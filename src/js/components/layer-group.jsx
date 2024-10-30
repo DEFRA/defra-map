@@ -4,10 +4,10 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
-import Symbol from './symbol.jsx'
+import KeySymbol from './key-symbol.jsx'
 
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
-  const { parent, dispatch, mode, layers, segments, query } = useApp()
+  const { parent, dispatch, mode, layers, segments } = useApp()
   const { basemap, size } = useViewport()
   const [, setQueryLyr] = useQueryState('lyr')
   const [isExpanded, setIsExpanded] = useState(group?.collapse !== 'collapse')
@@ -50,6 +50,42 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...(group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)) ? [label] : []], [])
     .join(', ').replace(/, ([^,]*)$/, ', $1') || 'None selected'
 
+  const GroupHeading = () => {
+    return (
+      groupHeading
+        ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{groupHeading}</h3>
+        : null
+    )
+  }
+
+  const ItemInner = ({ item, index, display, isChecked }) => {
+    if (hasInputs && group.type === 'radio') {
+      return (
+        <>
+          <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
+          <label className='fm-c-layers__label' htmlFor={item.id}>
+            {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+            <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
+          </label>
+        </>
+      )
+    } else if (hasInputs && item.id) {
+      return (
+        <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
+          {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+          <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
+        </button>
+      )
+    } else {
+      return (
+        <>
+          {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+          <span className={group.numLabels && index % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
+        </>
+      )
+    }
+  }
+
   return (
     <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={groupHeading}>
       {isDetails
@@ -69,9 +105,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             </span>
           </button>
           )
-        : groupHeading
-          ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{groupHeading}</h3>
-          : null}
+        : <GroupHeading />}
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}
@@ -82,40 +116,19 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
           const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
           return (
             <Fragment key={(item.id || item.label).toLowerCase()}>
-              {(hasSymbols || item.id) ? (
-              <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                {hasInputs && group.type === 'radio'
-                  ? (
-                    <>
-                      <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
-                      <label className='fm-c-layers__label' htmlFor={item.id}>
-                        {hasSymbols ? <Symbol display={display} item={item} /> : null}
-                        <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
-                      </label>
-                    </>
-                    )
-                  : hasInputs && item.id
-                    ? (
-                      <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
-                        {hasSymbols ? <Symbol display={display} item={item} /> : null}
-                        <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
-                      </button>
-                      )
-                    : (
-                      <>
-                        {hasSymbols ? <Symbol display={display} item={item} /> : null}
-                        <span className={group.numLabels && i % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
-                      </>
-                      )}
-              </div>
-              ) : null}
+              {(hasSymbols || item.id)
+                ? (
+                  <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
+                    <ItemInner item={item} index={i} display={display} isChecked={isChecked} />
+                  </div>
+                  )
+                : null}
               {hasSymbols
                 ? item.items?.map((child, j) => {
                   const display = item.display || (child.icon ? 'icon' : 'fill')
                   return (
                     <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                      <Symbol display={display} item={child} />
-                      <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: child.label }} />
+                      <ItemInner item={child} index={j} display={display} />
                     </div>
                   )
                 })

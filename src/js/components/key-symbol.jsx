@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useViewport } from '../store/use-viewport'
 import { parseSVG } from '../lib/symbols'
 
-export default function Symbol ({ item, display }) {
+export default function KeySymbol ({ item, display }) {
   const { basemap } = useViewport()
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 
@@ -23,7 +23,8 @@ export default function Symbol ({ item, display }) {
       {display === 'icon'
         ? (
           <div className={`fm-c-layers__image fm-c-layers__image--${display}`} dangerouslySetInnerHTML={svg} />
-        ) : null}
+          )
+        : null}
       {display === 'fill'
         ? (
           <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
@@ -31,7 +32,8 @@ export default function Symbol ({ item, display }) {
               <path d='M8 8h24v24H8z' />
             </svg>
           </div>
-        ) : null}
+          )
+        : null}
       {display === 'query-polygon'
         ? (
           <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
@@ -39,7 +41,8 @@ export default function Symbol ({ item, display }) {
               <path d='M9 9h22v22H9z' />
             </svg>
           </div>
-        ) : null}
+          )
+        : null}
       {display === 'ramp'
         ? (
           <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
@@ -47,7 +50,8 @@ export default function Symbol ({ item, display }) {
               <path d='M0 0h5v5H0z' />
             </svg>
           </div>
-        ) : null}
+          )
+        : null}
     </>
   )
 }

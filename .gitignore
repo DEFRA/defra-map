@@ -1,0 +1,41 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Mac OS X
+.DS_Store
+._.*
+._*
+
+# Ignore local editor
+.project
+.settings
+.idea
+*.swp
+tags
+nbproject/*
+.env
+
+# Package lock
+package-lock.json
+
+# Windows
+Thumbs.db
+
+# Debugging related
+npm-debug.log
+
+# Dependency packages files
+node_modules/
+
+# Output
+dist/
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+
+# Webpack bundle analyser
+stats.json
+
+# Demo assets
+demo/assets/js/*
+!demo/assets/js/plugin.js

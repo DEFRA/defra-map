@@ -1,0 +1,84 @@
+// Helper mixins
+
+// Clearfix
+// http://www.cssmojo.com/latest_new_clearfix_so_far/
+// Other clearfix options: https://github.com/stubbornella/oocss/blob/master/oocss/src/components/utils/_clearfix-me.scss
+@mixin clearfix {
+  &::after {
+    clear: both;
+    content: '';
+    display: table;
+  }
+}
+
+// Media queries
+@mixin from($device) {
+  @if $device == desktop {
+    @media (min-width: 835px) { @content; }
+  } @else if $device == tablet {
+    @media (min-width: 641px) { @content; }
+  }
+}
+@mixin until($device) {
+  @if $device == desktop {
+    @media (max-width: 834px) { @content; }
+  } @else if $device == tablet {
+    @media (max-width: 640px) { @content; }
+  }
+}
+
+// Text selection
+@mixin text-selection($color-selection, $color-selection-bg) {
+  ::-moz-selection { // sass-lint:disable-line no-vendor-prefixes
+    background: $color-selection-bg;
+    color: $color-selection;
+    text-shadow: none;
+  }
+
+  ::selection {
+    background: $color-selection-bg;
+    color: $color-selection;
+    text-shadow: none;
+  }
+}
+
+// Typography
+@mixin body-font($size, $weight) {
+  font-family: $body-font;
+  font-weight: $weight;
+  font-size: $size;
+  line-height: inherit;
+  // letter-spacing: 0.0286em;
+}
+
+@mixin visually-hidden() {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+// Focus :after pseudo element
+@mixin focus($offset: -1px, $border-radius: $button-radius) {
+  position:absolute;
+  content:'';
+  left: $offset;
+  right: $offset;
+  top: $offset;
+  bottom: $offset;
+  pointer-events: none;
+  z-index: 99;
+  border: 3px solid var(--foreground-colour);
+  outline: 3px solid var(--focus-colour);
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+}

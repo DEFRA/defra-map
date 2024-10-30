@@ -1,0 +1,25 @@
+.fm-c-status {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    &__inner {
+        // @extend .fm-c-body-xs;
+        padding: 15px;
+        border-radius: $button-radius;
+        background-color: #ffffff;
+        box-shadow: $panel-shadow;
+        pointer-events: auto;
+    }
+
+    &--visually-hidden {
+        @extend %fm-u-visually-hidden;
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "meta": {
+      "description": "Flood map",
+      "urls": {
+        "releaseNotes": "",
+        "documentation": "",
+        "versionHistory": ""
+      }
+    },
+    "assets": [
+      "/plugin/js",
+      "/plugin/images"
+    ],
+    "scripts": [
+      "/plugin/js/flood-map.js"
+    ],
+    "stylesheets": [
+      "/plugin/css/flood-map.css"
+    ],
+    "templates": [
+      {
+        "path": "/plugin/templates/map.njk",
+        "name": "Map",
+        "type": "nunjucks"
+      }
+    ]
+  }

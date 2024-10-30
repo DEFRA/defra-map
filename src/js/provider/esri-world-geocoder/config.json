@@ -1,0 +1,5 @@
+{
+    "FIND_ADDRESS_CANDIDATES_URL": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?singleLine={query}&magicKey={magicKey}&sourceCountry=UK&category=Populated Place,Postal&maxLocations={maxLocations}&outFields=*&token={token}&f=json",
+    "SUGGEST_URL": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={query}&sourceCountry=UK&category=Populated Place,Postal&maxSuggestions={maxSuggestions}&outFields=*&token={token}&f=json",
+    "ESRI_REVERSE_GEOCODE_URL": "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location={location}&token={token}&f=json"
+}

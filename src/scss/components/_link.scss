@@ -1,0 +1,43 @@
+%fm-c-link {
+    color: var(--link-colour);
+
+    &:focus {
+        outline: 3px solid transparent;
+    }
+
+    &.fm-u-focus-visible {
+        color: var(--foreground-colour);
+        background-color: var(--focus-colour);
+        text-decoration: none;
+        box-shadow: 0 -2px var(--focus-colour), 0 4px var(--foreground-colour); 
+    }
+
+    &:hover {
+        text-decoration-thickness: 3px;
+    }
+}
+
+.fm-c-link {
+    @extend %fm-c-link;
+}
+
+.fm-c-link-s {
+    @extend %fm-c-link;
+}
+
+%fm-c-link-button {
+    @extend %fm-c-link;
+
+    &:visited:not(.fm-u-focus-visible) {
+        color: var(--secondary-text-colour);
+    }
+    color: var(--secondary-text-colour);
+}
+
+.fm-c-link-button {
+    @extend %fm-c-link-button;
+}
+
+.fm-c-link-button-s {
+    @extend %fm-c-link-button;
+}

@@ -1,0 +1,83 @@
+// We need to overide inline styles, hence the use of !important
+
+// Outline - light basemap
+
+.fm-c-symbol__ol-stroke {
+    stroke: transparent !important;
+}
+
+.fm-c-symbol__ol-fill {
+    fill: transparent !important;
+}
+
+// Legend
+
+.fm-c-symbol--selected .fm-c-symbol__ol-stroke {
+    stroke: var(--foreground-colour) !important;
+}
+
+.fm-c-symbol--selected .fm-c-symbol__ol-fill {
+    fill: var(--foreground-colour) !important;
+}
+
+.fm-c-symbol__bg-stroke {
+    stroke: var(--background-colour) !important;
+}
+
+.fm-c-symbol__bg-fill {
+    fill: var(--background-colour) !important;
+}
+
+.fm-c-layers__columns button[aria-checked="true"] .fm-c-symbol__ol-stroke {
+    stroke: var(--foreground-colour) !important;
+}
+
+.fm-c-layers__columns button[aria-checked="true"] .fm-c-symbol__ol-fill {
+    fill: var(--foreground-colour) !important;
+}
+
+.fm-c-layers__columns button:not([aria-checked="true"]):hover .fm-c-symbol__ol-stroke {
+    stroke: var(--border-colour) !important;
+}
+
+.fm-c-layers__columns button:not([aria-checked="true"]):hover .fm-c-symbol__ol-fill {
+    fill: var(--border-colour) !important;
+}
+
+// Viewport
+
+.fm-o-viewport .fm-c-symbol {
+    display: none;
+}
+
+.fm-o-viewport .fm-c-symbol--selected .fm-c-symbol__ol-stroke {
+    stroke: #0b0c0c !important;
+}
+
+.fm-o-viewport .fm-c-symbol--selected .fm-c-symbol__ol-fill {
+    fill: #0b0c0c !important;
+}
+
+.fm-o-viewport .fm-c-symbol--dark.fm-c-symbol--selected .fm-c-symbol__ol-stroke {
+    stroke: #ffffff !important;
+}
+
+.fm-o-viewport .fm-c-symbol--dark.fm-c-symbol--selected .fm-c-symbol__ol-fill {
+    fill: #ffffff !important;
+}
+
+.fm-o-viewport .fm-c-symbol__bg-stroke {
+    stroke: #ffffff !important;
+}
+
+.fm-o-viewport .fm-c-symbol__bg-fill {
+    fill: #ffffff !important;
+}
+
+.fm-o-viewport .fm-c-symbol--dark .fm-c-symbol__bg-stroke {
+    stroke: #0b0c0c !important;
+}
+
+.fm-o-viewport .fm-c-symbol--dark .fm-c-symbol__bg-fill {
+    fill: #0b0c0c !important;
+}

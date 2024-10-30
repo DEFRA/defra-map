@@ -1,0 +1,115 @@
+.fm-c-details {
+    // @extend %govuk-body-s;
+    position: relative;
+    // align-items: center;
+    border: 0;
+    background-color: transparent;
+    padding: 15px 0;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.fm-c-details__heading {
+    display: block;
+}
+
+.fm-c-details__label {
+    &-focus {
+        display: inline-block;
+    }
+}
+
+.fm-c-details__summary {
+    display: block;
+    font-weight: 400;
+    margin-top: 7px;
+
+    &-focus {
+        display: inline-block;
+    }
+}
+
+.fm-c-details__toggle {
+    margin-top: 7px;
+    margin-bottom: -3px;
+    display: block;
+
+    &-focus {
+        display: inline-flex;
+        flex-direction: row;
+        color: var(--link-colour);
+        font-weight: 400;
+    }
+}
+
+.fm-c-details__chevron {
+    margin-right: 5px;;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 0.0625rem solid currentcolor;
+    border-radius: 50%;
+    vertical-align: middle;
+    transform: rotate(180deg);
+    color: var(--link-colour);
+    flex-shrink: 0;
+}
+
+.fm-c-details__chevron::after {
+    content: '';
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    bottom: 0.3125rem;
+    left: 0.375rem;
+    width: 0.375rem;
+    height: 0.375rem;
+    transform: rotate(-45deg);
+    border-top: 0.125rem solid;
+    border-right: 0.125rem solid;
+}
+
+.fm-c-details[aria-expanded="true"] .fm-c-details__chevron {
+    transform: rotate(0);
+}
+
+.fm-c-details:hover {
+    .fm-c-details__toggle-focus {
+        color: var(--foreground-colour);
+    }
+
+    .fm-c-details__chevron {
+        color: var(--foreground-colour);
+        background-color: var(--foreground-colour);
+    }
+
+    .fm-c-details__chevron::after {
+        border-color: var(--background-colour);
+    }
+}
+
+.fm-c-details:focus {
+    outline: 3px solid transparent;
+}
+
+.fm-c-details.fm-u-focus-visible {   
+    .fm-c-details__label-focus,
+    .fm-c-details__summary-focus,
+    .fm-c-details__toggle-focus {
+        color: var(--foreground-colour);
+        background-color: var(--focus-colour);
+        box-shadow: 0 -2px var(--focus-colour), 0 4px var(--foreground-colour);
+        text-decoration: none;
+        -webkit-box-decoration-break: clone;
+    }
+
+    .fm-c-details__chevron {
+        color: var(--foreground-colour);
+        background-color: var(--foreground-colour);
+    }
+
+    .fm-c-details__chevron::after {
+        border-color: var(--background-colour);
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -1.157201517,
+                    50.716157668
+                ]
+            },
+            "properties": {
+                "id": "065waf213",
+                "name": "St Johns, Ryde",
+                "state": "warning"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -1.49787004,
+                    50.698621396
+                ]
+            },
+            "properties": {
+                "id": "065fwc8001",
+                "name": "Yarmouth, Isle of Wight",
+                "state": "warning"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -1.288617355,
+                    50.74004324
+                ]
+            },
+            "properties": {
+                "id": "065fwc8101",
+                "name": "Cowes, East Cowes, and Newport",
+                "state": "warning"
+            }
+        }
+    ]
+}

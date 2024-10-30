@@ -1,0 +1,69 @@
+.fm-c-marker {
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 0;
+
+    svg {
+        display: block;
+    }
+}
+
+.fm-c-marker--visible {
+    display: block;
+}
+
+.fm-c-marker--centre {
+    transform: translate(-50%, -50%) !important; // Need to overide provider inline style
+    left: 50%;
+    top: 50%;
+}
+
+// Geolocation
+.fm-c-marker--location .fm-c-marker__inner {
+    border-radius: 100%;
+    box-shadow: $button-shadow;
+    color: currentcolor;
+}
+
+// Marker
+.fm-c-marker--target {
+    z-index: 2;
+    color: #505a5f;
+
+    circle {
+        stroke-dasharray: 4 2;
+    }
+
+    &.fm-c-marker--has-data {
+        color: #0b0c0c;
+
+        circle {
+            stroke-dasharray: none;
+        }
+    }
+}
+
+.fm-o-viewport--dark-basemap .fm-c-marker--target {
+    color: #b1b4b6;
+}
+
+.fm-o-viewport--dark-basemap .fm-c-marker--target.fm-c-marker--has-data {
+    color: #ffffff;
+}
+
+// Overlay marker
+.fm-o-viewport > .fm-c-marker--target {
+    width: 69px;
+    height: 69px;
+    left: 50%;
+    top: 50%;
+    margin-left: -34.5px;
+    margin-top: -34.5px;
+    pointer-events: none;
+}
+
+.fm-o-viewport--large > .fm-c-marker--target {
+    left: 100%;
+    top: 100%;
+}

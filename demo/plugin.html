@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Script tag example</title>
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="assets/images/favicon.ico" type="image/x-icon">
+    <meta name="description" content="Example use">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="">
+    <meta name="robots" content="noindex, nofollow">
+    <link href="plugin-assets/css/flood-map.css" rel="stylesheet" media="all">
+  </head>
+  <body>
+    <script>
+      /* Only needed if buttonFirst or hyrbid */
+      if (location.search.indexOf('view=map') >= 0) {
+        if (window.matchMedia('(max-width: 640px)').matches) { // Condition need for Hybrid
+          document.body.classList.add('fm-js-hidden')
+        }
+      }
+    </script>
+    <main style="padding: 20px">
+      <h1 class="govuk-heading-l">Plugin example</h1>
+      <div id="map"></div>
+    </main>
+    <script src="plugin-assets/js/flood-map.js"></script>
+    <script src="https://js.arcgis.com/4.30/"></script>
+    <script>
+        const getOsToken = async (tokens) => {
+            return fetch('/os-token').then(response => response.json()).then(data => {
+                const json = JSON.parse(data)
+                if (json.access_token) {
+                    tokens.os = json.access_token
+                    const timeout = (json.expires_in - 30) * 1000
+                    setTimeout(() => getOsToken(tokens), timeout)
+                } else {
+                    return Promise.reject()
+                }
+            }).catch(err => {
+                console.log('Error getting OS access token: ', err)
+                return Promise.reject()
+            })
+        }
+
+        const getEsriToken = async (tokens) => {
+            return fetch('/esri-token').then(response => response.json()).then(json => {
+                if (json.token) {
+                    tokens.esri = json.token
+                } else {
+                    return Promise.reject()
+                }
+            }).catch(err => {
+                console.log('Error getting ESRI access token: ', err)
+                return Promise.reject()
+            })
+        }
+
+        const tokens = {}
+
+        let map, view, isDark, isRamp, VectorTileLayer, FeatureLayer, Point
+
+        const vtLayers = [
+            { n: 'Surface_water_spatial_planning_1in30_depth', v: '_VTP_2', m: '_Model_Origin_Layer_gdb' },
+            { n: 'Surface_water_spatial_planning_1in100_depth', v: '_VTP', m: '_Model_Origin_Layer_gdb2' },
+            { n: 'Surface_water_spatial_planning_1in1000_depth', v: '_VTP', m: '_Model_Origin_Layer_gdb' },
+            { n: 'Rivers_1in30_Sea_1in30_defended_depth', v: '_VTP', m: '_Model_Origin_Layer' },
+            { n: 'Rivers_1in1000_Sea_1in1000_defended_depth', v: '_VTP_22', m: '_Model_Origin_Layer_gdb' },
+            { n: 'Rivers_1in100_Sea_1in200_undefended_depth', v: '_VTP', m: '_Model_Origin_Layer_gdb' },
+            { n: 'Rivers_1in1000_Sea_1in1000_undefended_depth', v: '_VTP', m: '_Model_Origin_Layer_gdb' }
+        ]
+
+        const fLayers = [
+            { n: 'nat_defences', q: 'fd'}
+        ]
+
+        const ids = [
+            'swpdhr',
+            'swpdmr',
+            'swpdlr',
+            'rsdpdhr',
+            'rsdpdlr',
+            'rsupdmr',
+            'rsupdlr'
+        ]
+
+        const addLayers = async () => {
+            vtLayers.forEach(async layer => {
+              map.add(new VectorTileLayer({
+                    id: layer.n,
+                    style: {
+                        'version': 8,
+                        'sources': {
+                            'esri': {
+                                'type': 'vector',
+                                'bounds': [-6.98694, 49.8816, 2.07537, 55.8333],
+                                'minzoom': 4,
+                                'maxzoom': 16,
+                                'scheme': 'xyz',
+                                'url': `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
+                            }
+                        },
+                        'layers': Array(7).fill(0).map((_, i) => { return {
+                            'id': layer.n + i,
+                            'type': 'fill',
+                            'source': 'esri',
+                            'source-layer': `${layer.n}_N`,
+                            'minzoom': 4.7597,
+                            'filter': ['==', '_symbol', i], 
+                            'paint': {
+                                'fill-color': fill(i),
+                                'fill-opacity': 0.75
+                            }
+                        }})
+                    },
+                    visible: false
+                }))
+            })
+            fLayers.forEach(layer => {
+                map.add(new FeatureLayer({
+                    id: layer.n,
+                    url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n}/FeatureServer`,
+                    visible: false
+                }))
+            })
+        }
+
+        const fill = (band) => {
+            const light = '#2b8cbe'
+            const dark = '#2b8cbe'
+            const depthLight = ['#08589e', '#2b8cbe', '#4eb3d3', '#7bccc4', '#a8ddb5', '#ccebc5', '#f0f9e8'] // light tones > 2300 to < 150
+            const depthDark = ['#08589e', '#2b8cbe', '#4eb3d3', '#7bccc4', '#a8ddb5', '#ccebc5', '#f0f9e8'] // dark tones > 2300 to < 150
+            return isRamp ? isDark ? depthDark[band] : depthLight[band] : isDark ? dark : light
+        }
+
+        const toggleVisibility = (type, mode, segments, layers) => {
+            // Conditionally add/remove layers might offer better for performance
+            const isDrawMode = ['draw', 'edit'].includes(mode)
+            vtLayers.forEach((l, i) => {
+                const id = l.n
+                const layer = map.findLayerById(id)
+                const isVisible = !isDrawMode && layer.id === vtLayers[i].n && segments.join('') === ids[i]
+                const isModeChange = type === 'mode'
+                layer.visible = isVisible
+                Array(7).fill(0).forEach((_, j) => {
+                    const paintProperties = layer.getPaintProperties(id + j)
+                    if (paintProperties && isVisible && !isModeChange) {
+                        paintProperties['fill-color'] = fill(j)
+                        layer.setPaintProperties(id + j, paintProperties)
+                    }
+                })
+            })
+            fLayers.forEach(l => {
+                const layer = map.findLayerById(l.n)
+                const isVisible = layers.includes(l.q)
+                layer.visible = isVisible
+            })
+        }
+
+        const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
+
+        Promise.all([getOsToken(tokens), getEsriToken(tokens)]).then(() => {
+          const fm = new defraMap.FloodMap('map', {
+              type: 'buttonFirst',
+              place: 'Ambleside',
+              zoom: 14,
+              minZoom: 6,
+              maxZoom: 18,
+              centre: [337297, 503995],
+              height: '700px',
+              provider: {
+                  name: 'esri',
+                  tokens: tokens,
+                  defaultUrl: 'https://cdn.arcgis.com/sharing/rest/content/items/ec701b28bab14eff890387e7178ef89a/resources/styles/root.json',
+                  darkUrl: 'https://cdn.arcgis.com/sharing/rest/content/items/e42283d5dd004a16b0c017f7f970418a/resources/styles/root.json',
+                  reverseGeocodeProvider: 'esri-world-geocoder',
+                  reverseGeocodeToken: tokens.esri,
+                  imagesPath: '/assets/images',
+                  symbolPath: '/assets/images/symbols',
+                  symbolName: ['flood-defence', 'main-river', 'water-storage']
+              },
+              search: {
+                  label: 'Search for a place',
+                  isAutocomplete: true,
+                  hasGeoLocation: true,
+                  provider: 'esri-world-geocoder',
+                  token: tokens.esri
+              },
+              legend: {
+                  // width: '360px',
+                  // display: 'inset',
+                  // isVisible: true,
+                  title: 'Menu',
+                  keyDisplay: 'none',
+                  isPersistInUrl: true,
+                  symbolPath: '/assets/images/symbols',
+                  segments: [
+                      {
+                          heading: 'Datasets',
+                          // collapse: 'collapse',
+                          items: [
+                              {
+                                  id: 'fz',
+                                  label: 'Flood zones 2 and 3'
+                              },
+                              {
+                                  id: 'rsd',
+                                  label: 'River and sea with defences'
+                              },
+                              {
+                                  id: 'rsu',
+                                  label: 'River and sea without defences'
+                              },
+                              {
+                                  id: 'sw',
+                                  label: 'Surface water'
+                              }
+
+                          ]
+                      },
+                      {
+                          id: 'tf',
+                          heading: 'Time frame',
+                          collapse: 'collapse',
+                          parentIds: ['rsd', 'rsu', 'sw'],
+                          items: [
+                              {
+                                  id: 'pd',
+                                  label: 'Present day'
+                              },
+                              {
+                                  id: 'cl',
+                                  label: '2040\'s to 2060\'s'
+                              }
+                          ]
+                      },
+                      {
+                          id: 'af1',
+                          heading: 'Annual likelihood of flooding',
+                          collapse: 'collapse',
+                          parentIds: ['rsd', 'sw'],
+                          items: [
+                              {
+                                  id: 'hr',
+                                  label: 'Above 3.3%'
+                              },
+                              {
+                                  id: 'mr',
+                                  label: '0.1% to 0.5%'
+                              },
+                              {
+                                  id: 'lr',
+                                  label: 'Below 0.1%'
+                              }
+                          ]
+                      },
+                      {
+                          id: 'af2',
+                          heading: 'Annual likelihood of flooding',
+                          collapse: 'collapse',
+                          parentIds: ['rsu'],
+                          items: [
+                              {
+                                  id: 'mr',
+                                  label: '0.1% to 0.5%'
+                              },
+                              {
+                                  id: 'lr',
+                                  label: 'below 0.1%'
+                              }
+                          ]
+                      }
+                  ],
+                  key: [
+                      {
+                          id: 'md',
+                          type: 'ramp',
+                          parentIds: ['pd', 'cl'],
+                          heading: 'Flood extent and depth',
+                          collapse: 'collapse',
+                          expandRampHeading: 'Maximum depth in metres', // Optional
+                          collapseFillLabel: 'Extent only',
+                          fill: '#2b8cbe', // Optional - sets ramp to initial collapse 
+                          items: [
+                              {
+                                  label: 'above 2.3',
+                                  fill: '#08589e'
+                              },
+                              {
+                                  label: '2.3',
+                                  fill: '#2b8cbe'
+                              },
+                              {
+                                  label: '1.2',
+                                  fill: '#4eb3d3'
+                              },
+                              {
+                                  label: '0.9',
+                                  fill: '#7bccc4'
+                              },
+                              {
+                                  label: '0.6',
+                                  fill: '#a8ddb5'
+                              },
+                              {
+                                  label: '0.3',
+                                  fill: '#ccebc5'
+                              },
+                              {
+                                  label: '0.15',
+                                  fill: '#f0f9e8'
+                              }
+                          ]
+                      },
+                      {
+                          type: 'symbol',
+                          heading: 'Map features',
+                          parentIds: ['fz'],
+                          isSelected: true,
+                          items: [
+                              {
+                                  id: 'fz2',
+                                  label: 'Flood zone 2',
+                                  fill: '#00A4CD',
+                                  isSelected: true
+                              },
+                              {
+                                  id: 'fz3',
+                                  label: 'Flood zone 3',
+                                  fill: '#003078',
+                                  isSelected: true
+                              }
+                          ]
+                      },
+                      {
+                          type: 'symbol',
+                          heading: 'Map features',
+                          parentIds: ['pd', 'cl'],
+                          collapse: 'collapse',
+                          isSelected: true,
+                          items: [
+                              {
+                                  id: 'wsa',
+                                  label: 'Water storage area',
+                                  icon: 'water-storage'
+                              },
+                              {
+                                  id: 'fd',
+                                  label: 'Flood defence',
+                                  icon: 'flood-defence'
+                              },
+                              {
+                                  id: 'mr',
+                                  label: 'Main river',
+                                  icon: 'main-river'
+                              }
+                          ]
+                      }
+                  ]
+              },
+              draw: {
+                  heading: 'Get information for a boundary',
+                  startLabel: 'Draw boundary',
+                  finishLabel: 'Finish and get report',
+                  helpLabel: 'How to draw a shape',
+                  html: '<p class="govuk-body-s">Instructions</p>',
+                  defaultUrl: '/styles/OS_VTS_27700_Outdoor.json',
+                  darkUrl: '/styles/OS_VTS_27700_Dark.json',
+                  minZoom: 12,
+                  maxZoom: 16
+              },
+              queryPixel: vtLayers.map(l => l.n)
+          })
+      
+          // Component is ready and we have access to map
+          // We can listen for map events now, such as 'loaded'
+          fm.addEventListener('ready', async e => {
+              VectorTileLayer = fm.modules.VectorTileLayer
+              FeatureLayer = fm.modules.FeatureLayer
+              Point = fm.modules.Point
+              map = e.detail.map
+              view = e.detail.view
+              const { mode, basemap, segments, layers } = e.detail
+              isDark = basemap === 'dark'
+              isRamp = layers.includes('md')
+              await addLayers()
+              toggleVisibility(null, mode, segments, layers)
+          })
+
+          // Listen for segments, layers or style changes
+          fm.addEventListener('change', e => {
+              const { type, mode, basemap, segments, layers } = e.detail
+              isDark = basemap === 'dark'
+              isRamp = layers.includes('md')
+              toggleVisibility(type, mode, segments, layers)
+          })
+
+          // Listen to map queries
+          fm.addEventListener('query', async e => {
+              const { resultType, point } = e.detail
+              
+              if (!resultType) {
+                  fm.info = null
+                  return
+              }
+
+              const result = e.detail.features[0]
+              const name = result.layer.split('_VTP')[0]
+              const layer = vtLayers.find(l => l.n === name)
+
+              const model = new FeatureLayer({
+                  url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.m}/FeatureServer`
+              })
+
+              const results = await model.queryFeatures({
+                  geometry: new Point({ x: point[0], y: point[1], spatialReference: 27700 }),
+                  outFields: ['*'],
+                  spatialRelationship: 'intersects',
+                  distance: 1,
+                  units: 'meters',
+                  returnGeometry: false
+              })
+              
+              const band = e.detail.features[0]._symbol
+              let attributes
+              if (results.features.length) {
+                  attributes = results.features[0].attributes
+              }
+
+              fm.info = {
+                  width: '360px',
+                  label: 'Info stuff',
+                  html: `<p class="govuk-body-s">
+                      <strong>Maximum depth:</strong> ${depthMap[band]} metres<br/>
+                      <strong>Model:</strong> ${attributes.model}</br/>
+                      <strong>Model year:</strong> ${attributes.model_year}
+                  </p>`
+              }
+          })
+      })
+    </script>
+  </body>
+</html>

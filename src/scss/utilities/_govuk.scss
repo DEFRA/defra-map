@@ -1,0 +1,10 @@
+.fm-o-container {
+    p, dd, dt {
+        color: var(--foreground-colour);
+    }
+}
+
+.govuk-body-s {
+    color: var(--foreground-colour);
+    font-size: 16px; // pre-frontend 5.2
+}

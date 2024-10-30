@@ -1,0 +1,50 @@
+// https://itcss.io/
+
+// GOVUK Colours
+@import 'govuk-frontend/dist/govuk/base';
+
+// Settings: font, colors definitions, etc
+@import 'scss/settings/fonts';
+@import 'scss/settings/colours';
+@import 'scss/settings/dimensions';
+@import 'scss/settings/shadows';
+
+// Tools: globally used mixins and functions
+@import 'scss/tools/mixins';
+
+// Generic: reset and/or normalize styles, box-sizing definition, etc
+@import 'scss/generic/reset';
+@import 'scss/generic/print';
+
+// Elements: styling for bare HTML elements eg h1, a, etc
+@import 'scss/elements/elements';
+
+// Objects: class-based selectors which define undecorated design patterns
+@import 'scss/objects/layout';
+
+// Components: specific UI components
+@import 'scss/components/button';
+@import 'scss/components/switch';
+@import 'scss/components/tooltip';
+@import 'scss/components/details';
+@import 'scss/components/link';
+@import 'scss/components/marker';
+@import 'scss/components/search';
+@import 'scss/components/status';
+@import 'scss/components/panel';
+@import 'scss/components/layers';
+@import 'scss/components/keyboard-list';
+@import 'scss/components/attribution';
+@import 'scss/components/segments';
+@import 'scss/components/symbol';
+@import 'scss/components/draw';
+@import 'scss/components/frame';
+
+// mapbox-gl-draw
+@import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
+// Utilities: utilities and helper classes with ability to override anything which goes before
+@import 'scss/utilities/utilities';
+@import 'scss/utilities/provider';
+@import 'scss/utilities/govuk';
+

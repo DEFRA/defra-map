@@ -1,0 +1,136 @@
+.fm-c-tooltip {
+    position: relative;
+    z-index: 98;
+}
+
+.fm-c-tooltip__label {
+    display: none;
+    position: absolute;
+}
+
+.fm-c-tooltip__label-inner {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: max-content;
+    max-width: 200px;
+    padding: 4px 5px;
+    background: var(--tooltip-background-colour);
+    border: 2px solid var(--tooltip-background-colour);
+    margin-bottom: 0;
+
+    &::after {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        z-index: 1;
+        width: 10px;
+        height: 10px;
+        color: var(--tooltip-background-colour);
+        border: 5px solid currentcolor;
+        -webkit-transform: rotate(135deg);
+        -moz-transform: rotate(135deg);
+        -o-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }
+}
+
+.fm-c-tooltip__label-inner.govuk-body-s {
+    color: #ffffff;
+    margin-bottom: 0;
+}
+
+// Above and below
+.fm-c-tooltip--below .fm-c-tooltip__label,
+.fm-c-tooltip--above .fm-c-tooltip__label {
+    width: 200px;
+    left: 50%;
+    text-align: center;
+    margin-left: -100px;
+}
+
+.fm-c-tooltip--below .fm-c-tooltip__label {
+    top: 100%;
+}
+
+.fm-c-tooltip--above .fm-c-tooltip__label {
+    bottom: 100%;
+}
+
+.fm-c-tooltip--below .fm-c-tooltip__label-inner,
+.fm-c-tooltip--above .fm-c-tooltip__label-inner {
+    &::after {
+        left: 50%;
+        margin-left: -4px;
+    }
+}
+
+.fm-c-tooltip--below .fm-c-tooltip__label-inner {
+    margin-top: 10px;
+
+    &::after {
+        top: -6px;
+    }
+}
+
+.fm-c-tooltip--above .fm-c-tooltip__label-inner {
+    margin-bottom: 10px;
+
+    &::after {
+        bottom: -6px;
+    }
+}
+
+// Left and right
+.fm-c-tooltip--left .fm-c-tooltip__label,
+.fm-c-tooltip--right .fm-c-tooltip__label {
+    height: 150%;
+    top: -25%;
+
+    &::before {
+        content: '';
+        display: inline-block;
+        height: 100%; 
+        vertical-align: middle;
+    }
+}
+
+.fm-c-tooltip--left .fm-c-tooltip__label-inner,
+.fm-c-tooltip--right .fm-c-tooltip__label-inner {
+    &::after {
+        top: 50%;
+        margin-top: -4px;
+    }
+}
+
+.fm-c-tooltip--left .fm-c-tooltip__label {
+    right: 100%;
+}
+
+.fm-c-tooltip--left .fm-c-tooltip__label-inner {
+    margin-right: 10px;
+
+    &::after {
+        right: -6px;
+    }
+}
+
+.fm-c-tooltip--right .fm-c-tooltip__label {
+    left: 100%;
+}
+
+.fm-c-tooltip--right .fm-c-tooltip__label-inner {
+    margin-left: 10px;
+
+    &::after {
+        left: -6px;
+    }
+}
+
+.fm-c-tooltip--visible .fm-c-tooltip__label {
+    display: block;
+}
+
+.fm-c-tooltip.fm-u-focus-within {
+    z-index: 99;
+}

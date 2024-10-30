@@ -1,0 +1,41 @@
+.fm-c-keyboard-list {
+    // @extend .fm-c-body-xs;
+    margin: 0;
+
+    &__item {
+        padding: 10px 0;
+        border-top: 1px solid var(--border-colour);
+    }
+
+    &__item:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    dt {
+        margin-bottom: 0.25em;
+    }
+}
+
+.fm-tablet .fm-c-keyboard-list,
+.fm-desktop .fm-c-keyboard-list {
+    &__item {
+        display: table;
+        width: 100%;
+    }
+
+    dt {
+        display: table-cell;
+        width: 45%;
+        padding-right: 15px;
+        margin-bottom: 0;
+    }
+
+    dt span {
+        display: block;
+    }
+
+    dd {
+        display: table-cell;
+    }
+}

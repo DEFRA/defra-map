@@ -1,0 +1,70 @@
+.fm-c-checkbox {
+    position: relative;
+    margin-left: -10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.fm-c-checkbox__input {
+    display: block;
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.fm-c-checkbox__label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    touch-action: manipulation;
+
+    &::before {
+        position: absolute;
+        content: '';
+        left: 10px;
+        top: 10px;
+        width: 24px;
+        height: 24px;
+        box-sizing: border-box;
+        background: transparent;
+        border: 2px solid;
+    }
+
+    &::after {
+        position: absolute;
+        content: '';
+        box-sizing: border-box;
+        background: transparent;
+        transform: rotate(-45deg);
+        border: solid;
+        border-top-color: transparent;
+        top: 17px;
+        left: 16px;
+        width: 12px;
+        height: 6.5px;
+        border-width: 0 0 3px 3px;
+        opacity: 0;
+    }
+}
+
+.fm-c-checkbox__input:checked + .fm-c-checkbox__label::after {
+    opacity: 1;
+}
+
+.fm-c-checkbox__input:focus + .fm-c-checkbox__label::before {
+    border-width: 4px;
+    outline: 3px solid transparent;
+    outline-offset: 1px;
+    box-shadow: 0 0 0 3px var(--focus-colour);
+}
+
+// Overides
+.fm-c-checkbox__label .fm-c-layers__image {
+    margin-right: 10px;
+}

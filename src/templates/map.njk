@@ -1,0 +1,60 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Map – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+
+    <script>
+      /* Only needed if buttonFirst or hyrbid */
+      if (location.search.indexOf('view=map') >= 0) {
+        if (window.matchMedia('(max-width: 640px)').matches) { // Condition need for Hybrid
+          document.body.classList.add('fm-js-hidden')
+        }
+      }
+    </script>
+
+    <h1 class="govuk-heading-l">A basic map</h1>
+    
+    <div id="map" data-zoom="10" data-centre="[-1.318249,50.673456]"></div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+      const fm = new defraMap.FloodMap('map', {
+        type: 'hybrid',
+        place: 'Carlisle',
+        zoom: 10,
+        minZoom: 6,
+        maxZoom: 18,
+        centre: [-1.311179,50.668434],
+        height: '600px',
+        provider: {
+            defaultUrl: '{{ env.DEFAULT_URL }}',
+            darkUrl: '{{ env.DARK_URL }}',
+            aerialUrl: '{{ env.AERIAL_URL }}',
+            deuteranopiaUrl: '{{ env.DEUTERANOPIA_URL }}',
+            tritanopiaUrl: '{{ env.TRITANOPIA_URL }}',
+            reverseGeocodeProvider: 'os-open-names',
+            reverseGeocodeToken: '{{ env.OS_API_KEY }}',
+            imagesPath: '/plugin-assets/%40defra%2Fflood-map/plugin/images',
+            symbolPath: '/plugin-assets/%40defra%2Fflood-map/plugin/images'
+            // symbolName: ['severe', 'warning', 'alert', 'removed']
+        },
+        search: {
+            label: 'Search for a place',
+            isAutocomplete: true,
+            hasGeoLocation: true,
+            provider: 'os-open-names',
+            token: '{{ env.OS_API_KEY }}'
+        },
+        basemaps: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
+        hasSizes: true,
+        queryFeature: ['point', 'polygon']
+      })
+    </script>
+
+{% endblock %}

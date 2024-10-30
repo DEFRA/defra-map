@@ -1,0 +1,101 @@
+// Panel default (fixed)
+.fm-c-panel {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    pointer-events: auto;
+    outline: 0;
+    background-color: var(--background-colour);
+    box-shadow: $panel-shadow;
+    border-radius: $panel-radius;
+    width: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    z-index: 5;
+
+    &.fm-u-focus-visible::after {
+        @include focus($offset: 3px);
+    }
+}
+
+.fm-c-panel--inset.fm-u-focus-visible::after {
+    @include focus($offset: -3px);
+}
+
+.fm-c-panel[aria-modal="true"] {
+    position: absolute;
+}
+
+// Panel contents
+.fm-c-panel__header {
+    position: relative;
+    z-index: 3;
+}
+
+.fm-c-btn--close-panel {
+    position: absolute;
+    z-index: 1;
+    right: 3px;
+    top: 3px;
+}
+
+.fm-c-panel__heading {
+    color: var(--foreground-colour);
+    margin: 0 15px;
+    padding: 11px 30px 10px 0;
+}
+
+.fm-c-panel__more {
+    padding: 0 15px;
+}
+
+.fm-c-panel__body {
+    flex: 1 1 auto;
+    padding: 0 15px 15px;
+    overflow: auto;
+    touch-action: pan-y;
+}
+
+.fm-c-panel__body[tabindex="0"] {
+    outline: 0;
+
+    &:focus.fm-u-focus-visible::after {
+        @include focus($offset: 3px);
+        top: 34px;
+    }
+}
+
+.fm-c-panel__footer {
+    border-top: 1px solid var(--border-colour);
+}
+
+// Viewport keyboard shortcuts label
+.fm-c-panel--viewport-label {
+    display: none;
+    position: relative;
+    margin: 0 auto 5px;
+    width: auto;
+    border-radius: $button-radius;
+    text-align: center;
+    padding: 10px;
+}
+
+// Overides
+.fm-mobile .fm-c-btn--close-panel.fm-u-focus-visible::after {
+    @include focus($offset: 0);
+}
+
+.fm-c-panel--legend .fm-c-panel__heading {
+    margin: 0;
+    padding-left: 15px;
+    padding-right: 45px; 
+    border-bottom: 1px solid var(--border-colour);
+}
+
+.fm-o-side .fm-c-panel__heading {
+    padding-right: 15px;
+}
+
+.fm-c-layers--style .fm-c-layers__heading {
+    padding-bottom: 0;
+}

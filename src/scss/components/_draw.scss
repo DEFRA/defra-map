@@ -1,0 +1,44 @@
+.fm-c-draw {
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    &__heading {
+        font-weight: 700;
+        margin-bottom: 0;
+        padding: 15px 0;
+    }
+
+    .fm-c-btn-more {
+        margin-top: 20px;
+    }
+
+    .fm-c-draw__body {
+        padding-top: 10px;
+    }
+}
+
+.fm-c-draw .fm-c-btn-more[aria-expanded="false"] + .fm-c-draw__body {
+    display: none;
+}
+
+.fm-draw .fm-o-inner .fm-o-focus-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: transparent;
+    visibility: visible;
+}
+
+// Controls
+.maplibregl-control-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+
+    * {
+        pointer-events: auto;
+    }
+}

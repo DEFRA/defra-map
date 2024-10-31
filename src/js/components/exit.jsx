@@ -6,7 +6,7 @@ export default function Exit () {
 
   const isFixed = options.legend.display !== 'inset' && isDesktop
 
-  const Path = ({ isBack, isFixed }) => {
+  const Path = () => {
     if (isBack && isFixed) {
       return (
         <path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' fill='currentColor' strokeWidth='0' />
@@ -25,7 +25,7 @@ export default function Exit () {
   return (
     <button onClick={handleExit} className='fm-c-btn fm-c-btn--exit govuk-body-s'>
       <svg aria-hidden='true' focusable='false' width={isBack ? '14' : '20'} height='20' viewBox={isBack ? '0 0 14 20' : '0 0 20 20'}>
-        <Path isBack={isBack} isFixed={isFixed} />
+        <Path />
       </svg>
       <span className='fm-c-btn__label'>{isBack ? 'Back' : 'Exit'}</span>
     </button>

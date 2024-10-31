@@ -74,6 +74,8 @@ export class FloodMap extends EventTarget {
         this._importComponent()
       } else if (type === 'buttonFirst' || (type === 'hybrid' && isMobile)) {
         this._removeComponent()
+      } else {
+        // No action
       }
     }
     window.addEventListener('popstate', handlePopstate)
@@ -82,12 +84,18 @@ export class FloodMap extends EventTarget {
     const handleMobileMQ = e => {
       isMobile = e.matches
       const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === id
-      isVisible = hasViewParam || type === 'inline' || (type === 'hybrid' && !isMobile)
-      isVisible ? this._importComponent() : this._removeComponent()
+      isVisible = (hasViewParam || type === 'inline' || (type === 'hybrid' && !isMobile))
+      if (isVisible) {
+        this._importComponent()
+      } else {
+        this._removeComponent()
+      }
     }
-    window.matchMedia(mobileMQ).addEventListener
-      ? window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
-      : window.matchMedia(mobileMQ).addListener(handleMobileMQ)
+    if (window.matchMedia(mobileMQ).addEventListener) {
+      window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
+    } else {
+      window.matchMedia(mobileMQ).addListener(handleMobileMQ)
+    }
 
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
@@ -95,7 +103,9 @@ export class FloodMap extends EventTarget {
     // Set isKeyboard
     const handleKeydown = e => {
       // if (!['Escape', 'Esc', 'Tab'].includes(e.key)) return
-      if (e.key !== 'Tab') return
+      if (e.key !== 'Tab') {
+        return
+      }
       this.isKeyboard = true
       eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
     }
@@ -112,7 +122,9 @@ export class FloodMap extends EventTarget {
 
     // Polyfil :focus-visible set
     const handleFocusIn = () => {
-      if (!this.isKeyboard) return
+      if (!this.isKeyboard) {
+        return
+      }
       document.activeElement.classList.add('fm-u-focus-visible')
     }
     window.addEventListener('focusin', handleFocusIn)
@@ -130,9 +142,15 @@ export class FloodMap extends EventTarget {
       // We now have a reference to the map
       eventBus.dispatch(this, events.READY, { type: 'ready', ...data })
       // Need to call these after the component is ready
-      if (this._info) eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
-      if (this._selected) eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
-      if (this._draw) eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
+      if (this._info) {
+        eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
+      }
+      if (this._selected) {
+        eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
+      }
+      if (this._draw) {
+        eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
+      }
     })
 
     // Change, eg segment, layer or style
@@ -153,7 +171,9 @@ export class FloodMap extends EventTarget {
   }
 
   _addComponent (module) {
-    if (this.root) return
+    if (this.root) {
+      return
+    }
     this.button.setAttribute('style', 'display: none')
     this.root = module.default(this.el, { ...this.props, isKeyboard: this.isKeyboard })
   }
@@ -176,7 +196,9 @@ export class FloodMap extends EventTarget {
 
   set info (value) {
     this._info = value
-    if (!this.isReady) return
+    if (!this.isReady) {
+      return
+    }
     eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
   }
 
@@ -186,7 +208,9 @@ export class FloodMap extends EventTarget {
 
   set select (value) {
     this._selected = value
-    if (!this.isReady) return
+    if (!this.isReady) {
+      return
+    }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
   }
 
@@ -196,7 +220,9 @@ export class FloodMap extends EventTarget {
 
   set draw (value) {
     this._draw = value
-    if (!this.isReady) return
+    if (!this.isReady) {
+      return
+    }
     eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
   }
 }

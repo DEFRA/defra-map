@@ -47,9 +47,14 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const heading = group.heading || group.label
   const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
   const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
-  const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...(
-    group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)) ? [label] : []], []
-  ).join(', ').replace(/, ([^,]*)$/, ', $1') || 'None selected'
+
+  const labels = (label, id) => {
+    const isActive = group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)
+    return isActive ? [label] : []
+  }
+
+  const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...labels(label, id)], [])
+    .join(', ').replace(/, ([^,]*)$/, ', $1')
 
   const Heading = () => {
     return (
@@ -96,7 +101,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
               <span className='fm-c-details__label-focus'>{heading}</span>
             </span>
             <span className='fm-c-details__summary'>
-              <span className='fm-c-details__summary-focus'>{groupSummary}</span>
+              <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
             </span>
             <span className='fm-c-details__toggle'>
               <span className='fm-c-details__toggle-focus'>

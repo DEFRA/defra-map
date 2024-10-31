@@ -4,9 +4,7 @@ import { useApp } from '../store/use-app'
 export default function Attribution () {
   const { provider } = useApp()
 
-  if (!provider) return
-
-  const attribution = provider.attribution
+  const attribution = provider?.attribution
 
   return (
     <>

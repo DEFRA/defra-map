@@ -7,11 +7,12 @@ export default function Exit () {
   const isFixed = options.legend.display !== 'inset' && isDesktop
 
   const Path = () => {
-    if (isBack && isFixed) {
-      return (
-        <path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' fill='currentColor' strokeWidth='0' />
-      )
-    } else if (isBack && !isFixed) {
+    if (isBack) {
+      if (isFixed) {
+        return (
+          <path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' fill='currentColor' strokeWidth='0' />
+        )
+      }
       return (
         <path d='M10.193,17.777l-7.778,-7.777l7.778,-7.778l1.414,1.414l-6.364,6.364l6.364,6.363l-1.414,1.414Z' fill='currentColor' strokeWidth='0' />
       )

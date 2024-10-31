@@ -103,7 +103,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             </span>
           </button>
           )
-        : heading && <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3> }
+        : heading && <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>}
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}

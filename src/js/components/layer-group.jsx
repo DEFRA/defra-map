@@ -56,14 +56,6 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const groupSummary = group.items.reduce((result, current) => [...result, ...labels(current)], [])
     .join(', ').replace(/, ([^,]*)$/, ', $1')
 
-  const Heading = () => {
-    return (
-      heading
-        ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
-        : null
-    )
-  }
-
   const ItemInner = ({ item, index, display, isChecked }) => {
     if (hasInputs && group.type === 'radio') {
       return (
@@ -111,7 +103,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             </span>
           </button>
           )
-        : <Heading />}
+        : heading && <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3> }
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}

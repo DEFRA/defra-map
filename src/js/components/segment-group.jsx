@@ -40,6 +40,14 @@ export default function SegmentGroup ({ id, group }) {
   })
   const selected = items.find(i => i.isChecked).label
 
+  const Heading = () => {
+    return (
+      heading
+        ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
+        : null
+    )
+  }
+
   return (
     <div className={`fm-c-segments${display ? ' fm-c-segments--' + display : ''}`} {...isHidden ? { style: { display: 'none' } } : {}}>
       {isDetails
@@ -59,9 +67,7 @@ export default function SegmentGroup ({ id, group }) {
             </span>
           </button>
           )
-        : heading
-          ? <h3 id={`segment-${id}`} className='fm-c-segments__heading govuk-body-s'>{heading}</h3>
-          : null}
+        : <Heading />}
       <div id={`content-${id}`} className='fm-c-segments__inner' role='group' {...heading ? { 'aria-labelledby': `segment-${id}` } : { 'aria-label': 'Segments' }}>
         {items.map(item => (
           <Fragment key={item.label.toLowerCase()}>

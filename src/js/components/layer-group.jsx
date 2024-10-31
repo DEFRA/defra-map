@@ -44,16 +44,17 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const isDetails = hasInputs && layout !== 'column' && group.heading && ['expanded', 'collapse'].includes(group.collapse)
   const numItems = group.items.length
   const numCols = layout === 'column' && group.display === 'ramp' ? numItems : Math.min(numItems, 4)
-  const groupHeading = group.heading || group.label
+  const heading = group.heading || group.label
   const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
   const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
-  const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...(group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)) ? [label] : []], [])
-    .join(', ').replace(/, ([^,]*)$/, ', $1') || 'None selected'
+  const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...(
+    group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)) ? [label] : []], []
+  ).join(', ').replace(/, ([^,]*)$/, ', $1') || 'None selected'
 
-  const GroupHeading = () => {
+  const Heading = () => {
     return (
-      groupHeading
-        ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{groupHeading}</h3>
+      heading
+        ? <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
         : null
     )
   }
@@ -87,12 +88,12 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }
 
   return (
-    <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={groupHeading}>
+    <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
       {isDetails
         ? (
           <button className='fm-c-details govuk-body-s' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
             <span className='fm-c-details__label'>
-              <span className='fm-c-details__label-focus'>{groupHeading}</span>
+              <span className='fm-c-details__label-focus'>{heading}</span>
             </span>
             <span className='fm-c-details__summary'>
               <span className='fm-c-details__summary-focus'>{groupSummary}</span>
@@ -105,7 +106,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             </span>
           </button>
           )
-        : <GroupHeading />}
+        : <Heading />}
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}

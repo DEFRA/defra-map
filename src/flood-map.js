@@ -91,11 +91,13 @@ export class FloodMap extends EventTarget {
         this._removeComponent()
       }
     }
-    if (window.matchMedia(mobileMQ).addEventListener) {
-      window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
-    } else {
-      window.matchMedia(mobileMQ).addListener(handleMobileMQ)
-    }
+    window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
+
+    // if (window.matchMedia(mobileMQ).addEventListener) {
+    //   window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
+    // } else {
+    //   window.matchMedia(mobileMQ).addListener(handleMobileMQ)
+    // }
 
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })

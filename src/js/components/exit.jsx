@@ -15,11 +15,10 @@ export default function Exit () {
       return (
         <path d='M10.193,17.777l-7.778,-7.777l7.778,-7.778l1.414,1.414l-6.364,6.364l6.364,6.363l-1.414,1.414Z' fill='currentColor' strokeWidth='0' />
       )
-    } else {
-      return (
-        <path d='M3.828 10l8.486 8.485-1.415 1.414L1 10 10.899.101l1.415 1.414L3.828 10z' fill='currentColor' strokeWidth='0' />
-      )
     }
+    return (
+      <path d='M3.828 10l8.486 8.485-1.415 1.414L1 10 10.899.101l1.415 1.414L3.828 10z' fill='currentColor' strokeWidth='0' />
+    )
   }
 
   return (

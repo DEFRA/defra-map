@@ -48,12 +48,12 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
   const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
 
-  const labels = (label, id) => {
-    const isActive = group?.type === 'radio' ? id === checkedRadioId : layers?.includes(id)
-    return isActive ? [label] : []
+  const labels = (item) => {
+    const isActive = group?.type === 'radio' ? item.id === checkedRadioId : layers?.includes(item.id)
+    return isActive ? [item.label] : []
   }
 
-  const groupSummary = group.items.reduce((result, { label, id }) => [...result, ...labels(label, id)], [])
+  const groupSummary = group.items.reduce((result, current) => [...result, ...labels(current)], [])
     .join(', ').replace(/, ([^,]*)$/, ', $1')
 
   const Heading = () => {

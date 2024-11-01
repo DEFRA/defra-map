@@ -312,12 +312,12 @@ class Provider extends EventTarget {
     const tokenCallback = isEsri ? this.esriTokenCallback : this.osTokenCallback
 
     if (window.globalThis) {
-      const { getNearest } = (isEsri === 'esri-world-geocoder')
+      const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, tokenCallback)
     } else {
-      const { getNearest } = (isEsri === 'esri-world-geocoder')
+      const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre-legacy" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, tokenCallback)

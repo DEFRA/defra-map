@@ -80,13 +80,13 @@ class Provider extends EventTarget {
   }
 
   addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, size, featureLayers, pixelLayers }) {
-    const { Map, Marker } = module.default
+    const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
     const bounds = bbox ? [[bbox[0], bbox[1]], [bbox[2], bbox[3]]] : null
     const center = centre || [0, 0]
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
-    const map = new Map({
+    const map = new MaplibreMap({
       style: this[basemap + 'Url'],
       container: target,
       maxBounds: defaults.OPTIONS.maxBounds,
@@ -312,12 +312,12 @@ class Provider extends EventTarget {
     const tokenCallback = isEsri ? this.esriTokenCallback : this.osTokenCallback
 
     if (window.globalThis) {
-      const { getNearest } = isEsri === 'esri-world-geocoder'
+      const { getNearest } = (isEsri === 'esri-world-geocoder')
         ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, tokenCallback)
     } else {
-      const { getNearest } = isEsri === 'esri-world-geocoder'
+      const { getNearest } = (isEsri === 'esri-world-geocoder')
         ? await import(/* webpackChunkName: "maplibre-legacy" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, tokenCallback)

@@ -7,7 +7,7 @@ export default function KeyButton ({ keyBtnRef }) {
   if (!legend) return
 
   const handleClick = () => {
-    dispatch({ type: 'OPEN', data: 'KEY' })
+    dispatch({ type: 'OPEN', payload: 'KEY' })
   }
 
   return (

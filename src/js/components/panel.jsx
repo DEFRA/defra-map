@@ -48,10 +48,10 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
     toggleInert()
   }
 
-  const handleBlur = e => {
-    if (!(isMobile && elementRef.current?.contains(e.target) && !elementRef.current?.contains(e.relatedTarget))) return
-    dispatch({ type: 'SET_IS_EXPANDED', value: false })
-  }
+  // const handleBlur = e => {
+  //   if (!(isMobile && elementRef.current?.contains(e.target) && !elementRef.current?.contains(e.relatedTarget))) return
+  //   dispatch({ type: 'SET_IS_EXPANDED', value: false })
+  // }
 
   // Template properties
   const panelId = `${id}-panel${className ? '-' + className : ''}`
@@ -89,7 +89,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
       aria-labelledby={`${panelId}-label`}
       role={instigatorRef ? 'dialog' : 'region'}
       ref={elementRef}
-      onBlur={handleBlur}
+      // onBlur={handleBlur}
       {...(instigatorRef
         ? {
             open: true,

@@ -7,7 +7,7 @@ export default function LegendButton ({ legendBtnRef }) {
   if (!legend) return
 
   const handleClick = () => {
-    dispatch({ type: 'OPEN', data: 'LEGEND' })
+    dispatch({ type: 'OPEN', payload: 'LEGEND' })
   }
 
   return (

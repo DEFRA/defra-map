@@ -12,6 +12,13 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const [, setQueryLyr] = useQueryState('lyr')
   const [isExpanded, setIsExpanded] = useState(group?.collapse !== 'collapse')
 
+  const dispatchAppChange = lyr => {
+    dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, basemap, size, segments, layers: lyr })
+    // Update query param
+    setQueryLyr(lyr.join(','))
+  }
+
   const handleItemClick = e => {
     const lyr = layers
     const index = lyr.indexOf(e.currentTarget.value)
@@ -26,13 +33,6 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     }
     lyr.push(e.currentTarget.value)
     dispatchAppChange(lyr)
-  }
-
-  const dispatchAppChange = lyr => {
-    dispatch({ type: 'TOGGLE_LAYERS', layers: lyr })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, basemap, size, segments, layers: lyr })
-    // Update query param
-    setQueryLyr(lyr.join(','))
   }
 
   const handleDetailsClick = e => {

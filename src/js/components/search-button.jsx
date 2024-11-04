@@ -7,7 +7,7 @@ export default function SearchButton ({ ariaLabelledby, searchBtnRef }) {
   if (!search) return
 
   const handleClick = () => {
-    dispatch({ type: 'OPEN', data: 'SEARCH' })
+    dispatch({ type: 'OPEN', payload: 'SEARCH' })
   }
 
   return (

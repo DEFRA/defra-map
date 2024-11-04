@@ -26,8 +26,8 @@ const removeTenuousResults = (results, query) => {
 // Mark search charcaters in result
 const markString = (string, find) => {
   find = find.replace(/,/g, '')
-  const patterns = [...new Set([find, ...find.trim().split(/[\s,\t,\n]+/)])].join('|')
-  const reg = new RegExp('(' + patterns + ')', 'i', 'g', 'gi')
+  const patterns = [...new Set([find, ...find.trim().split(/[s,t,n]+/)])].join('|')
+  const reg = new RegExp(`(${patterns})`, 'i', 'g', 'gi')
   return { __html: string.replace(reg, '<mark>$1</mark>') }
 }
 
@@ -40,10 +40,10 @@ const place = ({ ID, NAME1, MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, 
         (new OsGridRef(MBR_XMAX, MBR_YMAX)).toLatLon().lat]
         .map(n => Math.round(n * 1000000) / 1000000)
     : [
-        (new OsGridRef(GEOMETRY_X - 500, GEOMETRY_Y - 500)).toLatLon().lon,
-        (new OsGridRef(GEOMETRY_X - 500, GEOMETRY_Y - 500)).toLatLon().lat,
-        (new OsGridRef(GEOMETRY_X + 500, GEOMETRY_Y + 500)).toLatLon().lon,
-        (new OsGridRef(GEOMETRY_X + 500, GEOMETRY_Y + 500)).toLatLon().lat]
+        (new OsGridRef(GEOMETRY_X - config.POINT_BUFFER, GEOMETRY_Y - config.POINT_BUFFER)).toLatLon().lon,
+        (new OsGridRef(GEOMETRY_X - config.POINT_BUFFER, GEOMETRY_Y - config.POINT_BUFFER)).toLatLon().lat,
+        (new OsGridRef(GEOMETRY_X + config.POINT_BUFFER, GEOMETRY_Y + config.POINT_BUFFER)).toLatLon().lon,
+        (new OsGridRef(GEOMETRY_X + config.POINT_BUFFER, GEOMETRY_Y + config.POINT_BUFFER)).toLatLon().lat]
         .map(n => Math.round(n * 1000000) / 1000000)
   const centre = GEOMETRY_X
     ? [(new OsGridRef(GEOMETRY_X, GEOMETRY_Y)).toLatLon().lon,

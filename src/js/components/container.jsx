@@ -22,7 +22,7 @@ import Zoom from './zoom.jsx'
 import Reset from './reset.jsx'
 import Location from './location.jsx'
 import Attribution from './attribution.jsx'
-import Error from './error.jsx'
+import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawCancel from './draw-cancel.jsx'
 import DrawEdit from './draw-edit.jsx'
@@ -253,7 +253,7 @@ export default function Container () {
                 {activePanel === 'ERROR'
                   ? (
                     <Panel isInset maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal>
-                      <Error />
+                      <MapError />
                     </Panel>
                     )
                   : null}

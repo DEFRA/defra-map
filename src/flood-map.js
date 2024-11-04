@@ -29,7 +29,6 @@ export class FloodMap extends EventTarget {
     this.id = id
     this.el = el
     this.root = null
-    
     // Get visibility
     const { type, maxMobile } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
@@ -114,7 +113,7 @@ export class FloodMap extends EventTarget {
           <span class='fm-u-visually-hidden'>(Visual only)</span>
       </a>
     `)
-    const button = this.el.previousElementSibling 
+    const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
     this.button = button
   }
@@ -168,7 +167,7 @@ export class FloodMap extends EventTarget {
     eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
   }
 
-  _handlePointerdown ()  {
+  _handlePointerdown () {
     eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
     document.activeElement.classList.remove(cssFocusVisible)
     this.isKeyboard = false

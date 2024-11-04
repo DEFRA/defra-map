@@ -20,7 +20,7 @@ export default function Location ({ ariaLabelledby }) {
 
   const handleGeoLocationError = (err) => {
     viewportDispatch({ type: 'CLEAR_STATUS' })
-    appDispatch({ type: 'ERROR', payload: {label: 'Can\'t get location', message: err.message }})
+    appDispatch({ type: 'ERROR', payload: { label: 'Can\'t get location', message: err.message } })
   }
 
   // Reset viewport

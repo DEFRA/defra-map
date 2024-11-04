@@ -3,7 +3,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default {
   mode: 'production',
@@ -12,11 +12,11 @@ export default {
     errorDetails: true
   },
   entry: {
-    'flood-map': path.join(__dirname, 'src/flood-map.js'),
-    css: path.join(__dirname, 'src/flood-map.scss')
+    'flood-map': path.join(dirname, 'src/flood-map.js'),
+    css: path.join(dirname, 'src/flood-map.scss')
   },
   output: {
-    path: path.resolve(__dirname, 'plugin'),
+    path: path.resolve(dirname, 'plugin'),
     filename: 'js/[name].js',
     library: {
       name: 'defraMap',
@@ -40,17 +40,17 @@ export default {
     new CopyWebpackPlugin({
       patterns: [
         {
-          context: __dirname + '/src/images',
-          from: path.resolve(__dirname, 'src/images/*'),
-          to: path.resolve(__dirname, 'plugin/images'),
+          context: dirname + '/src/images',
+          from: path.resolve(dirname, 'src/images/*'),
+          to: path.resolve(dirname, 'plugin/images'),
           globOptions: {
             ignore: ['*.DS_Store', 'Thumbs.db']
           }
         },
         {
-          context: __dirname + '/src/templates',
-          from: path.resolve(__dirname, 'src/templates/*'),
-          to: path.resolve(__dirname, 'plugin/templates')
+          context: dirname + '/src/templates',
+          from: path.resolve(dirname, 'src/templates/*'),
+          to: path.resolve(dirname, 'plugin/templates')
         }
       ]
     })

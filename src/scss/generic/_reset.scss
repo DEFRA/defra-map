@@ -32,7 +32,6 @@ html:focus-within {
 
 // Set core body defaults
 body {
-  // min-height: 100vh;
   text-rendering: optimizespeed;
   line-height: 1.5;
 }
@@ -45,7 +44,6 @@ a:not([class]) {
 // Make images easier to work with
 img,
 picture {
-  // max-width: 100%;
   display: block;
 }
 
@@ -62,15 +60,6 @@ select {
   html:focus-within {
     scroll-behavior: auto;
   }
-  
-  // *,
-  // *::before,
-  // *::after {
-  //   animation-duration: 0.01ms !important;
-  //   animation-iteration-count: 1 !important;
-  //   transition-duration: 0.01ms !important;
-  //   scroll-behavior: auto !important;
-  // }
 }
 
 // Hidden

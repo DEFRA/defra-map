@@ -29,7 +29,7 @@
 
 // Text selection
 @mixin text-selection($color-selection, $color-selection-bg) {
-  ::-moz-selection { // sass-lint:disable-line no-vendor-prefixes
+  ::-moz-selection {
     background: $color-selection-bg;
     color: $color-selection;
     text-shadow: none;
@@ -48,7 +48,6 @@
   font-weight: $weight;
   font-size: $size;
   line-height: inherit;
-  // letter-spacing: 0.0286em;
 }
 
 @mixin visually-hidden() {

@@ -1,7 +1,5 @@
 .fm-c-details {
-    // @extend %govuk-body-s;
     position: relative;
-    // align-items: center;
     border: 0;
     background-color: transparent;
     padding: 15px 0;
@@ -25,7 +23,7 @@
     display: block;
     font-weight: 400;
     margin-top: 7px;
-
+    
     &-focus {
         display: inline-block;
     }

@@ -150,7 +150,6 @@
     align-items: flex-start;
     padding: $margin;
     pointer-events: none;
-    // overflow-x: auto;
     &__column:first-child {
         display: flex;
         flex-direction: row;
@@ -278,9 +277,7 @@
 .fm-desktop .fm-o-main > .fm-c-panel {
     left: auto;
     top: auto;
-    // right: calc(40px + ($margin * 2));
     right: $margin;
-    // max-width: calc(100% - (40px + $margin * 3));
     bottom: $margin;
 }
 
@@ -292,7 +289,6 @@
     display: none;
 }
 
-// .fm-o-top .fm-c-btn--search,
 .fm-o-top .fm-o-top__column:first-child .fm-c-tooltip {
     display: inline-block;
     margin-right: 10px;

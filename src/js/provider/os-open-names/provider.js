@@ -71,7 +71,9 @@ const suggestion = (query, { ID, NAME1, COUNTY_UNITARY, DISTRICT_BOROUGH, POSTCO
 }
 
 const parseResults = async (query, tokenCallback) => {
-  if (!query) return []
+  if (!query) {
+    return []
+  }
   let url = config.URL
   url = url.replace('{query}', encodeURI(query)).replace('{maxresults}', isPostcode(query) ? 1 : 100)
   let results = []

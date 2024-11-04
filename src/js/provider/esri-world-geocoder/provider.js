@@ -53,27 +53,37 @@ class Provider {
   }
 
   async suggest (query) {
-    if (!query) return []
+    if (!query) {
+      return []
+    }
     const token = (await this.tokenCallback()).token
     let url = config.SUGGEST_URL.replace('{token}', token)
     url = url.replace('{query}', encodeURI(query)).replace('{maxSuggestions}', isPostcode(query) ? 1 : 8)
     const response = await fetch(url)
     const json = await response.json()
-    if (json.error || !json.suggestions?.length) return []
+    if (json.error || !json.suggestions?.length) {
+      return []
+    }
     let results = json.suggestions.filter(r => r.text.toLowerCase().includes('england, gbr'))
     results = stripSuffix(results)
-    if (!results.length) return []
+    if (!results.length) {
+      return []
+    }
     return results.map(r => suggestion(query, r))
   }
 
   async find (query, id) {
-    if (!query) return null
+    if (!query) {
+      return null
+    }
     const token = (await this.tokenCallback()).token
     let url = config.FIND_ADDRESS_CANDIDATES_URL.replace('{token}', token)
     url = url.replace('{query}', encodeURI(query)).replace('{maxLocations}', 8).replace('{magicKey}', id || '')
     const response = await fetch(url)
     const json = await response.json()
-    if (json.error || !json.candidates?.length) return null
+    if (json.error || !json.candidates?.length) {
+      return null
+    }
     const results = json.candidates.filter(r => r.attributes.Region === 'England')
     return results.length ? place(results[0]) : null
   }

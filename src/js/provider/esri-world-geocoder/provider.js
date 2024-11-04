@@ -19,7 +19,7 @@ const stripSuffix = (results) => {
 // Mark search charcaters in result
 const markString = (string, find) => {
   find = find.replace(/,/g, '')
-  const patterns = [...new Set([find, ...find.trim().split(/[s,t,n]+/)])].join('|')
+  const patterns = [...new Set([find, ...find.trim().split(/[stn]+/)])].join('|')
   const reg = new RegExp(`(${patterns})`, 'i', 'g', 'gi')
   return { __html: string.replace(reg, '<mark>$1</mark>') }
 }

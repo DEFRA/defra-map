@@ -13,10 +13,15 @@ const setSearch = (state, payload) => {
 }
 
 const setInfo = (state, payload) => {
+  let activePanel = state.activePanel !== 'INFO' ? state.activePanel : null
+  if (payload) {
+    activePanel = 'INFO'
+  }
+
   return {
     ...state,
     info: payload,
-    activePanel: payload ? 'INFO' : state.activePanel !== 'INFO' ? state.activePanel : null,
+    activePanel: activePanel,
     hasViewportLabel: false
   }
 }

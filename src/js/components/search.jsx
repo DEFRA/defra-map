@@ -100,13 +100,15 @@ export default function Search ({ instigatorRef }) {
 
   return (
     <div
-      id={`${id}-search-form`} className={`fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}
+      id={`${id}-search-form`} className={`fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`}
       {...(!isFixed
         ? {
-            'aria-labelledby': `${id}-search`,
             role: 'dialog',
+            'aria-labelledby': `${id}-search`,
             'aria-modal': true,
-            open: true
+            open: true,
+            onKeyDown: handleKeyDown,
+            onKeyUp: handleKeyUp
           }
         : {})}
       {...searchWidth

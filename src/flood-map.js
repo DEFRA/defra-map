@@ -31,7 +31,7 @@ export class FloodMap extends EventTarget {
     this.root = null
     
     // Get visibility
-    const { type, maxMobile, buttonText, buttonType } = options
+    const { type, maxMobile } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
     const searchParams = new URLSearchParams(document.location.search)
     this.isMobile = window?.matchMedia(mobileMQ).matches
@@ -41,20 +41,10 @@ export class FloodMap extends EventTarget {
     if (this.isVisible) { this._importComponent() }
 
     // Add button
-    el.insertAdjacentHTML('beforebegin', `
-        <a href="${location.pathname}?view=${id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')} govuk-body-s" ${this.isVisible ? 'style="display:none"' : ''} role="button">
-            <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
-            <span class='fm-u-visually-hidden'>(Visual only)</span>
-        </a>
-    `)
-    const button = el.previousElementSibling
-    this.button = button
+    this._insertButtonHTML()
 
     // Exit map
     this.props.handleExit = this._handleExit
-
-    // Button click add app
-    button.addEventListener('click', this._handleClick.bind(this))
 
     // History change add/remove app
     window.addEventListener('popstate', this._handlePopstate.bind(this))
@@ -114,6 +104,19 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
+  }
+
+  _insertButtonHTML () {
+    const { buttonText, buttonType } = this.props
+    this.el.insertAdjacentHTML('beforebegin', `
+      <a href="${location.pathname}?view=${this.id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')} govuk-body-s" ${this.isVisible ? 'style="display:none"' : ''} role="button">
+          <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
+          <span class='fm-u-visually-hidden'>(Visual only)</span>
+      </a>
+    `)
+    const button = this.el.previousElementSibling 
+    button.addEventListener('click', this._handleClick.bind(this))
+    this.button = button
   }
 
   _handleExit () {

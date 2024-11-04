@@ -33,9 +33,9 @@ export class FloodMap extends EventTarget {
     // Get visibility
     const { type, maxMobile } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
-    const searchParams = new URLSearchParams(document.location.search)
+    this.searchParams = new URLSearchParams(document.location.search)
     this.isMobile = window?.matchMedia(mobileMQ).matches
-    this.isVisible = searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !this.isMobile)
+    this.isVisible = this.searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !this.isMobile)
 
     // Add app
     if (this.isVisible) { this._importComponent() }
@@ -125,8 +125,8 @@ export class FloodMap extends EventTarget {
       return
     }
     this._removeComponent()
-    Object.keys(settings.params).forEach(k => searchParams.delete(settings.params[k]))
-    const url = location.pathname + searchParams.toString()
+    Object.keys(settings.params).forEach(k => this.searchParams.delete(settings.params[k]))
+    const url = location.pathname + this.searchParams.toString()
     history.replaceState({ isBack: false }, '', url)
   }
 

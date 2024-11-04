@@ -10,6 +10,8 @@ export const initialState = (options) => {
     activePanel = 'INFO'
   } else if (legend?.isVisible) {
     activePanel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
+  } else {
+    activePanel = null
   }
 
   return {

@@ -83,8 +83,9 @@ const parseResults = async (query, tokenCallback) => {
       }
     })
     const json = await response.json()
-    if (json.error || json.header.totalresults === 0) return []
-
+    if (json.error || json.header.totalresults === 0) {
+      return []
+    }
     results = removeTenuousResults(json.results, query)
     results = removeDuplicates(results)
     results = removeNonEngland(results)
@@ -101,13 +102,17 @@ class Provider {
   }
 
   async suggest (query) {
-    if (!query) return []
+    if (!query) {
+      return []
+    }
     const results = await parseResults(query, this.tokenCallback)
     return results.map(l => suggestion(query, l.GAZETTEER_ENTRY))
   }
 
   async find (query) {
-    if (!query) return null
+    if (!query) {
+      return null
+    }
     const results = await parseResults(query, this.tokenCallback)
     return results.length ? place(results[0].GAZETTEER_ENTRY) : null
   }

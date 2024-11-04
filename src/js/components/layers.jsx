@@ -9,8 +9,6 @@ import LayerGroup from './layer-group.jsx'
 export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpanded }) {
   const { query, segments, options, activeRef, layers } = useApp()
 
-  if (!options.legend?.key) return
-
   const { zoom } = useViewport()
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend

@@ -66,6 +66,8 @@ export default function Container () {
   const hasSearchButton = !isQueryMode && search && !(isDesktop && search?.isExpanded)
   const hasSearchPanel = !isQueryMode && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))
   const hasQueryButton = !isQueryMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
+  const hasSegments = legend.segments
+  const hasLayers = legend.key
 
   // Communication between Vanilla JS and React components
   useEffect(() => {
@@ -97,8 +99,8 @@ export default function Container () {
                 ? (
                   <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
                     <DrawStart />
-                    <Segments />
-                    <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                    {hasSegments ? <Segments /> : null}
+                    {hasLayers ? <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                   </Panel>
                   )
                 : <Help focusRef={cancelBtnRef} heading={queryPolygon.helpLabel} body={queryPolygon.html} />}
@@ -141,7 +143,7 @@ export default function Container () {
             {activePanel === 'KEY' && !isMobile
               ? (
                 <Panel isInset isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
-                  <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                  {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
                 )
               : null}
@@ -152,8 +154,8 @@ export default function Container () {
               ? (
                 <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                   <DrawStart />
-                  <Segments />
-                  <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                  {hasSegments ? <Segments /> : null}
+                  {hasLayers ? <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
                 )
               : null}
@@ -203,7 +205,7 @@ export default function Container () {
               {activePanel === 'KEY' && isMobile
                 ? (
                   <Panel isInset isNotObscure className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
-                    <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                    {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                   </Panel>
                   )
                 : null}
@@ -211,8 +213,8 @@ export default function Container () {
                 ? (
                   <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                     <DrawStart />
-                    <Segments />
-                    <Layers hasSymbols hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                    {hasSegments ? <Segments /> : null}
+                    {hasLayers ? <Layers hasSymbols hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                   </Panel>
                   )
                 : null}

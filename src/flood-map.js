@@ -29,7 +29,6 @@ export class FloodMap extends EventTarget {
     this.id = id
     this.el = el
     this.root = null
-
     // Get visibility
     const { type, maxMobile } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`

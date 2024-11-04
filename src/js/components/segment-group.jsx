@@ -20,7 +20,7 @@ export default function SegmentGroup ({ id, group }) {
     seg.push(e.currentTarget.value)
     seg = parseSegments(legend.segments, seg)
     const lyr = parseLayers(legend.key, legend.segments, seg)
-    dispatch({ type: 'TOGGLE_SEGMENTS', payload: {segments: seg, layers: lyr }})
+    dispatch({ type: 'TOGGLE_SEGMENTS', payload: { segments: seg, layers: lyr } })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'segment', mode, basemap, size, segments: seg, layers: lyr })
 

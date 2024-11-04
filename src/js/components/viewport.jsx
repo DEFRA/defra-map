@@ -13,8 +13,6 @@ import Target from './target.jsx'
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isKeyboard, isDarkMode } = useApp()
 
-  if (!provider) return
-
   const { id, queryFeature, queryPixel, minZoom, maxZoom } = options
   const appDispatch = useApp().dispatch
 

@@ -42,15 +42,9 @@ export default function App (options) {
     document.body.classList.remove('fm-js-hidden')
 
     // Set media queries
-    if (window.matchMedia(mobileMQ).addEventListener) {
-      window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
-      window.matchMedia(desktopMQ).addEventListener('change', handleDesktopMQ)
-      window.matchMedia(colorSchemeMQ).addEventListener('change', handleColorSchemeMQ)
-    } else {
-      window.matchMedia(mobileMQ).addListener(handleMobileMQ)
-      window.matchMedia(desktopMQ).addListener(handleDesktopMQ)
-      window.matchMedia(colorSchemeMQ).addListener(handleColorSchemeMQ)
-    }
+    window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
+    window.matchMedia(desktopMQ).addEventListener('change', handleDesktopMQ)
+    window.matchMedia(colorSchemeMQ).addEventListener('change', handleColorSchemeMQ)
 
     // Keyboard events
     eventBus.on(parent, events.SET_IS_KEYBOARD, data => setIsKeyboard(data))

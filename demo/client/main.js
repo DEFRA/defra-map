@@ -6,7 +6,7 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'buttonFirst', // 'hybrid',
+  type: 'hybrid', // 'buttonFirs',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,

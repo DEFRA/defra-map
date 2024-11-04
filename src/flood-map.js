@@ -8,6 +8,7 @@ import eventBus from './js/lib/eventbus.js'
 import 'event-target-polyfill'
 
 const { location, history } = window
+const cssFocusVisible = 'fm-u-focus-visible'
 
 export class FloodMap extends EventTarget {
   _search
@@ -25,114 +26,63 @@ export class FloodMap extends EventTarget {
     const parent = document.getElementById(dataset.target || props.target || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
+    this.id = id
     this.el = el
     this.root = null
-
+    
     // Get visibility
     const { type, maxMobile, buttonText, buttonType } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
     const searchParams = new URLSearchParams(document.location.search)
-    let isMobile = window?.matchMedia(mobileMQ).matches
-    let isVisible = searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !isMobile)
+    this.isMobile = window?.matchMedia(mobileMQ).matches
+    this.isVisible = searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !this.isMobile)
 
     // Add app
-    if (isVisible) { this._importComponent() }
+    if (this.isVisible) { this._importComponent() }
 
     // Add button
     el.insertAdjacentHTML('beforebegin', `
-            <a href="${location.pathname}?view=${id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')} govuk-body-s" ${isVisible ? 'style="display:none"' : ''} role="button">
-                <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
-                <span class='fm-u-visually-hidden'>(Visual only)</span>
-            </a>
-        `)
+        <a href="${location.pathname}?view=${id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')} govuk-body-s" ${this.isVisible ? 'style="display:none"' : ''} role="button">
+            <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
+            <span class='fm-u-visually-hidden'>(Visual only)</span>
+        </a>
+    `)
     const button = el.previousElementSibling
     this.button = button
 
     // Exit map
-    this.props.handleExit = () => {
-      if (history.state?.isBack) {
-        history.back()
-        return
-      }
-      this._removeComponent()
-      Object.keys(settings.params).forEach(k => searchParams.delete(settings.params[k]))
-      const url = location.pathname + searchParams.toString()
-      history.replaceState({ isBack: false }, '', url)
-    }
+    this.props.handleExit = this._handleExit
 
     // Button click add app
-    button.addEventListener('click', e => {
-      e.preventDefault()
-      history.pushState({ isBack: true }, '', `${e.target.getAttribute('href')}`)
-      button.setAttribute('data-fm-open', '')
-      this._importComponent()
-    })
+    button.addEventListener('click', this._handleClick.bind(this))
 
     // History change add/remove app
-    const handlePopstate = () => {
-      if (history.state?.isBack) {
-        this._importComponent()
-      } else if (type === 'buttonFirst' || (type === 'hybrid' && isMobile)) {
-        this._removeComponent()
-      } else {
-        // No action
-      }
-    }
-    window.addEventListener('popstate', handlePopstate)
+    window.addEventListener('popstate', this._handlePopstate.bind(this))
 
     // Responsive add/remove app
-    const handleMobileMQ = e => {
-      isMobile = e.matches
-      const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === id
-      isVisible = (hasViewParam || type === 'inline' || (type === 'hybrid' && !isMobile))
-      if (isVisible) {
-        this._importComponent()
-      } else {
-        this._removeComponent()
-      }
-    }
-    window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
-
-    // if (window.matchMedia(mobileMQ).addEventListener) {
-    //   window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
-    // } else {
-    //   window.matchMedia(mobileMQ).addListener(handleMobileMQ)
-    // }
+    window.matchMedia(mobileMQ).addEventListener('change', this._handleMobileMQ.bind(this))
 
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
 
     // Set isKeyboard
-    const handleKeydown = e => {
-      // if (!['Escape', 'Esc', 'Tab'].includes(e.key)) return
-      if (e.key !== 'Tab') {
-        return
-      }
-      this.isKeyboard = true
-      eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
-    }
-    window.addEventListener('keydown', handleKeydown, true)
+    window.addEventListener('keydown', this._handleKeydown.bind(this), true)
 
     // Unset isKeyboard
-    const handlePointerdown = () => {
-      eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
-      document.activeElement.classList.remove('fm-u-focus-visible')
-      this.isKeyboard = false
-    }
-    window.addEventListener('pointerdown', handlePointerdown)
-    window.addEventListener('wheel', handlePointerdown)
+    window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
+    window.addEventListener('wheel', this._handlePointerdown.bind(this))
 
     // Polyfil :focus-visible set
     const handleFocusIn = () => {
       if (!this.isKeyboard) {
         return
       }
-      document.activeElement.classList.add('fm-u-focus-visible')
+      document.activeElement.classList.add(cssFocusVisible)
     }
     window.addEventListener('focusin', handleFocusIn)
 
     // Polyfil :focus-visible remove
-    const handleFocusOut = e => { e.target.classList.remove('fm-u-focus-visible') }
+    const handleFocusOut = e => { e.target.classList.remove(cssFocusVisible) }
     window.addEventListener('focusout', handleFocusOut)
 
     // Component ready
@@ -164,6 +114,61 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
+  }
+
+  _handleExit () {
+    if (history.state?.isBack) {
+      history.back()
+      return
+    }
+    this._removeComponent()
+    Object.keys(settings.params).forEach(k => searchParams.delete(settings.params[k]))
+    const url = location.pathname + searchParams.toString()
+    history.replaceState({ isBack: false }, '', url)
+  }
+
+  _handleClick (e) {
+    e.preventDefault()
+    history.pushState({ isBack: true }, '', `${e.target.getAttribute('href')}`)
+    this.button.setAttribute('data-fm-open', '')
+    this._importComponent()
+  }
+
+  _handleMobileMQ (e) {
+    this.isMobile = e.matches
+    const { type } = this.props
+    const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === this.id
+    this.isVisible = (hasViewParam || type === 'inline' || (type === 'hybrid' && !this.isMobile))
+    if (this.isVisible) {
+      this._importComponent()
+    } else {
+      this._removeComponent()
+    }
+  }
+
+  _handlePopstate () {
+    const { type } = this.props
+    if (history.state?.isBack) {
+      this._importComponent()
+    } else if (type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)) {
+      this._removeComponent()
+    } else {
+      // No action
+    }
+  }
+
+  _handleKeydown (e) {
+    if (e.key !== 'Tab') {
+      return
+    }
+    this.isKeyboard = true
+    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
+  }
+
+  _handlePointerdown ()  {
+    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
+    document.activeElement.classList.remove(cssFocusVisible)
+    this.isKeyboard = false
   }
 
   _importComponent () {

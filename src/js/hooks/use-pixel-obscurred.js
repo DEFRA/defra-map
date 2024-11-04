@@ -11,14 +11,14 @@ export const usePixelObscurred = () => {
   const [isObscurred, setIsObscurred] = useState(false)
 
   useEffect(() => {
-    if (!(targetMarker?.coord && provider.map)) return
-    let pixel = provider.getPixel(targetMarker.coord)
-    const scale = size === 'large' ? 2 : 1
-    pixel = pixel.map(c => c * scale)
-    const { top, left } = viewportRef.current.getBoundingClientRect()
-    const topEl = document.elementFromPoint(pixel[0] + left, pixel[1] + top)
-    const isObscurred = !!topEl?.closest('.fm-c-panel--info')
-    setIsObscurred(isObscurred)
+    if (targetMarker?.coord && provider.map) {
+      let pixel = provider.getPixel(targetMarker.coord)
+      const scale = size === 'large' ? 2 : 1
+      pixel = pixel.map(c => c * scale)
+      const { top, left } = viewportRef.current.getBoundingClientRect()
+      const topEl = document.elementFromPoint(pixel[0] + left, pixel[1] + top)
+      setIsObscurred(!!topEl?.closest('.fm-c-panel--info'))
+    }
 
     return () => {
       setIsObscurred(false)

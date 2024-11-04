@@ -128,7 +128,27 @@ export default function Search ({ instigatorRef }) {
               )
             : null}
           <label htmlFor={`${id}-search`} className='fm-u-visually-hidden'>{label}</label>
-          <input id={`${id}-search`} className='fm-c-search__input govuk-body-s' role='combobox' type='search' {...(!state.value ? { 'aria-describedby': `${id}-search-hint` } : {})} aria-owns='fm-suggestions' aria-autocomplete='list' autoComplete='off' placeholder={label} name={`${id}-search`} spellCheck='false' enterKeyHint='search' {...(state.selected >= 0 ? { 'aria-activedescendant': `${id}-search-suggestion-${state.selected}` } : {})} value={state.value} onClick={handleClick} onChange={handleChange} onFocus={() => dispatch({ type: 'FOCUS', isKeyboard })} onBlur={() => dispatch({ type: 'BLUR' })} ref={inputRef} />
+          <input
+            id={`${id}-search`}
+            className='fm-c-search__input govuk-body-s'
+            role='combobox'
+            aria-expanded={state.isVisible}
+            aria-controls={`${id}-suggestions`}
+            type='search'
+            {...(!state.value ? { 'aria-describedby': `${id}-search-hint` } : {})}
+            aria-autocomplete='list'
+            autoComplete='off'
+            placeholder={label}
+            name={`${id}-search`}
+            spellCheck='false'
+            enterKeyHint='search'
+            {...(state.selected >= 0 ? { 'aria-activedescendant': `${id}-search-suggestion-${state.selected}` } : {})}
+            value={state.value}
+            onClick={handleClick}
+            onChange={handleChange}
+            onFocus={() => dispatch({ type: 'FOCUS', isKeyboard })}
+            onBlur={() => dispatch({ type: 'BLUR' })} ref={inputRef}
+          />
           <div id={`${id}-search-hint`} style={{ display: 'none' }}>
             When search results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.
           </div>

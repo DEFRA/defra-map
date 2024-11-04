@@ -30,10 +30,10 @@ export default function Help ({ instigatorRef, focusRef, heading, body }) {
     }
   }
 
-  const handleBlur = e => {
-    if (!(isMobile && elementRef.current.contains(e.target) && !elementRef.current.contains(e.relatedTarget))) return
-    dispatch({ type: 'SET_IS_EXPANDED', value: false })
-  }
+  // const handleBlur = e => {
+  //   if (!(isMobile && elementRef.current.contains(e.target) && !elementRef.current.contains(e.relatedTarget))) return
+  //   dispatch({ type: 'SET_IS_EXPANDED', payload: false })
+  // }
 
   // Set intial focus
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function Help ({ instigatorRef, focusRef, heading, body }) {
           }
         : {}}
       ref={elementRef}
-      onBlur={handleBlur}
+      // onBlur={handleBlur}
       onKeyUp={handleKeyUp}
       tabIndex='-1'
       {...hasWidth

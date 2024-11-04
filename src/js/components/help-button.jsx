@@ -5,7 +5,7 @@ export default function HelpButton ({ helpBtnRef }) {
   const { dispatch, activePanel } = useApp()
 
   const handleClick = () => {
-    dispatch({ type: 'OPEN', data: 'HELP' })
+    dispatch({ type: 'OPEN', payload: 'HELP' })
   }
 
   return (

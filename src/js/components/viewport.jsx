@@ -62,11 +62,7 @@ export default function Viewport () {
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
       const status = getSelectedStatus(featuresInViewport, selectedIndex)
       const id = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      appDispatch({
-        type: 'SET_SELECTED',
-        featureId: id,
-        activePanel: null
-      })
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: id, activePanel: null }})
       // Debounce status update
       debounceUpdateStatus(status)
     }
@@ -82,7 +78,7 @@ export default function Viewport () {
 
     // Open keyboard controls (Alt + k)
     if (e.altKey && e.code.slice(-1) === 'K') {
-      appDispatch({ type: 'OPEN', data: 'KEYBOARD' })
+      appDispatch({ type: 'OPEN', payload: 'KEYBOARD' })
     }
 
     // Feature shortcut keys (Alt + 1 - 9)
@@ -94,7 +90,7 @@ export default function Viewport () {
     // Clear selected feature
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
-      appDispatch({ type: 'SET_SELECTED', id: null })
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null }})
     }
   }
 
@@ -141,12 +137,7 @@ export default function Viewport () {
     const { items, isPixelFeaturesAtPixel, coord } = e.detail.features
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const targetMarker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
-    appDispatch({
-      type: 'SET_SELECTED',
-      featureId: selectedId,
-      targetMarker,
-      activePanelHasFocus: true
-    })
+    appDispatch({type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker, activePanelHasFocus: true }})
     eventBus.dispatch(parent, events.APP_QUERY, e.detail)
   }
 

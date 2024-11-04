@@ -6,10 +6,9 @@ import eventBus from '../lib/eventbus.js'
 
 export default function DrawStart () {
   const { provider, parent, queryPolygon, mode, segments, layers, dispatch, query } = useApp()
+  const { size, basemap } = useViewport()
 
   if (!queryPolygon) return
-
-  const { size, basemap } = useViewport()
 
   const handleClick = () => {
     // Dynamic import of draw module

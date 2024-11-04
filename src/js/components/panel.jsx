@@ -15,12 +15,12 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   const [hasTabindex, setHasTabindex] = useState(false)
 
   // Hide keyboard on click outside
-  if (isOutsideInteract) {
-    useOutsideInteract(elementRef, 'click', () => {
-      // if (isFixed || e.target !== viewportRef?.current?.querySelector('canvas')) return
+  useOutsideInteract(elementRef, 'click', () => {
+    // if (isFixed || e.target !== viewportRef?.current?.querySelector('canvas')) return
+    if (isOutsideInteract) {
       handleClose()
-    })
-  }
+    }
+  })
 
   // Events
   const handleClose = () => {

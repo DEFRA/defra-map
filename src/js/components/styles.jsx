@@ -22,13 +22,13 @@ export default function Styles () {
   const handleBasemapClick = e => {
     activeRef.current = null
     const basemap = e.currentTarget.value
-    viewportDispatch({ type: 'SET_BASEMAP', basemap })
+    viewportDispatch({ type: 'SET_BASEMAP', payload: basemap })
   }
 
   const handleSizeClick = e => {
     activeRef.current = null
     const size = e.currentTarget.value
-    viewportDispatch({ type: 'SET_SIZE', size })
+    viewportDispatch({ type: 'SET_SIZE', payload: size })
   }
 
   // Set initial focus

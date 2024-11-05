@@ -15,20 +15,20 @@ export default function PaddingBox ({ children }) {
   // Set initial viewport padding before provider map is initialised
   useEffect(() => {
     if (!isContainerReady) return
-    dispatch({ type: 'SET_PADDING', panel: obscurePanelRef?.current, viewport: viewportRef.current, isMobile })
+    dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef?.current, viewport: viewportRef.current, isMobile } })
   }, [isContainerReady])
 
   // Update padding if isMobile change, needs timeout
   useEffect(() => {
     setTimeout(() => {
-      dispatch({ type: 'SET_PADDING', panel: obscurePanelRef.current, viewport: viewportRef.current, isMobile, isAnimate: false })
+      dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef.current, viewport: viewportRef.current, isMobile, isAnimate: false } })
     }, 0)
   }, [isMobile])
 
   // Reset padding on entering draw mode
   useEffect(() => {
     if (!['frame', 'draw'].includes(mode)) return
-    dispatch({ type: 'SET_PADDING', viewport: viewportRef.current, isMobile, isAnimate: false })
+    dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
   }, [mode])
 
   // Template properties

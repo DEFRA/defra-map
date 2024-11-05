@@ -12,22 +12,26 @@ export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
       layer.paint = { 'line-color': isDarkBasemap ? '#ffffff' : '#0b0c0c', 'line-width': 2 }
       layer.type = 'line'
     }
-    if (map.getLayer(layer.id)) map.removeLayer(layer.id)
+    if (map.getLayer(layer.id)) {
+      map.removeLayer(layer.id)
+    }
     map.addLayer(layer)
   }
 }
 
 export const loadSymbols = (provider) => {
+  let fn
   if (provider.symbols?.length) {
     const { map, symbols, basemap } = provider
     const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 
-    return Promise.all(symbols.map(u => fetch(u))).then(responses =>
+    fn = Promise.all(symbols.map(u => fetch(u))).then(responses =>
       Promise.all(responses.map(r => r.text()))
     ).then(texts => Promise.all(texts.map((t, i) => loadImage(getName(symbols[i]), t, map, isDarkBasemap))
       .concat(texts.map((t, i) => loadImage(`${getName(symbols[i])}-selected`, t, map, isDarkBasemap)))
     ))
   }
+  return fn
 }
 
 const getName = path => {

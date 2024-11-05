@@ -45,10 +45,14 @@ class Provider extends EventTarget {
   }
 
   remove () {
-    /* How to properly destroy the map and all related resources */
-    // this.view?.destroy()
-    // this.map = null
-    // this.view = null
+    console.log('Remove and tidy up')
+  }
+
+  async addInterceptors (params)  {
+    const token = (await this.osTokenCallback()).token
+    params.requestOptions.headers = {
+      Authorization: 'Bearer ' + token
+    }
   }
 
   async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, pixelLayers }) {
@@ -63,21 +67,12 @@ class Provider extends EventTarget {
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.esriTokenCallback()).token
-    esriConfig.request.interceptors.push({
-      urls: config.OS_SERVICE_URL,
-      before: async params => {
-        const token = (await this.osTokenCallback()).token
-        params.requestOptions.headers = {
-          Authorization: 'Bearer ' + token
-        }
-      }
-    })
+    esriConfig.request.interceptors.push({ urls: config.OS_SERVICE_URL, before: async params => this.addInterceptors(params) })
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()
     const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
     const extent = bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null
-
     const view = new MapView({
       spatialReference: 27700,
       container: target,
@@ -135,14 +130,11 @@ class Provider extends EventTarget {
 
     // Detect user initiated map movement
     view.on('drag', e => {
-      if (e.action !== 'start') {
-        return
+      if (e.action === 'start') {
+        this.isUserInitiated = true
       }
-      this.isUserInitiated = true
     })
-    view.on('mouse-wheel', () => {
-      this.isUserInitiated = true
-    })
+    view.on('mouse-wheel', () => { this.isUserInitiated = true })
   }
 
   getImagePos (style) {

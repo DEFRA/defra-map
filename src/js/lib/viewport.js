@@ -124,6 +124,18 @@ export const getDescription = (place, centre, bbox, features) => {
   return `Approximate map centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
+export const getStatus = (isPanZoom, isGeoLoc, place, description, direction) => {
+  let status = null
+  if (isPanZoom || isGeoLoc) {
+    if (place) {
+      status = description
+    } else {
+      status = direction
+    }
+  }
+  return status
+}
+
 export const parseCentre = value => {
   return value?.split(',').slice(0, 2).map(x => parseFloat(x))
 }

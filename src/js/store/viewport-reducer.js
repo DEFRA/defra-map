@@ -8,9 +8,10 @@ export const initialState = (options) => {
   const cz = queryParams.get('cz')
   const colorSchemeMQ = '(prefers-color-scheme: dark)'
   const isDarkMode = window?.matchMedia(colorSchemeMQ).matches
+  const initBbox = bbox || (centre && zoom ? null : settings.map.BBOX)
 
   return {
-    bbox: cz ? null : bbox || (centre && zoom ? null : settings.map.BBOX),
+    bbox: cz ? null : initBbox,
     centre: cz ? parseCentre(cz) : centre || null,
     zoom: cz ? parseZoom(cz) : zoom || null,
     place: cz ? null : place,

@@ -9,7 +9,7 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
 
   const debounceUpdateSuggest = debounce(async (value) => {
     const items = await provider.suggest(value)
-    dispatch({ type: 'ADD_SUGGESTIONS', suggestions: items })
+    dispatch({ type: 'ADD_SUGGESTIONS', payload: items })
     updateStatus()
   }, 350)
 
@@ -26,7 +26,7 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
     e.preventDefault()
     const value = state.suggestions[i].text
     const id = state.suggestions[i].id
-    dispatch({ type: 'SUBMIT', value })
+    dispatch({ type: 'SUBMIT', payload: value })
     updateViewport(value, id)
   }
 

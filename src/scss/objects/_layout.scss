@@ -150,6 +150,7 @@
     align-items: flex-start;
     padding: $margin;
     pointer-events: none;
+
     &__column:first-child {
         display: flex;
         flex-direction: row;

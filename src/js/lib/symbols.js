@@ -14,12 +14,14 @@ export const parseSVG = (icon, fill, text, isDarkBasemap = false, scale = 1) => 
   svg.classList.toggle('fm-c-symbol--dark', isDarkBasemap)
   // Set svg height and width
   const viewBox = svg.getAttribute('viewBox')
-  const width = viewBox.split(' ')[2] * scale
-  const height = viewBox.split(' ')[3] * scale
+  const width = parseInt(viewBox.split(' ')[2], 10) * scale
+  const height = parseInt(viewBox.split(' ')[3], 10) * scale
   svg.setAttribute('width', width)
   svg.setAttribute('height', height)
   // Conditionally add fill
-  if (fill) svg.setAttribute('fill', fill)
+  if (fill) {
+    svg.setAttribute('fill', fill)
+  }
   // Add classnames
   const olFill = svg.querySelectorAll('[fill="#0b0c0c" i], [style*="fill:#0b0c0c" i]')
   const olStroke = svg.querySelectorAll('[stroke="#0b0c0c" i], [style*="stroke:#0b0c0c" i]')

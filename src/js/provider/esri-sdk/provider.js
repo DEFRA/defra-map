@@ -136,7 +136,6 @@ class Provider extends EventTarget {
       if (e.action !== 'start') return
       this.isUserInitiated = true
     })
-    
     view.on('mouse-wheel', e => {
       this.isUserInitiated = true
     })

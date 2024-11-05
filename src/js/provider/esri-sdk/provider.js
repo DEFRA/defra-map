@@ -124,19 +124,23 @@ class Provider extends EventTarget {
         return
       }
       handleStationary(this)
-    }, 300)
+    }, defaults.DELAY)
 
     reactiveWatch(() => [view.stationary, view.updating], ([stationary, updating]) => {
-      if (updating || !stationary) return
+      if (updating || !stationary) {
+        return
+      }
       debounceStationary()
     })
 
     // Detect user initiated map movement
     view.on('drag', e => {
-      if (e.action !== 'start') return
+      if (e.action !== 'start') {
+        return
+      }
       this.isUserInitiated = true
     })
-    view.on('mouse-wheel', e => {
+    view.on('mouse-wheel', () => {
       this.isUserInitiated = true
     })
   }
@@ -193,11 +197,15 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.view) return
+    if (!this.view) {
+      return
+    }
     const { paddingBox } = this
     const padding = getFocusPadding(paddingBox, 1)
     this.view.padding = padding
-    if (!coord) return
+    if (!coord) {
+      return
+    }
 
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
       this.isUserInitiated = false
@@ -214,8 +222,8 @@ class Provider extends EventTarget {
     })
   }
 
-  setSize (size) {
-    // console.log('setSize')
+  setSize () {
+    console.log('setSize')
   }
 
   fitBbox (bbox) {
@@ -247,9 +255,12 @@ class Provider extends EventTarget {
     import(/* webpackChunkName: 'esri-sdk' */ '@arcgis/core/Graphic.js').then(module => {
       const Graphic = module.default
       const { map, graphicsLayer, isDark } = this
-      if (!(map && coord && isVisible)) return
+      if (!(map && coord && isVisible)) {
+        return
+      }
       // *** Bug with graphics layer order
-      map.reorder(graphicsLayer, 99)
+      const zIndex = 99
+      map.reorder(graphicsLayer, zIndex)
       const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
       graphicsLayer.add(graphic)
       this.isUpdate = false
@@ -259,18 +270,20 @@ class Provider extends EventTarget {
 
   removeTargetMarker () {
     const { graphicsLayer, targetMarker } = this
-    if (!targetMarker) return
+    if (!targetMarker) {
+      return
+    }
     this.isUpdate = false
     graphicsLayer.remove(targetMarker)
     this.targetMarker = null
   }
 
   selectFeature (id) {
-    // console.log('select')
+    console.log('select', id)
   }
 
   async queryFeature (id) {
-    // console.log('queryFeature')
+    console.log('queryFeature', id)
   }
 
   async queryPoint (point) {
@@ -313,7 +326,7 @@ class Provider extends EventTarget {
   }
 
   showLocation (coord) {
-    console.log('showLocation')
+    console.log('showLocation', coord)
     // import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Marker"] */ 'maplibre-gl-legacy').then(module => {
     //     this.locationMarker = addLocationMarker(module.default.Marker, coord, this.map)
     // })

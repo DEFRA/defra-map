@@ -47,7 +47,7 @@ export default function Search ({ instigatorRef }) {
     const suggestion = state.selected >= 0 ? state.suggestions[state.selected] : null
     const value = suggestion?.text || state.value
     const id = suggestion?.id
-    dispatch({ type: 'SUBMIT', value })
+    dispatch({ type: 'SUBMIT', payload: value })
     updateViewport(value, id)
   }
 
@@ -57,7 +57,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleClear = () => {
-    dispatch({ type: 'CLEAR', activeRef: inputRef, isFocusVisibleWithin: isKeyboard })
+    dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: isKeyboard } })
     inputRef.current.focus()
   }
 
@@ -74,22 +74,22 @@ export default function Search ({ instigatorRef }) {
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
       !(state.value || state.isVisible)
-        ? dispatch({ type: 'COLLAPSE', activeRef: instigatorRef })
+        ? dispatch({ type: 'COLLAPSE', payload: instigatorRef })
         : dispatch({ type: 'HIDE_SUGGESTIONS' })
     }
     // Review suggestions
     if (['ArrowDown', 'ArrowUp'].includes(e.key) && state.suggestions.length >= 1) {
       e.preventDefault()
-      dispatch({ type: 'REVIEW', key: e.key })
+      dispatch({ type: 'REVIEW', payload: e.key })
     }
   }
 
   const handleChange = e => {
-    dispatch({ type: 'CHANGE', value: e.target.value })
+    dispatch({ type: 'CHANGE', payload: e.target.value })
   }
 
   const handleClick = () => {
-    dispatch({ type: 'CLICK', isKeyboard, activeRef: inputRef })
+    dispatch({ type: 'CLICK', payload: { isKeyboard, activeRef: inputRef } })
   }
 
   // Move focus to input
@@ -148,7 +148,7 @@ export default function Search ({ instigatorRef }) {
             value={state.value}
             onClick={handleClick}
             onChange={handleChange}
-            onFocus={() => dispatch({ type: 'FOCUS', isKeyboard })}
+            onFocus={() => dispatch({ type: 'FOCUS', payload: isKeyboard })}
             onBlur={() => dispatch({ type: 'BLUR' })} ref={inputRef}
           />
           <div id={`${id}-search-hint`} style={{ display: 'none' }}>

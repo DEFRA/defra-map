@@ -20,7 +20,9 @@ export class Draw {
     map.setMaxZoom(draw.maxZoom)
     map.setMinZoom(draw.minZoom)
 
-    if (!this[basemap + 'Url']) return
+    if (!this[basemap + 'Url']) {
+      return
+    }
     provider.setBasemap(basemap)
   }
 
@@ -33,12 +35,15 @@ export class Draw {
     if (map.hasControl(draw)) {
       map.removeControl(draw)
     }
-    if (!this[provider.basemap + 'Url']) return
+    if (!this[provider.basemap + 'Url']) {
+      return
+    }
     provider.setBasemap(provider.basemap)
   }
 
   isSameFeature (a, b) {
-    return a.geometry.coordinates.flat(5).toString() === b.geometry.coordinates.flat(5).toString()
+    const numRings = 5
+    return a.geometry.coordinates.flat(numRings).toString() === b.geometry.coordinates.flat(numRings).toString()
   }
 
   edit () {

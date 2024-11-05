@@ -1,7 +1,7 @@
 import { getDetail } from './query'
 import { loadSymbols, addSelectedLayers } from './symbols'
 
-export const handleLoad = async (provider, e) => {
+export const handleLoad = async (provider) => {
   await loadSymbols(provider)
   provider.baseLayers = provider.map.getStyle().layers
   provider.isLoaded = true
@@ -13,7 +13,9 @@ export const handleLoad = async (provider, e) => {
 }
 
 export const handleStyleLoad = async (provider) => {
-  if (!provider.isLoaded) return
+  if (!provider.isLoaded) {
+    return
+  }
   await loadSymbols(provider)
   const { basemap } = provider
   provider.dispatchEvent(new CustomEvent('style', {
@@ -25,7 +27,9 @@ export const handleStyleLoad = async (provider) => {
 }
 
 export const handleIdle = async (provider) => {
-  if (!provider.map) return
+  if (!provider.map) {
+    return
+  }
   const { paddingBox, selectedId, scale } = provider
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
   const pixel = [offsetLeft + (offsetWidth / 2), offsetTop + (offsetHeight / 2)].map(c => c / scale)
@@ -44,17 +48,18 @@ export const handleMoveStart = (provider, e) => {
 }
 
 export const handleStyleData = (provider, e) => {
-  if (!provider.baseLayers.length) return
+  if (!provider.baseLayers.length) {
+    return
+  }
   const { map, basemap, selectedId } = provider
   const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
-
-  if (map.getStyle().layers.filter(l => l.id.includes('selected')).length === featureLayers.length) return
-
+  if (map.getStyle().layers.filter(l => l.id.includes('selected')).length === featureLayers.length) {
+    return
+  }
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-
   addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
 }
 
-export const handleError = (provider, err) => {
+export const handleError = (_provider, err) => {
   console.log(err)
 }

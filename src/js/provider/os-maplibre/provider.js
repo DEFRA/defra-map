@@ -3,7 +3,7 @@ import { addPointerQuery, toggleSelectedFeature, getDetail } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { getFocusPadding } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
-import { defaults } from './constants'
+import { defaults, css } from './constants'
 import { install as resizeObserverPolyfill } from 'resize-observer'
 import { LatLon } from 'geodesy/osgridref.js'
 
@@ -145,7 +145,7 @@ class Provider extends EventTarget {
     map.on('styledata', handleStyleData.bind(map, this))
 
     // All render/changes/animations complete. Must debounce, min 300ms
-    const debounceHandleIdle = debounce(() => { handleIdle(this) }, 300)
+    const debounceHandleIdle = debounce(() => { handleIdle(this) }, defaults.DELAY)
     map.on('idle', debounceHandleIdle)
 
     // Map basemap change
@@ -176,13 +176,18 @@ class Provider extends EventTarget {
   }
 
   getPixel (coord) {
-    if (!(this.map && coord)) return
-    const pixel = this.map.project(coord)
-    return [Math.round(pixel.x), Math.round(pixel.y)]
+    let pixel
+    if (this.map && coord) {
+      pixel = this.map.project(coord)
+      pixel = [Math.round(pixel.x), Math.round(pixel.y)]
+    }
+    return pixel
   }
 
   panBy (offset, isUserInitiated = true) {
-    if (!this.map) return
+    if (!this.map) {
+      return
+    }
     this.map.panBy(offset, { ...defaults.ANIMATION }, { isUserInitiated })
   }
 
@@ -191,12 +196,16 @@ class Provider extends EventTarget {
   }
 
   zoomIn () {
-    if (!this.map) return
+    if (!this.map) {
+      return
+    }
     this.map.zoomIn(defaults.ANIMATION)
   }
 
   zoomOut () {
-    if (!this.map) return
+    if (!this.map) {
+      return
+    }
     this.map.zoomOut(defaults.ANIMATION)
   }
 
@@ -207,12 +216,16 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.map) return
+    if (!this.map) {
+      return
+    }
     const { paddingBox, scale } = this
     const padding = getFocusPadding(paddingBox, scale)
     // Search needs to set padding first before fitBbox
     this.map.setPadding(padding)
-    if (!coord) return
+    if (!coord) {
+      return
+    }
     this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
   }
 
@@ -228,7 +241,7 @@ class Provider extends EventTarget {
           type: 'size', size, basemap: this.basemap
         }
       }))
-    }, 250)
+    }, defaults.DELAY)
   }
 
   fitBbox (bbox, isAnimate = true) {
@@ -236,8 +249,10 @@ class Provider extends EventTarget {
     this.map.fitBounds(bounds, { animate: isAnimate, linear: true, duration: defaults.ANIMATION.duration })
   }
 
-  setCentre (coord, zoom) {
-    if (!this.map) return
+  setCentre (coord, _zoom) {
+    if (!this.map) {
+      return
+    }
     this.map.flyTo({ center: coord, ...defaults.ANIMATION })
   }
 
@@ -258,10 +273,12 @@ class Provider extends EventTarget {
 
   setTargetMarker (coord, hasData, isVisible) {
     const { targetMarker } = this
-    if (!targetMarker) return
+    if (!targetMarker) {
+      return
+    }
     targetMarker.setLngLat(coord || [0, 0])
     hasData ? targetMarker.addClassName('fm-c-marker--has-data') : targetMarker.removeClassName('fm-c-marker--has-data')
-    isVisible && coord ? targetMarker.addClassName('fm-c-marker--visible') : targetMarker.removeClassName('fm-c-marker--visible')
+    isVisible && coord ? targetMarker.addClassName(css.MARKER_VISIBLE) : targetMarker.removeClassName(css.MARKER_VISIBLE)
   }
 
   selectFeature (id) {
@@ -274,7 +291,9 @@ class Provider extends EventTarget {
   }
 
   async queryFeature (id) {
-    if (!id) return
+    if (!id) {
+      return
+    }
     const detail = await getDetail(this, null, false)
     detail.features.items = [detail.features.items.find(f => f.id === id)]
     this.dispatchEvent(new CustomEvent('mapquery', {
@@ -342,7 +361,7 @@ class Provider extends EventTarget {
 
   showLocation (coord) {
     const { locationMarker } = this
-    locationMarker.setLngLat(coord).addClassName('fm-c-marker--visible')
+    locationMarker.setLngLat(coord).addClassName(css.MARKER_VISIBLE)
   }
 }
 

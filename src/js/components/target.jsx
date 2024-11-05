@@ -21,7 +21,7 @@ export default function Target () {
   // Update padding if target marker is obscurred
   useEffect(() => {
     if (!isObscurred || !(isContainerReady && obscurePanelRef.current)) return
-    dispatch({ type: 'SET_PADDING', panel: obscurePanelRef.current, viewport: viewportRef.current, isMobile, isAnimate: true })
+    dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef.current, viewport: viewportRef.current, isMobile, isAnimate: true } })
   }, [isObscurred])
 
   return (

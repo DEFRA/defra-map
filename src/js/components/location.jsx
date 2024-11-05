@@ -15,7 +15,7 @@ export default function Location ({ ariaLabelledby }) {
     const hasSession = !!sessionStorage.getItem('geoloc')
     sessionStorage.setItem('geoloc', JSON.stringify({ coord, place }))
     if (hasSession) return
-    viewportDispatch({ type: 'GEOLOC', centre: coord, place })
+    viewportDispatch({ type: 'GEOLOC', payload: { centre: coord, place } })
   }
 
   const handleGeoLocationError = (err) => {
@@ -27,10 +27,10 @@ export default function Location ({ ariaLabelledby }) {
   const handleOnClick = () => {
     const geoloc = JSON.parse(sessionStorage.getItem('geoloc'))
     if (geoloc) {
-      viewportDispatch({ type: 'GEOLOC', centre: geoloc.coord, place: geoloc.place })
+      viewportDispatch({ type: 'GEOLOC', payload: { centre: geoloc.coord, place: geoloc.place } })
     } else {
       provider.getGeoLocation(handleGeoLocationSuccess, handleGeoLocationError)
-      viewportDispatch({ type: 'UPDATE_STATUS', status: 'Getting location', isStatusVisuallyHidden: false })
+      viewportDispatch({ type: 'UPDATE_STATUS', payload: { status: 'Getting location', isStatusVisuallyHidden: false } })
     }
   }
 

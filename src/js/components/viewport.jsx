@@ -110,7 +110,7 @@ export default function Viewport () {
 
   const handleMovestart = e => {
     const isUserInitiated = e.detail.isUserInitiated
-    viewportDispatch({ type: 'MOVE_START', isUserInitiated })
+    viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
     if (!(isKeyboard && activePanel === 'INFO' && isUserInitiated)) return
     appDispatch({ type: 'CLOSE' })
   }
@@ -128,7 +128,7 @@ export default function Viewport () {
 
   // Get new bbox after map moveend
   const handleUpdate = e => {
-    viewportDispatch({ type: 'UPDATE', detail: e.detail })
+    viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
 
   // Provider map click
@@ -149,12 +149,12 @@ export default function Viewport () {
   // Update place
   const debounceUpdatePlace = debounce(async (centre) => {
     const place = await provider.getNearest(centre)
-    viewportDispatch({ type: 'UPDATE_PLACE', place })
+    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
   }, 300)
 
   // Update status
   const debounceUpdateStatus = debounce(status => {
-    viewportDispatch({ type: 'UPDATE_STATUS', status, isStatusVisuallyHidden: true })
+    viewportDispatch({ type: 'UPDATE_STATUS', payload: { status, isStatusVisuallyHidden: true } })
   }, 300)
 
   // Template properties
@@ -253,7 +253,7 @@ export default function Viewport () {
     if (!provider.map) return
 
     const basemap = setBasemap(isDarkMode)
-    viewportDispatch({ type: 'SET_BASEMAP', basemap })
+    viewportDispatch({ type: 'SET_BASEMAP', payload: basemap })
   }, [isDarkMode])
 
   // Set initial selected feature or target

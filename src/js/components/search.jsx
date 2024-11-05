@@ -32,7 +32,7 @@ export default function Search ({ instigatorRef }) {
     const location = await searchProvider.find(value, id)
     if (!location) return
     const { bbox, centre, zoom, text } = location
-    viewportDispatch({ type: 'SEARCH', bbox, centre, zoom, place: text })
+    viewportDispatch({ type: 'SEARCH', payload: { bbox, centre, zoom, place: text } })
   }
 
   const handleKeyUp = e => {

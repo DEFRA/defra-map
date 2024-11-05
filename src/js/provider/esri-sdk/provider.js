@@ -48,7 +48,7 @@ class Provider extends EventTarget {
     console.log('Remove and tidy up')
   }
 
-  async addInterceptors (params)  {
+  async addInterceptors (params) {
     const token = (await this.osTokenCallback()).token
     params.requestOptions.headers = {
       Authorization: 'Bearer ' + token

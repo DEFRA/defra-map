@@ -21,7 +21,7 @@ const setInfo = (state, payload) => {
   return {
     ...state,
     info: payload,
-    activePanel: activePanel,
+    activePanel,
     hasViewportLabel: false
   }
 }

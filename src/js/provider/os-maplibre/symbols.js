@@ -3,7 +3,6 @@ import { parseSVG } from '../../lib/symbols'
 
 export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
   for (let layer of layers) {
-    layer = JSON.parse(JSON.stringify(layer))
     layer.id = `${layer.id}-selected`
     layer.filter = ['==', 'id', selectedId || '']
     if (layer.type === 'symbol') {

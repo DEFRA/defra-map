@@ -62,69 +62,31 @@ class Provider extends EventTarget {
     const GraphicsLayer = modules[7].default
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
-
     esriConfig.apiKey = (await this.esriTokenCallback()).token
-
     esriConfig.request.interceptors.push({
       urls: config.OS_SERVICE_URL,
       before: async params => {
-        // Conditionally refresh token
         const token = (await this.osTokenCallback()).token
-
         params.requestOptions.headers = {
           Authorization: 'Bearer ' + token
         }
       }
     })
-
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
-
-    const baseTileLayer = new VectorTileLayer({
-      url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'],
-      visible: true
-    })
-
+    const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()
-
-    const map = new EsriMap({
-      layers: [baseTileLayer, graphicsLayer]
-    })
-
-    const extent = bbox
-      ? new Extent({
-        xmin: bbox[0],
-        ymin: bbox[1],
-        xmax: bbox[2],
-        ymax: bbox[3]
-      })
-      : null
+    const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
+    const extent = bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null
 
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
       zoom: zoom || null,
-      center: centre
-        ? new Point({
-          x: centre[0],
-          y: centre[1],
-          spatialReference: 27700
-        })
-        : null,
+      center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
       extent,
-      constraints: {
-        snapToZoom: false,
-        minZoom,
-        maxZoom,
-        maxScale: 0,
-        lods: TileInfo.create({
-          spatialReference: { wkid: 27700 }
-        }).lods,
-        rotationEnabled: false
-      },
-      ui: {
-        components: []
-      },
+      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
+      ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1)
     })
 
@@ -174,6 +136,7 @@ class Provider extends EventTarget {
       if (e.action !== 'start') return
       this.isUserInitiated = true
     })
+    
     view.on('mouse-wheel', e => {
       this.isUserInitiated = true
     })

@@ -4,7 +4,9 @@ import { defaults } from './constants'
 export const addPointerQuery = (provider) => {
   const { map, featureLayers, pixelLayers } = provider
 
-  if (!(featureLayers || pixelLayers)) return
+  if (!(featureLayers || pixelLayers)) {
+    return
+  }
 
   // Toggle cursor style for feature layers
   featureLayers.forEach(layer => {
@@ -17,7 +19,6 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
   const { map, getNearest, reverseGeocodeToken } = provider
   const viewport = getViewport(map)
   const features = getFeatures(provider, pixel)
-
   let place
   if (isUserInitiated && features.resultType === 'pixel') {
     place = await getNearest(features.coord, reverseGeocodeToken)

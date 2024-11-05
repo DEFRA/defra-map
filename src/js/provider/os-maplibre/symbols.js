@@ -2,7 +2,7 @@ import computedStyleToInlineStyle from 'computed-style-to-inline-style'
 import { parseSVG } from '../../lib/symbols'
 
 export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
-  for (let layer of layers) {
+  for (const layer of layers) {
     layer.id = `${layer.id}-selected`
     layer.filter = ['==', 'id', selectedId || '']
     if (layer.type === 'symbol') {

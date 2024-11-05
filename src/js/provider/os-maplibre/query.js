@@ -109,7 +109,7 @@ export const toggleSelectedFeature = (map, id) => {
     return
   }
   const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
-  for (let layer of selectedLayers) {
+  for (const layer of selectedLayers) {
     map.setLayoutProperty(layer.id, 'visibility', id ? 'visible' : 'none')
     map.setFilter(layer.id, ['==', 'id', id || ''])
   }

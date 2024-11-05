@@ -56,12 +56,15 @@ export class Draw {
       })
     }
 
-    if (!this[provider.basemap + 'Url']) return
+    if (!this[provider.basemap + 'Url']) {
+      return
+    }
     provider.setBasemap(provider.basemap)
   }
 
   isSameGraphic (a, b) {
-    return a.geometry.rings.flat(5).toString() === b.geometry.rings.flat(5).toString()
+    const numRings = 5
+    return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
   }
 
   edit () {
@@ -109,14 +112,12 @@ export class Draw {
     return feature
   }
 
-  query () {
-
-  }
-
   reColour () {
     const { graphicsLayer } = this.provider
     const graphic = graphicsLayer.graphics.items[0]
-    if (!graphic) return
+    if (!graphic) {
+      return
+    }
     this.addGraphic(graphic)
   }
 
@@ -146,12 +147,12 @@ export class Draw {
 
   finishEdit () {
     const { provider, sketchViewModel } = this
-    if (!sketchViewModel) return
-
-    sketchViewModel.complete()
-    sketchViewModel.layer = null
-    const graphic = provider.graphicsLayer.graphics.items[0]
-
+    let graphic
+    if (sketchViewModel) {
+      sketchViewModel.complete()
+      sketchViewModel.layer = null
+      graphic = provider.graphicsLayer.graphics.items[0]
+    }
     return graphic
   }
 
@@ -196,16 +197,18 @@ export class Draw {
   addGraphic (graphic) {
     const { map, graphicsLayer, isDark } = this.provider
     graphicsLayer.removeAll()
-
-    if (!graphic) return
-    const { sketchViewModel } = this
-    const clone = graphic.clone()
-    clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
-    graphicsLayer.add(clone)
-    if (sketchViewModel?.activeTool) {
-      sketchViewModel.update(clone)
+    let clone
+    if (graphic) {
+      const { sketchViewModel } = this
+      clone = graphic.clone()
+      clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+      graphicsLayer.add(clone)
+      if (sketchViewModel?.activeTool) {
+        sketchViewModel.update(clone)
+      }
+      const zIndex = 99
+      map.reorder(graphicsLayer, zIndex)
     }
-    map.reorder(graphicsLayer, 99)
     return clone
   }
 
@@ -219,7 +222,7 @@ export class Draw {
     }
   }
 
-  handleCreateComplete (e) {
+  handleCreateComplete () {
     console.log('handleCreateComplete')
   }
 

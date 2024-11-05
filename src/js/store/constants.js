@@ -91,3 +91,7 @@ export const margin = {
   BOTTOM: 15,
   LEFT: 70
 }
+
+export const search = {
+  MIN_CHARS: 3
+}

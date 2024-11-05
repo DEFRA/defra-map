@@ -1,4 +1,5 @@
 import { createMessage } from '../lib/search'
+import { search } from './constants'
 
 const expand = (state, payload) => {
   return {
@@ -53,7 +54,7 @@ const click = (state, payload) => {
 
 const change = (state, payload) => {
   let suggestions = []
-  if (payload.length < 3) {
+  if (payload.length < search.MIN_CHARS) {
     suggestions = state.suggestions
   }
   return {
@@ -61,7 +62,7 @@ const change = (state, payload) => {
     suggestions,
     value: payload,
     message: createMessage(suggestions, -1),
-    isVisible: payload.length >= 3
+    isVisible: payload.length >= search.MIN_CHARS
   }
 }
 

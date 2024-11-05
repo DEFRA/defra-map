@@ -1,4 +1,4 @@
-import { getDescription, getBoundsChange } from '../lib/viewport'
+import { getDescription, getStatus, getBoundsChange } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 
 const update = (state, payload) => {
@@ -12,7 +12,7 @@ const update = (state, payload) => {
   const isFeaturesChange = !(isSame(state.features, features))
   const isUpdate = isPanZoom || isGeoLoc || isFeaturesChange
   const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
-  const status = isPanZoom || isGeoLoc ? place ? description : direction : state.status
+  const status = getStatus(isPanZoom, isGeoLoc, place, description, direction) || state.status
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(state.action) && original),
@@ -31,11 +31,11 @@ const update = (state, payload) => {
 
 const updatePlace = (state, payload) => {
   const { centre, bbox, features } = state
-  const description = getDescription(payload, centre, bbox, features)
+  const status = getDescription(payload, centre, bbox, features)
   return {
     ...state,
     place: payload,
-    status: description,
+    status,
     isUserInitiated: false,
     isStatusVisuallyHidden: true
   }

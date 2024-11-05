@@ -2,8 +2,8 @@ import computedStyleToInlineStyle from 'computed-style-to-inline-style'
 import { parseSVG } from '../../lib/symbols'
 
 export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
-  for (let i = 0; i < layers.length; i++) {
-    const layer = JSON.parse(JSON.stringify(layers[i]))
+  for (let layer of layers) {
+    layer = JSON.parse(JSON.stringify(layer))
     layer.id = `${layer.id}-selected`
     layer.filter = ['==', 'id', selectedId || '']
     if (layer.type === 'symbol') {
@@ -19,20 +19,21 @@ export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
 }
 
 export const loadSymbols = (provider) => {
-  if (!provider.symbols?.length) return
+  if (provider.symbols?.length) {
+    const { map, symbols, basemap } = provider
+    const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 
-  const { map, symbols, basemap } = provider
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-
-  return Promise.all(symbols.map(u => fetch(u))).then(responses =>
-    Promise.all(responses.map(r => r.text()))
-  ).then(texts => Promise.all(texts.map((t, i) => loadImage(getName(symbols[i]), t, map, isDarkBasemap))
-    .concat(texts.map((t, i) => loadImage(`${getName(symbols[i])}-selected`, t, map, isDarkBasemap)))
-  ))
+    return Promise.all(symbols.map(u => fetch(u))).then(responses =>
+      Promise.all(responses.map(r => r.text()))
+    ).then(texts => Promise.all(texts.map((t, i) => loadImage(getName(symbols[i]), t, map, isDarkBasemap))
+      .concat(texts.map((t, i) => loadImage(`${getName(symbols[i])}-selected`, t, map, isDarkBasemap)))
+    ))
+  }
 }
 
 const getName = path => {
-  return path.split('\\').pop().split('/').pop().slice(0, -4)
+  const extNumChars = 4
+  return path.split('\\').pop().split('/').pop().slice(0, -Math.abs(extNumChars))
 }
 
 const loadImage = (name, text, map, isDarkBasemap) => {
@@ -47,7 +48,9 @@ const loadImage = (name, text, map, isDarkBasemap) => {
   return new Promise((resolve, reject) => {
     img.onload = () => {
       try {
-        if (map?.hasImage(name)) return
+        if (map?.hasImage(name)) {
+          return
+        }
         map.addImage(name, img)
         resolve(img)
       } catch (err) {

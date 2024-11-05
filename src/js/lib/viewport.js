@@ -136,6 +136,18 @@ export const getStatus = (isPanZoom, isGeoLoc, place, description, direction) =>
   return status
 }
 
+export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
+  let place
+  if (!isUserInitiated) {
+    if (action === 'RESET') {
+      place = oPlace
+    } else {
+      place = newPlace
+    }
+  }
+  return place
+}
+
 export const parseCentre = value => {
   return value?.split(',').slice(0, 2).map(x => parseFloat(x))
 }

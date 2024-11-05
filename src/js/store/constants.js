@@ -85,3 +85,9 @@ export const offsets = {
     ARROWDOWN: [0, 5]
   }
 }
+
+export const margin = {
+  TOP: 90,
+  BOTTOM: 15,
+  LEFT: 70
+}

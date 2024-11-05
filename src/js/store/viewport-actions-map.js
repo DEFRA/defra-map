@@ -1,5 +1,6 @@
 import { getDescription, getStatus, getPlace, getBoundsChange } from '../lib/viewport'
 import { isSame } from '../lib/utils'
+import { margin } from './constants'
 
 const update = (state, payload) => {
   const { oPlace, oZoom, isUserInitiated, action } = state
@@ -156,10 +157,10 @@ const setPadding = (state, payload) => {
     const oHeight = pRect.bottom - vRect.top
     const oWidth = pRect.right - vRect.left
     const isPortrait = viewport.offsetHeight / oHeight > viewport.offsetWidth / oWidth
-    const top = isPortrait ? Math.round(pRect.height) + 90 : 0
-    const left = isPortrait ? 0 : Math.round(pRect.width) + 70
+    const top = isPortrait ? Math.round(pRect.height) + margin.TOP : 0
+    const left = isPortrait ? 0 : Math.round(pRect.width) + margin.LEFT
     padding = {
-      ...isMobile ? { bottom: 15 + pRect.height } : {},
+      ...isMobile ? { bottom: margin.BOTTOM + pRect.height } : {},
       ...isPortrait && !isMobile ? { top } : {},
       ...!isPortrait && !isMobile ? { left } : {}
     }

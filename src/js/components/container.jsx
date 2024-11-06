@@ -178,7 +178,7 @@ export default function Container () {
                     </Tooltip>
                   )}
                   {!isMobile && <Zoom />}
-                  {provider.basemaps && Object.keys(provider?.basemaps).length && (
+                  {provider.basemaps && !!Object.keys(provider?.basemaps).length && (
                     <Tooltip id={`${id}-style-label`} position='left' cssModifier='style' text='Choose map style'>
                       <StylesButton ariaLabelledby={`${id}-style-label`} stylesBtnRef={stylesBtnRef} />
                     </Tooltip>

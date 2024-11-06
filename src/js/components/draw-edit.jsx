@@ -4,8 +4,6 @@ import { useApp } from '../store/use-app'
 export default function DrawEdit () {
   const { provider, mode, dispatch } = useApp()
 
-  if (!mode) return
-
   const handleEditClick = () => {
     provider.draw.edit()
     dispatch({ type: 'SET_MODE', payload: { value: 'draw', isFrameVisible: false } })

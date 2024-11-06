@@ -49,8 +49,8 @@ export default function Container () {
   const [isKeyExpanded, setIsKeyExpanded] = useState()
 
   // Template properties
+  const device = isMobile && 'mobile' || isDesktop && 'desktop' || 'tablet'
   const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
-  const device = isMobile ? 'mobile' : isDesktop ? 'desktop' : 'tablet'
   const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.type].HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
@@ -60,7 +60,8 @@ export default function Container () {
   const isQueryMode = ['frame', 'draw'].includes(mode)
   const hasLegendButton = legend && !isQueryMode && !(isDesktop && !isLegendInset)
   const hasKeyButton = legend && !isQueryMode && !legend.display
-  const isOffset = (isLegendInset && isPage) || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
+  const isLegendInsetPage = isLegendInset && isPage
+  const isOffset = isLegendInsetPage || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
   const hasDrawButtons = isQueryMode && !(isDesktop && !isLegendInset)
   const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
   const hasSearchButton = !isQueryMode && search && !(isDesktop && search?.isExpanded)

@@ -22,14 +22,11 @@ export const parseSegments = (dataSegments, seg) => {
   return segments
 }
 
-export const parseLayers = (dataLayers, dataSegments, seg) => {
+export const parseLayers = (dataLayers) => {
   let layers = null
   if (dataLayers) {
     const queryParams = new URLSearchParams(window.location.search)
     const lyr = queryParams.get('lyr')?.split(',') || []
-    if (!seg) {
-      seg = parseSegments(dataSegments)
-    }
     layers = []
     for (const g of dataLayers) {
       const c = g.items.filter(l => l.id && l.isSelected).map(l => l.id)

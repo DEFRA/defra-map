@@ -49,7 +49,7 @@ export default function Container () {
   const [isKeyExpanded, setIsKeyExpanded] = useState()
 
   // Template properties
-  const device = isMobile && 'mobile' || isDesktop && 'desktop' || 'tablet'
+  const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
   const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
   const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.type].HEIGHT
   const legend = options.legend

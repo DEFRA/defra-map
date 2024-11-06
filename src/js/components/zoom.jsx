@@ -10,7 +10,9 @@ export default function Zoom () {
   const viewportDispatch = useViewport().dispatch
 
   useEffect(() => {
-    if (!['ZOOM_IN', 'ZOOM_OUT'].includes(action)) return
+    if (!['ZOOM_IN', 'ZOOM_OUT'].includes(action)) {
+      return
+    }
     viewportDispatch({ type: 'MOVEEND' })
   }, [action])
 

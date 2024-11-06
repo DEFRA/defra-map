@@ -40,12 +40,12 @@ export const parseLayers = (dataLayers) => {
 
 export const parseGroups = (data, segments, layers, zoom, hasInputs, queryLabel) => {
   // Filter groups
-  let groups = data.filter(g =>
-  // Only groups that are within zoom
-    (g.minZoom ? g.minZoom <= zoom : g && g.maxZoom ? g.maxZoom > zoom : g) &&
-        // Only groups that have an active parent
-        (g.parentIds ? g.parentIds.some(i => segments.includes(i)) : g)
-  )
+  let groups = data.filter(g => {
+    const hasValidParent = !g.parentIds || g.parentIds.some(i => segments.includes(i))
+    const isValidMinZoom = !g.minZoom || g.minZoom <= zoom
+    const isValidMaxZoom = !g.maxZoom || g.maxZoom > zoom
+    return hasValidParent && isValidMinZoom && isValidMaxZoom
+  })
 
   // Flatten groups and items and remove non-checked items for use in key
   if (!hasInputs) {
@@ -56,7 +56,9 @@ export const parseGroups = (data, segments, layers, zoom, hasInputs, queryLabel)
       g.items.forEach(item => {
         const isChecked = g?.type === 'radio' ? item.id === checkedRadioId : layers.includes(item.id)
         const isVisible = isChecked || !item.id
-        if (!(isVisible && (item.fill || item.icon || item.items?.length))) return
+        if (!(isVisible && (item.fill || item.icon || item.items?.length))) {
+          return
+        }
         if (item.display === 'ramp') {
           ramps.push(item)
         } else if (item.items) {
@@ -88,19 +90,15 @@ export const parseQuery = (info) => {
 
   const targetMarkerParam = settings.params.targetMarker
   let targetMarkerQuery = getQueryParam(targetMarkerParam)?.split(',')
-  targetMarkerQuery = targetMarkerQuery?.length === 3
-    ? {
-        coord: [parseFloat(targetMarkerQuery[0]), parseFloat(targetMarkerQuery[1])],
-        hasData: targetMarkerQuery[2] === 'true'
-      }
-    : null
+  targetMarkerQuery = (targetMarkerQuery?.length === 3) && {
+    coord: [parseFloat(targetMarkerQuery[0]), parseFloat(targetMarkerQuery[1])],
+    hasData: targetMarkerQuery[2] === 'true'
+  }
 
-  const targetMarker = targetMarkerQuery || (!info?.featureId && info?.markerCoord
-    ? {
-        coord: info?.markerCoord,
-        hasData: info?.hasData
-      }
-    : null)
+  const targetMarker = targetMarkerQuery || (!info?.featureId && info?.markerCoord && {
+    coord: info?.markerCoord,
+    hasData: info?.hasData
+  })
 
   return {
     featureId,

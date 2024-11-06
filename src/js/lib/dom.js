@@ -86,7 +86,7 @@ export const constrainFocus = e => {
     '*[tabindex="0"]:not([disabled])'
   ]
   let focusableEls = Array.from(el.querySelectorAll(selectors.join(',')))
-  focusableEls = focusableEls.filter(el => !!el.offsetParent)
+  focusableEls = focusableEls.filter(focusableEl => !!focusableEl.offsetParent)
   const firstFocusableEl = focusableEls[0]
   const lastFocusableEl = focusableEls[focusableEls.length - 1]
 

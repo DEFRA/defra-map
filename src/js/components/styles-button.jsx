@@ -7,13 +7,17 @@ export default function StylesButton ({ ariaLabelledby, stylesBtnRef }) {
 
   // Mousedown used as target can move between mouseDown and mouseUp
   const handlePointerDown = e => {
-    if (e.button !== 0) return
+    if (e.button !== 0) {
+      return
+    }
     dispatch({ type: 'OPEN', payload: 'STYLE' })
   }
 
   // Keydown used as target can move between keyDown and keyUp
   const handleKeyDown = e => {
-    if (!['Enter', 'Space'].includes(e.key)) return
+    if (!['Enter', 'Space'].includes(e.key)) {
+      return
+    }
     dispatch({ type: 'OPEN', payload: 'STYLE' })
   }
 

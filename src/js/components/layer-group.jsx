@@ -6,15 +6,21 @@ import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
 import KeySymbol from './key-symbol.jsx'
 
-const getProps = (group, layers, hasInputs) => {
+const getDerivedProps = (group, layers, hasInputs) => {
+  const ROW_WIDTH = 300
   const layout = hasInputs ? group.layout : 'column'
   const isDetails = hasInputs && layout !== 'column' && group.heading && ['expanded', 'collapse'].includes(group.collapse)
   const numItems = group.items.length
   const numCols = layout === 'column' && group.display === 'ramp' ? numItems : Math.min(numItems, 4)
   const heading = group.heading || group.label
   const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
-  const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
+  const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(ROW_WIDTH / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
   return { layout, isDetails, heading, checkedRadioId, style }
+}
+
+const getLabels = (group, item, checkedRadioId, layers) => {
+  const isActive = group?.type === 'radio' ? item.id === checkedRadioId : layers?.includes(item.id)
+  return isActive ? [item.label] : []
 }
 
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
@@ -46,19 +52,14 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     dispatchAppChange(lyr)
   }
 
-  const handleDetailsClick = e => {
+  const handleDetailsClick = () => {
     setIsExpanded(!isExpanded)
   }
 
   // Display properties
-  const { layout, isDetails, heading, checkedRadioId, style } = getProps(group, layers, hasInputs)
+  const { layout, isDetails, heading, checkedRadioId, style } = getDerivedProps(group, layers, hasInputs)
 
-  const labels = (item) => {
-    const isActive = group?.type === 'radio' ? item.id === checkedRadioId : layers?.includes(item.id)
-    return isActive ? [item.label] : []
-  }
-
-  const groupSummary = group.items.reduce((result, current) => [...result, ...labels(current)], [])
+  const groupSummary = group.items.reduce((result, current) => [...result, ...getLabels(group, current, checkedRadioId, layers)], [])
     .join(', ').replace(/, ([^,]*)$/, ', $1')
 
   const ItemInner = ({ item, index, display, isChecked }) => {

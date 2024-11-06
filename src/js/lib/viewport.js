@@ -68,24 +68,29 @@ export const getUnits = (metres) => {
   return units
 }
 
+const getBearing = (coord1, coord2) => {
+  const east = coord1[0] < coord2[0] && 'east'
+  const west = coord1[0] > coord2[0] && 'west'
+  const north = coord1[1] < coord2[1] && 'north'
+  const south = coord1[1] > coord2[1] && 'south'
+  return [east, west, north, south].filter(b => b && typeof b === 'string')
+}
+
 export const getDirection = (coord1, coord2) => {
   coord1 = coord1.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
   coord2 = coord2.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
   const ns1 = [coord1[0], coord1[1]]
   const ns2 = [coord1[0], coord2[1]]
-  const nsd = getDistance(ns1, ns2)
   const ew1 = [coord1[0], coord1[1]]
   const ew2 = [coord2[0], coord1[1]]
+  const nsd = getDistance(ns1, ns2)
   const ewd = getDistance(ew1, ew2)
-  const east = coord1[0] < coord2[0] && 'east'
-  const west = coord1[0] > coord2[0] && 'west'
-  const north = coord1[1] < coord2[1] && 'north'
-  const south = coord1[1] > coord2[1] && 'south'
-  const ewc = east || west
-  const nsc = north || south
-  const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
+  const bearing = getBearing(coord1, coord2)
+  const ewc = bearing.filter(b => ['east', 'west'].includes(b)).join('')
+  const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
   const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
-  return ns + (nsc && ewc ? ', ' : '') + ew
+  const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
+  return ns + (ewc && nsc ? ', ' : '') + ew
 }
 
 export const getArea = (bbox) => {

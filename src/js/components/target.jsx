@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
-export default function QueryTarget () {
+export default function Target () {
   const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isMobile } = useApp()
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()

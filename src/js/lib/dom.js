@@ -59,17 +59,23 @@ export const setInitialFocus = () => {
   const viewport = isPage && !isWithinContainer && container.querySelector('[data-fm-viewport]')
   el = modal || viewport
 
-  if (!el) return
+  if (!el) {
+    return
+  }
 
   el.focus()
 }
 
 export const constrainFocus = e => {
-  if (e.key !== 'Tab') return
+  if (e.key !== 'Tab') {
+    return
+  }
 
   const el = document.activeElement.closest(`[aria-modal="true"][open], [${ATTR_PAGE}]`)
 
-  if (!el) return
+  if (!el) {
+    return
+  }
 
   const selectors = [
     'a[href]:not([disabled])',
@@ -80,7 +86,7 @@ export const constrainFocus = e => {
     '*[tabindex="0"]:not([disabled])'
   ]
   let focusableEls = Array.from(el.querySelectorAll(selectors.join(',')))
-  focusableEls = focusableEls.filter(e => !!e.offsetParent)
+  focusableEls = focusableEls.filter(el => !!el.offsetParent)
   const firstFocusableEl = focusableEls[0]
   const lastFocusableEl = focusableEls[focusableEls.length - 1]
 

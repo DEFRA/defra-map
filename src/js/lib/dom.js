@@ -21,25 +21,28 @@ export const updateTitle = () => {
 }
 
 export const toggleInert = () => {
+  const inertEls = document.querySelectorAll('[data-fm-inert]')
+  for (const inertEl of inertEls) {
+    inertEl.removeAttribute('aria-hidden')
+    inertEl.removeAttribute('data-fm-inert')
+  }
+
   let el = getContainer(document.activeElement)
 
-  const inert = document.querySelectorAll('[data-fm-inert]')
-  for (const el of inert) {
-    el.removeAttribute('aria-hidden')
-    el.removeAttribute('data-fm-inert')
+  if (!el) {
+    return
   }
-  if (el) {
-    while (el.parentNode && el !== document.body) {
-      let sibling = el.parentNode.firstChild
-      while (sibling) {
-        if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute('aria-hidden')) {
-          sibling.setAttribute('aria-hidden', true)
-          sibling.setAttribute('data-fm-inert', '')
-        }
-        sibling = sibling.nextSibling
+
+  while (el.parentNode && el !== document.body) {
+    let sibling = el.parentNode.firstChild
+    while (sibling) {
+      if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute('aria-hidden')) {
+        sibling.setAttribute('aria-hidden', true)
+        sibling.setAttribute('data-fm-inert', '')
       }
-      el = el.parentNode
+      sibling = sibling.nextSibling
     }
+    el = el.parentNode
   }
 }
 
@@ -47,14 +50,14 @@ export const setInitialFocus = () => {
   let el = document.activeElement
 
   const isPage = !!document.querySelector(`[${ATR_PAGE}]`)
-  let container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
+  const container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
   let modal = container?.querySelector('[aria-modal="true"][open]')
   const isWithinModal = modal?.contains(el)
   const isWithinContainer = container?.contains(el)
   modal = ((isPage || isWithinContainer) && modal && !isWithinModal) && modal
   const viewport = isPage && !isWithinContainer && container.querySelector('[data-fm-viewport]')
   el = modal || viewport
-  
+
   if (!el) return
 
   el.focus()

@@ -23,6 +23,10 @@ const getLabels = (group, item, checkedRadioId, layers) => {
   return isActive ? [item.label] : []
 }
 
+const getDisplay = (group, item) => {
+  return group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
+}
+
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const { parent, dispatch, mode, layers, segments } = useApp()
   const { basemap, size } = useViewport()
@@ -109,34 +113,32 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             </span>
           </button>
           )
-        : heading && <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>}
+        : heading && (
+          <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
+        )}
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}
         {...style}
       >
         {group.items.map((item, i) => {
-          let display = group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
+          let display = getDisplay(group, item)
           const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
           return (
             <Fragment key={(item.id || item.label).toLowerCase()}>
-              {(hasSymbols || item.id)
-                ? (
-                  <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                    <ItemInner item={item} index={i} display={display} isChecked={isChecked} />
+              {(hasSymbols || item.id) && (
+                <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
+                  <ItemInner item={item} index={i} display={display} isChecked={isChecked} />
+                </div>
+              )}
+              {hasSymbols && item.items?.map((child, j) => {
+                display = item.display || (child.icon ? 'icon' : 'fill')
+                return (
+                  <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
+                    <ItemInner item={child} index={j} display={display} />
                   </div>
-                  )
-                : null}
-              {hasSymbols
-                ? item.items?.map((child, j) => {
-                  display = item.display || (child.icon ? 'icon' : 'fill')
-                  return (
-                    <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                      <ItemInner item={child} index={j} display={display} />
-                    </div>
-                  )
-                })
-                : null}
+                )
+              })}
             </Fragment>
           )
         })}

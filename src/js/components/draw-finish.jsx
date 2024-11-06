@@ -5,10 +5,8 @@ import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
 
 export default function DrawFinish () {
-  const { provider, parent, queryPolygon, mode, segments, layers, dispatch, viewportRef, query } = useApp()
+  const { provider, parent, queryPolygon, segments, layers, dispatch, viewportRef, query } = useApp()
   const { size, basemap } = useViewport()
-
-  if (!mode) return
 
   const handleClick = () => {
     const feature = provider.draw.finish()

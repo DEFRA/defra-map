@@ -3,6 +3,21 @@ import { useOutsideInteract } from '../hooks/use-outside-interact'
 import { useApp } from '../store/use-app'
 import { constrainFocus, toggleInert } from '../lib/dom'
 
+const getClassNames = (className, isInset, hasTabindex) => {
+  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${hasTabindex ? ' fm-c-panel--has-body-focus' : ''}`
+}
+
+const getRole = (instigatorRef) => {
+  return instigatorRef ? 'dialog' : 'region'
+}
+
+const getProps = (id, className, isFixed, isMobile, isInset, instigatorRef, width) => {
+  const panelId = `${id}-panel${className ? '-' + className : ''}`
+  const hasCloseBtn = !isFixed && instigatorRef
+  const hasWidth = width && !(isMobile && isInset)
+  return { panelId, hasCloseBtn, hasWidth }
+}
+
 export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, setIsModal, isOutsideInteract, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { id } = options
@@ -16,7 +31,6 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
 
   // Hide keyboard on click outside
   useOutsideInteract(elementRef, 'click', () => {
-    // if (isFixed || e.target !== viewportRef?.current?.querySelector('canvas')) return
     if (isOutsideInteract) {
       handleClose()
     }
@@ -44,7 +58,9 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   }
 
   const handleFocus = e => {
-    if (e.currentTarget !== e.target) return
+    if (e.currentTarget !== e.target) {
+      return
+    }
     toggleInert()
   }
 
@@ -56,9 +72,10 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   // }
 
   // Template properties
-  const panelId = `${id}-panel${className ? '-' + className : ''}`
-  const hasCloseBtn = !isFixed && instigatorRef
-  const hasWidth = width && !(isMobile && isInset)
+  const { panelId, hasCloseBtn, hasWidth } = getProps(id, className, isFixed, isMobile, isInset, instigatorRef, width)
+  // const panelId = `${id}-panel${className ? '-' + className : ''}`
+  // const hasCloseBtn = !isFixed && instigatorRef
+  // const hasWidth = width && !(isMobile && isInset)
 
   // Set initial focus
   useEffect(() => {
@@ -87,43 +104,37 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   return (
     <div
       id={panelId}
-      className={`fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${hasTabindex ? ' fm-c-panel--has-body-focus' : ''}`}
+      className={getClassNames(className, isInset, hasTabindex)}
       aria-labelledby={`${panelId}-label`}
-      role={instigatorRef ? 'dialog' : 'region'}
+      role={getRole(instigatorRef)}
       ref={elementRef}
       // onBlur={handleBlur}
-      {...(instigatorRef
-        ? {
-            open: true,
-            'aria-modal': isModal,
-            onKeyDown: handleKeyDown,
-            onKeyUp: handleKeyUp,
-            onFocus: handleFocus,
-            tabIndex: '-1'
-          }
-        : {})}
-      {...!isMobile && hasWidth
-        ? {
-            style: { width, maxWidth }
-          }
-        : {}}
+      {...(instigatorRef && {
+        open: true,
+        'aria-modal': isModal,
+        onKeyDown: handleKeyDown,
+        onKeyUp: handleKeyUp,
+        onFocus: handleFocus,
+        tabIndex: '-1'
+      })}
+      {...!isMobile && hasWidth && {
+        style: { width, maxWidth }
+      }}
     >
       <div className={`fm-c-panel__header${isHideHeading ? ' fm-c-panel__header--collapse' : ''}`}>
         <h2 id={`${panelId}-label`} className={isHideHeading ? 'fm-u-visually-hidden' : 'fm-c-panel__heading govuk-heading-s'}>
           {label}
         </h2>
-        {hasCloseBtn
-          ? (
-            <button onClick={handleClose} className='fm-c-btn fm-c-btn--close-panel govuk-body-s' aria-label='Close panel'>
-              <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20'><path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' style={{ fill: 'currentColor', stroke: 'currentColor', strokeWidth: 0.1 }} /></svg>
-            </button>
-            )
-          : null}
+        {hasCloseBtn && (
+          <button onClick={handleClose} className='fm-c-btn fm-c-btn--close-panel govuk-body-s' aria-label='Close panel'>
+            <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20'><path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' style={{ fill: 'currentColor', stroke: 'currentColor', strokeWidth: 0.1 }} /></svg>
+          </button>
+        )}
       </div>
       <div className='fm-c-panel__body' ref={bodyRef} {...(hasTabindex ? { tabindex: 0 } : {})}>
-        {html
-          ? <div className='fm-c-panel__content' {...({ dangerouslySetInnerHTML: { __html: html } })} />
-          : null}
+        {html && (
+          <div className='fm-c-panel__content' {...({ dangerouslySetInnerHTML: { __html: html } })} />
+        )}
         {children}
       </div>
     </div>

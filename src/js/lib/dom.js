@@ -1,8 +1,9 @@
-const ATR_PAGE = 'data-fm-page'
+const ATTR_PAGE = 'data-fm-page'
+const ARIA_HIDDEN = 'aria-hidden'
 
 const getContainer = (el) => {
-  const isPage = !!document.querySelector(`[${ATR_PAGE}]`)
-  let container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
+  const isPage = !!document.querySelector(`[${ATTR_PAGE}]`)
+  let container = document.querySelector(`[${ATTR_PAGE}]`) || el?.closest('[data-fm-container]')
   let modal = container?.querySelector('[aria-modal="true"][open]')
   const isWithinModal = modal?.contains(el)
   const isWithinContainer = container?.contains(el)
@@ -13,7 +14,7 @@ const getContainer = (el) => {
 }
 
 export const updateTitle = () => {
-  const page = document.querySelector(`[${ATR_PAGE}]`)?.getAttribute(ATR_PAGE)
+  const page = document.querySelector(`[${ATTR_PAGE}]`)?.getAttribute(ATTR_PAGE)
   document.documentElement.classList.toggle('fm-page', !!page)
   const parts = document.title.split(' - ')
   const title = parts[parts.length - 1]
@@ -23,7 +24,7 @@ export const updateTitle = () => {
 export const toggleInert = () => {
   const inertEls = document.querySelectorAll('[data-fm-inert]')
   for (const inertEl of inertEls) {
-    inertEl.removeAttribute('aria-hidden')
+    inertEl.removeAttribute(ARIA_HIDDEN)
     inertEl.removeAttribute('data-fm-inert')
   }
 
@@ -36,8 +37,8 @@ export const toggleInert = () => {
   while (el.parentNode && el !== document.body) {
     let sibling = el.parentNode.firstChild
     while (sibling) {
-      if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute('aria-hidden')) {
-        sibling.setAttribute('aria-hidden', true)
+      if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute(ARIA_HIDDEN)) {
+        sibling.setAttribute(ARIA_HIDDEN, true)
         sibling.setAttribute('data-fm-inert', '')
       }
       sibling = sibling.nextSibling
@@ -49,8 +50,8 @@ export const toggleInert = () => {
 export const setInitialFocus = () => {
   let el = document.activeElement
 
-  const isPage = !!document.querySelector(`[${ATR_PAGE}]`)
-  const container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
+  const isPage = !!document.querySelector(`[${ATTR_PAGE}]`)
+  const container = document.querySelector(`[${ATTR_PAGE}]`) || el?.closest('[data-fm-container]')
   let modal = container?.querySelector('[aria-modal="true"][open]')
   const isWithinModal = modal?.contains(el)
   const isWithinContainer = container?.contains(el)
@@ -66,7 +67,7 @@ export const setInitialFocus = () => {
 export const constrainFocus = e => {
   if (e.key !== 'Tab') return
 
-  const el = document.activeElement.closest(`[aria-modal="true"][open], [${ATR_PAGE}]`)
+  const el = document.activeElement.closest(`[aria-modal="true"][open], [${ATTR_PAGE}]`)
 
   if (!el) return
 

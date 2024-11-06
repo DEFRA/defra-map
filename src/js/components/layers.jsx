@@ -13,7 +13,9 @@ export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpand
   const { display, keyDisplay } = legend
 
   useEffect(() => {
-    if (!isExpanded) return
+    if (!isExpanded) {
+      return
+    }
     const lastRef = activeRef.current
     const nextTabStop = findTabStop(lastRef, 'next')
     nextTabStop?.focus()

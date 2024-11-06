@@ -1,5 +1,19 @@
+const ATR_PAGE = 'data-fm-page'
+
+const getContainer = (el) => {
+  const isPage = !!document.querySelector(`[${ATR_PAGE}]`)
+  let container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
+  let modal = container?.querySelector('[aria-modal="true"][open]')
+  const isWithinModal = modal?.contains(el)
+  const isWithinContainer = container?.contains(el)
+  modal = (isPage || isWithinContainer) && isWithinModal && modal
+  container = isPage && container
+
+  return modal || container
+}
+
 export const updateTitle = () => {
-  const page = document.querySelector('[data-fm-page]')?.getAttribute('data-fm-page')
+  const page = document.querySelector(`[${ATR_PAGE}]`)?.getAttribute(ATR_PAGE)
   document.documentElement.classList.toggle('fm-page', !!page)
   const parts = document.title.split(' - ')
   const title = parts[parts.length - 1]
@@ -7,23 +21,10 @@ export const updateTitle = () => {
 }
 
 export const toggleInert = () => {
-  let el = document.activeElement
-
-  const isPage = !!document.querySelector('[data-fm-page]')
-  const container = document.querySelector('[data-fm-page]') || el?.closest('[data-fm-container]')
-  const modal = container?.querySelector('[aria-modal="true"][open]')
-  const isWithinModal = modal?.contains(el)
-  const isWithinContainer = container?.contains(el)
-
-  el = (isPage || isWithinContainer) && isWithinModal
-    ? modal
-    : isPage
-      ? container
-      : null
+  let el = getContainer(document.activeElement)
 
   const inert = document.querySelectorAll('[data-fm-inert]')
-  for (let i = 0; i < inert.length; i++) {
-    const el = inert[i]
+  for (const el of inert) {
     el.removeAttribute('aria-hidden')
     el.removeAttribute('data-fm-inert')
   }
@@ -31,11 +32,9 @@ export const toggleInert = () => {
     while (el.parentNode && el !== document.body) {
       let sibling = el.parentNode.firstChild
       while (sibling) {
-        if (sibling.nodeType === 1 && sibling !== el) {
-          if (!sibling.hasAttribute('aria-hidden')) {
-            sibling.setAttribute('aria-hidden', true)
-            sibling.setAttribute('data-fm-inert', '')
-          }
+        if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute('aria-hidden')) {
+          sibling.setAttribute('aria-hidden', true)
+          sibling.setAttribute('data-fm-inert', '')
         }
         sibling = sibling.nextSibling
       }
@@ -47,18 +46,15 @@ export const toggleInert = () => {
 export const setInitialFocus = () => {
   let el = document.activeElement
 
-  const isPage = !!document.querySelector('[data-fm-page]')
-  const container = document.querySelector('[data-fm-page]') || el?.closest('[data-fm-container]')
-  const modal = container?.querySelector('[aria-modal="true"][open]')
+  const isPage = !!document.querySelector(`[${ATR_PAGE}]`)
+  let container = document.querySelector(`[${ATR_PAGE}]`) || el?.closest('[data-fm-container]')
+  let modal = container?.querySelector('[aria-modal="true"][open]')
   const isWithinModal = modal?.contains(el)
   const isWithinContainer = container?.contains(el)
-
-  el = (isPage || isWithinContainer) && modal && !isWithinModal
-    ? modal
-    : isPage && !isWithinContainer
-      ? container.querySelector('[data-fm-viewport]')
-      : null
-
+  modal = ((isPage || isWithinContainer) && modal && !isWithinModal) && modal
+  const viewport = isPage && !isWithinContainer && container.querySelector('[data-fm-viewport]')
+  el = modal || viewport
+  
   if (!el) return
 
   el.focus()
@@ -67,7 +63,7 @@ export const setInitialFocus = () => {
 export const constrainFocus = e => {
   if (e.key !== 'Tab') return
 
-  const el = document.activeElement.closest('[aria-modal="true"][open], [data-fm-page]')
+  const el = document.activeElement.closest(`[aria-modal="true"][open], [${ATR_PAGE}]`)
 
   if (!el) return
 
@@ -101,9 +97,5 @@ export const findTabStop = (el, direction) => {
   const focusableEls = document.querySelectorAll('input, button, select, textarea, a[href]')
   const list = Array.prototype.filter.call(focusableEls, item => { return item.tabIndex >= '0' })
   const index = list.indexOf(el)
-  // if (direction === 'next') {
-  //   console.log(el.outerHTML)
-  //   console.log(list[14].outerHTML)
-  // }
   return list[direction === 'next' ? index + 1 : index - 1] || list[0]
 }

@@ -116,7 +116,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
         {...style}
       >
         {group.items.map((item, i) => {
-          const display = group.display || (item.icon ? 'icon' : item.fill ? 'fill' : item.display)
+          let display = group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
           const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
           return (
             <Fragment key={(item.id || item.label).toLowerCase()}>
@@ -129,7 +129,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
                 : null}
               {hasSymbols
                 ? item.items?.map((child, j) => {
-                  const display = item.display || (child.icon ? 'icon' : 'fill')
+                  display = item.display || (child.icon ? 'icon' : 'fill')
                   return (
                     <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
                       <ItemInner item={child} index={j} display={display} />

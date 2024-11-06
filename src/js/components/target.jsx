@@ -3,12 +3,16 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
+const isCentre = (isKeyboard, targetMarker, activePanel) => {
+  return isKeyboard && !(targetMarker && activePanel === 'INFO')
+}
+
 export default function Target () {
   const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isMobile } = useApp()
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
 
-  const isTargetCentre = isKeyboard && !(targetMarker && activePanel === 'INFO')
+  const isTargetCentre = isCentre(isKeyboard, targetMarker, activePanel)
   const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
   const isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord

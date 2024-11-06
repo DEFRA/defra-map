@@ -6,6 +6,17 @@ import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
 import KeySymbol from './key-symbol.jsx'
 
+const getProps = (group, layers, hasInputs) => {
+  const layout = hasInputs ? group.layout : 'column'
+  const isDetails = hasInputs && layout !== 'column' && group.heading && ['expanded', 'collapse'].includes(group.collapse)
+  const numItems = group.items.length
+  const numCols = layout === 'column' && group.display === 'ramp' ? numItems : Math.min(numItems, 4)
+  const heading = group.heading || group.label
+  const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
+  const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
+  return { layout, isDetails, heading, checkedRadioId, style }
+}
+
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const { parent, dispatch, mode, layers, segments } = useApp()
   const { basemap, size } = useViewport()
@@ -40,13 +51,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }
 
   // Display properties
-  const layout = hasInputs ? group.layout : 'column'
-  const isDetails = hasInputs && layout !== 'column' && group.heading && ['expanded', 'collapse'].includes(group.collapse)
-  const numItems = group.items.length
-  const numCols = layout === 'column' && group.display === 'ramp' ? numItems : Math.min(numItems, 4)
-  const heading = group.heading || group.label
-  const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
-  const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(300 / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
+  const { layout, isDetails, heading, checkedRadioId, style } = getProps(group, layers, hasInputs)
 
   const labels = (item) => {
     const isActive = group?.type === 'radio' ? item.id === checkedRadioId : layers?.includes(item.id)

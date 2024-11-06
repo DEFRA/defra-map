@@ -15,11 +15,10 @@ export default function SegmentGroup ({ id, group }) {
   const [isExpanded, setIsExpanded] = useState(group.isExpanded)
 
   const handleItemClickOrChange = e => {
-    // const group = groups.find(s => s.items.some(i => i.id === e.currentTarget.value))
     let seg = segments.filter(s => !items.map(i => i.id).includes(s))
     seg.push(e.currentTarget.value)
     seg = parseSegments(legend.segments, seg)
-    const lyr = parseLayers(legend.key, legend.segments, seg)
+    const lyr = parseLayers(legend.key)
     dispatch({ type: 'TOGGLE_SEGMENTS', payload: { segments: seg, layers: lyr } })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'segment', mode, basemap, size, segments: seg, layers: lyr })
@@ -32,12 +31,7 @@ export default function SegmentGroup ({ id, group }) {
     setIsExpanded(!isExpanded)
   }
 
-  const items = group.items.map(i => {
-    return {
-      ...i,
-      isChecked: segments.includes(i.id)
-    }
-  })
+  const items = group.items.map(i => { return { ...i, isChecked: segments.includes(i.id) } })
   const selected = items.find(i => i.isChecked).label
 
   return (
@@ -59,7 +53,9 @@ export default function SegmentGroup ({ id, group }) {
             </span>
           </button>
           )
-        : heading && <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>}
+        : heading && (
+          <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
+        )}
       <div id={`content-${id}`} className='fm-c-segments__inner' role='group' {...heading ? { 'aria-labelledby': `segment-${id}` } : { 'aria-label': 'Segments' }}>
         {items.map(item => (
           <Fragment key={item.label.toLowerCase()}>

@@ -2,9 +2,7 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function SearchButton ({ ariaLabelledby, searchBtnRef }) {
-  const { dispatch, search, activePanel } = useApp()
-
-  if (!search) return
+  const { dispatch, activePanel } = useApp()
 
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'SEARCH' })

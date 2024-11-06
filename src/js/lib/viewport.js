@@ -1,30 +1,34 @@
 import LatLon from 'geodesy/latlon-spherical.js'
 
 export const getFocusPadding = (el, scale) => {
-  if (!el) return
-  const parent = el.closest('.fm-o-main').getBoundingClientRect()
-  const box = el.getBoundingClientRect()
-  const padding = {
-    top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
-    left: ((box.x || box.left) - (parent.x || parent.left)) / scale,
-    right: (parent.width - box.width - ((box.x || box.left) - (parent.x || parent.left))) / scale,
-    bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
+  let padding
+  if (el) {
+    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const box = el.getBoundingClientRect()
+    padding = {
+      top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
+      left: ((box.x || box.left) - (parent.x || parent.left)) / scale,
+      right: (parent.width - box.width - ((box.x || box.left) - (parent.x || parent.left))) / scale,
+      bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
+    }
   }
   return padding
 }
 
 export const getFocusBounds = (el, scale) => {
-  if (!el) return
-  const parent = el.closest('.fm-o-main').getBoundingClientRect()
-  const box = el.getBoundingClientRect()
-  const m = 10
-  const bounds = [[
-    ((box.x || box.left) - (parent.x || parent.left) + m) / scale,
-    (((box.y || box.top) - (parent.y || parent.top)) + box.height - m) / scale
-  ], [
-    (box.width + ((box.x || box.left) - (parent.x || parent.left)) - m) / scale,
-    ((box.y || box.top) - (parent.y || parent.top) + m) / scale
-  ]]
+  let bounds
+  if (el) {
+    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const box = el.getBoundingClientRect()
+    const m = 10
+    bounds = [[
+      ((box.x || box.left) - (parent.x || parent.left) + m) / scale,
+      (((box.y || box.top) - (parent.y || parent.top)) + box.height - m) / scale
+    ], [
+      (box.width + ((box.x || box.left) - (parent.x || parent.left)) - m) / scale,
+      ((box.y || box.top) - (parent.y || parent.top) + m) / scale
+    ]]
+  }
   return bounds
 }
 
@@ -50,13 +54,16 @@ export const getDistance = (coord1, coord2) => {
 }
 
 export const getUnits = (metres) => {
+  const MAX_METRES = 800
+  const MAX_MILES = 5000
+  const RATIO = 0.621371
   let units
-  if (metres < 800) {
+  if (metres < MAX_METRES) {
     units = `${metres} metres`
-  } else if (metres < 5000) {
-    units = (metres / 1000 * 0.621371).toFixed(1) + ' miles'
+  } else if (metres < MAX_MILES) {
+    units = (metres / 1000 * RATIO).toFixed(1) + ' miles'
   } else {
-    units = Math.round((metres / 1000) * 0.621371) + ' miles'
+    units = Math.round((metres / 1000) * RATIO) + ' miles'
   }
   return units
 }
@@ -70,8 +77,12 @@ export const getDirection = (coord1, coord2) => {
   const ew1 = [coord1[0], coord1[1]]
   const ew2 = [coord2[0], coord1[1]]
   const ewd = getDistance(ew1, ew2)
-  const ewc = coord1[0] < coord2[0] ? 'east' : coord1[0] > coord2[0] ? 'west' : null
-  const nsc = coord1[1] < coord2[1] ? 'north' : coord1[1] > coord2[1] ? 'south' : null
+  const east = coord1[0] < coord2[0] && 'east'
+  const west = coord1[0] > coord2[0] && 'west'
+  const north = coord1[1] < coord2[1] && 'north'
+  const south = coord1[1] > coord2[1] && 'south'
+  const ewc = east || west
+  const nsc = north || south
   const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
   const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
   return ns + (nsc && ewc ? ', ' : '') + ew
@@ -87,17 +98,19 @@ export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
   const isSameZoom = oZoom === zoom
   const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
-  if (!isMove) return
   let change
-  if (!isSameCentre && !isSameZoom) {
-    change = 'New area'
-  } else if (!isSameCentre) {
-    change = `${getDirection(oCentre, centre)}`
-  } else {
-    const direction = zoom > oZoom ? 'in' : 'out'
-    change = `zoomed ${direction}, showing ${getArea(bbox)}`
+  if (isMove) {
+    if (!isSameCentre && !isSameZoom) {
+      change = 'New area'
+    } else if (!isSameCentre) {
+      change = `${getDirection(oCentre, centre)}`
+    } else {
+      const direction = zoom > oZoom ? 'in' : 'out'
+      change = `zoomed ${direction}, showing ${getArea(bbox)}`
+    }
+    change = `${change}: Use ALT plus I to get new details`
   }
-  return `${change}: Use ALT plus I to get new details`
+  return change
 }
 
 export const getDescription = (place, centre, bbox, features) => {
@@ -112,6 +125,8 @@ export const getDescription = (place, centre, bbox, features) => {
     text = 'No data at the centre coordinate'
   } else if (isFeaturesInMap) {
     text = 'No feature data in this area'
+  } else {
+    // Null
   }
 
   let coord
@@ -170,19 +185,17 @@ export const setBasemap = (isDarkMode) => {
 }
 
 export const getSelectedIndex = (key, total, current) => {
-  return key === 'PageDown'
-    ? current === total - 1 ? 0 : current + 1
-    : current > 0 ? current - 1 : total - 1
+  const increase = current === total - 1 ? 0 : current + 1
+  const decrease = current > 0 ? current - 1 : total - 1
+  return key === 'PageDown' ? increase : decrease
 }
 
 export const getSelectedStatus = (featuresInViewport, index) => {
   const total = featuresInViewport.length
   const feature = index < featuresInViewport.length ? featuresInViewport[index] : null
-  const status = feature
-    ? `
-        ${total} feature${total !== 1 ? 's' : ''} in this view. ${feature.name}. ${index + 1} of ${total} highlighted.
-    `
-    : ''
+  const status = feature && (
+    `${total} feature${total !== 1 ? 's' : ''} in this view. ${feature.name}. ${index + 1} of ${total} highlighted.`
+  )
   return status
 }
 

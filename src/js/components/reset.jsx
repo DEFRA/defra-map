@@ -9,15 +9,17 @@ export default function Reset () {
   const [isNewArea, setIsNewArea] = useState(false)
 
   const handleOnClick = () => {
-    if (!isNewArea) return
+    if (!isNewArea) {
+      return
+    }
     viewportDispatch({ type: 'RESET' })
   }
 
   useEffect(() => {
     const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
     const isSameZoom = rZoom === zoom
-    const isNewArea = oCentre && centre && rZoom && zoom && !(isSameCentre && isSameZoom)
-    setIsNewArea(isNewArea)
+    const isNew = oCentre && centre && rZoom && zoom && !(isSameCentre && isSameZoom)
+    setIsNewArea(isNew)
   }, [bbox])
 
   return (

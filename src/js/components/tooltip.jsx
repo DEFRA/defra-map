@@ -16,15 +16,17 @@ export default function Tooltip ({ id, position, text, cssModifier, children }) 
     setIsVisible(false)
   }
 
+  const DELAY = 500
+
   const showTooltip = () => {
-    timeoutRef.current = setTimeout(() => setIsVisible(true), 500)
+    timeoutRef.current = setTimeout(() => setIsVisible(true), DELAY)
   }
 
-  const handleKeyDown = e => {
+  const handleKeyDown = () => {
     setHasFocusWithin(false)
   }
 
-  const handleKeyUp = e => {
+  const handleKeyUp = () => {
     setHasFocusWithin(true)
   }
 

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
-import { usePixelObscurred } from '../hooks/use-pixel-obscurred'
+import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
-export default function Target () {
+export default function QueryTarget () {
   const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isMobile } = useApp()
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
@@ -20,7 +20,9 @@ export default function Target () {
 
   // Update padding if target marker is obscurred
   useEffect(() => {
-    if (!isObscurred || !(isContainerReady && obscurePanelRef.current)) return
+    if (!isObscurred || !(isContainerReady && obscurePanelRef.current)) {
+      return
+    }
     dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef.current, viewport: viewportRef.current, isMobile, isAnimate: true } })
   }, [isObscurred])
 

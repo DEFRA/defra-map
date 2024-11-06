@@ -97,7 +97,7 @@ export default function Container () {
             {!isQueryMode
               ? (
                 <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
-                  <DrawStart />
+                  {queryPolygon && <DrawStart />}
                   {hasSegments ? <Segments /> : null}
                   {hasLayers ? <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
@@ -148,7 +148,7 @@ export default function Container () {
             )}
             {activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
               <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
-                <DrawStart />
+                {queryPolygon && <DrawStart />}
                 {hasSegments && <Segments />}
                 {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />}
               </Panel>
@@ -161,7 +161,7 @@ export default function Container () {
                 <Attribution />
                 {isQueryMode && !isMobile && (
                   <div className='fm-o-actions'>
-                    <DrawFinish />
+                    {mode && <DrawFinish />}
                     <DrawCancel cancelBtnRef={cancelBtnRef} />
                   </div>
                 )}
@@ -195,14 +195,14 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
-                  <DrawStart />
+                  {queryPolygon && <DrawStart />}
                   {hasSegments ? <Segments /> : null}
                   {hasLayers ? <Layers hasSymbols hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
               )}
               {isQueryMode && isMobile && (
                 <div className='fm-o-actions'>
-                  <DrawFinish />
+                  {mode && <DrawFinish />}
                   <DrawCancel cancelBtnRef={cancelBtnRef} />
                 </div>
               )}

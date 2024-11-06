@@ -2,9 +2,7 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function KeyButton ({ keyBtnRef }) {
-  const { isEditMode, isMobile, dispatch, legend, activePanel } = useApp()
-
-  if (!legend) return
+  const { isEditMode, isMobile, dispatch, activePanel } = useApp()
 
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'KEY' })

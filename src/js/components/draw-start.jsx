@@ -8,8 +8,6 @@ export default function DrawStart () {
   const { provider, parent, queryPolygon, mode, segments, layers, dispatch, query } = useApp()
   const { size, basemap } = useViewport()
 
-  if (!queryPolygon) return
-
   const handleClick = () => {
     // Dynamic import of draw module
     provider.draw?.start ? provider.draw.start() : provider.initDraw(queryPolygon, query)

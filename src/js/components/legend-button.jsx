@@ -4,8 +4,6 @@ import { useApp } from '../store/use-app'
 export default function LegendButton ({ legendBtnRef }) {
   const { isEditMode, isMobile, dispatch, legend, activePanel } = useApp()
 
-  if (!legend) return
-
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'LEGEND' })
   }

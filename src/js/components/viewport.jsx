@@ -8,7 +8,7 @@ import { setBasemap, getSelectedStatus, getShortcutKey, getSelectedIndex, getMap
 import eventBus from '../lib/eventbus.js'
 import Status from './status.jsx'
 import PaddingBox from './padding-box.jsx'
-import Target from './target.jsx'
+import QueryTarget from './query-target.jsx'
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isKeyboard, isDarkMode } = useApp()
@@ -284,7 +284,7 @@ export default function Viewport () {
     >
       <div id={`${id}-map-container`} className='fm-o-map-container' ref={mapContainerRef} />
       <PaddingBox>
-        <Target />
+        <QueryTarget />
       </PaddingBox>
       <ul id={`${id}-viewport-features`} className='fm-u-visually-hidden' role='listbox' aria-labelledby={`${id}-viewport-label`}>
         {features?.featuresInViewport.map((feature, i) => {

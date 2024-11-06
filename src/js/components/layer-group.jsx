@@ -62,7 +62,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
         <>
           <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
           <label className='fm-c-layers__label' htmlFor={item.id}>
-            {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+            {hasSymbols && <KeySymbol display={display} item={item} />}
             <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
           </label>
         </>
@@ -70,14 +70,14 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     } else if (hasInputs && item.id) {
       return (
         <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
-          {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+          {hasSymbols && <KeySymbol display={display} item={item} />}
           <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
         </button>
       )
     } else {
       return (
         <>
-          {hasSymbols ? <KeySymbol display={display} item={item} /> : null}
+          {hasSymbols && <KeySymbol display={display} item={item} />}
           <span className={group.numLabels && index % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
         </>
       )

@@ -2,44 +2,43 @@ import { getQueryParam, hasQueryParam } from './utils'
 import { settings } from '../store/constants'
 
 export const parseSegments = (dataSegments, seg) => {
-  if (!dataSegments) return
-
-  const queryParams = new URLSearchParams(window.location.search)
-  seg = seg || queryParams.get('seg')?.split(',')
-
-  const segments = []
-
-  for (let i = 0; i < dataSegments.length; i++) {
-    const g = dataSegments[i]
-    const hasParent = !!g.parentIds?.length
-    const hasActiveParent = g.parentIds?.some(p => segments.includes(p))
-    const q = g.items.find(s => seg?.includes(s?.id))?.id
-    const c = g.items.find(l => l.isSelected)?.id || g.items[0]?.id
-    if (!(hasParent && !hasActiveParent)) {
-      segments.push(q || c)
+  let segments = null
+  if (dataSegments) {
+    const queryParams = new URLSearchParams(window.location.search)
+    if (!seg) {
+      seg = queryParams.get('seg')?.split(',')
+    }
+    segments = []
+    for (const g of dataSegments) {
+      const hasParent = !!g.parentIds?.length
+      const hasActiveParent = g.parentIds?.some(p => segments.includes(p))
+      const q = g.items.find(s => seg?.includes(s?.id))?.id
+      const c = g.items.find(l => l.isSelected)?.id || g.items[0]?.id
+      if (!(hasParent && !hasActiveParent)) {
+        segments.push(q || c)
+      }
     }
   }
-
   return segments
 }
 
 export const parseLayers = (dataLayers, dataSegments, seg) => {
-  if (!dataLayers) return
-
-  const queryParams = new URLSearchParams(window.location.search)
-  seg = seg || parseSegments(dataSegments)
-  const lyr = queryParams.get('lyr')?.split(',') || []
-
-  let layers = []
-
-  for (let i = 0; i < dataLayers.length; i++) {
-    const g = dataLayers[i]
-    const c = g.items.filter(l => l.id && l.isSelected).map(l => l.id)
-    const q = g.items.filter(l => lyr.includes(l.id)).map(l => l.id)
-    layers = layers.concat(queryParams.has('lyr') ? q : c)
+  let layers = null
+  if (dataLayers) {
+    const queryParams = new URLSearchParams(window.location.search)
+    const lyr = queryParams.get('lyr')?.split(',') || []
+    if (!seg) {
+      seg = parseSegments(dataSegments)
+    }
+    layers = []
+    for (const g of dataLayers) {
+      const c = g.items.filter(l => l.id && l.isSelected).map(l => l.id)
+      const q = g.items.filter(l => lyr.includes(l.id)).map(l => l.id)
+      layers = layers.concat(queryParams.has('lyr') ? q : c)
+    }
+    layers = [...new Set(layers)]
   }
-
-  return [...new Set(layers)]
+  return layers
 }
 
 export const parseGroups = (data, segments, layers, zoom, hasInputs, queryLabel) => {

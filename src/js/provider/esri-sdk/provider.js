@@ -45,7 +45,7 @@ class Provider extends EventTarget {
   }
 
   remove () {
-    console.log('Remove and tidy up')
+    // console.log('Remove and tidy up')
   }
 
   async addInterceptors (params) {
@@ -270,12 +270,12 @@ class Provider extends EventTarget {
     this.targetMarker = null
   }
 
-  selectFeature (id) {
-    console.log('select', id)
+  selectFeature (_id) {
+    // console.log('select', id)
   }
 
-  async queryFeature (id) {
-    console.log('queryFeature', id)
+  async queryFeature (_id) {
+    // console.log('queryFeature', id)
   }
 
   async queryPoint (point) {

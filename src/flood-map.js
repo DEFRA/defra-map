@@ -43,7 +43,7 @@ export class FloodMap extends EventTarget {
     this._insertButtonHTML()
 
     // Exit map
-    this.props.handleExit = this._handleExit
+    this.props.handleExit = this._handleExit.bind(this)
 
     // History change add/remove app
     window.addEventListener('popstate', this._handlePopstate.bind(this))

@@ -8,7 +8,6 @@ import LayerGroup from './layer-group.jsx'
 
 export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpanded }) {
   const { query, segments, options, activeRef, layers } = useApp()
-
   const { zoom } = useViewport()
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend
@@ -30,21 +29,19 @@ export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpand
     <div id={`${id}-key`} className='fm-c-layers'>
       {groups.map((g, i) => (
         <Fragment key={`fl${i}`}>
-          {isExpanded || (!isExpanded && i <= maxRow)
-            ? <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
-            : null}
+          {(isExpanded || (!isExpanded && i <= maxRow)) && (
+            <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
+          )}
         </Fragment>
       ))}
-      {maxRow < (groups.length - 1)
-        ? (
-          <div className='fm-c-layers__more fm-c-layers__more--centre'>
-            <More id={`${id}-key`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
-          </div>
-          )
-        : null}
-      {isEmptyKey
-        ? <p className='govuk-body-s govuk-!-margin-bottom-0'>No features displayed</p>
-        : null}
+      {(maxRow < (groups.length - 1)) && (
+        <div className='fm-c-layers__more fm-c-layers__more--centre'>
+          <More id={`${id}-key`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
+        </div>
+      )}
+      {isEmptyKey && (
+        <p className='govuk-body-s govuk-!-margin-bottom-0'>No features displayed</p>
+      )}
     </div>
   )
 }

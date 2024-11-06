@@ -49,7 +49,9 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   }
 
   // const handleBlur = e => {
-  //   if (!(isMobile && elementRef.current?.contains(e.target) && !elementRef.current?.contains(e.relatedTarget))) return
+  //   if (!(isMobile && elementRef.current?.contains(e.target) && !elementRef.current?.contains(e.relatedTarget))) {
+  //     return
+  //   }
   //   dispatch({ type: 'SET_IS_EXPANDED', value: false })
   // }
 

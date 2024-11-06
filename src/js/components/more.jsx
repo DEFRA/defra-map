@@ -8,7 +8,9 @@ export default function More ({ id, label, isExpanded, setIsExpanded, isRemove }
 
   const handleClick = () => {
     setIsExpanded(!isExpanded)
-    if (!isRemove) return
+    if (!isRemove) {
+      return
+    }
     const previousTabStop = findTabStop(document.activeElement, 'prev')
     activeRef.current = previousTabStop
   }

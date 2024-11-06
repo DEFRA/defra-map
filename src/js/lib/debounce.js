@@ -3,7 +3,6 @@ export const debounce = (fn, wait) => {
   return (...args) => {
     window.clearTimeout(timeoutId)
     timeoutId = window.setTimeout(() => {
-      console.log(...args)
       fn(...args)
     }, wait)
   }

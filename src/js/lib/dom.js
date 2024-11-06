@@ -84,16 +84,13 @@ export const constrainFocus = e => {
   const firstFocusableEl = focusableEls[0]
   const lastFocusableEl = focusableEls[focusableEls.length - 1]
 
-  if (e.shiftKey) {
-    if (document.activeElement === el || document.activeElement === firstFocusableEl) {
-      lastFocusableEl.focus()
-      e.preventDefault()
-    }
-  } else {
-    if (document.activeElement === lastFocusableEl) {
-      firstFocusableEl.focus()
-      e.preventDefault()
-    }
+  if (e.shiftKey && (document.activeElement === el || document.activeElement === firstFocusableEl)) {
+    lastFocusableEl.focus()
+    e.preventDefault()
+  }
+  if (!e.shiftKey && (document.activeElement === lastFocusableEl)) {
+    firstFocusableEl.focus()
+    e.preventDefault()
   }
 }
 

@@ -30,6 +30,19 @@ export default function Viewport () {
 
   const STATUS_DELAY = 300
 
+  const selectQuery = () => {
+    if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
+      const fId = features.featuresInViewport[featureIdRef.current].id
+      provider.queryFeature(fId)
+      return
+    }
+    if (!isMoving) {
+      const scale = size === 'large' ? 2 : 1
+      const point = getMapPixel(paddingBoxRef.current, scale)
+      provider.queryPoint(point)
+    }
+  }
+
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
@@ -44,20 +57,8 @@ export default function Viewport () {
     }
 
     // Select feature or query centre (Enter or Space)
-    if (['Enter', 'Space'].includes(e.key)) {
-      if (mode !== 'default') {
-        return
-      }
-      if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-        const fId = features.featuresInViewport[featureIdRef.current].id
-        provider.queryFeature(fId)
-        return
-      }
-      if (!isMoving) {
-        const scale = size === 'large' ? 2 : 1
-        const point = getMapPixel(paddingBoxRef.current, scale)
-        provider.queryPoint(point)
-      }
+    if (['Enter', 'Space'].includes(e.key) && mode === 'default') {
+      selectQuery()
     }
 
     // Cycle through feature list (PageUp and PageDown)

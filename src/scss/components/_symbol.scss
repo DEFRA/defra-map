@@ -2,6 +2,7 @@
 
 // Outline - light basemap
 
+// stylelint-disable declaration-no-important
 .fm-c-symbol__ol-stroke {
     stroke: transparent !important;
 }
@@ -81,3 +82,4 @@
 .fm-o-viewport .fm-c-symbol--dark .fm-c-symbol__bg-fill {
     fill: #0b0c0c !important;
 }
+// stylelint-enable declaration-no-important

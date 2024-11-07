@@ -12,6 +12,13 @@ export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpand
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend
 
+  // Derived properties
+  const moreLabel = keyDisplay === 'min' && isExpanded ? 'Fewer layers' : 'All layers'
+  const maxRow = display === 'inset' && keyDisplay === 'min' ? 0 : legend.key.length
+  const queryLabel = query ? queryPolygon.keyLabel : null
+  const groups = parseGroups(legend.key, segments, layers, zoom, hasInputs, queryLabel)
+  const isEmptyKey = !hasInputs && !groups.length
+
   useEffect(() => {
     if (!isExpanded) {
       return
@@ -20,12 +27,6 @@ export default function Layers ({ hasSymbols, hasInputs, isExpanded, setIsExpand
     const nextTabStop = findTabStop(lastRef, 'next')
     nextTabStop?.focus()
   }, [isExpanded])
-
-  const moreLabel = keyDisplay === 'min' && isExpanded ? 'Fewer layers' : 'All layers'
-  const maxRow = display === 'inset' && keyDisplay === 'min' ? 0 : legend.key.length
-  const queryLabel = query ? queryPolygon.keyLabel : null
-  const groups = parseGroups(legend.key, segments, layers, zoom, hasInputs, queryLabel)
-  const isEmptyKey = !hasInputs && !groups.length
 
   return (
     <div id={`${id}-key`} className='fm-c-layers'>

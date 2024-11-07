@@ -49,8 +49,8 @@ export default function Viewport () {
         return
       }
       if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-        const featureId = features.featuresInViewport[featureIdRef.current].id
-        provider.queryFeature(featureId)
+        const fId = features.featuresInViewport[featureIdRef.current].id
+        provider.queryFeature(fId)
         return
       }
       if (!isMoving) {
@@ -67,8 +67,8 @@ export default function Viewport () {
       const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
       const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
-      const featureId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId, activePanel: null } })
+      const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
       // Debounce status update
       debounceUpdateStatus(statusText)
     }
@@ -89,8 +89,8 @@ export default function Viewport () {
 
     // Feature shortcut keys (Alt + 1 - 9)
     if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
-      const featureId = getShortcutKey(e, features?.featuresInViewport)
-      provider.queryFeature(featureId)
+      const fId = getShortcutKey(e, features?.featuresInViewport)
+      provider.queryFeature(fId)
     }
 
     // Clear selected feature

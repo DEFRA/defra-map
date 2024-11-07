@@ -28,6 +28,7 @@ node_modules/
 
 # Output
 dist/
+coverage
 Footer
 © 2023 GitHub, Inc.
 Footer navigation

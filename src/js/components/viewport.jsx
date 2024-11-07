@@ -28,6 +28,8 @@ export default function Viewport () {
   const startPixel = useRef([0, 0])
   const isDraggingRef = useRef(false)
 
+  const STATUS_DELAY = 300
+
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
@@ -43,11 +45,15 @@ export default function Viewport () {
 
     // Select feature or query centre (Enter or Space)
     if (['Enter', 'Space'].includes(e.key)) {
-      if (mode !== 'default') return
+      if (mode !== 'default') {
+        return
+      }
       if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-        const id = features.featuresInViewport[featureIdRef.current].id
-        provider.queryFeature(id)
-      } else if (!isMoving) {
+        const featureId = features.featuresInViewport[featureIdRef.current].id
+        provider.queryFeature(featureId)
+        return
+      }
+      if (!isMoving) {
         const scale = size === 'large' ? 2 : 1
         const point = getMapPixel(paddingBoxRef.current, scale)
         provider.queryPoint(point)
@@ -60,11 +66,11 @@ export default function Viewport () {
       const { featuresInViewport } = features
       const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-      const status = getSelectedStatus(featuresInViewport, selectedIndex)
-      const id = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: id, activePanel: null } })
+      const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
+      const featureId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId, activePanel: null } })
       // Debounce status update
-      debounceUpdateStatus(status)
+      debounceUpdateStatus(statusText)
     }
   }
 
@@ -83,8 +89,8 @@ export default function Viewport () {
 
     // Feature shortcut keys (Alt + 1 - 9)
     if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
-      const id = getShortcutKey(e, features?.featuresInViewport)
-      provider.queryFeature(id)
+      const featureId = getShortcutKey(e, features?.featuresInViewport)
+      provider.queryFeature(featureId)
     }
 
     // Clear selected feature
@@ -95,7 +101,9 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current) return
+    if (mode !== 'default' || isDraggingRef.current) {
+      return
+    }
     const { layerX, layerY } = e.nativeEvent
     const scale = size === 'large' ? 2 : 1
     const point = [layerX / scale, layerY / scale]
@@ -111,7 +119,9 @@ export default function Viewport () {
   const handleMovestart = e => {
     const isUserInitiated = e.detail.isUserInitiated
     viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
-    if (!(isKeyboard && activePanel === 'INFO' && isUserInitiated)) return
+    if (!(isKeyboard && activePanel === 'INFO' && isUserInitiated)) {
+      return
+    }
     appDispatch({ type: 'CLOSE' })
   }
 
@@ -136,8 +146,8 @@ export default function Viewport () {
     const { resultType } = e.detail
     const { items, isPixelFeaturesAtPixel, coord } = e.detail.features
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
-    const targetMarker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
-    appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker, activePanelHasFocus: true } })
+    const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
+    appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
     eventBus.dispatch(parent, events.APP_QUERY, e.detail)
   }
 
@@ -147,15 +157,15 @@ export default function Viewport () {
   }
 
   // Update place
-  const debounceUpdatePlace = debounce(async (centre) => {
-    const place = await provider.getNearest(centre)
+  const debounceUpdatePlace = debounce(async (coord) => {
+    const place = await provider.getNearest(coord)
     viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
-  }, 300)
+  }, STATUS_DELAY)
 
   // Update status
-  const debounceUpdateStatus = debounce(status => {
-    viewportDispatch({ type: 'UPDATE_STATUS', payload: { status, isStatusVisuallyHidden: true } })
-  }, 300)
+  const debounceUpdateStatus = debounce(text => {
+    viewportDispatch({ type: 'UPDATE_STATUS', payload: { status: text, isStatusVisuallyHidden: true } })
+  }, STATUS_DELAY)
 
   // Template properties
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
@@ -235,6 +245,8 @@ export default function Viewport () {
         window.localStorage.setItem('basemap', `${basemap},${isDarkMode ? 'dark' : 'light'}`)
         provider.setBasemap(basemap)
         break
+      default:
+        // No action
     }
 
     return () => {
@@ -244,16 +256,18 @@ export default function Viewport () {
 
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
-    if (!isUpdate) return
+    if (!isUpdate) {
+      return
+    }
     setQueryCz(`${centre.toString()},${zoom}`)
   }, [isUpdate])
 
   // Swap basemap on light/dark mode change
   useEffect(() => {
-    if (!provider.map) return
-
-    const basemap = setBasemap(isDarkMode)
-    viewportDispatch({ type: 'SET_BASEMAP', payload: basemap })
+    if (!provider.map) {
+      return
+    }
+    viewportDispatch({ type: 'SET_BASEMAP', payload: setBasemap(isDarkMode) })
   }, [isDarkMode])
 
   // Set initial selected feature or target
@@ -287,9 +301,10 @@ export default function Viewport () {
         <Target />
       </PaddingBox>
       <ul id={`${id}-viewport-features`} className='fm-u-visually-hidden' role='listbox' aria-labelledby={`${id}-viewport-label`}>
-        {features?.featuresInViewport.map((feature, i) => {
+        {features?.featuresInViewport.map(feature => {
+          const uid = `${id}${feature.id}`
           return (
-            <li key={i} id={`${id}-feature-${feature.id}`} role='option' aria-selected={featureId === (feature.id)} aria-setsize='-1' tabIndex='-1'>{feature.name}</li>
+            <li key={uid} id={`${id}-feature-${feature.id}`} role='option' aria-selected={featureId === (feature.id)} aria-setsize='-1' tabIndex='-1'>{feature.name}</li>
           )
         })}
       </ul>

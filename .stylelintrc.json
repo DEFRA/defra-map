@@ -1,6 +1,3 @@
 {
-    "extends": "stylelint-config-gds/scss",
-    "rules": {
-        "declaration-no-important": null
-    }
+    "extends": "stylelint-config-gds/scss"
 }

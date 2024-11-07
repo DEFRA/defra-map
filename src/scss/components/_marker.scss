@@ -13,11 +13,13 @@
     display: block;
 }
 
+// stylelint-disable declaration-no-important
 .fm-c-marker--centre {
     transform: translate(-50%, -50%) !important; // Need to overide provider inline style
     left: 50%;
     top: 50%;
 }
+// stylelint-enable declaration-no-important
 
 // Geolocation
 .fm-c-marker--location .fm-c-marker__inner {

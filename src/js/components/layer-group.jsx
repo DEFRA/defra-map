@@ -1,10 +1,10 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useQueryState } from '../hooks/use-query-state'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
-import KeySymbol from './key-symbol.jsx'
+import { parseSVG } from '../lib/symbols'
 
 const getDerivedProps = (group, layers, hasInputs) => {
   const ROW_WIDTH = 300
@@ -27,11 +27,18 @@ const getDisplay = (group, item) => {
   return group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
 }
 
+const getFill = (item, basemap) => {
+  const fills = item?.fill?.replace(/\s/g, '').split(',').map(f => f.includes(':') ? f : `default:${f}`)
+  const fill = fills?.length ? (fills.find(f => f.includes(basemap)) || fills[0]).split(':')[1] : null
+  return fill
+}
+
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const { parent, dispatch, mode, layers, segments } = useApp()
   const { basemap, size } = useViewport()
   const [, setQueryLyr] = useQueryState('lyr')
   const [isExpanded, setIsExpanded] = useState(group?.collapse !== 'collapse')
+  const [svg, setSvg] = useState({})
 
   const dispatchAppChange = lyr => {
     dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
@@ -62,17 +69,49 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
 
   // Display properties
   const { layout, isDetails, heading, checkedRadioId, style } = getDerivedProps(group, layers, hasInputs)
+  const groupSummary = group.items.reduce((result, current) => [...result, ...getLabels(group, current, checkedRadioId, layers)], []).join(', ').replace(/, ([^,]*)$/, ', $1')
+  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 
-  const groupSummary = group.items.reduce((result, current) => [...result, ...getLabels(group, current, checkedRadioId, layers)], [])
-    .join(', ').replace(/, ([^,]*)$/, ', $1')
+  const keySymbol = ({ item, display }) => {
+    const fill = getFill(item, basemap)
 
-  const ItemInner = ({ item, index, display, isChecked }) => {
+    return (
+      <>
+        {display === 'icon' && (
+          <div className={`fm-c-layers__image fm-c-layers__image--${display}`} dangerouslySetInnerHTML={svg[item.icon]} />
+        )}
+        {display === 'fill' && (
+          <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
+            <svg width='40' height='40' viewBox='0 0 40 40' fill={fill}>
+              <path d='M8 8h24v24H8z' />
+            </svg>
+          </div>
+        )}
+        {display === 'query-polygon' && (
+          <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
+            <svg width='40' height='40' viewBox='0 0 40 40' fill='none'>
+              <path d='M9 9h22v22H9z' />
+            </svg>
+          </div>
+        )}
+        {display === 'ramp' && (
+          <div className={`fm-c-layers__image fm-c-layers__image--${display}`}>
+            <svg viewBox='0 0 5 5' preserveAspectRatio='none' fill={fill} stroke={fill} strokeWidth={1}>
+              <path d='M0 0h5v5H0z' />
+            </svg>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  const itemInner = ({ item, index, display, isChecked }) => {
     if (hasInputs && group.type === 'radio') {
       return (
         <>
           <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
           <label className='fm-c-layers__label' htmlFor={item.id}>
-            {hasSymbols && <KeySymbol display={display} item={item} />}
+            {hasSymbols && keySymbol({ display, item })}
             <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
           </label>
         </>
@@ -80,19 +119,34 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     } else if (hasInputs && item.id) {
       return (
         <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
-          {hasSymbols && <KeySymbol display={display} item={item} />}
+          {hasSymbols && keySymbol({ display, item })}
           <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
         </button>
       )
     } else {
       return (
         <>
-          {hasSymbols && <KeySymbol display={display} item={item} />}
+          {hasSymbols && keySymbol({ display, item })}
           <span className={group.numLabels && index % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
         </>
       )
     }
   }
+
+  useEffect(() => {
+    const items = group.items.map(item => item.items || item).flat(1).filter(item => item.icon)
+    Promise.all(items.map(item => fetch(item.icon))).then(responses =>
+      Promise.all(responses.map(res => res.text()))
+    ).then(texts => {
+      const icons = {}
+      texts.forEach((text, i) => {
+        const item = items[i]
+        const fill = getFill(item, basemap)
+        icons[item.icon] = { __html: parseSVG(item.icon, fill, text, isDarkBasemap) }
+      })
+      setSvg(icons)
+    })
+  }, [group])
 
   return (
     <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
@@ -128,14 +182,14 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
             <Fragment key={(item.id || item.label).toLowerCase()}>
               {(hasSymbols || item.id) && (
                 <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                  <ItemInner item={item} index={i} display={display} isChecked={isChecked} />
+                  {itemInner({ item, index: i, display, isChecked })}
                 </div>
               )}
               {hasSymbols && item.items?.map((child, j) => {
                 display = item.display || (child.icon ? 'icon' : 'fill')
                 return (
                   <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                    <ItemInner item={child} index={j} display={display} />
+                    {itemInner({ item: child, index: j, display })}
                   </div>
                 )
               })}

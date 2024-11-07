@@ -91,6 +91,10 @@ export default {
         loader: 'babel-loader'
       },
       {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },,
+      {
         test: /\.s?css$/i,
         use: [
           MiniCssExtractPlugin.loader,

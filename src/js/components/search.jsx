@@ -13,8 +13,9 @@ const getDerivedProps = (search, tokenCallback, isMobile, isDesktop, legend, sta
   const isFixed = search.isExpanded && isDesktop
   const hasClear = isMobile && state.value?.length
   const hasClose = !isMobile && !isFixed
-  const className = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
-  return { searchProvider, searchWidth, isFixed, hasClear, hasClose, className }
+  const className = `fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`
+  const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
+  return { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName }
 }
 
 export default function Search ({ instigatorRef }) {
@@ -28,7 +29,7 @@ export default function Search ({ instigatorRef }) {
   const clearBtnRef = useRef()
   const inputRef = useRef()
 
-  const { searchProvider, searchWidth, isFixed, hasClear, hasClose, className } = getDerivedProps(search, tokenCallback, isMobile, isDesktop, legend, state)
+  const { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName } = getDerivedProps(search, tokenCallback, isMobile, isDesktop, legend, state)
   const updateViewport = async (value, suggestionId) => {
     const location = await searchProvider.find(value, suggestionId)
     if (!location) {
@@ -110,7 +111,7 @@ export default function Search ({ instigatorRef }) {
 
   return (
     <div
-      id={`${id}-search-form`} className={`fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`}
+      id={`${id}-search-form`} className={className}
       {...(!isFixed && {
         role: 'dialog',
         'aria-labelledby': `${id}-search`,
@@ -125,7 +126,7 @@ export default function Search ({ instigatorRef }) {
       ref={formRef}
     >
       <div className='fm-c-search__control'>
-        <form role='search' className={className} aria-controls={`${id}-viewport`} onSubmit={handleSubmit}>
+        <form role='search' className={formClassName} aria-controls={`${id}-viewport`} onSubmit={handleSubmit}>
           {isMobile && (
             <button onClick={handleCollapse} type='button' className='fm-c-btn fm-c-btn--search-back govuk-body-s' aria-label='Close search'>
               <svg aria-hidden='true' focusable='false' width='14' height='20' viewBox='0 0 14 20' fillRule='evenodd' fill='currentColor'>

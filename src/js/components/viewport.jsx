@@ -43,6 +43,17 @@ export default function Viewport () {
     }
   }
 
+  const cycleFeatures = e => {
+    const { featuresInViewport } = features
+    const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
+    featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
+    const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
+    const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
+    appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
+    // Debounce status update
+    debounceUpdateStatus(statusText)
+  }
+
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
@@ -64,14 +75,7 @@ export default function Viewport () {
     // Cycle through feature list (PageUp and PageDown)
     if (queryFeature && ['PageDown', 'PageUp'].includes(e.key) && features.featuresInViewport?.length >= 1) {
       e.preventDefault()
-      const { featuresInViewport } = features
-      const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
-      featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-      const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
-      const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
-      // Debounce status update
-      debounceUpdateStatus(statusText)
+      cycleFeatures(e)
     }
   }
 

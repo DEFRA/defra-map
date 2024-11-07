@@ -19,6 +19,8 @@ export default function Styles () {
 
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
+  const MIN_COLS = 3
+
   const handleBasemapClick = e => {
     activeRef.current = null
     viewportDispatch({ type: 'SET_BASEMAP', payload: e.currentTarget.value })
@@ -34,20 +36,17 @@ export default function Styles () {
     if (!isExpanded) {
       return
     }
-    const MIN_COLS = 3
     const index = buttonsRef.current.length < MIN_COLS ? buttonsRef.current.length - 1 : 2
     const el = buttonsRef.current[index].current
     const nextTabStop = findTabStop(el, 'next')
     nextTabStop.focus()
   }, [isExpanded])
 
-  basemaps.filter((_, i) => isExpanded ? i >= 0 : i < 3).map((basemap, i) => console.log(basemap, i))
-
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
-          {basemaps.filter((_b, i) => isExpanded ? i >= 0 : i < 3).map((name, i) => (
+          {basemaps.filter((_b, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((name, i) => (
             <div key={name} className='fm-c-layers__item govuk-body-s'>
               <button className='fm-c-layers__button' value={name} aria-pressed={currentBasemap === name} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
                 <div className='fm-c-layers__image'>

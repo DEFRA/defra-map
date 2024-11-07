@@ -44,6 +44,10 @@ export default function Viewport () {
   }
 
   const cycleFeatures = e => {
+    if (!features.featuresInViewport?.length) {
+      return
+    }
+    e.preventDefault()
     const { featuresInViewport } = features
     const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
     featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
@@ -54,12 +58,16 @@ export default function Viewport () {
     debounceUpdateStatus(statusText)
   }
 
+  const panMap = e => {
+    e.preventDefault()
+    const offset = offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()]
+    provider.panBy(offset)
+  }
+
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
-      e.preventDefault()
-      const offset = offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()]
-      provider.panBy(offset)
+      panMap(e)
     }
 
     // Zoom map (+ or -)
@@ -73,8 +81,7 @@ export default function Viewport () {
     }
 
     // Cycle through feature list (PageUp and PageDown)
-    if (queryFeature && ['PageDown', 'PageUp'].includes(e.key) && features.featuresInViewport?.length >= 1) {
-      e.preventDefault()
+    if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
       cycleFeatures(e)
     }
   }

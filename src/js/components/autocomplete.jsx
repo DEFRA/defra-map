@@ -3,6 +3,8 @@ import { debounce } from '../lib/debounce'
 import Status from './status.jsx'
 
 export default function Autocomplete ({ id, state, dispatch, provider, updateViewport }) {
+  const SUGGEST_DELAY = 350
+  const STATUS_DELAY = 500
   const selectedRef = useRef()
 
   const { value, selected } = state
@@ -11,11 +13,11 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
     const items = await provider.suggest(value)
     dispatch({ type: 'ADD_SUGGESTIONS', payload: items })
     updateStatus()
-  }, 350)
+  }, SUGGEST_DELAY)
 
   const debounceUpdateStatus = debounce(() => {
     dispatch({ type: 'UPDATE_STATUS' })
-  }, 500)
+  }, STATUS_DELAY)
 
   const updateStatus = () => {
     dispatch({ type: 'CLEAR_STATUS' })
@@ -24,10 +26,10 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
 
   const handleOnMouseDown = (e, i) => {
     e.preventDefault()
-    const value = state.suggestions[i].text
-    const id = state.suggestions[i].id
-    dispatch({ type: 'SUBMIT', payload: value })
-    updateViewport(value, id)
+    const text = state.suggestions[i].text
+    const suggestionId = state.suggestions[i].id
+    dispatch({ type: 'SUBMIT', payload: text })
+    updateViewport(text, suggestionId)
   }
 
   useEffect(() => {
@@ -40,7 +42,12 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
   }, [selected])
 
   useEffect(() => {
-    value.length >= 3 ? debounceUpdateSuggest(value) : updateStatus()
+    const MIN_LENGTH = 3
+    if (value.length >= MIN_LENGTH) {
+      debounceUpdateSuggest(value)
+      return
+    }
+    updateStatus()
   }, [value])
 
   return (

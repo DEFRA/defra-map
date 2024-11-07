@@ -11,7 +11,7 @@ const getDerivedProps = (search, tokenCallback, isMobile, isDesktop, legend, sta
   const searchProvider = search.provider === 'esri-world-geocoder' ? new EsriProvider(tokenCallback) : new OsProvider(tokenCallback)
   const searchWidth = !isMobile ? (legend.keyWidth || legend.width) : null
   const isFixed = search.isExpanded && isDesktop
-  const hasClear = isMobile && state.value?.length
+  const hasClear = isMobile && !!state.value?.length
   const hasClose = !isMobile && !isFixed
   const className = `fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`

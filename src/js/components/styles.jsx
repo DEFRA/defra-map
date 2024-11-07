@@ -21,34 +21,37 @@ export default function Styles () {
 
   const handleBasemapClick = e => {
     activeRef.current = null
-    const basemap = e.currentTarget.value
-    viewportDispatch({ type: 'SET_BASEMAP', payload: basemap })
+    viewportDispatch({ type: 'SET_BASEMAP', payload: e.currentTarget.value })
   }
 
   const handleSizeClick = e => {
     activeRef.current = null
-    const size = e.currentTarget.value
-    viewportDispatch({ type: 'SET_SIZE', payload: size })
+    viewportDispatch({ type: 'SET_SIZE', payload: e.currentTarget.value })
   }
 
   // Set initial focus
   useEffect(() => {
-    if (!isExpanded) return
-    const index = buttonsRef.current.length < 3 ? buttonsRef.current.length - 1 : 2
+    if (!isExpanded) {
+      return
+    }
+    const MIN_COLS = 3
+    const index = buttonsRef.current.length < MIN_COLS ? buttonsRef.current.length - 1 : 2
     const el = buttonsRef.current[index].current
     const nextTabStop = findTabStop(el, 'next')
     nextTabStop.focus()
   }, [isExpanded])
 
+  basemaps.filter((_, i) => isExpanded ? i >= 0 : i < 3).map((basemap, i) => console.log(basemap, i))
+
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
-          {basemaps.filter((b, i) => isExpanded ? i >= 0 : i < 3).map((basemap, i) => (
-            <div key={i} className='fm-c-layers__item govuk-body-s'>
-              <button className='fm-c-layers__button' value={basemap} aria-pressed={currentBasemap === basemap} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
+          {basemaps.filter((_b, i) => isExpanded ? i >= 0 : i < 3).map((name, i) => (
+            <div key={name} className='fm-c-layers__item govuk-body-s'>
+              <button className='fm-c-layers__button' value={name} aria-pressed={currentBasemap === name} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
                 <div className='fm-c-layers__image'>
-                  <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(basemap) }} />
+                  <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
                 </div>
                 {{
                   default: 'Default',
@@ -57,40 +60,36 @@ export default function Styles () {
                   deuteranopia: 'Green-red enhanced',
                   tritanopia: 'Blue-yellow enhanced',
                   'high-contrast': 'High contrast'
-                }[basemap]}
+                }[name]}
               </button>
             </div>
           ))}
         </div>
       </div>
-      {hasSize && isExpanded
-        ? (
-          <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
-            <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
-              <h3 className='fm-c-layers__heading govuk-body-s'>Text size</h3>
-            </div>
-            <div className='fm-c-layers__columns'>
-              {['small', 'large'].map((size, i) => (
-                <div key={i} className='fm-c-layers__item govuk-body-s'>
-                  <button className='fm-c-layers__button' value={size} aria-pressed={currentSize === size} onClick={handleSizeClick}>
-                    <div className='fm-c-layers__image'>
-                      <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(size) }} />
-                    </div>
-                    {size[0].toUpperCase() + size.slice(1)}
-                  </button>
-                </div>
-              ))}
-            </div>
+      {hasSize && isExpanded && (
+        <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
+          <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
+            <h3 className='fm-c-layers__heading govuk-body-s'>Text size</h3>
           </div>
-          )
-        : null}
-      {basemaps.length > 3 || provider.hasSize
-        ? (
-          <div className='fm-c-layers__more fm-c-layers__more--centre'>
-            <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
+          <div className='fm-c-layers__columns'>
+            {['small', 'large'].map(name => (
+              <div key={name} className='fm-c-layers__item govuk-body-s'>
+                <button className='fm-c-layers__button' value={name} aria-pressed={currentSize === name} onClick={handleSizeClick}>
+                  <div className='fm-c-layers__image'>
+                    <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
+                  </div>
+                  {name[0].toUpperCase() + name.slice(1)}
+                </button>
+              </div>
+            ))}
           </div>
-          )
-        : null}
+        </div>
+      )}
+      {(basemaps.length > 3 || provider.hasSize) && (
+        <div className='fm-c-layers__more fm-c-layers__more--centre'>
+          <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
+        </div>
+      )}
     </div>
   )
 }

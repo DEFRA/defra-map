@@ -9,8 +9,8 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
 
   const { value, selected } = state
 
-  const debounceUpdateSuggest = debounce(async (value) => {
-    const items = await provider.suggest(value)
+  const debounceUpdateSuggest = debounce(async (text) => {
+    const items = await provider.suggest(text)
     dispatch({ type: 'ADD_SUGGESTIONS', payload: items })
     updateStatus()
   }, SUGGEST_DELAY)

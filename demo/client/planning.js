@@ -501,7 +501,9 @@ fm.addEventListener('ready', async e => {
 // Listen for mode, segments, layers or style changes
 fm.addEventListener('change', e => {
   const { type, mode, basemap, segments, layers } = e.detail
-  if (['layer', 'segment'].includes(type)) fm.info = null
+  if (['layer', 'segment'].includes(type)) {
+    fm.info = null
+  }
   isDark = basemap === 'dark'
   isRamp = layers.includes('md')
   toggleVisibility(type, mode, segments, layers)

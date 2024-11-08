@@ -13,14 +13,14 @@ const setSearch = (state, payload) => {
 }
 
 const setInfo = (state, payload) => {
-  let activePanel = state.activePanel !== 'INFO' ? state.activePanel : null
-  if (payload) {
-    activePanel = 'INFO'
-  }
-
+  // Restore previous panel only if it was the key
+  let previousPanel = (state.activePanel !== 'INFO' && state.activePanel) || state.previousPanel
+  previousPanel = previousPanel === 'KEY' && 'KEY'
+  const activePanel = payload ? 'INFO' : state.activePanel === 'INFO' ? state.previousPanel : state.activePanel
   return {
     ...state,
     info: payload,
+    previousPanel,
     activePanel,
     hasViewportLabel: false
   }
@@ -60,6 +60,7 @@ const error = (state, payload) => {
 const open = (state, payload) => {
   return {
     ...state,
+    previousPanel: state.activePanel,
     activePanel: payload,
     activePanelHasFocus: true,
     hasViewportLabel: false,
@@ -68,11 +69,15 @@ const open = (state, payload) => {
 }
 
 const close = (state) => {
+  // Restore previous panel only if it was the key
+  let activePanel = (state.previousPanel !== state.activePanel) && state.previousPanel
+  activePanel = activePanel === 'KEY' && 'KEY'
   return {
     ...state,
     featureId: null,
     targetMarker: null,
-    activePanel: null
+    previousPanel: null,
+    activePanel
   }
 }
 
@@ -104,7 +109,7 @@ const setMode = (state, payload) => {
     mode: payload.value,
     query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
     isFrameVisible: Object.hasOwn(payload, 'isFrameVisible') ? payload.isFrameVisible : state.isFrameVisible,
-    activePanel: state.mode !== 'draw' && payload.value === 'frame' ? 'HELP' : null,
+    activePanel: state.mode !== 'draw' && payload.value === 'frame' && 'HELP',
     featureId: null,
     targetMarker: null
   }

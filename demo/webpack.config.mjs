@@ -92,7 +92,8 @@ export default {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        loader: '@svgr/webpack',
+        options: { titleProp: true },
       },,
       {
         test: /\.s?css$/i,

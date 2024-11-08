@@ -10,7 +10,7 @@ export default function Attribution () {
 
   const attribution = provider?.attribution
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-  const props = { width: 90, height: 24 }
+  const props = { role: 'img', title: attribution?.label }
 
   return (
     <>
@@ -19,7 +19,6 @@ export default function Attribution () {
           <div className='fm-c-attribution'>
             {isDarkBasemap ? <DarkLogo {...props} /> : <DefaultLogo {...props} />}
           </div>
-          // <img className='fm-c-attribution' alt={attribution.label} src={attribution.logo} width='90' height='24' style={{ pointerEvents: 'auto', display: 'block' }} />
           )
         : <span className='fm-c-spacer' />}
     </>

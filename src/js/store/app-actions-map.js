@@ -16,7 +16,8 @@ const setInfo = (state, payload) => {
   // Restore previous panel only if it was the key
   let previousPanel = (state.activePanel !== 'INFO' && state.activePanel) || state.previousPanel
   previousPanel = previousPanel === 'KEY' && 'KEY'
-  const activePanel = payload ? 'INFO' : state.activePanel === 'INFO' ? state.previousPanel : state.activePanel
+  let activePanel = state.activePanel === 'INFO' ? state.previousPanel : state.activePanel
+  activePanel = payload ? 'INFO' : activePanel
   return {
     ...state,
     info: payload,

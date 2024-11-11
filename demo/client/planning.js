@@ -174,6 +174,7 @@ const fm = new FloodMap('map', {
   height: '750px',
   hasGeoLocation: true,
   provider: {
+    name: 'esri',
     osTokenCallback: getOsToken,
     esriTokenCallback: getEsriToken,
     defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,

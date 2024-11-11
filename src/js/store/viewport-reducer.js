@@ -1,9 +1,10 @@
 import { parseCentre, parseZoom, setBasemap } from '../lib/viewport'
-import { settings } from './constants'
+import { settings, capabilities } from './constants'
 import { actionsMap } from './viewport-actions-map'
 
 export const initialState = (options) => {
   const { bbox, centre, zoom, place } = options
+  const hasSize = capabilities[options.provider.name || 'default'].HAS_SIZE
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
   const colorSchemeMQ = '(prefers-color-scheme: dark)'
@@ -17,7 +18,7 @@ export const initialState = (options) => {
     place: cz ? null : place,
     oZoom: zoom,
     basemap: setBasemap(isDarkMode),
-    size: window.localStorage.getItem('size'),
+    size: hasSize && window.localStorage.getItem('size'),
     features: null,
     status: '',
     isStatusVisuallyHidden: true,

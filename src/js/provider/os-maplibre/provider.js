@@ -46,7 +46,6 @@ class Provider extends EventTarget {
     this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia', 'high-contrast'].filter(b => this[b + 'Url'])
     this.symbols = symbols
     this.stylesImagePath = src.STYLES
-    this.hasSize = false
     this.baseLayers = []
     this.selectedId = ''
     this.selectedCoordinate = null
@@ -132,7 +131,6 @@ class Provider extends EventTarget {
     this.frame = frame
     this.basemap = basemap
     this.scale = scale
-    this.hasSize = Number(map.version.slice(0, 1)) >= 4
 
     // Map ready event (first load)
     map.on('load', handleLoad.bind(map, this))
@@ -232,7 +230,9 @@ class Provider extends EventTarget {
     const scale = size === 'large' ? 2 : 1
     this.scale = scale
     this.setPadding()
-    this.map.setPixelRatio(window.devicePixelRatio * scale)
+    if (this.map.setPixelRatio) {
+      this.map?.setPixelRatio(window.devicePixelRatio * scale)
+    }
     setTimeout(() => {
       this.map.resize()
       this.dispatchEvent(new CustomEvent('style', {
@@ -276,8 +276,9 @@ class Provider extends EventTarget {
       return
     }
     targetMarker.setLngLat(coord || [0, 0])
-    hasData ? targetMarker.addClassName('fm-c-marker--has-data') : targetMarker.removeClassName('fm-c-marker--has-data')
-    isVisible && coord ? targetMarker.addClassName(css.MARKER_VISIBLE) : targetMarker.removeClassName(css.MARKER_VISIBLE)
+    const el = targetMarker.getElement() // addClassName not supported in v1.15
+    el.classList.toggle('fm-c-marker--has-data', hasData)
+    el.classList.toggle(css.MARKER_VISIBLE, isVisible && coord)
   }
 
   selectFeature (id) {

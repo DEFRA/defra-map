@@ -2,12 +2,13 @@ import React, { useRef, useState, createRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
+import { capabilities } from '../store/constants.js'
 import More from './more.jsx'
 
 export default function Styles () {
   const { options, provider, activeRef } = useApp()
   const { id } = options
-  const { basemaps, stylesImagePath, getImagePos, hasSize } = provider
+  const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
   const viewportDispatch = useViewport().dispatch
 
@@ -17,6 +18,7 @@ export default function Styles () {
   const [isExpanded, setIsExpanded] = useState(basemaps.indexOf(currentBasemap) > 2 || size !== 'small')
   buttonsRef.current = basemaps.map((_, i) => buttonsRef.current[i] ?? createRef())
 
+  const hasSize = capabilities[options.provider.name || 'default'].HAS_SIZE
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3
@@ -84,7 +86,7 @@ export default function Styles () {
           </div>
         </div>
       )}
-      {(basemaps.length > 3 || provider.hasSize) && (
+      {(basemaps.length > 3 || hasSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--centre'>
           <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
         </div>

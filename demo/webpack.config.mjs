@@ -55,17 +55,10 @@ export default {
         AERIAL_URL: JSON.stringify(process.env.AERIAL_URL),
         DEUTERANOPIA_URL: JSON.stringify(process.env.DEUTERANOPIA_URL),
         TRITANOPIA_URL: JSON.stringify(process.env.TRITANOPIA_URL),
-        OS_API_KEY: JSON.stringify(process.env.OS_API_KEY),
         OS_VTAPI_DEFAULT_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_URL),
         OS_VTAPI_DARK_URL: JSON.stringify(process.env.OS_VTAPI_DARK_URL),
         OS_VTAPI_DEFAULT_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_DRAW_URL),
         OS_VTAPI_DARK_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DARK_DRAW_URL),
-        ESRI_API_KEY: JSON.stringify(process.env.ESRI_API_KEY),
-        ESRI_DEFAULT_URL: JSON.stringify(process.env.ESRI_DEFAULT_URL),
-        ESRI_DARK_URL: JSON.stringify(process.env.ESRI_DARK_URL),
-        ESRI_AERIAL_URL: JSON.stringify(process.env.ESRI_AERIAL_URL),
-        ESRI_WORLD_GEOCODER_KEY: JSON.stringify(process.env.ESRI_WORLD_GEOCODER_KEY),
-        ESRI_API_KEY: JSON.stringify(process.env.ESRI_API_KEY)
       }
     }),
     new CopyWebpackPlugin({

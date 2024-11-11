@@ -1,8 +1,7 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
-import DefaultLogo from '../../images/os-logo-maps.svg'
-import DarkLogo from '../../images/os-logo-maps-white.svg'
+import { DefaultLogo, DarkLogo } from './logo-os-maps'
 
 export default function Attribution () {
   const { provider } = useApp()

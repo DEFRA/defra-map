@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+      - run: npm run lint
+      - name: npm run unit-test
+        run: |
+          npm run unit-test
+          sed -i 's/\/home\/runner\/work\/defra-map\/defra-map\//\/github\/workspace\//g' coverage/lcov.info
+
+      - name: sonarcloud
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=defra
+            -Dsonar.projectKey=DEFRA_defra-map
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/node_modules/**,**/tests/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.javascript.exclusions=**/node_modules/**,**/_tests_/**

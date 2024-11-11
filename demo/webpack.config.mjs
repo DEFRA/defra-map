@@ -91,11 +91,6 @@ export default {
         loader: 'babel-loader'
       },
       {
-        test: /\.svg$/,
-        loader: '@svgr/webpack',
-        options: { titleProp: true },
-      },,
-      {
         test: /\.s?css$/i,
         use: [
           MiniCssExtractPlugin.loader,

@@ -1,1 +1,14 @@
-export default { collectCoverage: !0, coverageDirectory: 'coverage', transform: { '\\.jsx?$': 'babel-jest', '\\.mjs$': 'babel-jest' }, projects: [{ displayName: 'client-side', testEnvironment: 'jsdom', testMatch: ['**/__tests__/client/**/*.?(m)js?(x)'], transformIgnorePatterns: [] }] }
+export default {
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  transform: {
+    '\\.jsx?$': 'babel-jest',
+    '\\.mjs$': 'babel-jest'
+  },
+  projects: [{
+    displayName: 'unit-tests',
+    testEnvironment: 'jsdom',
+    testMatch: ['**/tests/**/*.test.?(m)js?(x)'],
+    transformIgnorePatterns: []
+  }]
+}

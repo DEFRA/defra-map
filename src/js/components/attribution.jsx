@@ -1,7 +1,7 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
-import { DefaultLogo, DarkLogo } from './os-maps-logos'
+import { DefaultLogo, DarkLogo } from './os-maps-logos.jsx'
 
 export default function Attribution () {
   const { provider } = useApp()

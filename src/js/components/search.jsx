@@ -18,7 +18,7 @@ const getDerivedProps = (search, tokenCallback, isMobile, isDesktop, legend, sta
   return { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName }
 }
 
-export default function Search ({ instigatorRef }) {
+export default function Search ({ instigatorRef, setIsHidePanels }) {
   const { isKeyboard, isMobile, isDesktop, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -108,6 +108,10 @@ export default function Search ({ instigatorRef }) {
     }
     activeRef.current = inputRef.current
   }, [activePanel])
+
+  useEffect(() => {
+    setIsHidePanels(state.isVisible && !!state.suggestions.length)
+  }, [state.isVisible, state.suggestions])
 
   return (
     <div

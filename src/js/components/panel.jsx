@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useOutsideInteract } from '../hooks/use-outside-interact'
 import { useApp } from '../store/use-app'
 import { constrainFocus, toggleInert } from '../lib/dom'
 
-const getClassNames = (className, isInset, hasTabindex) => {
-  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${hasTabindex ? ' fm-c-panel--has-body-focus' : ''}`
+const getClassNames = (className, isInset) => {
+  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}`
 }
 
 const getRole = (instigatorRef) => {
@@ -25,9 +25,6 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   // Ref to element
   const elementRef = useRef(null)
   const bodyRef = useRef(null)
-
-  // Scroll tabindex
-  const [hasTabindex, setHasTabindex] = useState(false)
 
   // Hide keyboard on click outside
   useOutsideInteract(elementRef, 'click', () => {
@@ -64,18 +61,8 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
     toggleInert()
   }
 
-  // const handleBlur = e => {
-  //   if (!(isMobile && elementRef.current?.contains(e.target) && !elementRef.current?.contains(e.relatedTarget))) {
-  //     return
-  //   }
-  //   dispatch({ type: 'SET_IS_EXPANDED', value: false })
-  // }
-
   // Template properties
   const { panelId, hasCloseBtn, hasWidth } = getProps(id, className, isFixed, isMobile, isInset, instigatorRef, width)
-  // const panelId = `${id}-panel${className ? '-' + className : ''}`
-  // const hasCloseBtn = !isFixed && instigatorRef
-  // const hasWidth = width && !(isMobile && isInset)
 
   // Set initial focus
   useEffect(() => {
@@ -93,22 +80,22 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
     toggleInert()
   }, [isModal])
 
-  // Conditionally set tabindex on scrollable body
+  // Set tabindex on scrollable body
   useEffect(() => {
     const height = bodyRef.current?.offsetHeight
     const scrollHeight = bodyRef.current?.scrollHeight
     const hasInteractions = bodyRef.current?.querySelector('a, button')
-    setHasTabindex(!hasInteractions && height < scrollHeight)
+    const tabIndex = (!hasInteractions && height < scrollHeight) ? 0 : -1
+    bodyRef.current.tabIndex = tabIndex
   })
 
   return (
     <div
       id={panelId}
-      className={getClassNames(className, isInset, hasTabindex)}
+      className={getClassNames(className, isInset)}
       aria-labelledby={`${panelId}-label`}
       role={getRole(instigatorRef)}
       ref={elementRef}
-      // onBlur={handleBlur}
       {...(instigatorRef && {
         open: true,
         'aria-modal': isModal,
@@ -131,7 +118,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
           </button>
         )}
       </div>
-      <div className='fm-c-panel__body' ref={bodyRef} {...(hasTabindex ? { tabindex: 0 } : {})}>
+      <div className='fm-c-panel__body' ref={bodyRef}>
         {html && (
           <div className='fm-c-panel__content' {...({ dangerouslySetInnerHTML: { __html: html } })} />
         )}

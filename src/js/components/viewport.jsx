@@ -47,7 +47,6 @@ export default function Viewport () {
     if (!features.featuresInViewport?.length) {
       return
     }
-    e.preventDefault()
     const { featuresInViewport } = features
     const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
     featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
@@ -82,6 +81,7 @@ export default function Viewport () {
 
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
+      e.preventDefault()
       cycleFeatures(e)
     }
   }

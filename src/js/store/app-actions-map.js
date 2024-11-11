@@ -40,7 +40,6 @@ const setSelected = (state, payload) => {
     ...state,
     featureId: payload.featureId,
     targetMarker: payload.targetMarker,
-    activePanel: Object.hasOwn(payload, 'activePanel') ? payload.activePanel : state.activePanel,
     activePanelHasFocus: payload.activePanelHasFocus || state.activePanelHasFocus,
     hash: Date.now()
   }
@@ -78,6 +77,7 @@ const close = (state) => {
     featureId: null,
     targetMarker: null,
     previousPanel: null,
+    activePanelHasFocus: !activePanel,
     activePanel
   }
 }

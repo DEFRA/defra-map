@@ -19,7 +19,6 @@ class Provider extends EventTarget {
     this.images = images
     this.stylesImagePath = `${images}/styles.jpg`
     this.reverseGeocode = reverseGeocode
-    this.isUpdate = true
     this.isUserInitiated = false
     this.attribution = {
       logo: `${images}/os-logo.png`,
@@ -113,11 +112,6 @@ class Provider extends EventTarget {
 
     // All changes. Must debounce, min 300ms
     const debounceStationary = debounce(() => {
-      /* Dont update when adding graphics */
-      if (!this.isUpdate) {
-        this.isUpdate = true
-        return
-      }
       handleStationary(this)
     }, defaults.DELAY)
 
@@ -255,7 +249,6 @@ class Provider extends EventTarget {
       map.reorder(graphicsLayer, zIndex)
       const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
       graphicsLayer.add(graphic)
-      this.isUpdate = false
       this.targetMarker = graphic
     })
   }
@@ -265,7 +258,6 @@ class Provider extends EventTarget {
     if (!targetMarker) {
       return
     }
-    this.isUpdate = false
     graphicsLayer.remove(targetMarker)
     this.targetMarker = null
   }

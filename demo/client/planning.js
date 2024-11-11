@@ -197,7 +197,6 @@ const fm = new FloodMap('map', {
     title: 'Menu',
     keyWidth: '360px',
     keyDisplay: 'min',
-    symbolPath: '/assets/images/symbols',
     segments: [
       {
         heading: 'Datasets',

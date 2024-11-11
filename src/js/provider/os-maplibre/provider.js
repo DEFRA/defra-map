@@ -6,6 +6,7 @@ import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { install as resizeObserverPolyfill } from 'resize-observer'
 import { LatLon } from 'geodesy/osgridref.js'
+import src from './src.json'
 
 // const transformRequest = (url, resourceType) => {
 //   console.log(this)
@@ -31,7 +32,7 @@ import { LatLon } from 'geodesy/osgridref.js'
 // }
 
 class Provider extends EventTarget {
-  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl, reverseGeocodeProvider, reverseGeocodeToken, images, symbols }) {
+  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl, reverseGeocodeProvider, reverseGeocodeToken, symbols }) {
     super()
     this.srs = 4326
     this.osTokenCallback = osTokenCallback
@@ -43,9 +44,8 @@ class Provider extends EventTarget {
     this.tritanopiaUrl = tritanopiaUrl
     this.map = null
     this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia', 'high-contrast'].filter(b => this[b + 'Url'])
-    this.images = images
     this.symbols = symbols
-    this.stylesImagePath = `${images}/styles.jpg`
+    this.stylesImagePath = src.STYLES
     this.hasSize = false
     this.baseLayers = []
     this.selectedId = ''
@@ -54,7 +54,6 @@ class Provider extends EventTarget {
     this.reverseGeocodeProvider = reverseGeocodeProvider
     this.reverseGeocodeToken = reverseGeocodeToken
     this.attribution = {
-      logo: `${images}/os-logo.png`,
       label: 'Ordnance Survey logo'
     }
     // Not sure why this is needed?

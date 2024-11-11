@@ -179,7 +179,6 @@ const fm = new FloodMap('map', {
     defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,
     darkUrl: process.env.OS_VTAPI_DARK_URL,
     reverseGeocode: 'esri-world-geocoder',
-    images: '/assets/images',
     symbols
   },
   search: {

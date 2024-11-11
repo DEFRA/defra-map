@@ -4,10 +4,11 @@ import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
+import src from './src.json'
 import config from './config.json'
 
 class Provider extends EventTarget {
-  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, reverseGeocode, images }) {
+  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, reverseGeocode }) {
     super()
     this.srs = 27700
     this.osTokenCallback = osTokenCallback
@@ -16,12 +17,10 @@ class Provider extends EventTarget {
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
-    this.images = images
-    this.stylesImagePath = `${images}/styles.jpg`
+    this.stylesImagePath = src.STYLES
     this.reverseGeocode = reverseGeocode
     this.isUserInitiated = false
     this.attribution = {
-      logo: `${images}/os-logo.png`,
       label: 'Ordnance Survey logo'
     }
   }

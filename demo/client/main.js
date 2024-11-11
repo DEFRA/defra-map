@@ -25,7 +25,6 @@ const fm = new FloodMap('map', {
     tritanopiaUrl: process.env.TRITANOPIA_URL,
     reverseGeocodeProvider: 'os-open-names',
     osTokenCallback: getOsToken,
-    images: '/assets/images',
     symbols
   },
   search: {

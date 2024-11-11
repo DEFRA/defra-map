@@ -13,7 +13,7 @@ export default function Attribution () {
 
   return (
     <>
-      {attribution?.logo && attribution?.label
+      {attribution
         ? (
           <div className='fm-c-attribution'>
             {isDarkBasemap ? <DarkLogo {...props} /> : <DefaultLogo {...props} />}

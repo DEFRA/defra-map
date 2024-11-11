@@ -14,9 +14,6 @@ tags
 nbproject/*
 .env
 
-# Package lock
-package-lock.json
-
 # Windows
 Thumbs.db
 

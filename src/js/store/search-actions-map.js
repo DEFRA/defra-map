@@ -53,10 +53,15 @@ const click = (state, payload) => {
 }
 
 const change = (state, payload) => {
+  let suggestions = state.suggestions
+  if (payload.length < search.MIN_CHARS) {
+    suggestions = []
+  }
   return {
     ...state,
     value: payload,
-    message: createMessage(state.suggestions, -1),
+    suggestions,
+    message: createMessage(suggestions, -1),
     isVisible: payload.length >= search.MIN_CHARS
   }
 }

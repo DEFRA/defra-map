@@ -64,14 +64,17 @@ const open = (state, payload) => {
     activePanel: payload,
     activePanelHasFocus: true,
     hasViewportLabel: false,
+    targetMarker: payload === 'SEARCH' && null,
     featureId: payload === 'INFO' ? state.featureId : ''
   }
 }
 
-const close = (state) => {
+const close = (state, payload) => {
   // Restore previous panel only if it was the key
   let activePanel = (state.previousPanel !== state.activePanel) && state.previousPanel
   activePanel = activePanel === 'KEY' && 'KEY'
+  // Close all panels including key
+  activePanel = !payload ? activePanel : null
   return {
     ...state,
     featureId: null,

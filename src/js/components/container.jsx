@@ -47,7 +47,6 @@ export default function Container () {
 
   // Expanded panels
   const [isKeyExpanded, setIsKeyExpanded] = useState()
-  const [isHidePanels, setIsHidePanels] = useState(false)
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
@@ -93,7 +92,7 @@ export default function Container () {
   return (
     <ViewportProvider options={options}>
       <div
-        className={`fm-o-container${isHidePanels ? ' fm-o-container--hide-panels' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`}
+        className={`fm-o-container fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`}
         {...{ onKeyDown: constrainFocus }} style={{ height, width: '100%' }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
@@ -125,7 +124,7 @@ export default function Container () {
                     )}
                   </Tooltip>
                 )}
-                {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} setIsHidePanels={setIsHidePanels} />}
+                {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}

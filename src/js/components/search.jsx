@@ -18,7 +18,7 @@ const getDerivedProps = (search, tokenCallback, isMobile, isDesktop, legend, sta
   return { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName }
 }
 
-export default function Search ({ instigatorRef, setIsHidePanels }) {
+export default function Search ({ instigatorRef }) {
   const { isKeyboard, isMobile, isDesktop, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -30,6 +30,18 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
   const inputRef = useRef()
 
   const { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName } = getDerivedProps(search, tokenCallback, isMobile, isDesktop, legend, state)
+  // Hide soft keyboard on touchstart outside search input
+  useOutsideInteract(inputRef, 'touchstart', e => {
+    if (document.activeElement !== inputRef.current) {
+      return
+    }
+    inputRef.current.blur()
+    if (!formRef.current?.contains(e.target)) {
+      return
+    }
+    setTimeout(() => inputRef.current.focus(), 0)
+  })
+
   const updateViewport = async (value, suggestionId) => {
     const location = await searchProvider.find(value, suggestionId)
     if (!location) {
@@ -39,11 +51,12 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
     viewportDispatch({ type: 'SEARCH', payload: { bbox, centre, zoom, place: text } })
   }
 
-  const handleKeyUp = e => {
-    if (['Escape', 'Esc'].includes(e.key)) {
-      e.preventDefault()
-      handleCollapse()
+  const handleFocus = () => {
+    // Hide all panels input has existing content
+    if (isFixed && state.value?.length >= 1) {
+      appDispatch({ type: 'CLOSE', payload: true })
     }
+    dispatch({ type: 'FOCUS', payload: isKeyboard })
   }
 
   const handleSubmit = e => {
@@ -64,18 +77,6 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
     inputRef.current.focus()
   }
 
-  // Hide soft keyboard on touchstart outside search input
-  useOutsideInteract(inputRef, 'touchstart', e => {
-    if (document.activeElement !== inputRef.current) {
-      return
-    }
-    inputRef.current.blur()
-    if (!formRef.current?.contains(e.target)) {
-      return
-    }
-    setTimeout(() => inputRef.current.focus(), 0)
-  })
-
   const handleKeyDown = e => {
     // Escape key
     if (['Escape', 'Esc'].includes(e.key)) {
@@ -93,7 +94,18 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
     }
   }
 
+  const handleKeyUp = e => {
+    if (['Escape', 'Esc'].includes(e.key)) {
+      e.preventDefault()
+      handleCollapse()
+    }
+  }
+
   const handleChange = e => {
+    // Hide all panels if alphanumeric key and search fixed
+    if (isFixed) {
+      appDispatch({ type: 'CLOSE', payload: true })
+    }
     dispatch({ type: 'CHANGE', payload: e.target.value })
   }
 
@@ -109,10 +121,6 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
     activeRef.current = inputRef.current
   }, [activePanel])
 
-  useEffect(() => {
-    setIsHidePanels(state.isVisible && !!state.suggestions.length)
-  }, [state.isVisible, state.suggestions])
-
   return (
     <div
       id={`${id}-search-form`} className={className}
@@ -121,12 +129,12 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
         'aria-labelledby': `${id}-search`,
         'aria-modal': true,
         open: true,
-        onKeyDown: handleKeyDown,
         onKeyUp: handleKeyUp
       })}
       {...searchWidth && {
         style: { width: searchWidth }
       }}
+      onKeyDown={handleKeyDown}
       ref={formRef}
     >
       <div className='fm-c-search__control'>
@@ -157,7 +165,7 @@ export default function Search ({ instigatorRef, setIsHidePanels }) {
             value={state.value}
             onClick={handleClick}
             onChange={handleChange}
-            onFocus={() => dispatch({ type: 'FOCUS', payload: isKeyboard })}
+            onFocus={handleFocus}
             onBlur={() => dispatch({ type: 'BLUR' })} ref={inputRef}
           />
           <div id={`${id}-search-hint`} style={{ display: 'none' }}>

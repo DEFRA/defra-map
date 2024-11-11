@@ -27,7 +27,6 @@ export const handleBasemapChange = async (provider) => {
 }
 
 export const handleStationary = async (provider) => {
-  console.log('handleStationary')
   const { paddingBox } = provider
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
   const point = [offsetLeft + (offsetWidth / 2), offsetTop + (offsetHeight / 2)]

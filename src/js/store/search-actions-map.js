@@ -53,15 +53,10 @@ const click = (state, payload) => {
 }
 
 const change = (state, payload) => {
-  let suggestions = []
-  if (payload.length < search.MIN_CHARS) {
-    suggestions = state.suggestions
-  }
   return {
     ...state,
-    suggestions,
     value: payload,
-    message: createMessage(suggestions, -1),
+    message: createMessage(state.suggestions, -1),
     isVisible: payload.length >= search.MIN_CHARS
   }
 }
@@ -85,10 +80,12 @@ const hideSuggestions = (state) => {
 
 const review = (state, payload) => {
   let index
+  const current = state.selected
+  const length = state.suggestions.length
   if (payload === 'ArrowDown') {
-    index = state.selected === state.suggestions.length - 1 ? state.selected : state.selected + 1
+    index = current === length - 1 ? current : current + 1
   } else {
-    index = state.selected > 0 ? state.selected - 1 : -1
+    index = current > 0 ? current - 1 : -1
   }
   return {
     ...state,

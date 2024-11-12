@@ -117,6 +117,7 @@ export default function Container () {
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 {hasExitButton && <Exit />}
+                {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {!isMobile && hasSearchButton && (
                   <Tooltip id={`${id}-search-label`} position='below' text='Show search'>
                     {search && (
@@ -125,7 +126,6 @@ export default function Container () {
                   </Tooltip>
                 )}
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
-                {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
               </div>
@@ -144,7 +144,7 @@ export default function Container () {
                 {isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
               </div>
             </div>
-            {activePanel === 'KEY' && !isMobile && (
+            {!isQueryMode && activePanel === 'KEY' && !isMobile && (
               <Panel isInset isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
                 {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
               </Panel>
@@ -152,7 +152,7 @@ export default function Container () {
             {info && activePanel === 'INFO' && !isMobile && (
               <Panel className='info' isInset isNotObscure label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} />
             )}
-            {activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
+            {!isQueryMode  && activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
               <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                 {queryPolygon && <DrawStart />}
                 {hasSegments && <Segments />}
@@ -194,12 +194,12 @@ export default function Container () {
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel isInset isNotObscure className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} />
               )}
-              {activePanel === 'KEY' && isMobile && (
+              {!isQueryMode && activePanel === 'KEY' && isMobile && (
                 <Panel isInset isNotObscure className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
                   {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
               )}
-              {activePanel === 'LEGEND' && isMobile && isLegendInset && (
+              {!isQueryMode && activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                   {queryPolygon && <DrawStart />}
                   {hasSegments ? <Segments /> : null}

@@ -4,7 +4,6 @@ import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { getFocusPadding } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
-import { install as resizeObserverPolyfill } from 'resize-observer'
 import { LatLon } from 'geodesy/osgridref.js'
 import src from './src.json'
 
@@ -65,9 +64,12 @@ class Provider extends EventTarget {
         this.addMap({ module, ...options })
       })
     } else {
-      import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy').then(module => {
-        resizeObserverPolyfill()
-        this.addMap({ module, ...options })
+      Promise.all([
+        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy'),
+        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["install"] */ 'resize-observer')
+      ]).then(promises => {
+        promises[1].install()
+        this.addMap({ module: promises[0], ...options })
       })
     }
   }

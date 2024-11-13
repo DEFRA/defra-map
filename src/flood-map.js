@@ -1,5 +1,6 @@
 'use strict'
 import { events, settings } from './js/store/constants.js'
+import { capabilities, capabilties } from './js/store/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
@@ -19,6 +20,13 @@ export class FloodMap extends EventTarget {
   constructor (id, props) {
     super()
 
+    // Check capabilities
+    const provider = props?.provider?.name || 'default'
+    const isSupported = capabilities[provider].isSupported()
+    if (!isSupported) {
+      console.log('Browser not supported, fallback instead')
+    }
+
     // Merge props
     const el = document.getElementById(id)
     const dataset = { ...el.dataset }
@@ -29,6 +37,7 @@ export class FloodMap extends EventTarget {
     this.id = id
     this.el = el
     this.root = null
+
     // Get visibility
     const { type, maxMobile } = options
     const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`

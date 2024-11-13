@@ -240,10 +240,9 @@ const fm = new FloodMap('map', {
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'
-fm.addEventListener('ready', async e => {
+fm.addEventListener('ready', e => {
   const map = fm.map
   const isDarkBasemap = ['dark', 'aerial'].includes(e.detail.basemap)
-
   addSources(map)
   addLayers(map, isDarkBasemap)
   toggleVisibility(map, e.detail)

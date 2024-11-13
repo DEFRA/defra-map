@@ -4,7 +4,7 @@ import { actionsMap } from './viewport-actions-map'
 
 const getSize = (providerName) => {
   const hasSize = capabilities[providerName || 'default'].HAS_SIZE
-  return hasSize && window.localStorage.getItem('size')
+  return (hasSize && window.localStorage.getItem('size')) || 'small'
 }
 
 export const initialState = (options) => {

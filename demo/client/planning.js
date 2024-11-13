@@ -185,7 +185,7 @@ const fm = new FloodMap('map', {
   search: {
     label: 'Search for a place',
     isAutocomplete: true,
-    isExpanded: true,
+    isExpanded: false,
     provider: 'os-open-names',
     tokenCallback: getOsToken
     // provider: 'esri-world-geocoder',

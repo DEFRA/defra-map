@@ -394,16 +394,20 @@
 
 // Viewport focus
 .fm-o-viewport.fm-u-focus-visible ~ .fm-o-inner {
-    .fm-c-panel--viewport-label {
-        display: block;
-    }
-
     .fm-o-viewport-controls,
     .fm-o-top__column:first-child,
     .fm-o-top__column:last-child {
         opacity: 0;
         height: 0;
         overflow: hidden;
+    }
+    
+    > .fm-c-panel:not(.fm-c-panel--viewport-label) {
+        opacity: 0;
+    }
+
+    .fm-c-panel--viewport-label {
+        display: block;
     }
 }
 

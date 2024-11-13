@@ -22,7 +22,9 @@ jobs:
       - name: npm run unit-test
         run: |
           npm run unit-test
+          cd /home/runner/work
           ls -la
+          cd -
           sed -i 's/\/home\/runner\/work\/defra-map\/defra-map\//\/github\/workspace\//g' coverage/lcov.info
 
       - name: sonarcloud

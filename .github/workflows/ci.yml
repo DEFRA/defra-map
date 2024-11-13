@@ -34,5 +34,6 @@ jobs:
             -Dsonar.projectKey=DEFRA_defra-map
             -Dsonar.sources=src
             -Dsonar.exclusions=**/node_modules/**,**/tests/**
-            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.javascript.exclusions=**/node_modules/**,**/_tests_/**
+      - run: ls -la

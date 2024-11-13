@@ -66,7 +66,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
 
   // Set initial focus
   useEffect(() => {
-    // We need to know when if a panel ahs been added before rednering map
+    // We need to know when if a panel ahs been added before rendering map
     dispatch({ type: 'CONTAINER_READY' })
 
     obscurePanelRef.current = isNotObscure ? elementRef.current : null

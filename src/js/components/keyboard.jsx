@@ -8,6 +8,10 @@ export default function Keyboard () {
         <dd><kbd>Alt</kbd> + <kbd>I</kbd></dd>
       </div>
       <div className='fm-c-keyboard-list__item'>
+        <dt>Select a map control</dt>
+        <dd><kbd>Tab</kbd> or <kbd>Shift</kbd> + <kbd>Tab</kbd></dd>
+      </div>
+      <div className='fm-c-keyboard-list__item'>
         <dt>Move in large steps</dt>
         <dd><kbd>&larr;</kbd>, <kbd>&uarr;</kbd>, <kbd>&rarr;</kbd> or <kbd>&darr;</kbd></dd>
       </div>

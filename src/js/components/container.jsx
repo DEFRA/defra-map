@@ -77,7 +77,7 @@ export default function Container () {
     eventBus.on(parent, events.SET_DRAW, data => { dispatch({ type: 'SET_DRAW', payload: data }) })
 
     // Ready for map
-    if (!(info || legend?.isVisible)) {
+    if (!activePanel) {
       dispatch({ type: 'CONTAINER_READY' })
     }
   }, [])
@@ -118,6 +118,7 @@ export default function Container () {
               <div className='fm-o-top__column'>
                 {hasExitButton && <Exit />}
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
+                {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {!isMobile && hasSearchButton && (
                   <Tooltip id={`${id}-search-label`} position='below' text='Show search'>
                     {search && (
@@ -126,7 +127,6 @@ export default function Container () {
                   </Tooltip>
                 )}
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
-                {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
               </div>
               <div className='fm-o-top__column'>

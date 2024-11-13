@@ -1,6 +1,6 @@
 'use strict'
 import { events, settings } from './js/store/constants.js'
-import { capabilities, capabilties } from './js/store/capabilities.js'
+import { capabilities } from './js/store/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'

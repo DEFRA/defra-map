@@ -39,4 +39,20 @@ describe('legend-button', () => {
     expect(container.querySelector('span').textContent).toEqual('legend title')
     expect(container.querySelector('button').getAttribute('aria-label')).toEqual('legend title')
   })
+
+  it('should not display legend button', () => {
+    const dispatch = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      isMobile: false,
+      isEditMode: false,
+      legend: { title: 'legend title' },
+      activePanel: 'LEGEND'
+    })
+
+    const { container } = render(<LegendButton legendBtnRef={null} />)
+
+    expect(container.querySelector('button').style.display).toEqual('none')
+  })
 })

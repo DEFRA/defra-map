@@ -21,10 +21,9 @@ export class FloodMap extends EventTarget {
     super()
 
     // Check capabilities
-    const provider = props?.provider?.name || 'default'
-    const isSupported = capabilities[provider].isSupported()
+    const isSupported = capabilities[props?.provider?.name || 'default'].isSupported()
     if (!isSupported) {
-      console.log('Browser not supported, fallback instead')
+      console.log('Browser not supported')
     }
 
     // Merge props

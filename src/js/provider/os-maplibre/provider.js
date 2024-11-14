@@ -4,6 +4,7 @@ import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { getFocusPadding } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
+import { capabilities } from '../../store/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import src from './src.json'
 
@@ -34,6 +35,7 @@ class Provider extends EventTarget {
   constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl, reverseGeocodeProvider, reverseGeocodeToken, symbols }) {
     super()
     this.srs = 4326
+    this.capabilities = capabilities.default
     this.osTokenCallback = osTokenCallback
     this.esriTokenCallback = esriTokenCallback
     this.defaultUrl = defaultUrl
@@ -59,7 +61,7 @@ class Provider extends EventTarget {
   }
 
   init (options) {
-    if (window.globalThis) {
+    if (this.capabilities.isLatest) {
       import(/* webpackChunkName: "maplibre", webpackExports: ["Map", "Marker"] */ 'maplibre-gl').then(module => {
         this.addMap({ module, ...options })
       })
@@ -332,7 +334,7 @@ class Provider extends EventTarget {
     const isEsri = this.reverseGeocodeProvider === 'esri-world-geocoder'
     const tokenCallback = isEsri ? this.esriTokenCallback : this.osTokenCallback
 
-    if (window.globalThis) {
+    if (this.capabilities.isLatest) {
       const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')

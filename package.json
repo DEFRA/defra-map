@@ -79,7 +79,7 @@
     "webpack-remove-empty-scripts": "^1.0.4"
   },
   "dependencies": {
-    "@arcgis/core": "^4.30.0",
+    "@arcgis/core": "^4.31.0",
     "maplibre-gl": "^4.7.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@^1.15.0",
     "preact": "^10.23.1"

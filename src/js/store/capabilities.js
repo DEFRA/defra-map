@@ -1,6 +1,7 @@
 export const capabilities = {
   default: {
-    hasSize: true,
+    hasSize: !!window.globalThis,
+    isLatest: !!window.globalThis,
     isSupported: () => {
       try {
         return eval('typeof Object.getPrototypeOf(async function() {}).constructor === \'function\'')

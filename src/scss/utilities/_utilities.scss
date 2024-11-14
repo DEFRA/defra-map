@@ -18,6 +18,14 @@
     visibility: visible;
 }
 
+.fm-error {
+    padding: 15px;
+    border: 5px solid #b1b4b6;
+    p {
+        margin-bottom: 0;
+    }
+}
+
 %fm-u-visually-hidden {
     position: absolute;
     width: 1px;

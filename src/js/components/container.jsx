@@ -120,11 +120,7 @@ export default function Container () {
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {!isMobile && hasSearchButton && (
-                  <Tooltip id={`${id}-search-label`} position='below' text='Show search'>
-                    {search && (
-                      <SearchButton ariaLabelledby={`${id}-search-label`} searchBtnRef={searchBtnRef} />
-                    )}
-                  </Tooltip>
+                  <SearchButton searchBtnRef={searchBtnRef} />
                 )}
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
                 {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
@@ -136,9 +132,7 @@ export default function Container () {
               <div className='fm-o-top__column'>
                 {isMobile && hasSearchButton && (
                   <Tooltip id={`${id}-search-label`} position='left' text='Show search'>
-                    {search && (
-                      <SearchButton ariaLabelledby={`${id}-search-label`} searchBtnRef={searchBtnRef} />
-                    )}
+                    <SearchButton ariaLabelledby={`${id}-search-label`} searchBtnRef={searchBtnRef} />
                   </Tooltip>
                 )}
                 {isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}

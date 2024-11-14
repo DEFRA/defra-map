@@ -19,22 +19,22 @@ export class FloodMap extends EventTarget {
 
   constructor (id, props) {
     super()
+    this.el = document.getElementById(id)
 
     // Check capabilities
     const isSupported = capabilities[props?.provider?.name || 'default'].isSupported()
     if (!isSupported) {
-      console.log('Browser not supported')
+      this._insertNotSupported(props.fallBackHTML)
+      return
     }
 
     // Merge props
-    const el = document.getElementById(id)
-    const dataset = { ...el.dataset }
+    const dataset = { ...this.el.dataset }
     Object.keys(dataset).forEach(key => { dataset[key] = parseAttribute(dataset[key]) })
     const parent = document.getElementById(dataset.target || props.target || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
     this.id = id
-    this.el = el
     this.root = null
 
     // Get visibility
@@ -111,6 +111,15 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
+  }
+
+  _insertNotSupported (fallBackHTML) {
+    console.log('Device not supported')
+    this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
+      <div class="fm-error" role="alert">
+        <p class="govuk-body">Your device is not supporterd. A map would be a available with a more up-to-date device.</p>
+      </div>
+    `)
   }
 
   _insertButtonHTML () {

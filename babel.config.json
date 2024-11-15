@@ -5,7 +5,7 @@
       {
         "targets": {
           "node": 18,
-          "chrome": 56
+          "chrome": 54
         }
       }
     ],

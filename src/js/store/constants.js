@@ -95,14 +95,3 @@ export const margin = {
 export const search = {
   MIN_CHARS: 3
 }
-
-export const capabilities = {
-  default: {
-    HAS_SIZE: true,
-    FEATURE: window.WebGLRenderingContext
-  },
-  esri: {
-    HAS_SIZE: false,
-    FEATURE: null
-  }
-}

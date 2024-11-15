@@ -1,9 +1,10 @@
 import { parseCentre, parseZoom, setBasemap } from '../lib/viewport'
-import { settings, capabilities } from './constants'
+import { settings } from './constants'
+import { capabilities } from './capabilities'
 import { actionsMap } from './viewport-actions-map'
 
 const getSize = (providerName) => {
-  const hasSize = capabilities[providerName || 'default'].HAS_SIZE
+  const hasSize = capabilities[providerName || 'default'].hasSize
   return (hasSize && window.localStorage.getItem('size')) || 'small'
 }
 

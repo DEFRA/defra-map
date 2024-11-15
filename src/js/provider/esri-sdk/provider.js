@@ -2,6 +2,7 @@ import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handle
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
+import { capabilities } from '../../store/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import src from './src.json'
@@ -11,6 +12,7 @@ class Provider extends EventTarget {
   constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, reverseGeocode }) {
     super()
     this.srs = 27700
+    this.capabilities = capabilities.esri
     this.osTokenCallback = osTokenCallback
     this.esriTokenCallback = esriTokenCallback
     this.defaultUrl = defaultUrl
@@ -26,20 +28,18 @@ class Provider extends EventTarget {
   }
 
   init (options) {
-    if (window.globalThis) {
-      Promise.all([
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/config.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/Map.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/views/MapView.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Extent.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/VectorTileLayer.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/GraphicsLayer.js'),
-        import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/support/TileInfo.js'),
-        import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch", "when"] */ '@arcgis/core/core/reactiveUtils.js')
-      ]).then(modules => this.addMap({ modules, ...options }))
-    }
+    Promise.all([
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/config.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/Map.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/views/MapView.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Extent.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/VectorTileLayer.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/GraphicsLayer.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/support/TileInfo.js'),
+      import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch", "when"] */ '@arcgis/core/core/reactiveUtils.js')
+    ]).then(modules => this.addMap({ modules, ...options }))
   }
 
   remove () {

@@ -47,7 +47,7 @@ export default {
           'css-loader',
           'sass-loader'
         ]
-      }  
+      }
     ]
   }
 }

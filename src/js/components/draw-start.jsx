@@ -10,8 +10,9 @@ export default function DrawStart () {
 
   const handleClick = () => {
     // Dynamic import of draw module
-    provider.draw?.start ? provider.draw.start() : provider.initDraw(queryPolygon, query)
-    dispatch({ type: 'SET_MODE', payload: { value: 'frame', query, isFrameVisible: !query } })
+    const isFrame = true // mode === 'frame' // !!query
+    provider.draw?.start ? provider.draw.start(isFrame) : provider.initDraw(queryPolygon, query)
+    dispatch({ type: 'SET_MODE', payload: { value: 'frame', query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'frame', basemap, size, segments, layers })
   }
 

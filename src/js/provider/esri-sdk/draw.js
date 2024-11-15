@@ -9,7 +9,6 @@ export class Draw {
     const { view } = provider
     this.provider = provider
     this.query = query
-    this.isFrame = true
     Object.assign(this, options)
 
     // Reference to original styles
@@ -22,14 +21,20 @@ export class Draw {
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
-    this.start()
+    this.start(true)
   }
 
-  start () {
-    console.log('start', this.isFrame)
+  start (isFrame) {
+    console.log('start', isFrame)
     // Emit event to update component state
 
-    this.toggleConstraints(this.isFrame)
+    this.toggleConstraints(isFrame)
+
+    // Revert to frame
+    if (isFrame) {
+      const { graphicsLayer } = this.provider
+      graphicsLayer.removeAll()
+    }
   }
 
   toggleConstraints (isReCenter) {
@@ -41,7 +46,7 @@ export class Draw {
     view.constraints.minZoom = isReCenter ? minZoom : minZoomO
     styles.forEach(s => { provider[s] = isReCenter ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
 
-    // Reset centre an zoom on entering query mode
+    // Reset centre and zoom on entering query mode
     if (isReCenter && oCenter && oZoom) {
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
         const Point = module.default
@@ -62,7 +67,7 @@ export class Draw {
     provider.setBasemap(provider.basemap)
   }
 
-  isSameGraphic (a, b) {
+  isSamelGraphic (a, b) {
     const numRings = 5
     return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
   }
@@ -92,18 +97,16 @@ export class Draw {
   finish () {
     const { view, graphicsLayer, frame } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const fGraphic = this.getGraphicFromElement(frame)
-    const graphic = this.finishEdit() || currentGraphic || fGraphic
+    const elGraphic = this.getGraphicFromElement(frame)
+    const graphic = this.finishEdit() || currentGraphic || elGraphic
 
     // Is same as frame
-    this.fGraphic = this.fGraphic || fGraphic
-    this.isFrame = this.isSameGraphic(graphic, this.fGraphic)
-    console.log('finish', !!this.fGraphic)
+    this.elGraphic = this.elGraphic || elGraphic
+    // const isFrame = this.isSamelGraphic(graphic, this.elGraphic)
 
     // Store centre and zoom first time a shape created
-    this.oCenter = this.oCenter || view.center
-    this.oZoom = this.oZoom || view.zoom
-
+    this.oCenter = view.center
+    this.oZoom = view.zoom
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
     this.addGraphic(graphic)

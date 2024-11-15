@@ -6,17 +6,17 @@ export default function DrawEdit () {
 
   const handleEditClick = () => {
     provider.draw.edit()
-    dispatch({ type: 'SET_MODE', payload: { value: 'draw', isFrameVisible: false } })
+    dispatch({ type: 'SET_MODE', payload: { value: 'draw' } })
   }
 
   const handleBoxClick = () => {
     provider.draw.reset()
-    dispatch({ type: 'SET_MODE', payload: { value: 'frame', isFrameVisible: true } })
+    dispatch({ type: 'SET_MODE', payload: { value: 'frame' } })
   }
 
   // const handleDoneClick = () => {
   //     const feature = provider.draw.finishEdit()
-  //     dispatch({ type: 'SET_MODE', value: 'draw', isFrameVisible: !feature })
+  //     dispatch({ type: 'SET_MODE', value: 'draw' })
   // }
 
   // const handleResetClick = () => {

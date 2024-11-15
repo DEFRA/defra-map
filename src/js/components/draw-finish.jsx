@@ -10,7 +10,7 @@ export default function DrawFinish () {
 
   const handleClick = () => {
     const feature = provider.draw.finish()
-    dispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, isFrameVisible: false } })
+    dispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
     viewportRef.current.focus()
   }

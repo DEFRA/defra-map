@@ -4,7 +4,8 @@ export const capabilities = {
     isLatest: !!window.globalThis,
     isSupported: () => {
       try {
-        return eval('typeof Object.getPrototypeOf(async function() {}).constructor === \'function\'')
+        console.log(!document.documentMode)
+        return !document.documentMode
       } catch (_) {
         return false
       }

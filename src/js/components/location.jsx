@@ -1,10 +1,11 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
+import Tooltip from './tooltip.jsx'
 
 const { sessionStorage } = window
 
-export default function Location ({ ariaLabelledby }) {
+export default function Location () {
   const { provider, options } = useApp()
   const { id } = options
   const appDispatch = useApp().dispatch
@@ -37,14 +38,16 @@ export default function Location ({ ariaLabelledby }) {
   }
 
   return (
-    <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--location' aria-labelledby={ariaLabelledby} aria-controls={`${id}-viewport`}>
-      <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
-        <g fill='none' stroke='currentColor' strokeWidth='2'>
-          <circle cx='10' cy='10' r='6' />
-          <path d='M10 4V1m0 18v-3m6-6h3M1 10h3' strokeLinecap='butt' />
-        </g>
-        <circle cx='10' cy='10' r='3' fill='currentColor' />
-      </svg>
-    </button>
+    <Tooltip id={`${id}-location-label`} position='left' text='Use your location'>
+      <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--location' aria-labelledby={`${id}-location-label`} aria-controls={`${id}-viewport`}>
+        <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
+          <g fill='none' stroke='currentColor' strokeWidth='2'>
+            <circle cx='10' cy='10' r='6' />
+            <path d='M10 4V1m0 18v-3m6-6h3M1 10h3' strokeLinecap='butt' />
+          </g>
+          <circle cx='10' cy='10' r='3' fill='currentColor' />
+        </svg>
+      </button>
+    </Tooltip>
   )
 }

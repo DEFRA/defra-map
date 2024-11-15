@@ -29,12 +29,10 @@ import DrawEdit from './draw-edit.jsx'
 import QueryButton from './query-button.jsx'
 import Help from './help.jsx'
 import HelpButton from './help-button.jsx'
-import Tooltip from './tooltip.jsx'
 
 export default function Container () {
   // Derived from state and props
   const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, activeRef, viewportRef, query, error } = useApp()
-  const { id } = options
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -131,9 +129,7 @@ export default function Container () {
               </div>
               <div className='fm-o-top__column'>
                 {isMobile && hasSearchButton && (
-                  <Tooltip id={`${id}-search-label`} position='left' text='Show search'>
-                    <SearchButton ariaLabelledby={`${id}-search-label`} searchBtnRef={searchBtnRef} />
-                  </Tooltip>
+                  <SearchButton searchBtnRef={searchBtnRef} tooltip='left' />
                 )}
                 {isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
               </div>
@@ -173,15 +169,11 @@ export default function Container () {
                 <div className='fm-o-buttons' {...(activePanel === 'STYLE' ? { style: { display: 'none' } } : {})}>
                   {options.hasReset && <Reset />}
                   {options.hasGeoLocation && (
-                    <Tooltip id={`${id}-location-label`} position='left' text='Use your location'>
-                      <Location ariaLabelledby={`${id}-location-label`} provider={provider} />
-                    </Tooltip>
+                    <Location provider={provider} />
                   )}
                   {!isMobile && <Zoom />}
                   {provider.basemaps && !!Object.keys(provider?.basemaps).length && (
-                    <Tooltip id={`${id}-style-label`} position='left' cssModifier='style' text='Choose map style'>
-                      <StylesButton ariaLabelledby={`${id}-style-label`} stylesBtnRef={stylesBtnRef} />
-                    </Tooltip>
+                    <StylesButton stylesBtnRef={stylesBtnRef} />
                   )}
                 </div>
               </div>

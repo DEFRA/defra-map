@@ -21,17 +21,20 @@ export class Draw {
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
-    this.start(true)
+    this.start('frame')
   }
 
-  start (isFrame) {
-    console.log('start', isFrame)
+  start (mode) {
     // Emit event to update component state
-
-    this.toggleConstraints(isFrame)
+    console.log('start', mode)
+    // If no existing graphic then: true
+    // If graphic and same as frame: true
+    // If graphic but not same as frame: false
+    const isFrameMode = mode !== 'draw'
+    this.toggleConstraints(isFrameMode)
 
     // Revert to frame
-    if (isFrame) {
+    if (isFrameMode) {
       const { graphicsLayer } = this.provider
       graphicsLayer.removeAll()
     }
@@ -67,7 +70,7 @@ export class Draw {
     provider.setBasemap(provider.basemap)
   }
 
-  isSamelGraphic (a, b) {
+  isSameGraphic (a, b) {
     const numRings = 5
     return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
   }
@@ -100,9 +103,10 @@ export class Draw {
     const elGraphic = this.getGraphicFromElement(frame)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
 
+    console.log('draw.finsh()', graphic, elGraphic)
+
     // Is same as frame
-    this.elGraphic = this.elGraphic || elGraphic
-    // const isFrame = this.isSamelGraphic(graphic, this.elGraphic)
+    const isFrameMode = this.isSameGraphic(graphic, elGraphic)
 
     // Store centre and zoom first time a shape created
     this.oCenter = view.center
@@ -112,7 +116,11 @@ export class Draw {
     this.addGraphic(graphic)
     this.toggleConstraints(false)
     const feature = this.getFeature(graphic)
-    return feature
+
+    return {
+      isFrameMode,
+      feature
+    }
   }
 
   reColour () {

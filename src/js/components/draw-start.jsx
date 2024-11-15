@@ -10,8 +10,11 @@ export default function DrawStart () {
 
   const handleClick = () => {
     // Dynamic import of draw module
-    const isFrame = true // mode === 'frame' // !!query
-    provider.draw?.start ? provider.draw.start(isFrame) : provider.initDraw(queryPolygon, query)
+    // If we dont have a query object then it will be frame mode
+    // If we do then we don't yet know what mode to go into?
+    // We need to know at this stage if we should go into frame or draw mode
+    // const isFrame = true // mode === 'frame' // !!query
+    provider.draw?.start ? provider.draw.start(mode) : provider.initDraw(queryPolygon, query)
     dispatch({ type: 'SET_MODE', payload: { value: 'frame', query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'frame', basemap, size, segments, layers })
   }

@@ -9,8 +9,10 @@ export default function DrawFinish () {
   const { size, basemap } = useViewport()
 
   const handleClick = () => {
-    const feature = provider.draw.finish()
-    dispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature } })
+    const response = provider.draw.finish()
+    console.log('finish:', response)
+    // We now know what mode the draw start/edit button should take us back into
+    dispatch({ type: 'SET_MODE', payload: { value: 'default', query: response.feature } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
     viewportRef.current.focus()
   }

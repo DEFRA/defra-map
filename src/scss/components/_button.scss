@@ -216,16 +216,22 @@
 
 // Custom buttons
 .fm-c-btn--legend,
-.fm-c-btn--key {
+.fm-c-btn--key,
+.fm-c-btn--search {
     display: flex;
     padding: 10px;
     margin-right: 10px;
     justify-content: center;
     align-self: flex-start;
+    border-radius: $button-radius;
 
     &__label {
         margin-left: 7px;
     }
+}
+
+.fm-c-btn--search {
+    margin-right: 0;
 }
 
 .fm-c-btn--exit {
@@ -235,12 +241,6 @@
     margin-right: 10px;
     align-self: flex-start;
     justify-content: center;
-}
-
-.fm-c-btn--search {
-    padding: 10px;
-    border-radius: $button-radius;
-    margin: 0;
 }
 
 .fm-c-btn--search-back {

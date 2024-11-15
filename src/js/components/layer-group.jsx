@@ -134,7 +134,9 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }
 
   useEffect(() => {
-    const items = group.items.map(item => item.items || item).flat(1).filter(item => item.icon)
+    // Cross browser flatten array
+    let items = group.items.map(item => item.items || item)
+    items = [].concat(...items).filter(item => item.icon)
     Promise.all(items.map(item => fetch(item.icon))).then(responses =>
       Promise.all(responses.map(res => res.text()))
     ).then(texts => {

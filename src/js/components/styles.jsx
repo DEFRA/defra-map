@@ -2,7 +2,7 @@ import React, { useRef, useState, createRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
-import { capabilities } from '../store/constants.js'
+import { capabilities } from '../store/capabilities.js'
 import More from './more.jsx'
 
 export default function Styles () {
@@ -18,7 +18,7 @@ export default function Styles () {
   const [isExpanded, setIsExpanded] = useState(basemaps.indexOf(currentBasemap) > 2 || size !== 'small')
   buttonsRef.current = basemaps.map((_, i) => buttonsRef.current[i] ?? createRef())
 
-  const hasSize = capabilities[options.provider.name || 'default'].HAS_SIZE
+  const hasSize = capabilities[options.provider.name || 'default'].hasSize
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3

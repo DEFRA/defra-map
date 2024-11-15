@@ -1,7 +1,3 @@
-import { getCookie } from './utils.js'
-
-const token = getCookie('token')
-
 export const queryMap = {
   warningsGroup: 'fwg',
   waterGroup: 'wlg',
@@ -44,7 +40,6 @@ export const addSources = (map) => {
   map.addSource('five-day-forecast', {
     type: 'vector',
     url: 'http://localhost:8000/five_day_forecast_areas'
-    // tiles: [`https://vectortileservices1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/Five_day_forecast/VectorTileServer/tile/{z}/{y}/{x}.pbf?token=${token}`]
   })
   map.addSource('river-sea', {
     type: 'vector',

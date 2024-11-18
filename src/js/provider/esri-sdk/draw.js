@@ -54,7 +54,7 @@ export class Draw {
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {
-      // Additional zoom fix to address goTo graphic not respecting true size? 
+      // Additional zoom fix to address goTo graphic not respecting true size?
       view.goTo({ target: oGraphic, ...(isFrame && { zoom: this.oZoom }) })
     }
   }

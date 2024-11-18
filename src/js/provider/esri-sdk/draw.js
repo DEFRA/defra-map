@@ -105,9 +105,6 @@ export class Draw {
 
     console.log('draw.finsh()', graphic, elGraphic)
 
-    // Is same as frame
-    const isFrameMode = this.isSameGraphic(graphic, elGraphic)
-
     // Store centre and zoom first time a shape created
     this.oCenter = view.center
     this.oZoom = view.zoom
@@ -115,12 +112,7 @@ export class Draw {
     this.oGraphic = graphic.clone()
     this.addGraphic(graphic)
     this.toggleConstraints(false)
-    const feature = this.getFeature(graphic)
-
-    return {
-      isFrameMode,
-      feature
-    }
+    return this.getFeature(graphic)
   }
 
   reColour () {

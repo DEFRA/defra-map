@@ -210,3 +210,12 @@ export const getShortcutKey = (e, featuresViewport) => {
   const id = hasFeature ? featuresViewport.features[number - 1].id : ''
   return id
 }
+
+export const isFeatureSquare = (feature) => {
+  const coords = feature.geometry.coordinates
+  if (!coords.length === 5) {
+    return false
+  }
+  const numbers = new Set(coords.flat(3))
+  return numbers.length === 4
+}

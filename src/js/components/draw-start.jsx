@@ -3,6 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
+import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function DrawStart () {
   const { provider, parent, queryPolygon, mode, segments, layers, dispatch, query } = useApp()
@@ -14,7 +15,9 @@ export default function DrawStart () {
     // If we do then we don't yet know what mode to go into?
     // We need to know at this stage if we should go into frame or draw mode
     // const isFrame = true // mode === 'frame' // !!query
-    provider.draw?.start ? provider.draw.start(mode) : provider.initDraw(queryPolygon, query)
+    const isSquare = !query || (query && isFeatureSquare(query))
+    console.log('isSquare:', isSquare)
+    provider.draw?.start ? provider.draw.start() : provider.initDraw(queryPolygon, query)
     dispatch({ type: 'SET_MODE', payload: { value: 'frame', query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'frame', basemap, size, segments, layers })
   }

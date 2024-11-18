@@ -396,7 +396,6 @@
     padding: 0 0 2px;
     background-color: transparent;
     border: 0;
-    color: var(--link-colour);
     cursor: pointer;
     margin: 0;
     outline: 3px solid transparent;
@@ -405,8 +404,16 @@
     svg {
         margin-right: 7px;
     }
-    
-    .fm-u-focus-visible {
+
+    .fm-c-btn__label {
+        color: var(--link-colour);
+    }
+
+    .fm-c-btn__label:hover:not(:focus) {
+        color: var(--foreground-colour);
+    }
+
+    &.fm-u-focus-visible {
         outline: 3px solid transparent;
         color: var(--foreground-colour);
         background-color: var(--focus-colour);
@@ -414,5 +421,9 @@
         text-decoration: none;
         box-decoration-break: clone;
         -webkit-box-decoration-break: clone;
+    }
+
+    &.fm-u-focus-visible .fm-c-btn__label {
+        color: var(--foreground-colour);
     }
 }

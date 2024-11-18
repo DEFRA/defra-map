@@ -1,6 +1,6 @@
 {
   "name": "@defra/flood-map",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "",
   "browser": "dist/client.js",
   "scripts": {

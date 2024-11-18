@@ -53,15 +53,10 @@ export class Draw {
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {
-      console.log(oGraphic.geometry.extent)
+      console.log('Exent/zoom not quite right for frame edit')
       view.goTo(oGraphic.geometry.extent)
     }
   }
-
-  // isSameGraphic (a, b) {
-  //   const numRings = 5
-  //   return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
-  // }
 
   edit () {
     const { graphicsLayer, frame } = this.provider

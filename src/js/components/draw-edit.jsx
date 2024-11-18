@@ -36,9 +36,9 @@ export default function DrawEdit () {
         Edit shape
       </button>
       <button onClick={handleBoxClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' {...mode === 'frame' ? { style: { display: 'none' } } : {}}>
-        <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
+        <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
           <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
-          <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' />
+          <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none'/>
         </svg>
         Use square
       </button>

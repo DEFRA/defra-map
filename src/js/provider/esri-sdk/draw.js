@@ -24,10 +24,11 @@ export class Draw {
   }
 
   start (mode) {
-    this.toggleConstraints(true)
+    const isFrame = mode === 'frame'
+    this.toggleConstraints(true, isFrame)
 
     // Remove graphic if frame mode
-    if (mode === 'frame') {
+    if (isFrame) {
       const { graphicsLayer } = this.provider
       graphicsLayer.removeAll()
       return
@@ -37,7 +38,7 @@ export class Draw {
     this.editGraphic(this.oGraphic)
   }
 
-  toggleConstraints (hasConstraints) {
+  toggleConstraints (hasConstraints, isFrame) {
     const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
     const { view } = provider
 
@@ -53,16 +54,16 @@ export class Draw {
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {
-      console.log('Exent/zoom not quite right for frame edit')
-      view.goTo(oGraphic.geometry.extent)
+      // Additional zoom fix to address goTo graphic not respecting true size? 
+      view.goTo({ target: oGraphic, ...(isFrame && { zoom: this.oZoom }) })
     }
   }
 
   edit () {
     const { graphicsLayer, frame } = this.provider
     const hasExisting = graphicsLayer.graphics.length
-    const bGraphic = this.getGraphicFromElement(frame)
-    const graphic = hasExisting ? graphicsLayer.graphics.items[0] : bGraphic
+    const elGraphic = this.getGraphicFromElement(frame)
+    const graphic = hasExisting ? graphicsLayer.graphics.items[0] : elGraphic
     this.editGraphic(graphic)
   }
 
@@ -81,16 +82,13 @@ export class Draw {
   }
 
   finish () {
-    const { graphicsLayer, frame } = this.provider
+    const { view, graphicsLayer, frame } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
     const elGraphic = this.getGraphicFromElement(frame)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
-
-    console.log('draw.finsh()', graphic, elGraphic)
-
-    // Store centre and zoom first time a shape created
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
+    this.oZoom = view.zoom
     this.addGraphic(graphic)
     this.toggleConstraints(false)
     return this.getFeature(graphic)
@@ -152,7 +150,7 @@ export class Draw {
   }
 
   getGraphicFromElement (el) {
-    const bounds = this.getBounds(el).map(c => Math.round(c))
+    const bounds = this.getBounds(el) // .map(c => Math.round(c))
     const coords = [[
       [bounds[0], bounds[1]],
       [bounds[2], bounds[1]],
@@ -207,7 +205,7 @@ export class Draw {
   }
 
   handleCreateComplete () {
-    console.log('handleCreateComplete')
+    // console.log('handleCreateComplete')
   }
 
   handleUpdate (e) {

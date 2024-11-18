@@ -227,11 +227,11 @@ class Provider extends EventTarget {
     this.view.goTo({ center: coord, zoom }).catch(err => console.log(err))
   }
 
-  initDraw (options, report) {
+  initDraw (options) {
     this.removeTargetMarker()
     import(/* webpackChunkName: "esri-sdk-draw" */ './draw.js').then(module => {
       const Draw = module.default
-      this.draw = new Draw(this, options, report)
+      this.draw = new Draw(this, options)
     })
   }
 

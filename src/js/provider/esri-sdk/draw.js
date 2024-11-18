@@ -5,10 +5,9 @@ import { defaults } from './constants'
 const styles = ['defaultUrl', 'darkUrl', 'aerialUrl', 'deuteranopiaUrl', 'tritanopiaUrl']
 
 export class Draw {
-  constructor (provider, options, query) {
+  constructor (provider, options) {
     const { view } = provider
     this.provider = provider
-    this.query = query
     Object.assign(this, options)
 
     // Reference to original styles
@@ -25,55 +24,44 @@ export class Draw {
   }
 
   start (mode) {
-    // Emit event to update component state
-    console.log('start', mode)
-    // If no existing graphic then: true
-    // If graphic and same as frame: true
-    // If graphic but not same as frame: false
-    const isFrameMode = mode !== 'draw'
-    this.toggleConstraints(isFrameMode)
+    this.toggleConstraints(true)
 
-    // Revert to frame
-    if (isFrameMode) {
+    // Remove graphic if frame mode
+    if (mode === 'frame') {
       const { graphicsLayer } = this.provider
       graphicsLayer.removeAll()
-    }
-  }
-
-  toggleConstraints (isReCenter) {
-    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oCenter, oZoom } = this
-    const { view } = provider
-
-    // Re-instate view constraints and basemap
-    view.constraints.maxZoom = isReCenter ? maxZoom : maxZoomO
-    view.constraints.minZoom = isReCenter ? minZoom : minZoomO
-    styles.forEach(s => { provider[s] = isReCenter ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
-
-    // Reset centre and zoom on entering query mode
-    if (isReCenter && oCenter && oZoom) {
-      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
-        const Point = module.default
-        view.goTo({
-          target: new Point({
-            x: oCenter.x,
-            y: oCenter.y,
-            spatialReference: 27700
-          }),
-          zoom: oZoom
-        })
-      })
-    }
-
-    if (!this[provider.basemap + 'Url']) {
       return
     }
-    provider.setBasemap(provider.basemap)
+
+    // Edit graphic
+    this.editGraphic(this.oGraphic)
   }
 
-  isSameGraphic (a, b) {
-    const numRings = 5
-    return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
+  toggleConstraints (hasConstraints) {
+    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
+    const { view } = provider
+
+    // Toggle min and max zoom
+    view.constraints.maxZoom = hasConstraints ? maxZoom : maxZoomO
+    view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
+
+    // Toggle basemaps
+    styles.forEach(s => { provider[s] = hasConstraints ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
+    if (this[provider.basemap + 'Url']) {
+      provider.setBasemap(provider.basemap)
+    }
+
+    // Zoom to extent if we have an existing graphic
+    if (hasConstraints && oGraphic) {
+      console.log(oGraphic.geometry.extent)
+      view.goTo(oGraphic.geometry.extent)
+    }
   }
+
+  // isSameGraphic (a, b) {
+  //   const numRings = 5
+  //   return a.geometry.rings.flat(numRings).toString() === b.geometry.rings.flat(numRings).toString()
+  // }
 
   edit () {
     const { graphicsLayer, frame } = this.provider
@@ -98,7 +86,7 @@ export class Draw {
   }
 
   finish () {
-    const { view, graphicsLayer, frame } = this.provider
+    const { graphicsLayer, frame } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
     const elGraphic = this.getGraphicFromElement(frame)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
@@ -106,8 +94,6 @@ export class Draw {
     console.log('draw.finsh()', graphic, elGraphic)
 
     // Store centre and zoom first time a shape created
-    this.oCenter = view.center
-    this.oZoom = view.zoom
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
     this.addGraphic(graphic)

@@ -213,9 +213,6 @@ export const getShortcutKey = (e, featuresViewport) => {
 
 export const isFeatureSquare = (feature) => {
   const coords = feature.geometry.coordinates
-  if (!coords.length === 5) {
-    return false
-  }
-  const numbers = new Set(coords.flat(3))
-  return numbers.length === 4
+  const flatCoords = Array.from(new Set(coords.flat(2)))
+  return flatCoords.length === 4
 }

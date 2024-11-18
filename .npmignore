@@ -1,7 +1,7 @@
 node_modules
 coverage
 demo
-__tests__
+tests
 README.md
-jest.config.js
+jest.config.mjs
 .*

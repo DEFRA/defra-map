@@ -4,7 +4,6 @@ export const capabilities = {
     isLatest: !!window.globalThis,
     isSupported: () => {
       try {
-        console.log(!document.documentMode)
         return !document.documentMode
       } catch (_) {
         return false

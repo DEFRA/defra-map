@@ -20,7 +20,7 @@ export default function Draw () {
 
   return (
     <div className='fm-c-menu__group'>
-      <h2 className='fm-c-menu__heading govuk-body-s'>{ queryPolygon.heading }</h2>
+      <h2 className='fm-c-menu__heading govuk-body-s'>{queryPolygon.heading}</h2>
       <div className='fm-c-menu__item'>
         <button className='fm-c-btn-menu govuk-body-s' {...mode === 'frame' ? { 'aria-disabled': true } : {}} onClick={handleClick}>
           {isFrameMode

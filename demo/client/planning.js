@@ -470,10 +470,11 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   queryPolygon: {
-    heading: 'Get a boundary  report',
-    startLabel: 'Add site boundary',
-    editLabel: 'Edit site boundary',
-    addLabel: 'Add boundary',
+    heading: 'Site boundary',
+    startLabel: 'Add boundary',
+    editLabel: 'Edit boundary',
+    deleteLabel: 'Delete boundary',
+    addLabel: 'Confirm boundary',
     updateLabel: 'Update boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',

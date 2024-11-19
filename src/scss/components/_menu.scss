@@ -6,6 +6,14 @@
     &__heading {
         font-weight: 700;
         margin-bottom: 0;
-        padding: 15px 0;
+        padding-bottom: 10px;
+    }
+}
+
+.fm-c-menu__item {
+    margin-bottom: 10px;
+    
+    &:last-child {
+        margin-bottom: 0;
     }
 }

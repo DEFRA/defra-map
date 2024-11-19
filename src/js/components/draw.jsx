@@ -20,7 +20,8 @@ export default function Draw () {
   
   const handleDeleteClick = () => {
     console.log('Delete clicked')
-    dispatch({ type: 'SET_MODE', payload: {query: null } })
+    provider.draw.delete()
+    dispatch({ type: 'SET_MODE', payload: {query: null} })
     console.log('Dispatched')
   }
 

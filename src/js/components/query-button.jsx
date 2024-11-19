@@ -7,11 +7,8 @@ export default function QueryButton () {
   const { parent, queryPolygon, query } = useApp()
 
   const handleOnClick = () => {
-    console.log('handleOnClick')
-    console.log(query)
-    const detail = { resultType: 'polygon', feature: query }
+    const detail = { resultType: 'polygon', query }
     eventBus.dispatch(parent, events.APP_QUERY, detail)
-    console.log(detail)
   }
 
   return (

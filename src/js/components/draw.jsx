@@ -6,23 +6,29 @@ import eventBus from '../lib/eventbus.js'
 import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function Draw () {
-  const { provider, parent, queryPolygon, mode, segments, layers, dispatch, query } = useApp()
+  const { provider, parent, queryPolygon, segments, layers, dispatch, query } = useApp()
   const { size, basemap } = useViewport()
 
   const isFrameMode = !query || (query && isFeatureSquare(query))
   const drawMode = isFrameMode ? 'frame' : 'draw'
 
-  const handleClick = () => {
+  const handleStartClick = () => {
     provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryPolygon)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, basemap, size, segments, layers })
+  }
+  
+  const handleDeleteClick = () => {
+    console.log('Delete clicked')
+    dispatch({ type: 'SET_MODE', payload: {query: null } })
+    console.log('Dispatched')
   }
 
   return (
     <div className='fm-c-menu__group'>
       <h2 className='fm-c-menu__heading govuk-body-s'>{queryPolygon.heading}</h2>
       <div className='fm-c-menu__item'>
-        <button className='fm-c-btn-menu govuk-body-s' {...mode === 'frame' ? { 'aria-disabled': true } : {}} onClick={handleClick}>
+        <button className='fm-c-btn-menu govuk-body-s' onClick={handleStartClick}>
           {isFrameMode
             ? (
               <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
@@ -44,6 +50,19 @@ export default function Draw () {
           </span>
         </button>
       </div>
+      {query && (
+        <div className='fm-c-menu__item'>
+          <button className='fm-c-btn-menu govuk-body-s' onClick={handleDeleteClick}>
+            <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
+              <path d='M3 5.963H2V3.989h4V2h8v1.989h4v1.974h-.956V18H3V5.963zm12 0H5.044v10.063H15V5.963z' fill='currentColor'/>
+              <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2'/>
+            </svg>
+            <span className='fm-c-btn__label'>
+              {queryPolygon.deleteLabel}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

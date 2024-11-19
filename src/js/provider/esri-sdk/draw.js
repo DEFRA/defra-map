@@ -70,7 +70,7 @@ export class Draw {
   reset () {
     const { graphicsLayer } = this.provider
     this.sketchViewModel?.cancel()
-    this.oGraphic = null
+    // this.oGraphic = null
     graphicsLayer.removeAll()
   }
 

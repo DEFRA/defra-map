@@ -390,10 +390,10 @@
 .fm-c-btn-menu {
     @include body-font(16px, 400);
     line-height: 125%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     position: relative;
-    padding: 0 0 2px;
+    padding: 0;
     background-color: transparent;
     border: 0;
     cursor: pointer;

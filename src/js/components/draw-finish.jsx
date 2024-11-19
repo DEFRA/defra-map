@@ -8,7 +8,7 @@ export default function DrawFinish () {
   const { provider, parent, queryPolygon, segments, layers, dispatch, viewportRef, query } = useApp()
   const { size, basemap } = useViewport()
 
-  const handleClick = () => {
+  const handleUpdateClick = () => {
     const query = provider.draw.finish()
     // We now know what mode the draw start/edit button should take us back into
     dispatch({ type: 'SET_MODE', payload: { value: 'default', query } })
@@ -16,9 +16,21 @@ export default function DrawFinish () {
     viewportRef.current.focus()
   }
 
+  const handleCancelClick = () => {
+    provider.draw.cancel()
+    dispatch({ type: 'SET_MODE', payload: { value: 'default' } })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
+    viewportRef.current.focus()
+  }
+
   return (
-    <button onClick={handleClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
-      {query ? queryPolygon.updateLabel : queryPolygon.addLabel}
-    </button>
+    <>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
+        {query ? queryPolygon.updateLabel : queryPolygon.addLabel}
+      </button>
+      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary govuk-body-s'>
+        Cancel
+      </button>
+    </>
   )
 }

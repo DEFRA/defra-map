@@ -5,7 +5,7 @@ import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 import { isFeatureSquare } from '../lib/viewport.js'
 
-export default function DrawStart () {
+export default function Draw () {
   const { provider, parent, queryPolygon, mode, segments, layers, dispatch, query } = useApp()
   const { size, basemap } = useViewport()
 
@@ -19,9 +19,9 @@ export default function DrawStart () {
   }
 
   return (
-    <div className='fm-c-draw'>
-      {/* <h2 className='fm-c-draw__heading govuk-body-s'>{ draw.heading }</h2> */}
-      <button className='fm-c-btn-draw govuk-body-s' {...mode === 'frame' ? { 'aria-disabled': true } : {}} onClick={handleClick}>
+    <div className='fm-c-menu__group'>
+      {/* <h2 className='fm-c-menu__heading govuk-body-s'>{ draw.heading }</h2> */}
+      <button className='fm-c-btn-menu govuk-body-s' {...mode === 'frame' ? { 'aria-disabled': true } : {}} onClick={handleClick}>
         {isFrameMode
           ? (
             <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>

@@ -110,7 +110,7 @@ const setIsKeyboard = (state, payload) => {
 const setMode = (state, payload) => {
   return {
     ...state,
-    mode: payload.value,
+    mode: payload.value || state.mode,
     query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
     activePanel: null, // state.mode !== 'draw' && payload.value === 'frame' && 'HELP',
     featureId: null,

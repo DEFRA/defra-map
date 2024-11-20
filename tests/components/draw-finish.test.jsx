@@ -39,7 +39,7 @@ describe('draw-finish', () => {
 
     render(<DrawFinish cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Confirm'))
+    fireEvent.click(screen.getByText('Confirm area'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
@@ -90,9 +90,9 @@ describe('draw-finish', () => {
 
     render(<DrawFinish />)
 
-    fireEvent.click(screen.getByText('Update'))
+    fireEvent.click(screen.getByText('Update area'))
 
-    expect(screen.getByText('Update')).toBeTruthy()
+    expect(screen.getByText('Update area')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()

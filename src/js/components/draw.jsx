@@ -47,7 +47,7 @@ export default function Draw () {
               </svg>
               )}
           <span className='fm-c-btn__label'>
-            {`${query ? 'Edit' : 'Add'}`}
+            {`${query ? 'Edit' : 'Add'}`} area
           </span>
         </button>
       </div>

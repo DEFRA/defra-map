@@ -59,7 +59,7 @@ export default function Draw () {
               <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2' />
             </svg>
             <span className='fm-c-btn__label'>
-              Delete
+              Delete area
             </span>
           </button>
         </div>

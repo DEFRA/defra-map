@@ -22,7 +22,7 @@ describe('draw-finish', () => {
 
   jest.mocked(eventBus)
 
-  it('should handle click for Add label', () => {
+  it('should handle click for Confirm label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       queryPolygon: {
@@ -42,7 +42,7 @@ describe('draw-finish', () => {
 
     render(<DrawFinish cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Add test'))
+    fireEvent.click(screen.getByText('Confirm test'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()

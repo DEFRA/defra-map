@@ -25,7 +25,7 @@ export default function DrawFinish () {
   return (
     <>
       <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
-        {query ? queryPolygon.updateLabel : queryPolygon.addLabel}
+        {`${query ? 'Update' : 'Add'} ${queryPolygon.buttonLabel}`}
       </button>
       <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary govuk-body-s'>
         Cancel

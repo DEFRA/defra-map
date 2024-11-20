@@ -11,7 +11,7 @@ describe('draw-edit', () => {
   const drawReset = jest.fn()
   const dispatch = jest.fn()
 
-  it('should handle edit click and not show use box button', () => {
+  it('should handle edit click and not show use square button', () => {
     jest.mocked(useApp).mockReturnValue({
       mode: 'frame',
       dispatch,
@@ -26,16 +26,16 @@ describe('draw-edit', () => {
     render(<DrawEdit />)
 
     const editButton = screen.getByText('Edit shape')
-    const useBoxButton = screen.getByText('Use box')
+    const useButton = screen.getByText('Use square')
 
     fireEvent.click(editButton)
 
     expect(drawEdit).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
-    expect(useBoxButton.style.display).toEqual('none')
+    expect(useButton.style.display).toEqual('none')
   })
 
-  it('should handle use box click and not show edit button', () => {
+  it('should handle use square click and not show edit button', () => {
     jest.mocked(useApp).mockReturnValue({
       mode: 'draw',
       dispatch,
@@ -50,11 +50,11 @@ describe('draw-edit', () => {
     render(<DrawEdit />)
 
     const editButton = screen.getByText('Edit shape')
-    const useBoxButton = screen.getByText('Use box')
+    const useButton = screen.getByText('Use square')
 
-    fireEvent.click(useBoxButton)
+    fireEvent.click(useButton)
 
-    expect(drawEdit).toHaveBeenCalled()
+    expect(drawReset).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(editButton.style.display).toEqual('none')
   })

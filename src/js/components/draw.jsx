@@ -47,7 +47,7 @@ export default function Draw () {
               </svg>
               )}
           <span className='fm-c-btn__label'>
-            {query ? queryPolygon.editLabel : queryPolygon.startLabel}
+            {`${query ? 'Edit' : 'Add'} ${queryPolygon.buttonLabel}`}
           </span>
         </button>
       </div>
@@ -59,7 +59,7 @@ export default function Draw () {
               <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2' />
             </svg>
             <span className='fm-c-btn__label'>
-              {queryPolygon.deleteLabel}
+              {`Delete ${queryPolygon.buttonLabel}`}
             </span>
           </button>
         </div>

@@ -471,11 +471,7 @@ const fm = new FloodMap('map', {
   // },
   queryPolygon: {
     heading: 'Site boundary',
-    startLabel: 'Add boundary',
-    editLabel: 'Edit boundary',
-    deleteLabel: 'Delete boundary',
-    addLabel: 'Confirm boundary',
-    updateLabel: 'Update boundary',
+    buttonLabel: 'boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',

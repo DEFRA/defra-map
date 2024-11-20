@@ -471,7 +471,6 @@ const fm = new FloodMap('map', {
   // },
   queryPolygon: {
     heading: 'Site boundary',
-    buttonLabel: 'boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',

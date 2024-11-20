@@ -25,9 +25,6 @@ describe('draw-finish', () => {
   it('should handle click for Confirm label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      queryPolygon: {
-        buttonLabel: 'test'
-      },
       provider: {
         draw: {
           finish: drawFinish
@@ -42,7 +39,7 @@ describe('draw-finish', () => {
 
     render(<DrawFinish cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Confirm test'))
+    fireEvent.click(screen.getByText('Confirm'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
@@ -53,9 +50,6 @@ describe('draw-finish', () => {
   it('should handle click for Cancel label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      queryPolygon: {
-        buttonLabel: 'test'
-      },
       provider: {
         draw: {
           cancel: drawFinish
@@ -82,9 +76,6 @@ describe('draw-finish', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       query: true,
-      queryPolygon: {
-        buttonLabel: 'test'
-      },
       provider: {
         draw: {
           finish: drawFinish
@@ -99,9 +90,9 @@ describe('draw-finish', () => {
 
     render(<DrawFinish />)
 
-    fireEvent.click(screen.getByText('Update test'))
+    fireEvent.click(screen.getByText('Update'))
 
-    expect(screen.getByText('Update test')).toBeTruthy()
+    expect(screen.getByText('Update')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()

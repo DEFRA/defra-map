@@ -30,7 +30,7 @@ describe('draw', () => {
       dispatch,
       mode: 'frame',
       queryPolygon: {
-        buttonLabel: 'test'
+        heading: ''
       },
       provider: {
         draw: {
@@ -41,9 +41,9 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add test'))
+    fireEvent.click(screen.getByText('Add'))
 
-    expect(screen.getByText('Add test')).toBeTruthy()
+    expect(screen.getByText('Add')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
@@ -55,7 +55,7 @@ describe('draw', () => {
       mode: 'draw',
       query: true,
       queryPolygon: {
-        buttonLabel: 'test'
+        heading: ''
       },
       provider: {
         draw: {
@@ -66,9 +66,9 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Edit test'))
+    fireEvent.click(screen.getByText('Edit'))
 
-    expect(screen.getByText('Edit test')).toBeTruthy()
+    expect(screen.getByText('Edit')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
@@ -78,7 +78,7 @@ describe('draw', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       queryPolygon: {
-        buttonLabel: 'test'
+        heading: ''
       },
       provider: {
         initDraw: draw
@@ -88,7 +88,7 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add test'))
+    fireEvent.click(screen.getByText('Add'))
 
     expect(draw).toHaveBeenCalled()
   })

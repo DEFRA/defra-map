@@ -9,8 +9,8 @@ export default function DrawFinish () {
   const { size, basemap } = useViewport()
 
   const handleUpdateClick = () => {
-    const query = provider.draw.finish()
-    dispatch({ type: 'SET_MODE', payload: { value: 'default', query } })
+    const newQuery = provider.draw.finish()
+    dispatch({ type: 'SET_MODE', payload: { value: 'default', newQuery } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
     viewportRef.current.focus()
   }

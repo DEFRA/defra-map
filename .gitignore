@@ -26,6 +26,7 @@ node_modules/
 # Output
 dist/
 plugin
+coverage
 
 # Webpack bundle analyser
 stats.json

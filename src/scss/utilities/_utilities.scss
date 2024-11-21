@@ -27,6 +27,10 @@
     }
 }
 
+.fm-js-enabled .fm-error {
+    display: none;
+}
+
 %fm-u-visually-hidden {
     position: absolute;
     width: 1px;

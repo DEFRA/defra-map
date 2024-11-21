@@ -116,7 +116,7 @@ export class FloodMap extends EventTarget {
   _insertNotSupported (fallBackHTML) {
     console.log('Device not supported')
     this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
-      <div class="fm-error" role="alert">
+      <div class="fm-error">
         <p class="govuk-body">Your device is not supporterd. A map would be a available with a more up-to-date device.</p>
       </div>
     `)

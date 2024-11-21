@@ -25,11 +25,7 @@ node_modules/
 
 # Output
 dist/
-plugin/
+plugin
 
 # Webpack bundle analyser
 stats.json
-
-# Demo assets
-demo/assets/js/*
-!demo/assets/js/plugin.js

@@ -8,36 +8,13 @@ import { capabilities } from '../../store/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import src from './src.json'
 
-// const transformRequest = (url, resourceType) => {
-//   console.log(this)
-//   // const token = (async () => (await this.osTokenCallback()).token)()
-//   // console.log(token)
-//   if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
-//     // Conditionally refresh token
-//     // const token = ''
-//     const token = (async () => (await this.osTokenCallback()).token)()
-//     url = new URL(url)
-
-//     if (!url.searchParams.has('srs')) {
-//       url.searchParams.append('srs', 3857)
-//     }
-
-//     return {
-//       url: new Request(url).url,
-//       headers: {
-//         Authorization: 'Bearer ' + token
-//       }
-//     }
-//   }
-// }
-
 class Provider extends EventTarget {
-  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl, reverseGeocodeProvider, reverseGeocodeToken, symbols }) {
+  constructor ({ requestCallback, tileRequestCallback, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
-    this.osTokenCallback = osTokenCallback
-    this.esriTokenCallback = esriTokenCallback
+    this.requestCallback = requestCallback
+    this.tileRequestCallback = tileRequestCallback
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
@@ -51,8 +28,7 @@ class Provider extends EventTarget {
     this.selectedId = ''
     this.selectedCoordinate = null
     this.isLoaded = false
-    this.reverseGeocodeProvider = reverseGeocodeProvider
-    this.reverseGeocodeToken = reverseGeocodeToken
+    this.geocodeProvider = geocodeProvider
     this.attribution = {
       label: 'Ordnance Survey logo'
     }
@@ -99,7 +75,8 @@ class Provider extends EventTarget {
       maxZoom,
       fadeDuration: 0,
       attributionControl: false,
-      dragRotate: false
+      dragRotate: false,
+      transformRequest: this.tileRequestCallback
     })
 
     // Set initial padding, bounds and centre
@@ -319,7 +296,7 @@ class Provider extends EventTarget {
   }
 
   async getNearest (coord) {
-    if (this.reverseGeocodeProvider === 'os-open-names') {
+    if (this.geocodeProvider === 'os-open-names') {
       try {
         const bng = (new LatLon(coord[1], coord[0])).toOsGrid()
         coord = [bng.easting, bng.northing]
@@ -331,19 +308,18 @@ class Provider extends EventTarget {
 
     let response
 
-    const isEsri = this.reverseGeocodeProvider === 'esri-world-geocoder'
-    const tokenCallback = isEsri ? this.esriTokenCallback : this.osTokenCallback
+    const isEsri = this.geocodeProvider === 'esri-world-geocoder'
 
     if (this.capabilities.isLatest) {
       const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, tokenCallback)
+      response = await getNearest(coord, this.requestCallback)
     } else {
       const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre-legacy" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, tokenCallback)
+      response = await getNearest(coord, this.requestCallback)
     }
 
     return response

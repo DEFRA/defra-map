@@ -23,7 +23,7 @@ export const initialState = (options) => {
     place: cz ? null : place,
     oZoom: zoom,
     basemap: setBasemap(isDarkMode),
-    size: getSize(options.provider.name),
+    size: getSize(options.framework),
     features: null,
     status: '',
     isStatusVisuallyHidden: true,

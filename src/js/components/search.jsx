@@ -7,29 +7,29 @@ import Autocomplete from './autocomplete.jsx'
 import OsProvider from '../provider/os-open-names/provider.js'
 import EsriProvider from '../provider/esri-world-geocoder/provider.js'
 
-const getDerivedProps = (search, tokenCallback, isMobile, isDesktop, legend, state) => {
-  const searchProvider = search.provider === 'esri-world-geocoder' ? new EsriProvider(tokenCallback) : new OsProvider(tokenCallback)
+const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, isDesktop, legend, state) => {
+  const geocode = geocodeProvider === 'esri-world-geocoder' ? new EsriProvider(requestCallback) : new OsProvider(requestCallback)
   const searchWidth = !isMobile ? (legend.keyWidth || legend.width) : null
   const isFixed = search.isExpanded && isDesktop
   const hasClear = isMobile && !!state.value?.length
   const hasClose = !isMobile && !isFixed
   const className = `fm-c-search${isFixed ? ' fm-c-search--fixed' : ''}`
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
-  return { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName }
+  return { geocode, searchWidth, isFixed, hasClear, hasClose, className, formClassName }
 }
 
 export default function Search ({ instigatorRef }) {
   const { isKeyboard, isMobile, isDesktop, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const { label, isAutocomplete, tokenCallback } = search
-  const { id } = options
+  const { label, isAutocomplete } = search
+  const { id, requestCallback, geocodeProvider } = options
   const [state, dispatch] = useReducer(reducer, initialState)
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
 
-  const { searchProvider, searchWidth, isFixed, hasClear, hasClose, className, formClassName } = getDerivedProps(search, tokenCallback, isMobile, isDesktop, legend, state)
+  const { geocode, searchWidth, isFixed, hasClear, hasClose, className, formClassName } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, isDesktop, legend, state)
   // Hide soft keyboard on touchstart outside search input
   useOutsideInteract(inputRef, 'touchstart', e => {
     if (document.activeElement !== inputRef.current) {
@@ -43,7 +43,7 @@ export default function Search ({ instigatorRef }) {
   })
 
   const updateViewport = async (value, suggestionId) => {
-    const location = await searchProvider.find(value, suggestionId)
+    const location = await geocode.find(value, suggestionId)
     if (!location) {
       return
     }
@@ -191,7 +191,7 @@ export default function Search ({ instigatorRef }) {
         </form>
       </div>
       {isAutocomplete && (
-        <Autocomplete id={id} state={state} dispatch={dispatch} provider={searchProvider} updateViewport={updateViewport} />
+        <Autocomplete id={id} state={state} dispatch={dispatch} geocode={geocode} updateViewport={updateViewport} />
       )}
     </div>
   )

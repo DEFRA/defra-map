@@ -1,0 +1,19 @@
+.fm-c-menu {
+    padding-top: 20px;
+    padding-bottom: 15px;
+    line-height: 1rem;
+
+    &__heading {
+        font-weight: 700;
+        margin-bottom: 0;
+        padding-bottom: 15px;
+    }
+}
+
+.fm-c-menu__item {
+    margin-bottom: 15px;
+    
+    &:last-child {
+        margin-bottom: 2px;
+    }
+}

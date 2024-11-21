@@ -175,6 +175,14 @@
     padding-right: 10px;
 }
 
+.fm-draw .fm-o-inner .fm-o-focus-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: transparent;
+    visibility: visible;
+}
+
 .fm-o-viewport-controls {
     display: flex;
 }

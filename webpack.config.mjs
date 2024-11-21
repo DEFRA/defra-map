@@ -2,6 +2,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import e from 'path'
 
 const t = e.dirname(new URL(import.meta.url).pathname)
+
 export default {
   entry: {
     'flood-map': [

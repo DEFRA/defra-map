@@ -10,7 +10,7 @@ export default function App (options) {
   const mobileMQ = `(max-width: ${options.maxMobile || settings.breakpoints.MAX_MOBILE})`
   const desktopMQ = `(min-width: ${options.minDesktop || settings.breakpoints.MIN_DESKTOP})`
   const colorSchemeMQ = '(prefers-color-scheme: dark)'
-  const { type, parent, target, handleExit } = options
+  const { type, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDarkMode, setIsDarkMode] = useState(window?.matchMedia(colorSchemeMQ).matches)
@@ -18,7 +18,12 @@ export default function App (options) {
   const [isKeyboard, setIsKeyboard] = useState(!!options.isKeyboard)
 
   // Create a provider instance
-  const provider = useRef(new Provider(options.provider))
+  const provider = useRef(new Provider({
+    requestCallback,
+    geocodeProvider,
+    symbols,
+    ...styles
+  }))
   const viewportRef = useRef(null)
   const paddingBoxRef = useRef(null)
   const frameRef = useRef(null)

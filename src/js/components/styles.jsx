@@ -7,7 +7,7 @@ import More from './more.jsx'
 
 export default function Styles () {
   const { options, provider, activeRef } = useApp()
-  const { id } = options
+  const { id, framework } = options
   const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
   const viewportDispatch = useViewport().dispatch
@@ -18,7 +18,7 @@ export default function Styles () {
   const [isExpanded, setIsExpanded] = useState(basemaps.indexOf(currentBasemap) > 2 || size !== 'small')
   buttonsRef.current = basemaps.map((_, i) => buttonsRef.current[i] ?? createRef())
 
-  const hasSize = capabilities[options.provider.name || 'default'].hasSize
+  const hasSize = capabilities[framework || 'default'].hasSize
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3

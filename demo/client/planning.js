@@ -1,5 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getOsToken, getEsriToken } from './tokens.js'
+import { getInterceptors, getRequest, getEsriToken } from './request.js'
 
 let map, isDark, isRamp
 
@@ -166,6 +166,7 @@ const symbols = getSymbols()
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
+  framework: 'esri',
   type: 'hybrid',
   place: 'Ambleside',
   zoom: 16,
@@ -174,23 +175,19 @@ const fm = new FloodMap('map', {
   centre: [324973, 536891],
   height: '750px',
   hasGeoLocation: true,
-  provider: {
-    name: 'esri',
-    osTokenCallback: getOsToken,
-    esriTokenCallback: getEsriToken,
+  symbols,
+  requestCallback: getRequest,
+  // geocodeProvider: 'esri-world-geocoder',
+  styles: {
+    tokenCallback: getEsriToken,
+    interceptorsCallback: getInterceptors,
     defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,
-    darkUrl: process.env.OS_VTAPI_DARK_URL,
-    reverseGeocode: 'esri-world-geocoder',
-    symbols
+    darkUrl: process.env.OS_VTAPI_DARK_URL
   },
   search: {
     label: 'Search for a place',
     isAutocomplete: true,
-    isExpanded: false,
-    provider: 'os-open-names',
-    tokenCallback: getOsToken
-    // provider: 'esri-world-geocoder',
-    // tokenCallback: getEsriToken
+    isExpanded: false
   },
   legend: {
     width: '280px',
@@ -470,11 +467,7 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   queryPolygon: {
-    heading: 'Get a boundary  report',
-    startLabel: 'Add site boundary',
-    editLabel: 'Edit site boundary',
-    addLabel: 'Add boundary',
-    updateLabel: 'Update boundary',
+    heading: 'Site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
@@ -512,6 +505,11 @@ fm.addEventListener('change', e => {
 
 // Listen to map queries
 fm.addEventListener('query', e => {
+  if(e.detail.resultType === 'polygon'){
+    console.log('Polygon query',e.detail)
+    return
+  }
+  
   const { coord, features } = e.detail
   const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
 

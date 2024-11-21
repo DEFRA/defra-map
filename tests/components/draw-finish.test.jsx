@@ -22,12 +22,9 @@ describe('draw-finish', () => {
 
   jest.mocked(eventBus)
 
-  it('should handle click for Add label', () => {
+  it('should handle click for Confirm label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      queryPolygon: {
-        addLabel: 'test add'
-      },
       provider: {
         draw: {
           finish: drawFinish
@@ -40,11 +37,35 @@ describe('draw-finish', () => {
       }
     })
 
+    render(<DrawFinish cancelBtnRef={null} />)
+
+    fireEvent.click(screen.getByText('Confirm area'))
+
+    expect(drawFinish).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalled()
+    expect(viewPortRefFocus).toHaveBeenCalled()
+    expect(eventBus.dispatch).toHaveBeenCalled()
+  })
+
+  it('should handle click for Cancel label', () => {
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      provider: {
+        draw: {
+          cancel: drawFinish
+        }
+      },
+      viewportRef: {
+        current: {
+          focus: viewPortRefFocus
+        }
+      }
+    })
+
     render(<DrawFinish />)
 
-    fireEvent.click(document.querySelector('button'))
+    fireEvent.click(screen.getByText('Cancel'))
 
-    expect(screen.getByText('test add')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()
@@ -55,9 +76,6 @@ describe('draw-finish', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       query: true,
-      queryPolygon: {
-        updateLabel: 'test update'
-      },
       provider: {
         draw: {
           finish: drawFinish
@@ -72,9 +90,9 @@ describe('draw-finish', () => {
 
     render(<DrawFinish />)
 
-    fireEvent.click(document.querySelector('button'))
+    fireEvent.click(screen.getByText('Update area'))
 
-    expect(screen.getByText('test update')).toBeTruthy()
+    expect(screen.getByText('Update area')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()

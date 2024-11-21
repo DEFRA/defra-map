@@ -2,7 +2,7 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 
-export default function StylesButton ({ ariaLabelledby, stylesBtnRef }) {
+export default function StylesButton ({ stylesBtnRef }) {
   const { provider, dispatch, options } = useApp()
   const { id } = options
   const { basemaps } = provider

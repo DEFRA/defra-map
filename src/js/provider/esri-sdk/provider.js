@@ -6,21 +6,21 @@ import { capabilities } from '../../store/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import src from './src.json'
-import config from './config.json'
 
 class Provider extends EventTarget {
-  constructor ({ osTokenCallback, esriTokenCallback, defaultUrl, darkUrl, aerialUrl, reverseGeocode }) {
+  constructor ({ requestCallback, tokenCallback, interceptorsCallback, geocodeProvider, defaultUrl, darkUrl, aerialUrl }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
-    this.osTokenCallback = osTokenCallback
-    this.esriTokenCallback = esriTokenCallback
+    this.requestCallback = requestCallback
+    this.tokenCallback = tokenCallback
+    this.interceptorsCallback = interceptorsCallback
+    this.geocodeProvider = geocodeProvider
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.stylesImagePath = src.STYLES
-    this.reverseGeocode = reverseGeocode
     this.isUserInitiated = false
     this.attribution = {
       label: 'Ordnance Survey logo'
@@ -46,13 +46,6 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addInterceptors (params) {
-    const token = (await this.osTokenCallback()).token
-    params.requestOptions.headers = {
-      Authorization: 'Bearer ' + token
-    }
-  }
-
   async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
@@ -64,8 +57,9 @@ class Provider extends EventTarget {
     const GraphicsLayer = modules[7].default
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
-    esriConfig.apiKey = (await this.esriTokenCallback()).token
-    esriConfig.request.interceptors.push({ urls: config.OS_SERVICE_URL, before: async params => this.addInterceptors(params) })
+    esriConfig.apiKey = (await this.tokenCallback()).token
+    // Add intercepors
+    this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()
@@ -227,11 +221,11 @@ class Provider extends EventTarget {
     this.view.goTo({ center: coord, zoom }).catch(err => console.log(err))
   }
 
-  initDraw (options, report) {
+  initDraw (options) {
     this.removeTargetMarker()
     import(/* webpackChunkName: "esri-sdk-draw" */ './draw.js').then(module => {
       const Draw = module.default
-      this.draw = new Draw(this, options, report)
+      this.draw = new Draw(this, options)
     })
   }
 
@@ -283,13 +277,12 @@ class Provider extends EventTarget {
 
   async getNearest (coord) {
     const isOs = this.reverseGeocode !== 'esri-world-geocoder'
-    const tokenCallback = isOs ? this.osTokenCallback : this.esriTokenCallback
 
     const { getNearest } = isOs
       ? await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
       : await import(/* webpackChunkName: "esri-sdk" */ '../esri-world-geocoder/nearest.js')
 
-    const response = await getNearest(coord, tokenCallback)
+    const response = await getNearest(coord, this.requestCallback)
 
     return response
   }

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from 'react'
 import { debounce } from '../lib/debounce'
 import Status from './status.jsx'
 
-export default function Autocomplete ({ id, state, dispatch, provider, updateViewport }) {
+export default function Autocomplete ({ id, state, dispatch, geocode, updateViewport }) {
   const SUGGEST_DELAY = 350
   const STATUS_DELAY = 500
   const selectedRef = useRef()
@@ -10,7 +10,7 @@ export default function Autocomplete ({ id, state, dispatch, provider, updateVie
   const { value, selected } = state
 
   const debounceUpdateSuggest = debounce(async (text) => {
-    const items = await provider.suggest(text)
+    const items = await geocode.suggest(text)
     dispatch({ type: 'ADD_SUGGESTIONS', payload: items })
     updateStatus()
   }, SUGGEST_DELAY)

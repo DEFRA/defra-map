@@ -20,9 +20,6 @@ export default mergeWithCustomize({
     main: [
       path.join(__dirname, 'client/planning.js'),
       path.join(__dirname, 'client/main.scss')
-    ],
-    'long-term': [
-      path.join(__dirname, 'client/long-term.js')
     ]
   },
   plugins: [

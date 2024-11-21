@@ -1,5 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getOsToken } from './tokens.js'
+import { getRequest, getTileRequest } from './request.js'
 import getSymbols from './symbols.js'
 import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 
@@ -17,21 +17,20 @@ const fm = new FloodMap('map', {
   hasGeoLocation: true,
   height: '600px',
   // buttonType: 'anchor',
-  provider: {
+  symbols,
+  requestCallback: getRequest,
+  // geocodeProvider: 'esri-world-geocoder',
+  styles: {
+    tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,
     aerialUrl: process.env.AERIAL_URL,
     deuteranopiaUrl: process.env.DEUTERANOPIA_URL,
-    tritanopiaUrl: process.env.TRITANOPIA_URL,
-    reverseGeocodeProvider: 'os-open-names',
-    osTokenCallback: getOsToken,
-    symbols
+    tritanopiaUrl: process.env.TRITANOPIA_URL
   },
   search: {
     label: 'Search for a place',
-    isAutocomplete: true,
-    provider: 'os-open-names',
-    tokenCallback: getOsToken
+    isAutocomplete: true
   },
   legend: {
     title: 'Menu',

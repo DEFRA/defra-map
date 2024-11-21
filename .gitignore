@@ -25,15 +25,8 @@ node_modules/
 
 # Output
 dist/
+plugin
 coverage
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-Terms
 
 # Webpack bundle analyser
 stats.json
-
-# Demo assets
-demo/assets/js/*
-!demo/assets/js/plugin.js

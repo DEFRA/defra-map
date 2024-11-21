@@ -8,8 +8,7 @@
       }
     },
     "assets": [
-      "/plugin/js",
-      "/plugin/images"
+      "/plugin/js"
     ],
     "scripts": [
       "/plugin/js/flood-map.js"

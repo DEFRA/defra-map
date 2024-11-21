@@ -10,7 +10,7 @@ import Search from './search.jsx'
 import Panel from './panel.jsx'
 import Segments from './segments.jsx'
 import Layers from './layers.jsx'
-import DrawStart from './draw-start.jsx'
+import Draw from './draw.jsx'
 import Styles from './styles.jsx'
 import Keyboard from './keyboard.jsx'
 import LegendButton from './legend-button.jsx'
@@ -24,7 +24,6 @@ import Location from './location.jsx'
 import Attribution from './attribution.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
-import DrawCancel from './draw-cancel.jsx'
 import DrawEdit from './draw-edit.jsx'
 import QueryButton from './query-button.jsx'
 import Help from './help.jsx'
@@ -40,7 +39,6 @@ export default function Container () {
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
   const helpBtnRef = useRef(null)
-  const cancelBtnRef = useRef(null)
   const maskRef = useRef(null)
 
   // Expanded panels
@@ -101,12 +99,16 @@ export default function Container () {
             {!isQueryMode
               ? (
                 <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
-                  {queryPolygon && <DrawStart />}
+                  {queryPolygon && (
+                    <div className='fm-c-menu'>
+                      <Draw />
+                    </div>
+                  )}
                   {hasSegments ? <Segments /> : null}
                   {hasLayers ? <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
                 )
-              : <Help focusRef={cancelBtnRef} heading={queryPolygon.helpLabel} body={queryPolygon.html} />}
+              : <Help heading={queryPolygon.helpLabel} body={queryPolygon.html} />}
           </div>
         )}
         <div className='fm-o-main'>
@@ -144,7 +146,11 @@ export default function Container () {
             )}
             {!isQueryMode && activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
               <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
-                {queryPolygon && <DrawStart />}
+                {queryPolygon && (
+                  <div className='fm-c-menu'>
+                    <Draw />
+                  </div>
+                )}
                 {hasSegments && <Segments />}
                 {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />}
               </Panel>
@@ -157,8 +163,7 @@ export default function Container () {
                 <Attribution />
                 {isQueryMode && !isMobile && (
                   <div className='fm-o-actions'>
-                    {mode && <DrawFinish />}
-                    <DrawCancel cancelBtnRef={cancelBtnRef} />
+                    <DrawFinish />
                   </div>
                 )}
                 {hasQueryButton && !isMobile && (
@@ -187,15 +192,18 @@ export default function Container () {
               )}
               {!isQueryMode && activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
-                  {queryPolygon && <DrawStart />}
+                  {queryPolygon && (
+                    <div className='fm-c-menu'>
+                      <Draw />
+                    </div>
+                  )}
                   {hasSegments ? <Segments /> : null}
                   {hasLayers ? <Layers hasSymbols hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
               )}
               {isQueryMode && isMobile && (
                 <div className='fm-o-actions'>
-                  {mode && <DrawFinish />}
-                  <DrawCancel cancelBtnRef={cancelBtnRef} />
+                  <DrawFinish />
                 </div>
               )}
               {hasQueryButton && isMobile && (

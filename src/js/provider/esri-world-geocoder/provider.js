@@ -48,18 +48,18 @@ const suggestion = (query, { text, magicKey }) => {
 }
 
 class Provider {
-  constructor (tokenCallback) {
-    this.tokenCallback = tokenCallback
+  constructor (requestCallback) {
+    this.requestCallback = requestCallback
   }
 
   async suggest (query) {
     if (!query) {
       return []
     }
-    const token = (await this.tokenCallback()).token
-    let url = config.SUGGEST_URL.replace('{token}', token)
+    // const token = (await this.requestCallback()).token
+    let url = config.SUGGEST_URL
     url = url.replace('{query}', encodeURI(query)).replace('{maxSuggestions}', isPostcode(query) ? 1 : 8)
-    const response = await fetch(url)
+    const response = await fetch(await this.requestCallback(url))
     const json = await response.json()
     if (json.error || !json.suggestions?.length) {
       return []
@@ -76,10 +76,10 @@ class Provider {
     if (!query) {
       return null
     }
-    const token = (await this.tokenCallback()).token
-    let url = config.FIND_ADDRESS_CANDIDATES_URL.replace('{token}', token)
+    // const token = (await this.requestCallback()).token
+    let url = config.FIND_ADDRESS_CANDIDATES_URL
     url = url.replace('{query}', encodeURI(query)).replace('{maxLocations}', 8).replace('{magicKey}', id || '')
-    const response = await fetch(url)
+    const response = await fetch(await this.requestCallback(url))
     const json = await response.json()
     if (json.error || !json.candidates?.length) {
       return null

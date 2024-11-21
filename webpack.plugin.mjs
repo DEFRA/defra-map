@@ -40,14 +40,6 @@ export default {
     new CopyWebpackPlugin({
       patterns: [
         {
-          context: dirname + '/src/images',
-          from: path.resolve(dirname, 'src/images/*'),
-          to: path.resolve(dirname, 'plugin/images'),
-          globOptions: {
-            ignore: ['*.DS_Store', 'Thumbs.db']
-          }
-        },
-        {
           context: dirname + '/src/templates',
           from: path.resolve(dirname, 'src/templates/*'),
           to: path.resolve(dirname, 'plugin/templates')

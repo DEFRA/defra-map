@@ -4,38 +4,34 @@ import { useApp } from '../store/use-app'
 export default function DrawEdit () {
   const { provider, mode, dispatch } = useApp()
 
-  const handleEditClick = () => {
+  const handleShapeClick = () => {
     provider.draw.edit()
-    dispatch({ type: 'SET_MODE', payload: { value: 'draw', isFrameVisible: false } })
+    dispatch({ type: 'SET_MODE', payload: { value: 'draw' } })
   }
 
-  const handleBoxClick = () => {
+  const handleSquareClick = () => {
     provider.draw.reset()
-    dispatch({ type: 'SET_MODE', payload: { value: 'frame', isFrameVisible: true } })
+    dispatch({ type: 'SET_MODE', payload: { value: 'frame' } })
   }
-
-  // const handleDoneClick = () => {
-  //     const feature = provider.draw.finishEdit()
-  //     dispatch({ type: 'SET_MODE', value: 'draw', isFrameVisible: !feature })
-  // }
-
-  // const handleResetClick = () => {
-  //     provider.draw.reset()
-  // }
 
   return (
     <div className='fm-o-viewport-controls'>
-      <button onClick={handleEditClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' {...mode === 'draw' ? { style: { display: 'none' } } : {}}>
+      <button onClick={handleShapeClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' {...mode === 'draw' ? { style: { display: 'none' } } : {}}>
         <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='none' stroke='currentColor' strokeWidth='2'>
-          <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' /><circle cx='4' cy='4' r='2' /><circle cx='4' cy='15.996' r='2' /><circle cx='16' cy='4' r='2' /><circle cx='16' cy='15.996' r='2' />
+          <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' />
+          <circle cx='4' cy='4' r='2' />
+          <circle cx='4' cy='15.996' r='2' />
+          <circle cx='16' cy='4' r='2' />
+          <circle cx='16' cy='15.996' r='2' />
         </svg>
         Edit shape
       </button>
-      <button onClick={handleBoxClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' {...mode === 'frame' ? { style: { display: 'none' } } : {}}>
-        <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='none' stroke='currentColor' strokeWidth='2'>
-          <rect x='2' y='2' width='16' height='16' />
+      <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' {...mode === 'frame' ? { style: { display: 'none' } } : {}}>
+        <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
+          <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
+          <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none' />
         </svg>
-        Use box
+        Use square
       </button>
     </div>
   )

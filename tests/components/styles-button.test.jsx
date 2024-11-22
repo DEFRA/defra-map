@@ -1,3 +1,5 @@
+/* global MouseEvent, PointerEvent */
+
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import StylesButton from '../../src/js/components/styles-button'

@@ -9,7 +9,6 @@ export default function StylesButton ({ stylesBtnRef }) {
 
   // Mousedown used as target can move between mouseDown and mouseUp
   const handlePointerDown = e => {
-    console.log('Dispatch function:', dispatch)
     if (e.button !== 0) {
       return
     }

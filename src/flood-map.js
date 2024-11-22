@@ -1,10 +1,8 @@
-'use strict'
 import { events, settings } from './js/store/constants.js'
 import { capabilities } from './js/store/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
-
 // Polyfills
 import 'event-target-polyfill'
 
@@ -22,7 +20,7 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const isSupported = capabilities[props?.provider?.name || 'default'].isSupported()
+    const isSupported = capabilities[props.framework || 'default'].isSupported()
     if (!isSupported) {
       this._insertNotSupported(props.fallBackHTML)
       return
@@ -114,12 +112,13 @@ export class FloodMap extends EventTarget {
   }
 
   _insertNotSupported (fallBackHTML) {
-    console.log('Device not supported')
     this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
       <div class="fm-error">
-        <p class="govuk-body">Your device is not supporterd. A map would be a available with a more up-to-date device.</p>
+        <p class="govuk-body">Your device is not supporterd. A map is available with a more up-to-date device.</p>
       </div>
     `)
+    // Remove hidden class
+    document.body.classList.remove('fm-js-hidden')
   }
 
   _insertButtonHTML () {
@@ -133,6 +132,8 @@ export class FloodMap extends EventTarget {
     const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
     this.button = button
+    // Remove hidden class
+    document.body.classList.remove('fm-js-hidden')
   }
 
   _handleExit () {

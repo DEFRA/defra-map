@@ -1,7 +1,6 @@
 import webpack from 'webpack'
 import path from 'path'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
 import dotenv from 'dotenv'
 import { setupMiddlewares } from './server/main.js'
 
@@ -62,17 +61,6 @@ export default {
         MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY)
       }
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'assets/images/*'),
-          to: path.resolve(__dirname, 'dist'),
-          globOptions: {
-            ignore: ['*.DS_Store', 'Thumbs.db']
-          }
-        }
-      ]
-    }),
     new MiniCssExtractPlugin({
       filename: '[name].css'
     })
@@ -81,7 +69,7 @@ export default {
     rules: [
       {
         test: /\.jsx?$/i,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!event-target-polyfill).+/,
         loader: 'babel-loader'
       },
       {
@@ -91,12 +79,6 @@ export default {
           'css-loader',
           'sass-loader'
         ]
-      },
-      {
-        test: /\.(jpg|png)$/,
-        use: {
-          loader: 'url-loader'
-        }
       },
       {
         test: /\.jsx?$/,

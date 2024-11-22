@@ -52,7 +52,7 @@ describe('zoom', () => {
 
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_IN' })
   })
-  
+
   it('should dispatch ZOOM_OUT action on zoom out button click', () => {
     const viewportDispatchMock = jest.fn()
     jest.mocked(useViewport).mockReturnValue({
@@ -68,5 +68,4 @@ describe('zoom', () => {
 
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_OUT' })
   })
-
 })

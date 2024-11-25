@@ -2,7 +2,7 @@ import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handle
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
-import { capabilities } from '../../store/capabilities.js'
+import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import src from './src.json'

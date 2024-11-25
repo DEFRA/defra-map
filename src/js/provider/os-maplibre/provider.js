@@ -4,7 +4,7 @@ import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { getFocusPadding } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
-import { capabilities } from '../../store/capabilities.js'
+import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import src from './src.json'
 

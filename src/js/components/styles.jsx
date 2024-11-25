@@ -2,7 +2,7 @@ import React, { useRef, useState, createRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
-import { capabilities } from '../store/capabilities.js'
+import { capabilities } from '../lib/capabilities.js'
 import More from './more.jsx'
 
 export default function Styles () {

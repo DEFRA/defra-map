@@ -1,5 +1,5 @@
 import { events, settings } from './js/store/constants.js'
-import { capabilities } from './js/store/capabilities.js'
+import { capabilities } from './js/lib/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
@@ -20,9 +20,17 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const isSupported = capabilities[props.framework || 'default'].isSupported()
-    if (!isSupported) {
-      this._insertNotSupported(props.fallBackHTML)
+    const device = capabilities[props.framework || 'default'].getDevice()
+    if (!device.isSupported) {
+      this.el.insertAdjacentHTML('beforebegin', `
+        <div class="fm-error">
+          <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
+        </div>
+      `)
+      // Remove hidden class
+      document.body.classList.remove('fm-js-hidden')
+      // Log error message
+      device.error && console.log(device.error)
       return
     }
 
@@ -109,16 +117,6 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
-  }
-
-  _insertNotSupported (fallBackHTML) {
-    this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
-      <div class="fm-error">
-        <p class="govuk-body">Your device is not supporterd. A map is available with a more up-to-date device.</p>
-      </div>
-    `)
-    // Remove hidden class
-    document.body.classList.remove('fm-js-hidden')
   }
 
   _insertButtonHTML () {

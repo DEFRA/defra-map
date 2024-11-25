@@ -8,20 +8,21 @@ import 'event-target-polyfill'
 
 const { location, history } = window
 const cssFocusVisible = 'fm-u-focus-visible'
+const device = framework => capabilities[framework || 'default'].getDevice()
 
 export class FloodMap extends EventTarget {
   _search
   _info
   _selected
   _draw
-
+  
   constructor (id, props) {
     super()
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const device = capabilities[props.framework || 'default'].getDevice()
-    if (!device.isSupported) {
+    const { isSupported, error } = device(props.framework)
+    if (!isSupported) {
       this.el.insertAdjacentHTML('beforebegin', `
         <div class="fm-error">
           <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
@@ -30,7 +31,7 @@ export class FloodMap extends EventTarget {
       // Remove hidden class
       document.body.classList.remove('fm-js-hidden')
       // Log error message
-      device.error && console.log(device.error)
+      error && console.log(error)
       return
     }
 

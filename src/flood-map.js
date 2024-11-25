@@ -15,7 +15,7 @@ export class FloodMap extends EventTarget {
   _info
   _selected
   _draw
-  
+
   constructor (id, props) {
     super()
     this.el = document.getElementById(id)

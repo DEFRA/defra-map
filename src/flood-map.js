@@ -1,15 +1,14 @@
-'use strict'
 import { events, settings } from './js/store/constants.js'
-import { capabilities } from './js/store/capabilities.js'
+import { capabilities } from './js/lib/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
-
 // Polyfills
 import 'event-target-polyfill'
 
 const { location, history } = window
 const cssFocusVisible = 'fm-u-focus-visible'
+const device = framework => capabilities[framework || 'default'].getDevice()
 
 export class FloodMap extends EventTarget {
   _search
@@ -22,9 +21,17 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const isSupported = capabilities[props?.provider?.name || 'default'].isSupported()
+    const { isSupported, error } = device(props.framework)
     if (!isSupported) {
-      this._insertNotSupported(props.fallBackHTML)
+      this.el.insertAdjacentHTML('beforebegin', `
+        <div class="fm-error">
+          <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
+        </div>
+      `)
+      // Remove hidden class
+      document.body.classList.remove('fm-js-hidden')
+      // Log error message
+      error && console.log(error)
       return
     }
 
@@ -113,15 +120,6 @@ export class FloodMap extends EventTarget {
     })
   }
 
-  _insertNotSupported (fallBackHTML) {
-    console.log('Device not supported')
-    this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
-      <div class="fm-error" role="alert">
-        <p class="govuk-body">Your device is not supporterd. A map would be a available with a more up-to-date device.</p>
-      </div>
-    `)
-  }
-
   _insertButtonHTML () {
     const { buttonText, buttonType } = this.props
     this.el.insertAdjacentHTML('beforebegin', `
@@ -133,6 +131,8 @@ export class FloodMap extends EventTarget {
     const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
     this.button = button
+    // Remove hidden class
+    document.body.classList.remove('fm-js-hidden')
   }
 
   _handleExit () {

@@ -19,7 +19,7 @@ npm i @defra/flood-map
 You will need to initialise flood map in your client side code:
 
 ```js
-import Floodmap from '@defra/flood-map';
+import FloodMap from '@defra/flood-map';
 ```
 
 ### HTML

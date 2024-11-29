@@ -223,7 +223,7 @@
     }
 }
 
-.fm-c-btn--search {
+.fm-mobile .fm-c-btn--search {
     margin-right: 0;
 }
 
@@ -289,6 +289,20 @@
         object-fit: none;
         transform: scale(0.5);
         transform-origin: 0 0;
+    }
+}
+
+// Attribution
+.fm-c-btn--attribution {
+    border-radius: 100%;
+    background-color: transparent;
+    border: 2px solid var(--foreground-colour);
+    padding: 0;
+    margin-top: 20px;
+
+    &.fm-u-focus-visible::after {
+        @include focus($offset: -2px);
+        border-radius: 100%;
     }
 }
 

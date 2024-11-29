@@ -5,6 +5,7 @@ import { getFocusPadding } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
+import { defaults as storeDefaults } from '../../store/constants.js'
 import src from './src.json'
 
 class Provider extends EventTarget {
@@ -15,16 +16,13 @@ class Provider extends EventTarget {
     this.requestCallback = requestCallback
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
-    this.geocodeProvider = geocodeProvider
+    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.stylesImagePath = src.STYLES
     this.isUserInitiated = false
-    this.attribution = {
-      label: 'Ordnance Survey logo'
-    }
   }
 
   init (options) {

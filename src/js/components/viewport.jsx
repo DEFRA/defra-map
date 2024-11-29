@@ -6,7 +6,6 @@ import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
 import { setBasemap, getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
-import Status from './status.jsx'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
@@ -322,7 +321,11 @@ export default function Viewport () {
       </ul>
       {useMemo(() => {
         return (
-          <Status message={status} isVisuallyHidden={isStatusVisuallyHidden} />
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
+            <div className='fm-c-status__inner govuk-body-s' aria-atomic>
+              {status}
+            </div>
+          </div>
         )
       }, [status])}
     </div>

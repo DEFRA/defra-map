@@ -21,7 +21,7 @@ import StylesButton from './styles-button.jsx'
 import Zoom from './zoom.jsx'
 import Reset from './reset.jsx'
 import Location from './location.jsx'
-import Attribution from './attribution.jsx'
+import Logo from './logo.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawEdit from './draw-edit.jsx'
@@ -113,16 +113,16 @@ export default function Container () {
         )}
         <div className='fm-o-main'>
           <Viewport />
-          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}`}>
+          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}${activePanel === 'STYLE' ? ' fm-o-inner--has-style' : ''}`}>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 {hasExitButton && <Exit />}
-                {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
-                {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {!isMobile && hasSearchButton && (
                   <SearchButton searchBtnRef={searchBtnRef} />
                 )}
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
+                {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
+                {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
                 {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
               </div>
               <div className='fm-o-top__column'>
@@ -134,6 +134,14 @@ export default function Container () {
                   <SearchButton searchBtnRef={searchBtnRef} tooltip='left' />
                 )}
                 {isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
+                {!(isMobile && hasSearchPanel) && (
+                  <>
+                    {provider.basemaps && !!Object.keys(provider?.basemaps).length && <StylesButton stylesBtnRef={stylesBtnRef} />}
+                    {options.hasReset && <Reset />}
+                    {options.hasGeoLocation && <Location provider={provider} />}
+                    {!isMobile && <Zoom />}
+                  </>
+                )}
               </div>
             </div>
             {!isQueryMode && activePanel === 'KEY' && !isMobile && (
@@ -160,7 +168,9 @@ export default function Container () {
             )}
             <div className='fm-o-bottom'>
               <div className='fm-o-footer'>
-                <Attribution />
+                <div className='fm-o-logo'>
+                  <Logo />
+                </div>
                 {isQueryMode && !isMobile && (
                   <div className='fm-o-actions'>
                     <DrawFinish />
@@ -171,16 +181,7 @@ export default function Container () {
                     <QueryButton />
                   </div>
                 )}
-                <div className='fm-o-buttons' {...(activePanel === 'STYLE' ? { style: { display: 'none' } } : {})}>
-                  {options.hasReset && <Reset />}
-                  {options.hasGeoLocation && (
-                    <Location provider={provider} />
-                  )}
-                  {!isMobile && <Zoom />}
-                  {provider.basemaps && !!Object.keys(provider?.basemaps).length && (
-                    <StylesButton stylesBtnRef={stylesBtnRef} />
-                  )}
-                </div>
+                <div className='fm-o-scale' />
               </div>
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel isInset isNotObscure className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} />
@@ -212,6 +213,11 @@ export default function Container () {
                 </div>
               )}
             </div>
+            {!isMobile && (
+              <div className='fm-o-attribution'>
+                <div className='fm-c-attribution'>{settings.ATTRIBUTION}</div>
+              </div>
+            )}
           </div>
           {activePanel === 'STYLE' && (
             <Panel isInset label='Map style' instigatorRef={stylesBtnRef} width='400px' isModal>

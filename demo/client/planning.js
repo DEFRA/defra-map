@@ -167,13 +167,13 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   framework: 'esri',
-  type: 'hybrid',
+  type: 'inline',
   place: 'Ambleside',
   zoom: 16,
   minZoom: 6,
   maxZoom: 20,
   centre: [324973, 536891],
-  height: '750px',
+  height: '100%',
   hasGeoLocation: true,
   symbols,
   requestCallback: getRequest,
@@ -185,9 +185,8 @@ const fm = new FloodMap('map', {
     darkUrl: process.env.OS_VTAPI_DARK_URL
   },
   search: {
-    label: 'Search for a place',
-    isAutocomplete: true,
-    isExpanded: false
+    country: 'england',
+    isAutocomplete: true
   },
   legend: {
     width: '280px',
@@ -391,12 +390,10 @@ const fm = new FloodMap('map', {
         collapse: 'collapse',
         items: [
           {
-            // id: 'fz1',
             label: 'Flood zone 1',
             fill: '#00A4CD'
           },
           {
-            // id: 'fz2',
             label: 'Flood zone 2',
             fill: '#003078'
           },

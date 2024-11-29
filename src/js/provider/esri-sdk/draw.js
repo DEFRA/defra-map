@@ -1,4 +1,5 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
 import Graphic from '@arcgis/core/Graphic'
 import { defaults } from './constants'
 
@@ -91,6 +92,7 @@ export class Draw {
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
     const elGraphic = this.getGraphicFromElement(frame)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
+    console.log(graphic)
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
     this.oZoom = view.zoom
@@ -127,8 +129,7 @@ export class Draw {
 
     this.sketchViewModel = sketchViewModel
 
-    sketchViewModel.on(['update', 'undo', 'redo'], this.handleUpdate)
-    sketchViewModel.on('create-complete', this.handleCreateComplete)
+    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
     sketchViewModel.update(this.addGraphic(graphic))
   }
 
@@ -209,12 +210,25 @@ export class Draw {
     }
   }
 
-  handleCreateComplete () {
-    // console.log('handleCreateComplete')
-  }
+  handleUpdateDelete (e) {
+    const toolInfoType = e.toolEventInfo?.type
+    const graphic = e.graphics[0]
 
-  handleUpdate (e) {
-    if (e.toolEventInfo?.type.includes('move-start')) {
+    // Undo draw if polygon has a zero area
+    if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
+      const area = geometryEngine.planarArea(graphic.geometry, 'square-meters')
+      if (area <= 0) {
+        this.undo()
+      }
+    }
+
+    // Undo draw if attemtped self-intersect
+    if (toolInfoType === 'reshape' && graphic?.geometry.isSelfIntersecting) {
+      this.undo()
+    }
+
+    // Canel draw if attempted polygon move
+    if (toolInfoType === 'move-start') {
       this.cancel()
     }
   }

@@ -6,7 +6,7 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'buttonFirst', // 'buttonFirst',
+  type: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
@@ -29,7 +29,7 @@ const fm = new FloodMap('map', {
     tritanopiaUrl: process.env.TRITANOPIA_URL
   },
   search: {
-    label: 'Search for a place',
+    country: 'england',
     isAutocomplete: true
   },
   legend: {

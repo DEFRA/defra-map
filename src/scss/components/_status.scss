@@ -17,8 +17,4 @@
         box-shadow: $panel-shadow;
         pointer-events: auto;
     }
-
-    &--visually-hidden {
-        @extend %fm-u-visually-hidden;
-    }
 }

@@ -45,26 +45,38 @@ export class FloodMap extends EventTarget {
     this.root = null
 
     // Get visibility
-    const { type, maxMobile } = options
-    const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
+    const { maxMobile } = options
+    const mobileMQ = window.matchMedia(`(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`)
     this.searchParams = new URLSearchParams(document.location.search)
-    this.isMobile = window?.matchMedia(mobileMQ).matches
-    this.isVisible = this.searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !this.isMobile)
 
-    // Add app
-    if (this.isVisible) { this._importComponent() }
+    // Set isMobile and isVisible
+    this._handleMobileMQ(mobileMQ)
+
+    // Add container
+    if (this.isVisible) {
+      this._importComponent()
+    }
 
     // Add button
-    this._insertButtonHTML()
+    if (['buttonFirst', 'hybrid'].includes(props.type)) {
+      this._insertButtonHTML()
+      // Remove hidden class
+      if (!this.isVisible) {
+        document.body.classList.remove('fm-js-hidden')
+      }
+    }
 
     // Exit map
     this.props.handleExit = this._handleExit.bind(this)
 
+    // Responsive change add/remove app
+    mobileMQ.addEventListener('change', () => {
+      this._handleMobileMQ(mobileMQ)
+      this.isVisible ? this._importComponent() : this._removeComponent()
+    })
+
     // History change add/remove app
     window.addEventListener('popstate', this._handlePopstate.bind(this))
-
-    // Responsive add/remove app
-    window.matchMedia(mobileMQ).addEventListener('change', this._handleMobileMQ.bind(this))
 
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
@@ -131,8 +143,6 @@ export class FloodMap extends EventTarget {
     const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
     this.button = button
-    // Remove hidden class
-    document.body.classList.remove('fm-js-hidden')
   }
 
   _handleExit () {
@@ -154,22 +164,18 @@ export class FloodMap extends EventTarget {
   }
 
   _handleMobileMQ (e) {
-    this.isMobile = e.matches
     const { type } = this.props
     const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === this.id
-    this.isVisible = (hasViewParam || type === 'inline' || (type === 'hybrid' && !this.isMobile))
-    if (this.isVisible) {
-      this._importComponent()
-    } else {
-      this._removeComponent()
-    }
+    this.isMobile = e.matches
+    this.isVisible = hasViewParam || type === 'inline' || (type === 'hybrid' && !e.matches)
   }
 
   _handlePopstate () {
     const { type } = this.props
+    const hasButton = type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)
     if (history.state?.isBack) {
       this._importComponent()
-    } else if (type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)) {
+    } else if (hasButton) {
       this._removeComponent()
     } else {
       // No action
@@ -200,7 +206,7 @@ export class FloodMap extends EventTarget {
     if (this.root) {
       return
     }
-    this.button.setAttribute('style', 'display: none')
+    this.button?.setAttribute('style', 'display: none')
     this.root = module.default(this.el, { ...this.props, isKeyboard: this.isKeyboard })
   }
 

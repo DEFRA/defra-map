@@ -21,6 +21,7 @@ const fm = new FloodMap('map', {
   requestCallback: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   styles: {
+    attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,

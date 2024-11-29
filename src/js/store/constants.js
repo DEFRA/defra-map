@@ -69,9 +69,7 @@ export const settings = {
     layers: 'lyr',
     featureId: 'id',
     targetMarker: 'qxy'
-  },
-  ATTRIBUTION: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,
-  ATTRIBUTION_OPEN: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`
+  }
 }
 
 export const offsets = {

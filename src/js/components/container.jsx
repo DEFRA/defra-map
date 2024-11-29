@@ -213,11 +213,6 @@ export default function Container () {
                 </div>
               )}
             </div>
-            {!isMobile && (
-              <div className='fm-o-attribution'>
-                <div className='fm-c-attribution'>{settings.ATTRIBUTION}</div>
-              </div>
-            )}
           </div>
           {activePanel === 'STYLE' && (
             <Panel isInset label='Map style' instigatorRef={stylesBtnRef} width='400px' isModal>

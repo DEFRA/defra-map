@@ -92,7 +92,6 @@ export class Draw {
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
     const elGraphic = this.getGraphicFromElement(frame)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
-    console.log(graphic)
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
     this.oZoom = view.zoom

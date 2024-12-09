@@ -9,7 +9,7 @@ export const useOutsideInteract = (ref, type, callback) => {
      * Alert if clicked on outside of element
      */
     function handleInteractOutside (e) {
-      if (ref.current && document.contains(e.target) && !ref.current.contains(e.target)) {
+      if (ref.current && !ref.current.contains(e.target)) {
         callback(e)
       }
     }

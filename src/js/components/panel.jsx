@@ -27,7 +27,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   const bodyRef = useRef(null)
 
   // Hide keyboard on click outside
-  useOutsideInteract(elementRef, 'click', () => {
+  useOutsideInteract(elementRef, 'pointerdown', () => {
     if (isOutsideInteract) {
       handleClose()
     }

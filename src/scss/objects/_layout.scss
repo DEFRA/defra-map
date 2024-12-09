@@ -156,11 +156,6 @@
     max-height: calc(100% - (110px + ($margin * 2)));
 }
 
-.fm-tablet .fm-o-inner--has-style .fm-o-top__column:last-child,
-.fm-desktop .fm-o-inner--has-style .fm-o-top__column:last-child {
-    opacity: 0;
-}
-
 .fm-o-top {
     z-index: 9;
     display: flex;
@@ -291,7 +286,7 @@
     backface-visibility: hidden;
     padding: $margin;
     pointer-events: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .fm-tablet .fm-o-footer,
@@ -397,6 +392,16 @@
     svg {
         margin-right: 0;
     }
+}
+
+// Style overides
+.fm-c-panel.fm-c-panel--style {
+    z-index: 99;
+}
+
+.fm-tablet .fm-o-main > .fm-c-panel--style,
+.fm-desktop .fm-o-main > .fm-c-panel--style {
+    right: calc(40px + ($margin * 2));
 }
 
 // Apply button shadows

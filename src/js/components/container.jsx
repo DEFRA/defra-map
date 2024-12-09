@@ -80,6 +80,7 @@ export default function Container () {
 
   // Toggle inert elements
   useEffect(() => {
+    activeRef.current?.removeAttribute('aria-hidden')
     activeRef.current?.focus()
     updateTitle()
     toggleInert()
@@ -113,7 +114,7 @@ export default function Container () {
         )}
         <div className='fm-o-main'>
           <Viewport />
-          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}${activePanel === 'STYLE' ? ' fm-o-inner--has-style' : ''}`}>
+          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}`}>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 {hasExitButton && <Exit />}
@@ -145,12 +146,12 @@ export default function Container () {
               </div>
             </div>
             {!isQueryMode && activePanel === 'KEY' && !isMobile && (
-              <Panel isInset isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
+              <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded} isInset>
                 {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
               </Panel>
             )}
             {info && activePanel === 'INFO' && !isMobile && (
-              <Panel className='info' isInset isNotObscure label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} />
+              <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
             )}
             {!isQueryMode && activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
               <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
@@ -184,10 +185,10 @@ export default function Container () {
                 <div className='fm-o-scale' />
               </div>
               {info && activePanel === 'INFO' && isMobile && (
-                <Panel isInset isNotObscure className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} />
+                <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
               )}
               {!isQueryMode && activePanel === 'KEY' && isMobile && (
-                <Panel isInset isNotObscure className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded}>
+                <Panel className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded} isInset isNotObscure>
                   {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
               )}
@@ -215,19 +216,19 @@ export default function Container () {
             </div>
           </div>
           {activePanel === 'STYLE' && (
-            <Panel isInset label='Map style' instigatorRef={stylesBtnRef} width='400px' isModal>
+            <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isOutsideInteract isModal isInset>
               <Styles />
             </Panel>
           )}
-          {['KEYBOARD', 'ERROR'].includes(activePanel) && (
+          {['KEYBOARD', 'ERROR', 'STYLE'].includes(activePanel) && (
             <div className='fm-o-mask' ref={maskRef}>
               {activePanel === 'KEYBOARD' && (
-                <Panel isInset width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isOutsideInteract isModal>
+                <Panel width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isOutsideInteract isModal isInset>
                   <Keyboard />
                 </Panel>
               )}
               {activePanel === 'ERROR' && (
-                <Panel isInset maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal>
+                <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal isInset>
                   <MapError />
                 </Panel>
               )}

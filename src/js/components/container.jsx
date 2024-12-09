@@ -26,7 +26,6 @@ import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawEdit from './draw-edit.jsx'
 import QueryButton from './query-button.jsx'
-import Help from './help.jsx'
 import HelpButton from './help-button.jsx'
 
 export default function Container () {
@@ -60,11 +59,12 @@ export default function Container () {
   const isOffset = isLegendInsetPage || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
   const hasDrawButtons = isQueryMode && !(isDesktop && !isLegendInset)
   const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
-  const hasSearchButton = !isQueryMode && search && !(isDesktop && search?.isExpanded)
+  const hasSearchButton = search && !(isDesktop && search?.isExpanded)
   const hasSearchPanel = !isQueryMode && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))
   const hasQueryButton = !isQueryMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
   const hasSegments = legend.segments
   const hasLayers = legend.key
+  const hasMask = ['KEYBOARD', 'ERROR', 'STYLE'].includes(activePanel) || (activePanel === 'LEGEND' && isLegendModal)
 
   // Communication between Vanilla JS and React components
   useEffect(() => {
@@ -80,10 +80,9 @@ export default function Container () {
 
   // Toggle inert elements
   useEffect(() => {
-    activeRef.current?.removeAttribute('aria-hidden')
-    activeRef.current?.focus()
     updateTitle()
-    toggleInert()
+    toggleInert(activeRef.current)
+    activeRef.current?.focus()
   }, [isPage, activePanel])
 
   return (
@@ -109,7 +108,9 @@ export default function Container () {
                   {hasLayers ? <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
                 )
-              : <Help heading={queryPolygon.helpLabel} body={queryPolygon.html} />}
+              : (
+                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} html={queryPolygon.html} />
+              )}
           </div>
         )}
         <div className='fm-o-main'>
@@ -154,7 +155,7 @@ export default function Container () {
               <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
             )}
             {!isQueryMode && activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
-              <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
+              <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isOutsideInteract={isLegendModal} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                 {queryPolygon && (
                   <div className='fm-c-menu'>
                     <Draw />
@@ -165,7 +166,7 @@ export default function Container () {
               </Panel>
             )}
             {activePanel === 'HELP' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
-              <Help instigatorRef={helpBtnRef} heading={queryPolygon.helpLabel} body={queryPolygon.html} />
+              <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryPolygon.html} isModal />
             )}
             <div className='fm-o-bottom'>
               <div className='fm-o-footer'>
@@ -193,7 +194,7 @@ export default function Container () {
                 </Panel>
               )}
               {!isQueryMode && activePanel === 'LEGEND' && isMobile && isLegendInset && (
-                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isOutsideInteract={isLegendModal} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                   {queryPolygon && (
                     <div className='fm-c-menu'>
                       <Draw />
@@ -214,25 +215,25 @@ export default function Container () {
                 </div>
               )}
             </div>
+            {hasMask && (
+              <div className='fm-o-mask' ref={maskRef}>
+                {activePanel === 'KEYBOARD' && (
+                  <Panel width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isOutsideInteract isModal isInset>
+                    <Keyboard />
+                  </Panel>
+                )}
+                {activePanel === 'ERROR' && (
+                  <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal isInset>
+                    <MapError />
+                  </Panel>
+                )}
+              </div>
+            )}
           </div>
           {activePanel === 'STYLE' && (
             <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isOutsideInteract isModal isInset>
               <Styles />
             </Panel>
-          )}
-          {['KEYBOARD', 'ERROR', 'STYLE'].includes(activePanel) && (
-            <div className='fm-o-mask' ref={maskRef}>
-              {activePanel === 'KEYBOARD' && (
-                <Panel width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isOutsideInteract isModal isInset>
-                  <Keyboard />
-                </Panel>
-              )}
-              {activePanel === 'ERROR' && (
-                <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal isInset>
-                  <MapError />
-                </Panel>
-              )}
-            </div>
           )}
         </div>
       </div>

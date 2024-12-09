@@ -69,12 +69,9 @@ const open = (state, payload) => {
   }
 }
 
-const close = (state, payload) => {
-  // Restore previous panel only if it was the key
-  let activePanel = (state.previousPanel !== state.activePanel) && state.previousPanel
-  activePanel = activePanel === 'KEY' && 'KEY'
-  // Close all panels including key
-  activePanel = !payload ? activePanel : null
+const close = (state) => {
+  // Restore previous panel if it wasn't an info or legend
+  const activePanel = state.previousPanel !== 'INFO' ? state.previousPanel : null
   return {
     ...state,
     featureId: null,

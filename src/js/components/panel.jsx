@@ -18,7 +18,7 @@ const getProps = (id, className, isFixed, isMobile, isInset, instigatorRef, widt
   return { panelId, hasCloseBtn, hasWidth }
 }
 
-export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, setIsModal, isOutsideInteract, instigatorRef, width, maxWidth, html, children }) {
+export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, setIsModal, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { id } = options
 
@@ -26,14 +26,12 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   const elementRef = useRef(null)
   const bodyRef = useRef(null)
 
-  // Hide keyboard on click outside
-  useOutsideInteract(elementRef, 'pointerdown', () => {
-    if (isOutsideInteract) {
+  useOutsideInteract(elementRef, isModal, 'pointerdown', () => {
+    if (isModal) {
       handleClose()
     }
   })
 
-  // Events
   const handleClose = () => {
     if (setIsModal) {
       setIsModal(false)
@@ -55,10 +53,9 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   }
 
   const handleFocus = e => {
-    if (e.currentTarget !== e.target) {
-      return
+    if (e.currentTarget === e.target) {
+      toggleInert()
     }
-    toggleInert()
   }
 
   // Template properties

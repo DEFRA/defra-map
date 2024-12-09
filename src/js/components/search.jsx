@@ -30,7 +30,7 @@ export default function Search ({ instigatorRef }) {
 
   const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, isDesktop, legend, state)
   // Hide soft keyboard on touchstart outside search input
-  useOutsideInteract(inputRef, 'touchstart', e => {
+  useOutsideInteract(inputRef, true, 'touchstart', e => {
     if (document.activeElement !== inputRef.current) {
       return
     }

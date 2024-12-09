@@ -110,7 +110,7 @@ export default function Container () {
                 )
               : (
                 <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} html={queryPolygon.html} />
-              )}
+                )}
           </div>
         )}
         <div className='fm-o-main'>

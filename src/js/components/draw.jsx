@@ -19,14 +19,14 @@ export default function Draw () {
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, basemap, size, segments, layers })
     activeRef.current = viewportRef.current
-    activeRef.current.focus()
+    activeRef.current?.focus()
   }
 
   const handleDeleteClick = () => {
     provider.draw.delete()
     dispatch({ type: 'SET_MODE', payload: { query: null } })
     activeRef.current = viewportRef.current
-    activeRef.current.focus()
+    activeRef.current?.focus()
   }
 
   return (

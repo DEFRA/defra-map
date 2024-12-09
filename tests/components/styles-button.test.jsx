@@ -1,5 +1,3 @@
-/* global MouseEvent, PointerEvent */
-
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import StylesButton from '../../src/js/components/styles-button'
@@ -8,12 +6,6 @@ import { useApp } from '../../src/js/store/use-app'
 jest.mock('../../src/js/store/use-app')
 
 describe('styles-button', () => {
-  beforeAll(() => {
-    if (!global.PointerEvent) {
-      global.PointerEvent = class extends MouseEvent {}
-    }
-  })
-
   it('should show styles button', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: {
@@ -44,7 +36,7 @@ describe('styles-button', () => {
     expect(screen.getByText('Choose map style')).toBeTruthy()
   })
 
-  it('should dispatch OPEN action on pointer down', () => {
+  it('should dispatch OPEN action on click', () => {
     const dispatchMock = jest.fn()
     jest.mocked(useApp).mockReturnValue({
       provider: {
@@ -57,11 +49,9 @@ describe('styles-button', () => {
     })
 
     render(<StylesButton />)
-    // Query the button using the class name as fallback
-    const button = document.querySelector('.fm-c-btn--style')
 
-    const pointerDownEvent = new PointerEvent('pointerdown', { button: 0, bubbles: true })
-    button.dispatchEvent(pointerDownEvent)
+    const button = document.querySelector('.fm-c-btn--style')
+    fireEvent.click(button)
 
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'OPEN', payload: 'STYLE' })
   })

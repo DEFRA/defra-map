@@ -36,7 +36,7 @@
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-react": "^7.25.9",
     "@esri/arcgis-rest-request": "^4.2.3",
-    "@mapbox/mapbox-gl-draw": "^1.4.3",
+    "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",

@@ -38,7 +38,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
     }
     dispatch({ type: 'CLOSE' })
     obscurePanelRef.current = null
-    activeRef.current = instigatorRef.current
+    activeRef.current = instigatorRef?.current
   }
 
   const handleKeyDown = e => {

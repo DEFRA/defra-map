@@ -78,6 +78,7 @@ const close = (state) => {
     targetMarker: null,
     previousPanel: null,
     activePanelHasFocus: !activePanel,
+    isKeyExpanded: false,
     activePanel
   }
 }
@@ -121,7 +122,8 @@ const toggleSegments = (state, payload) => {
     segments: payload.segments,
     layers: payload.layers,
     featureId: null,
-    targetMarker: null
+    targetMarker: null,
+    isKeyExpanded: false
   }
 }
 
@@ -129,6 +131,13 @@ const toggleLayers = (state, payload) => {
   return {
     ...state,
     layers: payload
+  }
+}
+
+const toggleKeyExpanded = (state, payload) => {
+  return {
+    ...state,
+    isKeyExpanded: payload
   }
 }
 
@@ -155,5 +164,6 @@ export const actionsMap = {
   SET_MODE: setMode,
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
+  TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
   TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
 }

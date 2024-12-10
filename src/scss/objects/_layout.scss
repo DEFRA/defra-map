@@ -169,6 +169,12 @@
     }
 }
 
+.fm-tablet .fm-o-top__column:last-child,
+.fm-desktop .fm-o-top__column:last-child {
+    position: relative;
+    z-index: -1;
+}
+
 .fm-draw .fm-o-top__column:nth-child(2) {
     padding-left: 10px;
     padding-right: 10px;
@@ -278,10 +284,10 @@
 
 .fm-tablet .fm-o-bottom,
 .fm-desktop .fm-o-bottom {
-    z-index: 3;
+    z-index: -1;
 }
 
-.fm-o-top .fm-o-top__column:first-child .fm-c-tooltip {
+.fm-o-top__column:first-child .fm-c-tooltip {
     display: inline-block;
     margin-right: 10px;
 }

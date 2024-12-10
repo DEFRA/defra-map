@@ -23,6 +23,7 @@ export const initialState = (options) => {
     queryPolygon,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
+    isKeyExpanded: false,
     featureId,
     targetMarker: !featureId && targetMarker,
     pointerQuery: null,

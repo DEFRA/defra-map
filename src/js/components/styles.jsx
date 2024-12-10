@@ -90,7 +90,7 @@ export default function Styles () {
       )}
       {(basemaps.length > 3 || hasSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--centre'>
-          <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
+          <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>
       )}
     </div>

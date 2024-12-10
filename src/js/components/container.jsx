@@ -30,7 +30,7 @@ import HelpButton from './help-button.jsx'
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, activeRef, viewportRef, query, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, activeRef, viewportRef, query, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -38,7 +38,6 @@ export default function Container () {
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
   const helpBtnRef = useRef(null)
-  const maskRef = useRef(null)
 
   // Expanded panels
   const [isKeyExpanded, setIsKeyExpanded] = useState()
@@ -57,14 +56,13 @@ export default function Container () {
   const hasKeyButton = legend && !isQueryMode && !legend.display
   const isLegendInsetPage = isLegendInset && isPage
   const isOffset = isLegendInsetPage || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
-  const hasDrawButtons = isQueryMode && !(isDesktop && !isLegendInset)
+  const hasHelpButton = isQueryMode && !(isDesktop && !isLegendInset)
   const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
-  const hasSearchButton = search && !(isDesktop && search?.isExpanded)
-  const hasSearchPanel = !isQueryMode && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))
+  const hasSearchButton = search && !isQueryMode && !(isDesktop && search?.isExpanded)
+  const hasSearchPanel = activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
   const hasQueryButton = !isQueryMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
   const hasSegments = legend.segments
   const hasLayers = legend.key
-  const hasMask = ['KEYBOARD', 'ERROR', 'STYLE'].includes(activePanel) || (activePanel === 'LEGEND' && isLegendModal)
 
   // Communication between Vanilla JS and React components
   useEffect(() => {
@@ -88,12 +86,12 @@ export default function Container () {
   return (
     <ViewportProvider options={options}>
       <div
-        className={`fm-o-container fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`}
+        className={`fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`}
         {...{ onKeyDown: constrainFocus }} style={{ height, width: '100%' }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
-        {isDesktop && !isLegendInset && (
+        {isLegendFixed && (
           <div className='fm-o-side'>
             {!isQueryMode && isPage ? <Exit /> : null}
             {!isQueryMode
@@ -109,7 +107,7 @@ export default function Container () {
                 </Panel>
                 )
               : (
-                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} html={queryPolygon.html} />
+                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} html={queryPolygon.html} isModal />
                 )}
           </div>
         )}
@@ -125,7 +123,28 @@ export default function Container () {
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
-                {hasDrawButtons && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
+                {hasHelpButton && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
+                {activePanel === 'KEY' && !isMobile && (
+                  <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded} isInset>
+                    {hasLayers && (
+                      <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />
+                    )}
+                  </Panel>
+                )}
+                {activePanel === 'INFO' && info && !isMobile && (
+                  <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
+                )}
+                {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
+                  <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
+                    {queryPolygon && (
+                      <div className='fm-c-menu'>
+                        <Draw />
+                      </div>
+                    )}
+                    {hasSegments && <Segments />}
+                    {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />}
+                  </Panel>
+                )}
               </div>
               <div className='fm-o-top__column'>
                 <ViewportLabel />
@@ -140,34 +159,43 @@ export default function Container () {
                   <>
                     {provider.basemaps && !!Object.keys(provider?.basemaps).length && <StylesButton stylesBtnRef={stylesBtnRef} />}
                     {options.hasReset && <Reset />}
-                    {options.hasGeoLocation && <Location provider={provider} />}
+                    {options.hasGeoLocation && !isQueryMode && <Location provider={provider} />}
                     {!isMobile && <Zoom />}
                   </>
                 )}
               </div>
             </div>
-            {!isQueryMode && activePanel === 'KEY' && !isMobile && (
-              <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded} isInset>
-                {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
-              </Panel>
-            )}
-            {info && activePanel === 'INFO' && !isMobile && (
-              <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
-            )}
-            {!isQueryMode && activePanel === 'LEGEND' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
-              <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isOutsideInteract={isLegendModal} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
-                {queryPolygon && (
-                  <div className='fm-c-menu'>
-                    <Draw />
-                  </div>
-                )}
-                {hasSegments && <Segments />}
-                {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />}
-              </Panel>
-            )}
-            {activePanel === 'HELP' && !(isMobile && isLegendInset) && !(isDesktop && !isLegendInset) && (
-              <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryPolygon.html} isModal />
-            )}
+            <div className='fm-o-middle'>
+              {activePanel === 'LEGEND' && !isLegendInset && (
+                <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
+                  {queryPolygon && (
+                    <div className='fm-c-menu'>
+                      <Draw />
+                    </div>
+                  )}
+                  {hasSegments && <Segments />}
+                  {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} />}
+                </Panel>
+              )}
+              {activePanel === 'HELP' && !isLegendFixed && (
+                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryPolygon.html} isModal />
+              )}
+              {activePanel === 'STYLE' && (
+                <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
+                  <Styles />
+                </Panel>
+              )}
+              {activePanel === 'KEYBOARD' && (
+                <Panel className='keyboard' width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isModal isInset>
+                  <Keyboard />
+                </Panel>
+              )}
+              {activePanel === 'ERROR' && (
+                <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isModal isInset>
+                  <MapError />
+                </Panel>
+              )}
+            </div>
             <div className='fm-o-bottom'>
               <div className='fm-o-footer'>
                 <div className='fm-o-logo'>
@@ -188,13 +216,13 @@ export default function Container () {
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
               )}
-              {!isQueryMode && activePanel === 'KEY' && isMobile && (
+              {activePanel === 'KEY' && isMobile && (
                 <Panel className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} setIsModal={setIsKeyExpanded} isInset isNotObscure>
                   {hasLayers ? <Layers hasSymbols hasInputs={false} isExpanded={isKeyExpanded} setIsExpanded={setIsKeyExpanded} /> : null}
                 </Panel>
               )}
-              {!isQueryMode && activePanel === 'LEGEND' && isMobile && isLegendInset && (
-                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isOutsideInteract={isLegendModal} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
+              {activePanel === 'LEGEND' && isMobile && isLegendInset && (
+                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} setIsModal={setIsKeyExpanded} isHideHeading={!hasLengedHeading}>
                   {queryPolygon && (
                     <div className='fm-c-menu'>
                       <Draw />
@@ -215,26 +243,7 @@ export default function Container () {
                 </div>
               )}
             </div>
-            {hasMask && (
-              <div className='fm-o-mask' ref={maskRef}>
-                {activePanel === 'KEYBOARD' && (
-                  <Panel width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isOutsideInteract isModal isInset>
-                    <Keyboard />
-                  </Panel>
-                )}
-                {activePanel === 'ERROR' && (
-                  <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isOutsideInteract isModal isInset>
-                    <MapError />
-                  </Panel>
-                )}
-              </div>
-            )}
           </div>
-          {activePanel === 'STYLE' && (
-            <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isOutsideInteract isModal isInset>
-              <Styles />
-            </Panel>
-          )}
         </div>
       </div>
     </ViewportProvider>

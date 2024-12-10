@@ -20,6 +20,7 @@ const fm = new FloodMap('map', {
   symbols,
   requestCallback: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
+  // hasAutoMode: true,
   styles: {
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     tileRequestCallback: getTileRequest,

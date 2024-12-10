@@ -109,7 +109,7 @@ const setMode = (state, payload) => {
     ...state,
     mode: payload.value || state.mode,
     query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
-    activePanel: null, // state.mode !== 'draw' && payload.value === 'frame' && 'HELP',
+    activePanel: null,
     featureId: null,
     targetMarker: null
   }

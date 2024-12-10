@@ -18,7 +18,7 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
 }
 
 export default function Search ({ instigatorRef }) {
-  const { isKeyboard, isMobile, isDesktop, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
+  const { isKeyboard, isMobile, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
@@ -28,7 +28,7 @@ export default function Search ({ instigatorRef }) {
   const clearBtnRef = useRef()
   const inputRef = useRef()
 
-  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, isDesktop, legend, state)
+  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, legend, state)
   // Hide soft keyboard on touchstart outside search input
   useOutsideInteract(inputRef, true, 'touchstart', e => {
     if (document.activeElement !== inputRef.current) {

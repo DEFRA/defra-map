@@ -72,7 +72,8 @@ class Provider extends EventTarget {
       extent,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
-      padding: getFocusPadding(paddingBox, 1)
+      padding: getFocusPadding(paddingBox, 1),
+      popupEnabled: false
     })
 
     // Tidy up canvas

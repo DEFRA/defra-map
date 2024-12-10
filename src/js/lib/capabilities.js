@@ -1,4 +1,4 @@
-const getWebGL = (names) => {
+const getWebGL = names => {
   if (!window.WebGLRenderingContext) {
     // WebGL is not supported
     return { isEnabled: false, error: 'WebGL is not supported' }
@@ -20,13 +20,12 @@ const getWebGL = (names) => {
   return { isEnabled: false, error: 'WebGL is supported, but disabled' }
 }
 
-const getArrayFindLast = () => {
-  if (Array.prototype.findLast) {
+export const getNullishCoalescingOperator = () => {
+  try {
+    new Function('let a; a ??= true')
     return { isSupported: true }
-  }
-  return {
-    isSupported: false,
-    error: 'Array.prototype.findLast() is not supported'
+  } catch (err) {
+    return { isSupported: false, error: 'Nullish coalescing operator not supported' }
   }
 }
 
@@ -47,10 +46,10 @@ export const capabilities = {
     hasSize: false,
     getDevice: () => {
       const webGL = getWebGL(['webgl2'])
-      const arrayFindLast = getArrayFindLast()
+      const nullishCoalescingOperator = getNullishCoalescingOperator()
       return {
-        isSupported: webGL.isEnabled && arrayFindLast.isSupported,
-        error: arrayFindLast.error || webGL.error
+        isSupported: webGL.isEnabled && nullishCoalescingOperator.isSupported,
+        error: webGL.error || nullishCoalescingOperator.error
       }
     }
   }

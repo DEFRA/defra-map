@@ -22,7 +22,7 @@ export class FloodMap extends EventTarget {
 
     // Check capabilities
     const { isSupported, error } = device(props.framework)
-    if (!isSupported) {
+    if (!(isSupported && props.deviceTestCallback())) {
       this.el.insertAdjacentHTML('beforebegin', `
         <div class="fm-error">
           <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>

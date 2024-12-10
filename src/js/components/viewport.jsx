@@ -30,6 +30,9 @@ export default function Viewport () {
   const STATUS_DELAY = 300
 
   const selectQuery = () => {
+    if (!(queryFeature || queryPixel)) {
+      return
+    }
     if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
       const fId = features.featuresInViewport[featureIdRef.current].id
       provider.queryFeature(fId)
@@ -112,7 +115,7 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current) {
+    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
       return
     }
     const { layerX, layerY } = e.nativeEvent

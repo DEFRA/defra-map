@@ -6,6 +6,7 @@ import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
+import { defaults as storeDefaults } from '../../store/constants.js'
 import src from './src.json'
 
 class Provider extends EventTarget {
@@ -28,10 +29,7 @@ class Provider extends EventTarget {
     this.selectedId = ''
     this.selectedCoordinate = null
     this.isLoaded = false
-    this.geocodeProvider = geocodeProvider
-    this.attribution = {
-      label: 'Ordnance Survey logo'
-    }
+    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
   }

@@ -27,7 +27,7 @@ export default function SearchButton ({ searchBtnRef, tooltip }) {
     <>
       {tooltip
         ? (
-          <Tooltip id={`${id}-search-label`} position={tooltip} text='Show search'>
+          <Tooltip id={`${id}-search-label`} position={tooltip} cssModifier='search' text='Show search'>
             {button()}
           </Tooltip>
           )

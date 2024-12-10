@@ -6,7 +6,7 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'buttonFirst', // 'buttonFirst',
+  type: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
@@ -20,7 +20,9 @@ const fm = new FloodMap('map', {
   symbols,
   requestCallback: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
+  // hasAutoMode: true,
   styles: {
+    attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,
@@ -29,7 +31,7 @@ const fm = new FloodMap('map', {
     tritanopiaUrl: process.env.TRITANOPIA_URL
   },
   search: {
-    label: 'Search for a place',
+    country: 'england',
     isAutocomplete: true
   },
   legend: {

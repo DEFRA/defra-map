@@ -18,7 +18,9 @@ export const events = {
 
 export const defaults = {
   CONTAINER_TYPE: 'buttonFirst',
-  PANEL_POSITION: 'overlayRight'
+  PANEL_POSITION: 'overlayRight',
+  MIN_SEARCH_LENGTH: 3,
+  GEOCODE_PROVIDER: 'os-open-names'
 }
 
 export const settings = {
@@ -36,7 +38,7 @@ export const settings = {
     },
     inline: {
       CLASS: 'fm-inline',
-      HEIGHT: '400px'
+      HEIGHT: '600px'
     }
   },
   map: {
@@ -90,8 +92,4 @@ export const margin = {
   TOP: 90,
   BOTTOM: 15,
   LEFT: 70
-}
-
-export const search = {
-  MIN_CHARS: 3
 }

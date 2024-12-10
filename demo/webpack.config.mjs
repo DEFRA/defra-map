@@ -16,8 +16,7 @@ export default {
     ]
   },
   devtool: 'source-map',
-  // mode: 'development',
-  mode: 'production',
+  mode: 'development',
   devServer: {
     allowedHosts: 'all',
     static: {

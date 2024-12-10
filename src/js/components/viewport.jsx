@@ -6,14 +6,13 @@ import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
 import { setBasemap, getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
-import Status from './status.jsx'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isKeyboard, isDarkMode } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, isKeyboard, isDarkMode } = useApp()
 
-  const { id, queryFeature, queryPixel, minZoom, maxZoom } = options
+  const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
   const appDispatch = useApp().dispatch
 
   const { bbox, centre, zoom, oCentre, oZoom, rZoom, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -31,6 +30,9 @@ export default function Viewport () {
   const STATUS_DELAY = 300
 
   const selectQuery = () => {
+    if (!(queryFeature || queryPixel)) {
+      return
+    }
     if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
       const fId = features.featuresInViewport[featureIdRef.current].id
       provider.queryFeature(fId)
@@ -113,7 +115,7 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current) {
+    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
       return
     }
     const { layerX, layerY } = e.nativeEvent
@@ -322,9 +324,18 @@ export default function Viewport () {
       </ul>
       {useMemo(() => {
         return (
-          <Status message={status} isVisuallyHidden={isStatusVisuallyHidden} />
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
+            <div className='fm-c-status__inner govuk-body-s' aria-atomic>
+              {status}
+            </div>
+          </div>
         )
       }, [status])}
+      {!isMobile && (
+        <div className='fm-o-attribution'>
+          <div className='fm-c-attribution'>{styles.attribution}</div>
+        </div>
+      )}
     </div>
   )
 }

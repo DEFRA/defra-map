@@ -21,14 +21,14 @@ export const updateTitle = () => {
   document.title = page ? `${page} - ${title}` : title
 }
 
-export const toggleInert = () => {
+export const toggleInert = (activeEl) => {
   const inertEls = document.querySelectorAll('[data-fm-inert]')
   for (const inertEl of inertEls) {
     inertEl.removeAttribute(ARIA_HIDDEN)
     inertEl.removeAttribute('data-fm-inert')
   }
 
-  let el = getContainer(document.activeElement)
+  let el = getContainer(activeEl || document.activeElement)
 
   if (!el) {
     return

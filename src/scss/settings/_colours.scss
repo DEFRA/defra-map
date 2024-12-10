@@ -21,20 +21,19 @@
     --query-polygon-stroke-colour: #d4351c;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --foreground-colour: #ffffff;
-        --background-colour: #373737;
-        --secondary-text-colour:#b1b4b6;
-        --secondary-button-hover-colour: #626B6F;
-        --button-background-colour: #373737;
-        --button-hover-colour: #505a5f;
-        --border-colour: #505a5f;
-        --link-colour: #a5c6e3; // 40% govuk blue
-        --focus-colour: #1d70b8; // #837102;
-        --tooltip-background-colour: #505a5f;
-        --query-polygon-stroke-colour: #ffffff;
-    }
-  } 
+:root .fm-o-container--dark {
+    --foreground-colour: #ffffff;
+    --background-colour: #373737;
+    --secondary-text-colour:#b1b4b6;
+    --secondary-button-hover-colour: #626B6F;
+    --button-background-colour: #373737;
+    --button-hover-colour: #505a5f;
+    --border-colour: #505a5f;
+    --link-colour: #a5c6e3; // 40% govuk blue
+    --focus-colour: #1d70b8; // #837102;
+    --tooltip-background-colour: #505a5f;
+    --query-polygon-stroke-colour: #ffffff;
+}
+
 
 

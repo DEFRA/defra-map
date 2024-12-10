@@ -30,23 +30,13 @@
     right:0;
     width: 100%;
     background-color:var(--background-colour);
-    overflow: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x pan-y;
 }
+
 // MediaQuery (from tablet)
 .fm-hybrid.fm-tablet.fm-o-container,
-.fm-hybrid.fm-desktop.fm-o-container {
-    position: relative;
-    z-index: auto;
-    top:auto;
-    bottom:auto;
-    left:auto;
-    right:auto;
-    border: 1px solid var(--border-colour);
-    overflow: visible;
-}
-
+.fm-hybrid.fm-desktop.fm-o-container,
 .fm-inline.fm-o-container {
     position: relative;
     z-index: auto;
@@ -56,6 +46,7 @@
     right:auto;
     border: 1px solid var(--border-colour);
     overflow: visible;
+    clip-path: inset(0 0 0 0);
 }
 
 .fm-o-main {
@@ -71,7 +62,7 @@
     z-index: 3;
     background-color: var(--background-colour);
     flex-shrink: 0;
-    clip-path: inset(0 -3px 0 0);
+    clip-path: inset(0 -1px 0 0);
     box-shadow: $panel-shadow;
 }
 
@@ -86,6 +77,29 @@
         @include focus($offset: 3px);
         border-radius: 0;
     }
+}
+
+// Large text
+.fm-o-viewport--large .fm-o-map-container {
+    width: 50%;
+    height: 50%;
+}
+
+.fm-o-viewport--large.fm-u-focus-visible .fm-o-map-container::after {
+    right: calc(3px - 100%);
+    bottom: calc(3px - 100%);
+}
+
+.fm-o-viewport--large .maplibregl-canvas-container {
+    overflow: visible;
+    transform-origin: top left;
+    transform: scale(200%);
+}
+
+.fm-o-viewport--large .fm-o-map-container .fm-c-marker__inner {
+    transform-origin: center;
+    transform: scale(50%);
+    -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .fm-o-map-container {
@@ -106,27 +120,17 @@
     flex-wrap: nowrap;
 }
 
-.fm-o-inner > .fm-c-panel {
-    position: absolute;
-}
-
 .fm-o-inner > .fm-c-panel--legend,
 .fm-o-inner > .fm-c-panel--help {
-    clip-path: inset(0 -3px 0 0);
+    clip-path: inset(0 -20px 0 0);
     height: 100%;
 }
 
-.fm-o-inner:not(.fm-o-inner--inset) > .fm-c-panel--legend,
-.fm-o-inner:not(.fm-o-inner--inset) > .fm-c-panel--help {
-    z-index: 9;
-}
-
-.fm-o-inner > .fm-c-panel--key,
-.fm-o-inner > .fm-c-panel--info,
-.fm-o-inner--inset > .fm-c-panel--legend {
+.fm-o-top__column:first-child > .fm-c-panel {
+    position: absolute;
     left: $margin;
-    top: $margin;
-    max-height: calc(100% - ($margin * 2));
+    top: calc(40px + ($margin * 2));
+    max-height: calc(100% - (110px + $margin));
 }
 
 .fm-o-inner--inset > .fm-c-panel--legend { 
@@ -135,15 +139,8 @@
     bottom: auto;
 }
 
-.fm-o-inner--offset-top > .fm-c-panel--key,
-.fm-o-inner--offset-top > .fm-c-panel--info,
-.fm-o-inner--inset.fm-o-inner--offset-top > .fm-c-panel--legend {
-    top: calc(40px + $margin * 2);
-    max-height: calc(100% - (110px + ($margin * 2)));
-}
-
 .fm-o-top {
-    z-index: 9;
+    z-index: 3;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -160,13 +157,15 @@
     }
 
     &__column:last-child {
-        text-align: right;
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
         flex-basis: 0;
     }
 
     .fm-c-tooltip {
         display: inline-block;
+        margin-left: auto;
     }
 }
 
@@ -198,6 +197,23 @@
     padding: 5px;
 }
 
+.fm-tablet .fm-o-buttons,
+.fm-desktop .fm-o-buttons {
+    margin-bottom: calc($margin + 25px);
+}
+
+.fm-o-middle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+}
+
 .fm-o-bottom {
     margin-top: auto;
     pointer-events: none;
@@ -219,7 +235,24 @@
     padding: 0 calc($margin - 5px) calc($margin - 5px);
     width: 100%;
     -webkit-align-items: flex-end;
-    z-index: 3;
+    z-index: 2;
+}
+
+.fm-o-attribution {
+    pointer-events: auto;
+}
+
+.fm-tablet .fm-o-attribution,
+.fm-desktop .fm-o-attribution {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.fm-o-logo,
+.fm-o-scale {
+    flex-grow: 1;
+    flex-basis: 0;
 }
 
 .fm-o-actions {
@@ -235,34 +268,6 @@
     margin: calc($margin / 2);
 }
 
-.fm-o-mask {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    display: flex;
-    z-index: 5;
-    align-items: center;
-    justify-content: center;
-    backface-visibility: hidden;
-    padding: $margin;
-    pointer-events: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-// MediaQuery (from tablet)
-.fm-hybrid.fm-tablet .fm-o-viewport,
-.fm-hybrid.fm-desktop .fm-o-viewport {
-    .fm-u-focus-visible::after {
-        @include focus($offset: 2px);
-    }
-}
-
-.fm-inline .fm-o-viewport.fm-u-focus-visible::after {
-    @include focus($offset: 1px);
-}
-
 .fm-tablet .fm-o-footer,
 .fm-desktop .fm-o-footer {
     display: flex;
@@ -271,6 +276,17 @@
     align-items: flex-end;
 }
 
+.fm-tablet .fm-o-bottom,
+.fm-desktop .fm-o-bottom {
+    z-index: 3;
+}
+
+.fm-o-top .fm-o-top__column:first-child .fm-c-tooltip {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+// Panels
 .fm-o-main > .fm-c-panel {
     position: absolute;
     left: auto;
@@ -285,40 +301,12 @@
 .fm-tablet .fm-o-main > .fm-c-panel,
 .fm-desktop .fm-o-main > .fm-c-panel {
     left: auto;
-    top: auto;
+    top: $margin;
     right: $margin;
-    bottom: $margin;
+    bottom: auto;
 }
 
-.fm-o-bottom--expanded .fm-c-panel {
-    position: absolute;
-}
-
-.fm-mobile .fm-o-bottom--expanded .fm-o-footer {
-    display: none;
-}
-
-.fm-o-top .fm-o-top__column:first-child .fm-c-tooltip {
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.fm-o-mask .fm-c-panel[aria-modal="true"] {
-    display: flex;
-    position: relative;
-    z-index: 6;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: 100%;
-    height: auto;
-    max-height: calc(100% - $margin);
-    background-color: var(--background-colour);
-    border-radius: $panel-radius;
-    box-shadow: $panel-shadow;
-    pointer-events: auto;
-}
-
-// Legend overides
+// Side panel
 .fm-o-side .fm-c-panel {
     background-color: transparent;
     box-shadow: none;
@@ -368,36 +356,59 @@
     }
 }
 
-// Apply button shadows
+// Panel fixed width
+.fm-o-top .fm-c-panel:not(.fm-c-panel--viewport-label) {
+    width: $panel-width;
+}
+
+// Panel full height
+.fm-o-middle .fm-c-panel--legend,
+.fm-o-middle .fm-c-panel--help {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: $panel-width;
+}
+
+// Mobile bottom panels
+.fm-mobile .fm-o-bottom .fm-c-panel {
+    width: 100%;
+    min-height: 0;
+}
+
+// Style panel
+.fm-c-panel--style {
+    top: auto;
+    bottom: 0;
+}
+
+.fm-tablet .fm-c-panel--style,
+.fm-desktop .fm-c-panel--style {
+    top: $margin;
+    right: calc(40px + ($margin * 2));
+    bottom: auto;
+}
+
+// Keyboard panel
+.fm-c-panel.fm-c-panel--keyboard {
+    max-width: calc(100% - ($margin * 2));
+}
+
+// Button shadows
 .fm-o-top__column > .fm-c-btn,
 .fm-o-top__column > .fm-c-tooltip .fm-c-btn,
+.fm-o-top__column > .fm-c-zoom,
 .fm-o-top__column > .fm-o-viewport-controls {
     box-shadow: $button-shadow;
-    border-radius: $button-radius;
 }
 
-.fm-o-buttons > .fm-c-btn,
-.fm-o-buttons > .fm-c-tooltip .fm-c-btn,
-.fm-o-buttons > .fm-c-zoom,
-.fm-o-buttons > .fm-o-group {
-    box-shadow: $button-shadow;
-    border-radius: $button-radius;
-}
-
-.fm-o-buttons > .fm-c-tooltip--style {
+.fm-c-tooltip--location {
     margin-top: 10px;
 }
 
-// Viewport label
-.fm-o-bottom > .fm-c-panel--viewport-label {
-    width: calc(100% - $margin * 2);
-    margin-bottom: $margin;
-}
-
-.fm-o-bottom .fm-c-panel:not(.fm-c-panel--viewport-label):not([aria-modal="true"]) {
-    position: relative;
-    width: 100%;
-    pointer-events: auto;
+.fm-mobile .fm-c-tooltip--search {
+    margin-bottom: 30px;
 }
 
 // Viewport focus
@@ -417,21 +428,4 @@
     .fm-c-panel--viewport-label {
         display: block;
     }
-}
-
-// Panel fixed width
-.fm-tablet .fm-c-panel:not(.fm-c-panel--viewport-label),
-.fm-desktop .fm-c-panel:not(.fm-c-panel--viewport-label),
-.fm-o-inner:not(.fm-o-inner--inset) .fm-c-panel:not(.fm-c-panel--viewport-label) {
-    width: $panel-width;
-}
-
-.fm-mobile .fm-o-inner .fm-o-bottom .fm-c-panel--info,
-.fm-mobile .fm-o-inner .fm-o-bottom .fm-c-panel--key {
-    width: 100%;
-    min-height: 0;
-}
-
-.fm-mobile .fm-o-inner .fm-o-bottom .fm-c-panel--info {
-    max-height: 70%;
 }

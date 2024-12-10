@@ -3,13 +3,13 @@ import { useEffect } from 'react'
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-export const useOutsideInteract = (ref, type, callback) => {
+export const useOutsideInteract = (ref, isModal, type, callback) => {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
     function handleInteractOutside (e) {
-      if (ref.current && document.contains(e.target) && !ref.current.contains(e.target)) {
+      if (ref.current && !ref.current.contains(e.target)) {
         callback(e)
       }
     }
@@ -19,5 +19,5 @@ export const useOutsideInteract = (ref, type, callback) => {
       // Unbind the event listener on clean up
       document.removeEventListener(type, handleInteractOutside)
     }
-  }, [ref])
+  }, [ref, isModal])
 }

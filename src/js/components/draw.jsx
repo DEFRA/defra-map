@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
@@ -6,8 +6,10 @@ import eventBus from '../lib/eventbus.js'
 import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function Draw () {
-  const { provider, parent, queryPolygon, segments, layers, dispatch, query } = useApp()
+  const { provider, parent, queryPolygon, segments, layers, dispatch, query, activeRef, viewportRef } = useApp()
   const { size, basemap } = useViewport()
+
+  const startBtnRef = useRef(null)
 
   const isFrameMode = !query || (query && isFeatureSquare(query))
   const drawMode = isFrameMode ? 'frame' : 'draw'
@@ -16,18 +18,22 @@ export default function Draw () {
     provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryPolygon)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, basemap, size, segments, layers })
+    activeRef.current = viewportRef.current
+    activeRef.current?.focus()
   }
 
   const handleDeleteClick = () => {
     provider.draw.delete()
     dispatch({ type: 'SET_MODE', payload: { query: null } })
+    activeRef.current = viewportRef.current
+    activeRef.current?.focus()
   }
 
   return (
     <div className='fm-c-menu__group'>
       <h2 className='fm-c-menu__heading govuk-body-s'>{queryPolygon.heading}</h2>
       <div className='fm-c-menu__item'>
-        <button className='fm-c-btn-menu govuk-body-s' onClick={handleStartClick}>
+        <button className='fm-c-btn-menu govuk-body-s' onClick={handleStartClick} ref={startBtnRef}>
           {isFrameMode
             ? (
               <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>

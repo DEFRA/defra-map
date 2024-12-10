@@ -1,4 +1,4 @@
-const getWebGL = (names) => {
+const getWebGL = names => {
   if (!window.WebGLRenderingContext) {
     // WebGL is not supported
     return { isEnabled: false, error: 'WebGL is not supported' }

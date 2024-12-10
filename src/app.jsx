@@ -74,6 +74,7 @@ export default function App (options) {
         isPage,
         isMobile,
         isDarkMode,
+        setIsDarkMode,
         isDesktop,
         isBack: window.history.state?.isBack,
         isKeyboard,

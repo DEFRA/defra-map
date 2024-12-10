@@ -6,7 +6,7 @@ import { capabilities } from '../lib/capabilities.js'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options, provider, activeRef } = useApp()
+  const { options, provider, activeRef, setIsDarkMode } = useApp()
   const { id, framework } = options
   const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
@@ -25,7 +25,9 @@ export default function Styles () {
 
   const handleBasemapClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_BASEMAP', payload: e.currentTarget.value })
+    const style = e.currentTarget.value
+    setIsDarkMode(style === 'dark')
+    viewportDispatch({ type: 'SET_BASEMAP', payload: style })
   }
 
   const handleSizeClick = e => {

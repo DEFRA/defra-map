@@ -177,7 +177,7 @@ const fm = new FloodMap('map', {
   hasGeoLocation: true,
   symbols,
   requestCallback: getRequest,
-  deviceTestCallback: () => !!Array.prototype.findLast,
+  // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
   styles: {
     attribution: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,

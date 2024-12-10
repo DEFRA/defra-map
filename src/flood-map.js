@@ -8,7 +8,6 @@ import 'event-target-polyfill'
 
 const { location, history } = window
 const cssFocusVisible = 'fm-u-focus-visible'
-const device = framework => capabilities[framework || 'default'].getDevice()
 
 export class FloodMap extends EventTarget {
   _search
@@ -21,9 +20,9 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const { isSupported, error } = device(props.framework)
-    const isImplementationSupported = props.deviceTestCallback ? props.deviceTestCallback() : true
-    if (!(isSupported && isImplementationSupported)) {
+    const device = this._testDevice(props)
+
+    if (!device.isSupported) {
       this.el.insertAdjacentHTML('beforebegin', `
         <div class="fm-error">
           <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
@@ -32,7 +31,7 @@ export class FloodMap extends EventTarget {
       // Remove hidden class
       document.body.classList.remove('fm-js-hidden')
       // Log error message
-      error && console.log(error)
+      device.error && console.log(device.error)
       return
     }
 
@@ -131,6 +130,16 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
+  }
+
+  _testDevice (props) {
+    const device = framework => capabilities[framework || 'default'].getDevice()
+    const { isSupported, error } = device(props.framework)
+    const isImplementationSupported = props.deviceTestCallback ? props.deviceTestCallback() : true
+    return {
+      isSupported: isSupported && isImplementationSupported,
+      error
+    }
   }
 
   _insertButtonHTML () {

@@ -12,7 +12,7 @@ import Target from './target.jsx'
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, isKeyboard } = useApp()
 
-  const { id, styles, queryFeature, queryPixel, minZoom, maxZoom, hasAutoMode } = options
+  const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
   const appDispatch = useApp().dispatch
 
   const { bbox, centre, zoom, oCentre, oZoom, rZoom, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -282,7 +282,7 @@ export default function Viewport () {
       return
     }
     const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme }})
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
   // Set initial selected feature or target

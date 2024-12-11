@@ -6,7 +6,7 @@ import { capabilities } from '../lib/capabilities.js'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options, provider, activeRef, isDarkMode } = useApp()
+  const { options, provider, activeRef } = useApp()
   const { id, framework } = options
   const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
@@ -26,7 +26,7 @@ export default function Styles () {
 
   const handleBasemapClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value }})
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
@@ -48,7 +48,7 @@ export default function Styles () {
   // Toggle dark mode
   useEffect(() => {
     const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme }})
+    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme } })
   }, [basemap])
 
   return (

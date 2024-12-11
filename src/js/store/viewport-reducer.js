@@ -8,11 +8,14 @@ const getSize = (framework) => {
   return (hasSize && window.localStorage.getItem('size')) || 'small'
 }
 
+const getBasemap = () => {
+  return window.localStorage.getItem('basemap') || 'default'
+}
+
 export const initialState = (options) => {
   const { bbox, centre, zoom, place } = options
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
-  const basemap = window.localStorage.getItem('basemap') || 'default'
   const initBbox = bbox || (centre && zoom ? null : settings.map.BBOX)
 
   return {
@@ -21,7 +24,7 @@ export const initialState = (options) => {
     zoom: cz ? parseZoom(cz) : zoom || null,
     place: cz ? null : place,
     oZoom: zoom,
-    basemap,
+    basemap: getBasemap(),
     size: getSize(options.framework),
     features: null,
     status: '',

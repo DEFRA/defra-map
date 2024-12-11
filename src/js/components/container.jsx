@@ -60,6 +60,10 @@ export default function Container () {
   const hasQueryButton = !isQueryMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
   const hasSegments = legend.segments
   const hasLayers = legend.key
+  const handleColorSchemeMQ = () => dispatch({
+    type: 'SET_IS_DARK_MODE',
+    payload: { colourScheme: window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }
+  })
 
   // Communication between Vanilla JS and React components
   useEffect(() => {
@@ -67,9 +71,18 @@ export default function Container () {
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
     eventBus.on(parent, events.SET_DRAW, data => { dispatch({ type: 'SET_DRAW', payload: data }) })
 
+    // Dark mode media query
+    if (options.hasAutoMode) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleColorSchemeMQ)
+    }
+
     // Ready for map
     if (!activePanel) {
       dispatch({ type: 'CONTAINER_READY' })
+    }
+
+    return () => {
+      window.removeEventListener('change', handleColorSchemeMQ)
     }
   }, [])
 

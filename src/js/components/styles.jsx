@@ -6,10 +6,11 @@ import { capabilities } from '../lib/capabilities.js'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options, provider, activeRef, setIsDarkMode } = useApp()
+  const { options, provider, activeRef, isDarkMode } = useApp()
   const { id, framework } = options
   const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
+  const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
 
   const currentBasemap = basemap
@@ -25,9 +26,7 @@ export default function Styles () {
 
   const handleBasemapClick = e => {
     activeRef.current = null
-    const style = e.currentTarget.value
-    setIsDarkMode(style === 'dark')
-    viewportDispatch({ type: 'SET_BASEMAP', payload: style })
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value }})
   }
 
   const handleSizeClick = e => {
@@ -45,6 +44,12 @@ export default function Styles () {
     const nextTabStop = findTabStop(el, 'next')
     nextTabStop.focus()
   }, [isExpanded])
+
+  // Toggle dark mode
+  useEffect(() => {
+    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme }})
+  }, [basemap])
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>

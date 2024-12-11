@@ -7,13 +7,11 @@ import Container from './js/components/container.jsx'
 import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
+  const { type, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
   const mobileMQ = `(max-width: ${options.maxMobile || settings.breakpoints.MAX_MOBILE})`
   const desktopMQ = `(min-width: ${options.minDesktop || settings.breakpoints.MIN_DESKTOP})`
-  const colorSchemeMQ = '(prefers-color-scheme: dark)'
-  const { type, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols, hasAutoMode } = options
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
-  const [isDarkMode, setIsDarkMode] = useState(hasAutoMode ? window?.matchMedia(colorSchemeMQ).matches : false)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
   const [isKeyboard, setIsKeyboard] = useState(!!options.isKeyboard)
 
@@ -36,7 +34,6 @@ export default function App (options) {
 
   const handleMobileMQ = e => setIsMobile(e.matches)
   const handleDesktopMQ = e => setIsDesktop(e.matches)
-  const handleColorSchemeMQ = e => setIsDarkMode(e.matches)
 
   //
   // Side effects
@@ -49,11 +46,6 @@ export default function App (options) {
     // Set media queries
     window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
     window.matchMedia(desktopMQ).addEventListener('change', handleDesktopMQ)
-
-    // Conditionally add auto dark mode detection
-    if (hasAutoMode) {
-      window.matchMedia(colorSchemeMQ).addEventListener('change', handleColorSchemeMQ)
-    }
 
     // Keyboard events
     eventBus.on(parent, events.SET_IS_KEYBOARD, data => setIsKeyboard(data))
@@ -73,8 +65,6 @@ export default function App (options) {
         provider: provider.current,
         isPage,
         isMobile,
-        isDarkMode,
-        setIsDarkMode,
         isDesktop,
         isBack: window.history.state?.isBack,
         isKeyboard,

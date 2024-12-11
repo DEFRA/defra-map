@@ -10,6 +10,7 @@ export default function Styles () {
   const { id, framework } = options
   const { basemaps, stylesImagePath, getImagePos } = provider
   const { basemap, size } = useViewport()
+  const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
 
   const currentBasemap = basemap
@@ -25,7 +26,7 @@ export default function Styles () {
 
   const handleBasemapClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_BASEMAP', payload: e.currentTarget.value })
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
@@ -43,6 +44,12 @@ export default function Styles () {
     const nextTabStop = findTabStop(el, 'next')
     nextTabStop.focus()
   }, [isExpanded])
+
+  // Toggle dark mode
+  useEffect(() => {
+    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme } })
+  }, [basemap])
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
@@ -88,7 +95,7 @@ export default function Styles () {
       )}
       {(basemaps.length > 3 || hasSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--centre'>
-          <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={setIsExpanded} isRemove />
+          <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>
       )}
     </div>

@@ -4,13 +4,13 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { setBasemap, getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
+import { getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, isKeyboard, isDarkMode } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, isKeyboard } = useApp()
 
   const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
   const appDispatch = useApp().dispatch
@@ -256,7 +256,7 @@ export default function Viewport () {
         provider.setSize(size)
         break
       case 'BASEMAP':
-        window.localStorage.setItem('basemap', `${basemap},${isDarkMode ? 'dark' : 'light'}`)
+        window.localStorage.setItem('basemap', basemap)
         provider.setBasemap(basemap)
         break
       default:
@@ -281,8 +281,9 @@ export default function Viewport () {
     if (!provider.map) {
       return
     }
-    viewportDispatch({ type: 'SET_BASEMAP', payload: setBasemap(isDarkMode) })
-  }, [isDarkMode])
+    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
+  }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
   // Set initial selected feature or target
   useEffect(() => {

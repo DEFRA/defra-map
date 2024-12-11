@@ -52,10 +52,10 @@ export const getFeatures = (provider, pixel) => {
 
   // Get all features under a given pixel
   let layers = [...featureLayers, ...pixelLayers]
-  layers = map.getStyle().layers
+  layers = map.getStyle()?.layers
     .filter(l => layers.includes(l?.id) && l?.layout?.visibility !== 'none')
     .map(l => l.id)
-  const hasPixelLayers = layers.some(l => pixelLayers?.includes(l))
+  const hasPixelLayers = layers?.some(l => pixelLayers?.includes(l))
   let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
   featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), f])).values()]
 

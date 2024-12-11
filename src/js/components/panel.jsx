@@ -18,7 +18,7 @@ const getProps = (id, className, isFixed, isMobile, isInset, instigatorRef, widt
   return { panelId, hasCloseBtn, hasWidth }
 }
 
-export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, setIsModal, instigatorRef, width, maxWidth, html, children }) {
+export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { id } = options
 
@@ -33,9 +33,6 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   })
 
   const handleClose = () => {
-    if (setIsModal) {
-      setIsModal(false)
-    }
     dispatch({ type: 'CLOSE' })
     obscurePanelRef.current = null
     activeRef.current = instigatorRef?.current

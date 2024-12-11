@@ -1,8 +1,13 @@
 import { parseSegments, parseLayers, parseQuery } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 
+const getIsDarkMode = (hasAutoMode) => {
+  const basemap = window.localStorage.getItem('basemap')
+  return basemap === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
+}
+
 export const initialState = (options) => {
-  const { legend, search, info, queryPolygon } = options
+  const { legend, search, info, queryPolygon, hasAutoMode } = options
 
   const { featureId, targetMarker } = parseQuery(info)
 
@@ -23,6 +28,9 @@ export const initialState = (options) => {
     queryPolygon,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
+    isKeyExpanded: false,
+    isDarkMode: getIsDarkMode(hasAutoMode),
+    hasAutoMode,
     featureId,
     targetMarker: !featureId && targetMarker,
     pointerQuery: null,

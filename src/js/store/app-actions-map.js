@@ -78,29 +78,8 @@ const close = (state) => {
     targetMarker: null,
     previousPanel: null,
     activePanelHasFocus: !activePanel,
+    isKeyExpanded: false,
     activePanel
-  }
-}
-
-const setIsMobile = (state, payload) => {
-  return {
-    ...state,
-    isMobile: payload.value
-  }
-}
-
-const setIsDesktop = (state, payload) => {
-  return {
-    ...state,
-    isDesktop: payload.value,
-    isFixed: state.legend?.position?.includes('fixed') && payload.value
-  }
-}
-
-const setIsKeyboard = (state, payload) => {
-  return {
-    ...state,
-    isKeyboard: payload.value
   }
 }
 
@@ -115,13 +94,23 @@ const setMode = (state, payload) => {
   }
 }
 
+const setIsDarkMode = (state, payload) => {
+  const { basemap, colourScheme } = payload
+  const isDarkMode = basemap === 'dark' || colourScheme === 'dark'
+  return {
+    ...state,
+    isDarkMode
+  }
+}
+
 const toggleSegments = (state, payload) => {
   return {
     ...state,
     segments: payload.segments,
     layers: payload.layers,
     featureId: null,
-    targetMarker: null
+    targetMarker: null,
+    isKeyExpanded: false
   }
 }
 
@@ -129,6 +118,13 @@ const toggleLayers = (state, payload) => {
   return {
     ...state,
     layers: payload
+  }
+}
+
+const toggleKeyExpanded = (state, payload) => {
+  return {
+    ...state,
+    isKeyExpanded: payload
   }
 }
 
@@ -149,11 +145,10 @@ export const actionsMap = {
   ERROR: error,
   OPEN: open,
   CLOSE: close,
-  SET_IS_MOBILE: setIsMobile,
-  SET_IS_DESKTOP: setIsDesktop,
-  SET_IS_KEYBOARD: setIsKeyboard,
   SET_MODE: setMode,
+  SET_IS_DARK_MODE: setIsDarkMode,
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
+  TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
   TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
 }

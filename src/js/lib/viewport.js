@@ -176,19 +176,6 @@ export const parseZoom = value => {
   return parseFloat(value?.split(',')[2])
 }
 
-export const setBasemap = (isDarkMode) => {
-  const ls = window.localStorage.getItem('basemap')
-  const oColourScheme = ls?.split(',')[1]
-  const oBasemap = ls?.split(',')[0]
-  const colourScheme = isDarkMode ? 'dark' : 'light'
-  if (colourScheme !== oColourScheme && ['default', 'dark'].includes(oBasemap)) {
-    window.localStorage.removeItem('basemap')
-  }
-  const basemap = ls?.split(',')[0]
-  const reset = isDarkMode ? 'dark' : 'default'
-  return basemap || reset
-}
-
 export const getSelectedIndex = (key, total, current) => {
   const increase = current === total - 1 ? 0 : current + 1
   const decrease = current > 0 ? current - 1 : total - 1

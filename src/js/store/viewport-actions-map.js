@@ -115,11 +115,18 @@ const zoomOut = (state) => {
 }
 
 const setBasemap = (state, payload) => {
+  let { basemap, colourScheme } = payload
+  if (colourScheme === 'light' && basemap === 'dark') {
+    basemap = 'default'
+  }
+  if (colourScheme === 'dark' && basemap === 'default') {
+    basemap = 'dark'
+  }
   return {
     ...state,
     action: 'BASEMAP',
     isUpdate: false,
-    basemap: payload
+    basemap
   }
 }
 

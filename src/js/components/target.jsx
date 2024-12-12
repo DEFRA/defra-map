@@ -4,7 +4,7 @@ import { useViewport } from '../store/use-viewport.js'
 import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
 const isCentre = (isKeyboard, isTouch, targetMarker, activePanel) => {
-  return (isKeyboard|| isTouch) && !(targetMarker && activePanel === 'INFO')
+  return (isKeyboard || isTouch) && !(targetMarker && activePanel === 'INFO')
 }
 
 export default function Target () {

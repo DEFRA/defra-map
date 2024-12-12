@@ -251,7 +251,7 @@ export default function Container () {
                   <PolygonQueryButton />
                 </div>
               )}
-              {isTouch && isTargetVisible && !activePanel && (
+              {!activePanel && (
                 <div className='fm-o-actions'>
                   <PixelQueryButton />
                 </div>

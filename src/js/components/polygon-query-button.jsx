@@ -1,9 +1,9 @@
 import React from 'react'
-import { useApp } from '../store/use-app'
+import { useApp } from '../store/use-app.js'
 import eventBus from '../lib/eventbus.js'
 import { events } from '../store/constants.js'
 
-export default function QueryButton () {
+export default function PolygonQueryButton () {
   const { parent, queryPolygon, query } = useApp()
 
   const handleOnClick = () => {

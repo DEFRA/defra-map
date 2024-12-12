@@ -9,6 +9,7 @@ const isCentre = (isKeyboard, isTouch, targetMarker, activePanel) => {
 
 export default function Target () {
   const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isTouch, isMobile } = useApp()
+  const appDispatch = useApp().dispatch
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
 
@@ -16,6 +17,13 @@ export default function Target () {
   const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
   const isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
+
+  console.log('Target', targetMarker, isTargetCentre, hasTargetData, targetCoord, isTargetVisible)
+
+  // Update app state
+  useEffect(() => {
+    appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: isTargetVisible })
+  }, [isTargetVisible])
 
   // Conditionally show target marker
   useEffect(() => {

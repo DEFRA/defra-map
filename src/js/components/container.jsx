@@ -25,12 +25,13 @@ import Logo from './logo.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawEdit from './draw-edit.jsx'
-import QueryButton from './query-button.jsx'
+import PixelQueryButton from './pixel-query-button.jsx'
+import PolygonQueryButton from './polygon-query-button.jsx'
 import HelpButton from './help-button.jsx'
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, query, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, isTargetVisible, activePanel, isPage, isMobile, isTouch, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, query, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -216,7 +217,7 @@ export default function Container () {
                 )}
                 {hasQueryButton && !isMobile && (
                   <div className='fm-o-actions'>
-                    <QueryButton />
+                    <PolygonQueryButton />
                   </div>
                 )}
                 <div className='fm-o-scale' />
@@ -247,7 +248,12 @@ export default function Container () {
               )}
               {hasQueryButton && isMobile && (
                 <div className='fm-o-actions'>
-                  <QueryButton />
+                  <PolygonQueryButton />
+                </div>
+              )}
+              {isTouch && isTargetVisible && !activePanel && (
+                <div className='fm-o-actions'>
+                  <PixelQueryButton />
                 </div>
               )}
             </div>

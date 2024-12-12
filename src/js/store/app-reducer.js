@@ -40,6 +40,7 @@ export const initialState = (options) => {
     hasViewportLabel: false,
     mode: 'default',
     isFrameVisible: false,
+    isTargetVisible: false,
     query: null,
     hash: null
   }

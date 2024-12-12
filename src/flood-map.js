@@ -81,10 +81,11 @@ export class FloodMap extends EventTarget {
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
 
-    // Set isKeyboard
+    // Set isKeyboard or isTouch
     window.addEventListener('keydown', this._handleKeydown.bind(this), true)
+    window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
 
-    // Unset isKeyboard
+    // Unset isKeyboard and isTouch
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
     window.addEventListener('wheel', this._handlePointerdown.bind(this))
 
@@ -197,13 +198,24 @@ export class FloodMap extends EventTarget {
       return
     }
     this.isKeyboard = true
+    this.isTouch = true
     eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
+    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, false)
+  }
+
+  _handleTouchstart () {
+    this.isTouch = true
+    this.isKeyboard = false
+    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, true)
+    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
   }
 
   _handlePointerdown () {
     eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
+    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, false)
     document.activeElement.classList.remove(cssFocusVisible)
     this.isKeyboard = false
+    this.isTouch = false
   }
 
   _importComponent () {

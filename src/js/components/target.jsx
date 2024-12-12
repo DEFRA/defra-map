@@ -16,9 +16,8 @@ export default function Target () {
   const isTargetCentre = isCentre(isKeyboard, isTouch, targetMarker, activePanel)
   const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
-  const isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
-
-  console.log('Target', targetMarker, isTargetCentre, hasTargetData, targetCoord, isTargetVisible)
+  let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
+  isTargetVisible && !(isTouch && ['LEGEND', 'KEY'].includes(activePanel))
 
   // Update app state
   useEffect(() => {

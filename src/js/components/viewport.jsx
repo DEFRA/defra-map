@@ -115,7 +115,7 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
-    if ((mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) && !(isTouch && targetMarker)) {
+    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
       return
     }
     const { layerX, layerY } = e.nativeEvent

@@ -55,6 +55,7 @@ export default {
         AERIAL_URL: JSON.stringify(process.env.AERIAL_URL),
         DEUTERANOPIA_URL: JSON.stringify(process.env.DEUTERANOPIA_URL),
         TRITANOPIA_URL: JSON.stringify(process.env.TRITANOPIA_URL),
+        TILE_SERVER_URL: JSON.stringify(process.env.TILE_SERVER_URL),
         OS_VTAPI_DEFAULT_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_URL),
         OS_VTAPI_DARK_URL: JSON.stringify(process.env.OS_VTAPI_DARK_URL),
         OS_VTAPI_DEFAULT_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_DRAW_URL),

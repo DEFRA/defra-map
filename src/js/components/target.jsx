@@ -17,7 +17,8 @@ export default function Target () {
   const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
   let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
-  isTargetVisible && !(isTouch && ['LEGEND', 'KEY'].includes(activePanel))
+  // Hide when touch detected and a panel is displayed at the bottom
+  isTargetVisible = isTargetVisible && !(isTouch && ['LEGEND', 'KEY'].includes(activePanel))
 
   // Update app state
   useEffect(() => {

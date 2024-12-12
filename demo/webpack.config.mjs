@@ -43,7 +43,9 @@ export default {
       chunks () {
         return false
       }
-    }
+    },
+    usedExports: true,
+    minimize: true
   },
   plugins: [
     new webpack.DefinePlugin({

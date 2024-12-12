@@ -22,7 +22,7 @@ export default function Target () {
   if (isTouch) {
     isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
   }
-  
+
   // Update app state
   useEffect(() => {
     appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: isTargetVisible })

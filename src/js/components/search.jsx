@@ -29,10 +29,9 @@ export default function Search ({ instigatorRef }) {
   const inputRef = useRef()
 
   const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, legend, state)
-  
+
   // Hide search on click outside
   useOutsideInteract(formRef, false, 'pointerdown', e => {
-    console.log('pointerdown', formRef.current?.contains(e.target))
     if (e.target === instigatorRef.current || formRef.current?.contains(e.target)) {
       return
     }

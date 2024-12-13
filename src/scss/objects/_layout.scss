@@ -273,7 +273,9 @@
     justify-content: center;
     background-color: var(--background-colour);
     box-shadow: $panel-shadow;
-    padding: calc($margin / 2);
+    .fm-c-btn {
+        margin: $margin calc($margin / 2);
+    }
 }
 
 .fm-tablet .fm-o-actions,

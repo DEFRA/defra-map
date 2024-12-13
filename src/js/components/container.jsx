@@ -58,7 +58,6 @@ export default function Container () {
   const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
   const hasSearchButton = search && !isQueryMode && !(isDesktop && search?.isExpanded)
   const hasSearchPanel = activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
-  const hasQueryButton = !isQueryMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
   const hasSegments = legend.segments
   const hasLayers = legend.key
   const handleColorSchemeMQ = () => dispatch({
@@ -210,14 +209,11 @@ export default function Container () {
                 <div className='fm-o-logo'>
                   <Logo />
                 </div>
-                {isQueryMode && !isMobile && (
+                {!isMobile && (
                   <div className='fm-o-actions'>
                     <DrawFinish />
-                  </div>
-                )}
-                {hasQueryButton && !isMobile && (
-                  <div className='fm-o-actions'>
                     <PolygonQueryButton />
+                    <PixelQueryButton/>
                   </div>
                 )}
                 <div className='fm-o-scale' />
@@ -241,9 +237,13 @@ export default function Container () {
                   {hasLayers && <Layers hasSymbols hasInputs />}
                 </Panel>
               )}
-              {isQueryMode && isMobile && <DrawFinish />}
-              {hasQueryButton && isMobile && <PolygonQueryButton />}
-              <PixelQueryButton/>
+              {isMobile && (
+                <div className='fm-o-actions'>
+                  <DrawFinish />
+                  <PolygonQueryButton />
+                  <PixelQueryButton />
+                </div>
+              )}
             </div>
           </div>
         </div>

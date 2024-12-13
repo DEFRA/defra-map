@@ -5,7 +5,7 @@ import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
 
 export default function DrawFinish () {
-  const { provider, parent, segments, layers, dispatch, viewportRef, query } = useApp()
+  const { provider, parent, mode, segments, layers, dispatch, viewportRef, query } = useApp()
   const { size, basemap } = useViewport()
 
   const handleUpdateClick = () => {
@@ -22,14 +22,16 @@ export default function DrawFinish () {
     viewportRef.current.focus()
   }
 
+  const isVisible = ['frame', 'draw'].includes(mode)
+
   return (
-    <div className='fm-o-actions'>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
+    <>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(!isVisible && { 'style': { display: 'none' } })}>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
-      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary govuk-body-s'>
+      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary' {...(!isVisible && { 'style': { display: 'none' } })}>
         Cancel
       </button>
-    </div>
+    </>
   )
 }

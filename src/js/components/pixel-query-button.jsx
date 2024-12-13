@@ -12,10 +12,8 @@ export default function PixelQueryButton () {
   const isVisible = interfaceType === 'touch' && isTargetVisible && !activePanel
   
   return (
-    <div className='fm-o-actions' {...(!isVisible && { 'style': { display: 'none' } })}>
-      <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
-        Get feature information
-      </button>
-    </div>
+    <button onClick={handleOnClick} className={`fm-c-btn fm-c-btn--primary`} {...(!isVisible && { 'style': { display: 'none' } })}>
+      Get feature information
+    </button>
   )
 }

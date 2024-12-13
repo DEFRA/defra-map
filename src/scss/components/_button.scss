@@ -150,8 +150,9 @@
 }
 
 // Draw
-.fm-c-btn.fm-c-btn--primary,
-.fm-c-btn.fm-c-btn--secondary {
+.fm-c-btn--primary,
+.fm-c-btn--secondary {
+    @include body-font(16px, normal);
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
@@ -166,14 +167,13 @@
     text-align: left;
     cursor: pointer;
     outline: 3px solid transparent;
-    margin: calc($margin / 2);
 
     svg {
         flex-shrink: 0;
         margin-right: 5px;
     }
 
-    &:hover {
+    &:hover:not([aria-disabled=true]) {
         background-color: var(--secondary-button-hover-colour);
     }
 
@@ -197,12 +197,12 @@
     }
 }
 
-.fm-c-btn.fm-c-btn--primary {
+.fm-c-btn--primary {
     background-color: var(--green);
     color: #ffffff;
     box-shadow: 0 2px 0 var(--primary-button-shadow-colour);
 
-    &:hover {
+    &:hover:not([aria-disabled=true]) {
         background-color: var(--primary-button-hover-colour);
     }
 }

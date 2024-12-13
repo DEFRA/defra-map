@@ -4,6 +4,14 @@ import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
+const getIsPixelVisible = (interfaceType, isTargetVisible, activePanel) => {
+  return interfaceType === 'touch' && isTargetVisible && !activePanel
+}
+
+const getIsPolygonVisible = (isDrawVisible, query, activePanel, isMobile) => {
+  return !isDrawVisible && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
+}
+
 export default function Actions () {
   const { provider, parent, mode, segments, layers, dispatch, viewportRef, queryPolygon, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { size, basemap } = useViewport()
@@ -33,8 +41,8 @@ export default function Actions () {
   }
 
   const isDrawVisible = ['frame', 'draw'].includes(mode)
-  const isPixelVisible = interfaceType === 'touch' && isTargetVisible && !activePanel
-  const isPolygonVisible = !isDrawVisible && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
+  const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
+  const isPolygonVisible = getIsPolygonVisible(isDrawVisible, query, activePanel, isMobile)
   const hasActions = isDrawVisible || isPixelVisible || isPolygonVisible
 
   return (

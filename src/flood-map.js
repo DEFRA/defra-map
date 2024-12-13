@@ -204,14 +204,7 @@ export class FloodMap extends EventTarget {
 
   _handleTouchstart () {
     this.interfaceType = 'touch'
-    const div = document.createElement('div')
-    div.setAttribute('style', 'position:absolute;top:100px;left:10px;border:2px solid green;z-index:1000;visibility:visible;background-color:white;')
-    div.innerHTML = this.interfaceType
-    document.body.appendChild(div)
-    setTimeout(() => {
-      document.body.removeChild(div)
-    }, 1000)
-    // eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
   }
 
   _handlePointerdown () {

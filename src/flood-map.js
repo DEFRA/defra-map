@@ -85,7 +85,7 @@ export class FloodMap extends EventTarget {
     window.addEventListener('keydown', this._handleKeydown.bind(this), true)
 
     // Set touch interfaceType
-    window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
+    // window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
 
     // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))

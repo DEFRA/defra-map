@@ -5,8 +5,8 @@ export default function PixelQueryButton () {
   const { viewportRef } = useApp()
 
   const handleOnClick = () => {
-    // const event = new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })
-    // viewportRef.current.dispatchEvent(event)
+    const event = new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })
+    viewportRef.current.dispatchEvent(event)
   }
 
   return (

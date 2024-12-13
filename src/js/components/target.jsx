@@ -19,9 +19,9 @@ export default function Target () {
   let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
 
   // Hide when touch detected and a panel is displayed at the bottom
-  // if (interfaceType === 'touch') {
-  //   isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
-  // }
+  if (interfaceType === 'touch') {
+    isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
+  }
 
   // Update app state
   useEffect(() => {

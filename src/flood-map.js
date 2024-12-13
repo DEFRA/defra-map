@@ -87,12 +87,11 @@ export class FloodMap extends EventTarget {
     // Set touch interfaceType
     // window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
     window.addEventListener('touchstart', () => {
-      const vp = document.querySelector('.fm-o-viewport')
-      vp.style.outline = '5px solid green'
-      vp.style.outlineOffset = '-5px'
+      const div = document.createElement('div')
+      div.setAttribute('style', 'position:absolute;top:10px;left:10px;width:100px;height:50px;border:5px solid green;z-index:1000;visibility:visible;')
+      document.body.appendChild(div)
       setTimeout(() => {
-        vp.style.outline = '0'
-        vp.style.outlineOffset = '0'
+        document.body.removeChild(div)
       }, 1000)
     })
 

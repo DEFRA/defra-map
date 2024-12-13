@@ -30,7 +30,7 @@ export default function Target () {
   const hasTargetData = hasData(isTargetCentre, features, targetMarker)
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
   const isTargetVisible = isVisible(interfaceType, isTargetCentre, mode, features, targetCoord, activePanel)
-  
+
   // Update app state
   useEffect(() => {
     appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: isTargetVisible })

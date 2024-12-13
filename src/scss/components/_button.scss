@@ -173,7 +173,7 @@
         margin-right: 5px;
     }
 
-    &:hover:not([aria-disabled=true]) {
+    &:hover:not([aria-disabled="true"]) {
         background-color: var(--secondary-button-hover-colour);
     }
 
@@ -202,7 +202,7 @@
     color: #ffffff;
     box-shadow: 0 2px 0 var(--primary-button-shadow-colour);
 
-    &:hover:not([aria-disabled=true]) {
+    &:hover:not([aria-disabled="true"]) {
         background-color: var(--primary-button-hover-colour);
     }
 }

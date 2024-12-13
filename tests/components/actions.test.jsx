@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import DrawFinish from '../../src/js/components/draw-finish'
+import Actions from '../../src/js/components/actions'
 import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
@@ -10,7 +10,7 @@ jest.mock('../../src/js/lib/eventbus')
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 
-describe('draw-finish', () => {
+describe('actions', () => {
   const drawFinish = jest.fn()
   const dispatch = jest.fn()
   const viewPortRefFocus = jest.fn()
@@ -37,7 +37,7 @@ describe('draw-finish', () => {
       }
     })
 
-    render(<DrawFinish cancelBtnRef={null} />)
+    render(<Actions cancelBtnRef={null} />)
 
     fireEvent.click(screen.getByText('Confirm area'))
 
@@ -62,7 +62,7 @@ describe('draw-finish', () => {
       }
     })
 
-    render(<DrawFinish />)
+    render(<Actions />)
 
     fireEvent.click(screen.getByText('Cancel'))
 
@@ -88,7 +88,7 @@ describe('draw-finish', () => {
       }
     })
 
-    render(<DrawFinish />)
+    render(<Actions />)
 
     fireEvent.click(screen.getByText('Update area'))
 

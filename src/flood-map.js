@@ -88,7 +88,8 @@ export class FloodMap extends EventTarget {
     // window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
     window.addEventListener('touchstart', () => {
       const div = document.createElement('div')
-      div.setAttribute('style', 'position:absolute;top:10px;left:10px;width:100px;height:50px;border:5px solid green;z-index:1000;visibility:visible;')
+      div.setAttribute('style', 'position:absolute;top:60px;left:10px;border:2px solid green;z-index:1000;visibility:visible;background-color:white;')
+      div.innerHTML = 'touch'
       document.body.appendChild(div)
       setTimeout(() => {
         document.body.removeChild(div)

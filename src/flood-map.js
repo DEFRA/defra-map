@@ -85,16 +85,16 @@ export class FloodMap extends EventTarget {
     window.addEventListener('keydown', this._handleKeydown.bind(this), true)
 
     // Set touch interfaceType
-    // window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
-    window.addEventListener('touchstart', () => {
-      const div = document.createElement('div')
-      div.setAttribute('style', 'position:absolute;top:60px;left:10px;border:2px solid green;z-index:1000;visibility:visible;background-color:white;')
-      div.innerHTML = 'touch'
-      document.body.appendChild(div)
-      setTimeout(() => {
-        document.body.removeChild(div)
-      }, 1000)
-    })
+    window.addEventListener('touchstart', this._handleTouchstart.bind(this))
+    // window.addEventListener('touchstart', () => {
+    //   const div = document.createElement('div')
+    //   div.setAttribute('style', 'position:absolute;top:60px;left:10px;border:2px solid green;z-index:1000;visibility:visible;background-color:white;')
+    //   div.innerHTML = 'touch'
+    //   document.body.appendChild(div)
+    //   setTimeout(() => {
+    //     document.body.removeChild(div)
+    //   }, 1000)
+    // })
 
     // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))

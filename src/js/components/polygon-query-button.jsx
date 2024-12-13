@@ -12,8 +12,10 @@ export default function PolygonQueryButton () {
   }
 
   return (
-    <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
-      {queryPolygon.submitLabel}
-    </button>
+    <div className='fm-o-actions'>
+      <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
+        {queryPolygon.submitLabel}
+      </button>
+    </div>
   )
 }

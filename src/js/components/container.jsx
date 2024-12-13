@@ -241,21 +241,9 @@ export default function Container () {
                   {hasLayers && <Layers hasSymbols hasInputs />}
                 </Panel>
               )}
-              {isQueryMode && isMobile && (
-                <div className='fm-o-actions'>
-                  <DrawFinish />
-                </div>
-              )}
-              {hasQueryButton && isMobile && (
-                <div className='fm-o-actions'>
-                  <PolygonQueryButton />
-                </div>
-              )}
-              {interfaceType === 'touch' && isTargetVisible && !activePanel && (
-                <div className='fm-o-actions'>
-                  <PixelQueryButton />
-                </div>
-              )}
+              {isQueryMode && isMobile && <DrawFinish />}
+              {hasQueryButton && isMobile && <PolygonQueryButton />}
+              <PixelQueryButton/>
             </div>
           </div>
         </div>

@@ -23,13 +23,13 @@ export default function DrawFinish () {
   }
 
   return (
-    <>
+    <div className='fm-o-actions'>
       <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary govuk-body-s'>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
       <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary govuk-body-s'>
         Cancel
       </button>
-    </>
+    </div>
   )
 }

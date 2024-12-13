@@ -81,20 +81,21 @@ export class FloodMap extends EventTarget {
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
 
-    // Set isKeyboard or isTouch
+    // Set keyboard interfaceType
     window.addEventListener('keydown', this._handleKeydown.bind(this), true)
+
+    // Set touch interfaceType
     window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
 
-    // Unset isKeyboard and isTouch
+    // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
     window.addEventListener('wheel', this._handlePointerdown.bind(this))
 
     // Polyfil :focus-visible set
     const handleFocusIn = () => {
-      if (!this.isKeyboard) {
-        return
+      if (this.interfaceType === 'keyboard') {
+        document.activeElement.classList.add(cssFocusVisible)
       }
-      document.activeElement.classList.add(cssFocusVisible)
     }
     window.addEventListener('focusin', handleFocusIn)
 
@@ -107,7 +108,7 @@ export class FloodMap extends EventTarget {
       this.map = data.map
       this.modules = data.modules
       this.isReady = true
-      eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, this.isKeyboard || false)
+      eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, this.interfaceType)
       // We now have a reference to the map
       eventBus.dispatch(this, events.READY, { type: 'ready', ...data })
       // Need to call these after the component is ready
@@ -197,25 +198,19 @@ export class FloodMap extends EventTarget {
     if (e.key !== 'Tab') {
       return
     }
-    this.isKeyboard = true
-    this.isTouch = true
-    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
-    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, false)
+    this.interfaceType = 'keyboard'
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
   }
 
   _handleTouchstart () {
-    this.isTouch = true
-    this.isKeyboard = false
-    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, true)
-    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
+    this.interfaceType = 'touch'
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
   }
 
   _handlePointerdown () {
-    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
-    eventBus.dispatch(this.props.parent, events.SET_IS_TOUCH, false)
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, null)
     document.activeElement.classList.remove(cssFocusVisible)
-    this.isKeyboard = false
-    this.isTouch = false
+    this.interfaceType = null
   }
 
   _importComponent () {
@@ -229,7 +224,7 @@ export class FloodMap extends EventTarget {
       return
     }
     this.button?.setAttribute('style', 'display: none')
-    this.root = module.default(this.el, { ...this.props, isKeyboard: this.isKeyboard })
+    this.root = module.default(this.el, { ...this.props, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {

@@ -31,7 +31,7 @@ import HelpButton from './help-button.jsx'
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, isTargetVisible, activePanel, isPage, isMobile, isTouch, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, query, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, isTargetVisible, activePanel, isPage, isMobile, interfaceType, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, query, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -251,7 +251,7 @@ export default function Container () {
                   <PolygonQueryButton />
                 </div>
               )}
-              {isTouch && isTargetVisible && !activePanel && (
+              {interfaceType === 'touch' && isTargetVisible && !activePanel && (
                 <div className='fm-o-actions'>
                   <PixelQueryButton />
                 </div>

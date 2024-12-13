@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
 export default function PaddingBox ({ children }) {
-  const { provider, isContainerReady, mode, viewportRef, paddingBoxRef, obscurePanelRef, targetMarker, frameRef, isKeyboard, isMobile } = useApp()
+  const { provider, isContainerReady, mode, viewportRef, paddingBoxRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate } = useViewport()
 
   // Update provider padding, need to run this before viewport action effect
@@ -38,8 +38,8 @@ export default function PaddingBox ({ children }) {
   }, [mode])
 
   // Template properties
-  const isVisible = isKeyboard && features?.isFeaturesInMap
-  const isActive = isKeyboard && features?.featuresInViewport.length
+  const isVisible = interfaceType === 'keyboard' && features?.isFeaturesInMap
+  const isActive = interfaceType === 'keyboard' && features?.featuresInViewport.length
   const isFrame = mode === 'frame'
 
   return (

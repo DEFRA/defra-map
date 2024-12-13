@@ -3,23 +3,23 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
-const isCentre = (isKeyboard, isTouch, targetMarker, activePanel) => {
-  return (isKeyboard || isTouch) && !(targetMarker && activePanel === 'INFO')
+const isCentre = (interfaceType, targetMarker, activePanel) => {
+  return ['keyboard', 'touch'].includes(interfaceType) && !(targetMarker && activePanel === 'INFO')
 }
 
 export default function Target () {
-  const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isTouch, isMobile } = useApp()
+  const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, interfaceType, isMobile } = useApp()
   const appDispatch = useApp().dispatch
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
 
-  const isTargetCentre = isCentre(isKeyboard, isTouch, targetMarker, activePanel)
+  const isTargetCentre = isCentre(interfaceType, targetMarker, activePanel)
   const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
   let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
 
   // Hide when touch detected and a panel is displayed at the bottom
-  if (isTouch) {
+  if (interfaceType === 'touch') {
     isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
   }
 

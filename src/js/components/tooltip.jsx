@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 
 export default function Tooltip ({ id, position, text, cssModifier, children }) {
-  const { isKeyboard } = useApp()
+  const { interfaceType } = useApp()
   const [isVisible, setIsVisible] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
 
@@ -51,7 +51,7 @@ export default function Tooltip ({ id, position, text, cssModifier, children }) 
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
       onMouseDown={hideTooltip}
-      onFocus={isKeyboard ? showTooltip : null}
+      onFocus={interfaceType === 'keyboard' ? showTooltip : null}
       onBlur={hideTooltip}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}

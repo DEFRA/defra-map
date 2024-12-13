@@ -30,10 +30,10 @@ const fm = new FloodMap('map', {
     deuteranopiaUrl: process.env.DEUTERANOPIA_URL,
     tritanopiaUrl: process.env.TRITANOPIA_URL
   },
-  search: {
-    country: 'england',
-    isAutocomplete: true
-  },
+  // search: {
+  //   country: 'england',
+  //   isAutocomplete: true
+  // },
   legend: {
     title: 'Menu',
     width: '360px',

@@ -18,7 +18,7 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
 }
 
 export default function Search ({ instigatorRef }) {
-  const { isKeyboard, isMobile, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
@@ -60,7 +60,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleFocus = () => {
-    dispatch({ type: 'FOCUS', payload: isKeyboard })
+    dispatch({ type: 'FOCUS', payload: interfaceType === 'keyboard' })
   }
 
   const handleSubmit = e => {
@@ -77,7 +77,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleClear = () => {
-    dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: isKeyboard } })
+    dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: interfaceType === 'keyboard' } })
     inputRef.current.focus()
   }
 
@@ -110,6 +110,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleClick = () => {
+    const isKeyboard = interfaceType === 'keyboard'
     dispatch({ type: 'CLICK', payload: { isKeyboard, activeRef: inputRef } })
   }
 

@@ -10,7 +10,7 @@ import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, isKeyboard } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
 
   const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
   const appDispatch = useApp().dispatch
@@ -182,6 +182,7 @@ export default function Viewport () {
   }, STATUS_DELAY)
 
   // Template properties
+  const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 

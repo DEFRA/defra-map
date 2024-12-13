@@ -269,12 +269,15 @@
 }
 
 .fm-o-actions {
-    display: flex;
-    justify-content: center;
-    background-color: var(--background-colour);
-    box-shadow: $panel-shadow;
     .fm-c-btn {
-        margin: $margin calc($margin / 2);
+        margin: calc($margin / 2);
+    }
+    &--has-actions {
+        display: flex;
+        justify-content: center;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow;
+        padding: calc($margin / 2);
     }
 }
 

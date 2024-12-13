@@ -15,7 +15,6 @@ import Styles from './styles.jsx'
 import Keyboard from './keyboard.jsx'
 import LegendButton from './legend-button.jsx'
 import KeyButton from './key-button.jsx'
-import DrawFinish from './draw-finish.jsx'
 import SearchButton from './search-button.jsx'
 import StylesButton from './styles-button.jsx'
 import Zoom from './zoom.jsx'
@@ -25,13 +24,12 @@ import Logo from './logo.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawEdit from './draw-edit.jsx'
-import PixelQueryButton from './pixel-query-button.jsx'
-import PolygonQueryButton from './polygon-query-button.jsx'
+import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, isTargetVisible, activePanel, isPage, isMobile, interfaceType, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, query, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -209,13 +207,7 @@ export default function Container () {
                 <div className='fm-o-logo'>
                   <Logo />
                 </div>
-                {!isMobile && (
-                  <div className='fm-o-actions'>
-                    <DrawFinish />
-                    <PolygonQueryButton />
-                    <PixelQueryButton/>
-                  </div>
-                )}
+                {!isMobile && <Actions />}
                 <div className='fm-o-scale' />
               </div>
               {info && activePanel === 'INFO' && isMobile && (
@@ -237,13 +229,7 @@ export default function Container () {
                   {hasLayers && <Layers hasSymbols hasInputs />}
                 </Panel>
               )}
-              {isMobile && (
-                <div className='fm-o-actions'>
-                  <DrawFinish />
-                  <PolygonQueryButton />
-                  <PixelQueryButton />
-                </div>
-              )}
+              {isMobile && <Actions />}
             </div>
           </div>
         </div>

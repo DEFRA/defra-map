@@ -132,7 +132,7 @@ export default function Container () {
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
-                <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />
+                <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon?.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />

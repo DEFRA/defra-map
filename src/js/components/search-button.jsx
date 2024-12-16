@@ -3,10 +3,10 @@ import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 
 export default function SearchButton ({ searchBtnRef, tooltip }) {
-  const { dispatch, mode, search, activePanel, options, isDesktop } = useApp()
+  const { dispatch, mode, search, activePanel, options } = useApp()
   const isQueryMode = ['frame', 'draw'].includes(mode)
 
-  if (!(search && !isQueryMode && !(isDesktop && search?.isExpanded))) {
+  if (!(search && !isQueryMode)) {
     return null
   }
 

@@ -5,7 +5,7 @@ export default function KeyButton ({ keyBtnRef }) {
   const { dispatch, activePanel, options, mode } = useApp()
   const isQueryMode = ['frame', 'draw'].includes(mode)
 
-  if (!(options.legend && !isQueryMode && !options.legend.display)) {
+  if (!(options?.legend && !isQueryMode && !options?.legend?.display)) {
     return null
   }
 

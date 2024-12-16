@@ -2,11 +2,11 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function LegendButton ({ legendBtnRef }) {
-  const { options, dispatch, mode, legend, isDesktop, activePanel } = useApp()
+  const { dispatch, mode, legend, isDesktop, activePanel } = useApp()
   const isQueryMode = ['frame', 'draw'].includes(mode)
-  const isLegendInset = options.legend.display === 'inset'
+  const isLegendInset = legend?.display === 'inset'
 
-  if (!(options.legend && !isQueryMode && !(isDesktop && !isLegendInset))) {
+  if (!(legend && !isQueryMode && !(isDesktop && !isLegendInset))) {
     return null
   }
 

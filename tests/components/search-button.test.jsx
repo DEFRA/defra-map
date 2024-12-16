@@ -8,9 +8,10 @@ jest.mock('../../src/js/store/use-app')
 describe('search-button', () => {
   it('should show search button', () => {
     jest.mocked(useApp).mockReturnValue({
-      options: {
-        id: 'test-id'
-      }
+      isDesktop: true,
+      options: { id: 'test-id' },
+      search: {},
+      mode: null
     })
 
     render(<SearchButton />)
@@ -21,11 +22,11 @@ describe('search-button', () => {
   it('should dispatch OPEN action on click', () => {
     const dispatchMock = jest.fn()
     jest.mocked(useApp).mockReturnValue({
-      options: {
-        id: 'test-id'
-      },
+      options: { id: 'test-id' },
+      search: {},
       activePanel: null,
-      dispatch: dispatchMock
+      dispatch: dispatchMock,
+      mode: null
     })
 
     render(<SearchButton />)
@@ -38,10 +39,10 @@ describe('search-button', () => {
 
   it('should hide button when activePanel is SEARCH', () => {
     jest.mocked(useApp).mockReturnValue({
-      options: {
-        id: 'test-id'
-      },
-      activePanel: 'SEARCH'
+      options: { id: 'test-id' },
+      search: {},
+      activePanel: 'SEARCH',
+      mode: null
     })
 
     render(<SearchButton />)

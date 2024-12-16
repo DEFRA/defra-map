@@ -149,7 +149,6 @@ export const getStatus = (action, place, description, direction) => {
   if (action === 'DATA') {
     return 'Map change: new data. Use ALT plus I to get new details'
   } else if (['PANZOOM', 'GEOLOC'].includes(action)) {
-    let status = null
     if (place) {
       status = description
     } else {

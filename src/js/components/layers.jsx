@@ -10,8 +10,10 @@ export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend
-  if (!legend.key) return null
   const { zoom } = useViewport()
+  if (!legend.key) {
+    return null
+  }
 
   // Derived properties
   const moreLabel = keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'

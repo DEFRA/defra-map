@@ -145,18 +145,20 @@ export const getDescription = (place, centre, bbox, features) => {
 }
 
 export const getStatus = (action, place, description, direction) => {
+  let status = null
   if (action === 'DATA') {
     return 'Map change: new data. Use ALT plus I to get new details'
-  }
-  if (['PANZOOM', 'GEOLOC'].includes(action)) {
+  } else if (['PANZOOM', 'GEOLOC'].includes(action)) {
     let status = null
     if (place) {
       status = description
     } else {
       status = `${direction}. Use ALT plus I to get new details`
     }
-    return status
+  } else {
+    // Empty status
   }
+  return status
 }
 
 export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {

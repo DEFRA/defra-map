@@ -28,7 +28,7 @@ import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 
 const getClassNames = (isDarkMode, device, type, isQueryMode) => {
- return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`
+  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`
 }
 
 export default function Container () {

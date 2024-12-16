@@ -8,9 +8,12 @@ import LayerGroup from './layer-group.jsx'
 
 export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
-  const { zoom } = useViewport()
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend
+  const { zoom } = useViewport()
+  if (!legend.key) {
+    return null
+  }
 
   // Derived properties
   const moreLabel = keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'

@@ -103,6 +103,13 @@ const setIsDarkMode = (state, payload) => {
   }
 }
 
+const setIsTargetVisible = (state, payload) => {
+  return {
+    ...state,
+    isTargetVisible: payload
+  }
+}
+
 const toggleSegments = (state, payload) => {
   return {
     ...state,
@@ -147,6 +154,7 @@ export const actionsMap = {
   CLOSE: close,
   SET_MODE: setMode,
   SET_IS_DARK_MODE: setIsDarkMode,
+  SET_IS_TARGET_VISIBLE: setIsTargetVisible,
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,

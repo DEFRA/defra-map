@@ -61,15 +61,20 @@ class Provider extends EventTarget {
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()
-    const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
-    const extent = bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null
+    const map = new EsriMap({
+      layers: [baseTileLayer, graphicsLayer]
+    })
+    // Validate coordinates
+    bbox = this.validateCoords(bbox)
+    centre = this.validateCoords(centre)
+    // Create MapView
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
       zoom: zoom || null,
       center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
-      extent,
+      extent: bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
@@ -121,6 +126,11 @@ class Provider extends EventTarget {
       }
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
+  }
+
+  validateCoords (coords) {
+    const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
+    return isValid ? coords : null
   }
 
   getImagePos (style) {

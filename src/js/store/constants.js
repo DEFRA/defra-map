@@ -9,7 +9,7 @@ export const events = {
   SET_INFO: 'setinfo',
   SET_DRAW: 'setdraw',
   SET_SELECTED: 'setselected',
-  SET_IS_KEYBOARD: 'setiskeyboard',
+  SET_INTERFACE_TYPE: 'setinterfacetype',
   MAP_QUERY: 'mapquery',
   MAP_CLICK: 'mapclick',
   MAP_LOAD: 'load',

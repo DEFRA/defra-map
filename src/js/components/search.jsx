@@ -17,8 +17,12 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
   return { geocode, searchWidth, hasClear, className, formClassName, label }
 }
 
+const hasPanel = (search, activePanel, isDesktop) => {
+  return activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
+}
+
 export default function Search ({ instigatorRef }) {
-  const { isKeyboard, isMobile, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
@@ -27,8 +31,16 @@ export default function Search ({ instigatorRef }) {
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
-
   const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, legend, state)
+
+  // Hide search on click outside
+  useOutsideInteract(formRef, false, 'pointerdown', e => {
+    if (e.target === instigatorRef.current || formRef.current?.contains(e.target)) {
+      return
+    }
+    handleCollapse()
+  })
+
   // Hide soft keyboard on touchstart outside search input
   useOutsideInteract(inputRef, true, 'touchstart', e => {
     if (document.activeElement !== inputRef.current) {
@@ -51,7 +63,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleFocus = () => {
-    dispatch({ type: 'FOCUS', payload: isKeyboard })
+    dispatch({ type: 'FOCUS', payload: interfaceType === 'keyboard' })
   }
 
   const handleSubmit = e => {
@@ -68,7 +80,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleClear = () => {
-    dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: isKeyboard } })
+    dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: interfaceType === 'keyboard' } })
     inputRef.current.focus()
   }
 
@@ -101,6 +113,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleClick = () => {
+    const isKeyboard = interfaceType === 'keyboard'
     dispatch({ type: 'CLICK', payload: { isKeyboard, activeRef: inputRef } })
   }
 
@@ -111,6 +124,10 @@ export default function Search ({ instigatorRef }) {
     }
     activeRef.current = inputRef.current
   }, [activePanel])
+
+  if (!hasPanel(search, activePanel, isDesktop)) {
+    return null
+  }
 
   return (
     <div

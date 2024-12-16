@@ -6,10 +6,15 @@ import Tooltip from './tooltip.jsx'
 const { sessionStorage } = window
 
 export default function Location () {
-  const { provider, options } = useApp()
+  const { provider, options, mode } = useApp()
   const { id } = options
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
+  const isQueryMode = ['frame', 'draw'].includes(mode)
+
+  if (!(options.hasGeoLocation && !isQueryMode)) {
+    return null
+  }
 
   // Set initial geo location
   const handleGeoLocationSuccess = (coord, place) => {

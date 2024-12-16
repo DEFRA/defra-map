@@ -3,6 +3,11 @@ import { useApp } from '../store/use-app'
 
 export default function DrawEdit () {
   const { provider, mode, dispatch } = useApp()
+  const isQueryMode = ['frame', 'draw'].includes(mode)
+
+  if (!isQueryMode) {
+    return null
+  }
 
   const handleShapeClick = () => {
     provider.draw.edit()

@@ -10,6 +10,8 @@ describe('key-button', () => {
   beforeEach(() => {
     jest.mocked(useApp).mockReturnValue({
       activePanel: null,
+      options: { legend: { key: {} } },
+      mode: null,
       dispatch: jest.fn()
     })
   })
@@ -24,6 +26,8 @@ describe('key-button', () => {
     const dispatchMock = jest.fn()
     jest.mocked(useApp).mockReturnValue({
       activePanel: null,
+      options: { legend: { key: {} } },
+      mode: null,
       dispatch: dispatchMock
     })
 
@@ -38,6 +42,8 @@ describe('key-button', () => {
   it('should hide button when activePanel is KEY', () => {
     jest.mocked(useApp).mockReturnValue({
       activePanel: 'KEY',
+      options: { legend: { key: {} } },
+      mode: null,
       dispatch: jest.fn()
     })
 

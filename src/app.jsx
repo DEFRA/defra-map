@@ -13,7 +13,7 @@ export default function App (options) {
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
-  const [isKeyboard, setIsKeyboard] = useState(!!options.isKeyboard)
+  const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
 
   // Create a provider instance
   const provider = useRef(new Provider({
@@ -47,8 +47,8 @@ export default function App (options) {
     window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
     window.matchMedia(desktopMQ).addEventListener('change', handleDesktopMQ)
 
-    // Keyboard events
-    eventBus.on(parent, events.SET_IS_KEYBOARD, data => setIsKeyboard(data))
+    // Keyboard and touch events
+    eventBus.on(parent, events.SET_INTERFACE_TYPE, data => setInterfaceType(data))
 
     return () => {
       window.removeEventListener('change', handleMobileMQ)
@@ -67,7 +67,7 @@ export default function App (options) {
         isMobile,
         isDesktop,
         isBack: window.history.state?.isBack,
-        isKeyboard,
+        interfaceType,
         parent,
         handleExit,
         viewportRef,

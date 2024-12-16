@@ -2,7 +2,13 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function LegendButton ({ legendBtnRef }) {
-  const { dispatch, legend, activePanel } = useApp()
+  const { dispatch, mode, legend, isDesktop, activePanel } = useApp()
+  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isLegendInset = legend?.display === 'inset'
+
+  if (!(legend && !isQueryMode && !(isDesktop && !isLegendInset))) {
+    return null
+  }
 
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'LEGEND' })

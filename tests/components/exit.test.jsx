@@ -14,7 +14,8 @@ describe('exit', () => {
       handleExit,
       isDesktop: true,
       isBack: false,
-      options: { legend: { display: 'inset ' } }
+      isPage: true,
+      mode: null
     })
 
     const { container } = render(<Exit />)
@@ -32,8 +33,9 @@ describe('exit', () => {
     jest.mocked(useApp).mockReturnValue({
       handleExit,
       isDesktop: true,
+      isPage: true,
       isBack: true,
-      options: { legend: { display: 'inset ' } }
+      mode: null
     })
 
     const { container } = render(<Exit />)

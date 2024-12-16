@@ -52,12 +52,8 @@ export default function Container () {
   const isLegendModal = !isLegendFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const hasLengedHeading = !(legend.display === 'inset' || (isLegendFixed && isPage))
   const isQueryMode = ['frame', 'draw'].includes(mode)
-  const hasLegendButton = legend && !isQueryMode && !(isDesktop && !isLegendInset)
-  const hasKeyButton = legend && !isQueryMode && !legend.display
-  const isLegendInsetPage = isLegendInset && isPage
-  const isOffset = isLegendInsetPage || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
-  const hasSearchButton = search && !isQueryMode && !(isDesktop && search?.isExpanded)
-  const hasSearchPanel = activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
+  const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
+
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
     payload: { colourScheme: window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }
@@ -122,16 +118,18 @@ export default function Container () {
         )}
         <div className='fm-o-main'>
           <Viewport />
-          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}`}>
+          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 <Exit />
-                {!isMobile && hasSearchButton && (
-                  <SearchButton searchBtnRef={searchBtnRef} />
+                {!isMobile && (
+                  <>
+                    <SearchButton searchBtnRef={searchBtnRef} />
+                    <Search instigatorRef={searchBtnRef} />
+                  </>
                 )}
-                {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
-                {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
-                {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
+                <LegendButton legendBtnRef={legendBtnRef} />
+                <KeyButton keyBtnRef={keyBtnRef} />
                 <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon?.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
@@ -155,19 +153,21 @@ export default function Container () {
               </div>
               <div className='fm-o-top__column'>
                 <ViewportLabel />
-                {isQueryMode && <DrawEdit />}
+                <DrawEdit />
               </div>
               <div className='fm-o-top__column'>
-                {isMobile && hasSearchButton && (
-                  <SearchButton searchBtnRef={searchBtnRef} tooltip='left' />
-                )}
-                {isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
-                {!(isMobile && hasSearchPanel) && (
+                {isMobile && (
                   <>
-                    {provider.basemaps && !!Object.keys(provider?.basemaps).length && <StylesButton stylesBtnRef={stylesBtnRef} />}
-                    {options.hasReset && <Reset />}
-                    {options.hasGeoLocation && !isQueryMode && <Location provider={provider} />}
-                    {!isMobile && <Zoom />}
+                    <SearchButton searchBtnRef={searchBtnRef} tooltip='left' />
+                    <Search instigatorRef={searchBtnRef} />
+                  </>
+                )}
+                {hasButtons && (
+                  <>
+                    <StylesButton stylesBtnRef={stylesBtnRef} />
+                    <Reset />
+                    <Location provider={provider} />
+                    <Zoom />
                   </>
                 )}
               </div>

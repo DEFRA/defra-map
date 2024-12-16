@@ -3,10 +3,14 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 
 export default function Reset () {
-  const { id } = useApp().options
+  const { id, options } = useApp().options
   const { bbox, oCentre, rZoom, centre, zoom } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [isNewArea, setIsNewArea] = useState(false)
+
+  if (!options?.hasReset) {
+    return null
+  }
 
   const handleOnClick = () => {
     if (!isNewArea) {

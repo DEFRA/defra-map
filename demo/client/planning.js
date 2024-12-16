@@ -167,7 +167,7 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   framework: 'esri',
-  type: 'inline',
+  type: 'hybrid',
   place: 'Ambleside',
   zoom: 16,
   minZoom: 6,

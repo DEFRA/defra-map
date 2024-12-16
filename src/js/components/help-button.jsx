@@ -2,9 +2,10 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function HelpButton ({ helpBtnRef }) {
-  const { dispatch, options, isQueryMode, isDesktop, activePanel } = useApp()
-
-  if (!(isQueryMode && !(isDesktop && options?.legend.display === 'inset'))) {
+  const { dispatch, mode, isDesktop, activePanel } = useApp()
+  const isQueryMode = ['frame', 'draw'].includes(mode)
+  
+  if (!isQueryMode || isDesktop) {
     return null
   }
 

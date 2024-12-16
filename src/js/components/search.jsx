@@ -18,7 +18,7 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
 }
 
 export default function Search ({ instigatorRef }) {
-  const { interfaceType, isMobile, options, search, activeRef, activePanel, activePanelHasFocus, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
@@ -27,7 +27,6 @@ export default function Search ({ instigatorRef }) {
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
-
   const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, legend, state)
 
   // Hide search on click outside
@@ -122,6 +121,10 @@ export default function Search ({ instigatorRef }) {
     activeRef.current = inputRef.current
   }, [activePanel])
 
+  if (!(activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))) {
+    return null
+  }
+  
   return (
     <div
       id={`${id}-search-form`} className={className}

@@ -7,6 +7,10 @@ export default function StylesButton ({ stylesBtnRef }) {
   const { id } = options
   const { basemaps } = provider
 
+  if (!(provider.basemaps && !!Object.keys(provider?.basemaps).length)) {
+    return null
+  }
+
   // Open panel
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'STYLE' })

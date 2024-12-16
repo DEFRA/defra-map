@@ -8,12 +8,10 @@ const update = (state, payload) => {
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
   const description = getDescription(place, centre, bbox, features)
   const original = { oBbox: bbox, oCentre: centre, rZoom: zoom, oZoom, oPlace: place }
-  const isPanZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom))
-  const isGeoLoc = action === 'GEOLOC'
-  const isFeaturesChange = !(isSame(state.features, features))
-  const isUpdate = isPanZoom || isGeoLoc || isFeaturesChange
+  const panZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom)) && 'PANZOOM'
+  const updateAction = (action === 'GEOLOC' && 'GEOLOC') || (action === 'DATA' && 'DATA') || panZoom
   const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
-  const status = getStatus(isPanZoom, isGeoLoc, place, description, direction) || state.status
+  const status = getStatus(updateAction, place, description, direction) || state.status
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -24,8 +22,7 @@ const update = (state, payload) => {
     status,
     features,
     isMoving: false,
-    isFeaturesChange: isPanZoom || isGeoLoc,
-    isUpdate,
+    isUpdate: !!updateAction,
     action: null
   }
 }
@@ -151,7 +148,9 @@ const clearStatus = (state) => {
 const clearFeatures = (state) => {
   return {
     ...state,
-    features: null
+    features: null,
+    status: '',
+    action: 'DATA'
   }
 }
 

@@ -113,7 +113,7 @@ export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
       const direction = zoom > oZoom ? 'in' : 'out'
       change = `zoomed ${direction}, showing ${getArea(bbox)}`
     }
-    change = `${change}: Use ALT plus I to get new details`
+    change = `${change}`
   }
   return change
 }
@@ -144,16 +144,19 @@ export const getDescription = (place, centre, bbox, features) => {
   return `Approximate map centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
-export const getStatus = (isPanZoom, isGeoLoc, place, description, direction) => {
-  let status = null
-  if (isPanZoom || isGeoLoc) {
+export const getStatus = (action, place, description, direction) => {
+  if (action === 'DATA') {
+    return 'Map change: new data. Use ALT plus I to get new details'
+  }
+  if (['PANZOOM', 'GEOLOC'].includes(action)) {
+    let status = null
     if (place) {
       status = description
     } else {
-      status = direction
+      status = `${direction}. Use ALT plus I to get new details`
     }
+    return status
   }
-  return status
 }
 
 export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {

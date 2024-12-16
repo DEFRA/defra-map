@@ -36,12 +36,14 @@ const getFill = (item, basemap) => {
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const { parent, dispatch, mode, layers, segments } = useApp()
   const { basemap, size } = useViewport()
+  const viewportDispatch = useViewport().dispatch
   const [, setQueryLyr] = useQueryState('lyr')
   const [isExpanded, setIsExpanded] = useState(group?.collapse !== 'collapse')
   const [svg, setSvg] = useState({})
 
   const dispatchAppChange = lyr => {
     dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
+    viewportDispatch({ type: 'CLEAR_FEATURES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, basemap, size, segments, layers: lyr })
     // Update query param
     setQueryLyr(lyr.join(','))

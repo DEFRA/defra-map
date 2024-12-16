@@ -17,6 +17,10 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
   return { geocode, searchWidth, hasClear, className, formClassName, label }
 }
 
+const hasPanel = (search, activePanel, isDesktop) => {
+  return activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
+}
+
 export default function Search ({ instigatorRef }) {
   const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, activePanelHasFocus, legend } = useApp()
   const appDispatch = useApp().dispatch
@@ -121,7 +125,7 @@ export default function Search ({ instigatorRef }) {
     activeRef.current = inputRef.current
   }, [activePanel])
 
-  if (!(activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))) {
+  if (!hasPanel(search, activePanel, isDesktop)) {
     return null
   }
 

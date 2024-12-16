@@ -56,8 +56,6 @@ export default function Container () {
   const hasKeyButton = legend && !isQueryMode && !legend.display
   const isLegendInsetPage = isLegendInset && isPage
   const isOffset = isLegendInsetPage || !!search || (hasLegendButton && ['INFO', 'KEY'].includes(activePanel)) || (hasKeyButton && activePanel !== 'KEY')
-  const hasHelpButton = isQueryMode && !(isDesktop && !isLegendInset)
-  const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
   const hasSearchButton = search && !isQueryMode && !(isDesktop && search?.isExpanded)
   const hasSearchPanel = activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
   const handleColorSchemeMQ = () => dispatch({
@@ -104,7 +102,7 @@ export default function Container () {
       >
         {isLegendFixed && (
           <div className='fm-o-side'>
-            {!isQueryMode && isPage && <Exit />}
+            <Exit />
             {!isQueryMode
               ? (
                 <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
@@ -127,14 +125,14 @@ export default function Container () {
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}${isOffset ? ' fm-o-inner--offset-top' : ''}`}>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
-                {hasExitButton && <Exit />}
+                <Exit />
                 {!isMobile && hasSearchButton && (
                   <SearchButton searchBtnRef={searchBtnRef} />
                 )}
                 {!isMobile && hasSearchPanel && <Search instigatorRef={searchBtnRef} />}
                 {hasLegendButton && <LegendButton legendBtnRef={legendBtnRef} />}
                 {hasKeyButton && <KeyButton keyBtnRef={keyBtnRef} />}
-                {hasHelpButton && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
+                <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />

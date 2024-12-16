@@ -2,7 +2,11 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function HelpButton ({ helpBtnRef }) {
-  const { dispatch, activePanel } = useApp()
+  const { dispatch, options, isQueryMode, isDesktop, activePanel } = useApp()
+
+  if (!(isQueryMode && !(isDesktop && options?.legend.display === 'inset'))) {
+    return null
+  }
 
   const handleClick = () => {
     dispatch({ type: 'OPEN', payload: 'HELP' })

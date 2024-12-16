@@ -27,6 +27,10 @@ import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 
+const getClassNames = (isDarkMode, device, type, isQueryMode) => {
+ return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`
+}
+
 export default function Container () {
   // Derived from state and props
   const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, error } = useApp()
@@ -56,8 +60,6 @@ export default function Container () {
   const hasExitButton = !isQueryMode && isPage && !(isDesktop && !isLegendInset)
   const hasSearchButton = search && !isQueryMode && !(isDesktop && search?.isExpanded)
   const hasSearchPanel = activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)
-  const hasSegments = legend.segments
-  const hasLayers = legend.key
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
     payload: { colourScheme: window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }
@@ -94,8 +96,9 @@ export default function Container () {
   return (
     <ViewportProvider options={options}>
       <div
-        className={`fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`}
-        {...{ onKeyDown: constrainFocus }} style={{ height, width: '100%' }}
+        className={getClassNames(isDarkMode, device, type, isQueryMode)}
+        onKeyDown={constrainFocus}
+        style={{ height }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
@@ -110,8 +113,8 @@ export default function Container () {
                       <Draw />
                     </div>
                   )}
-                  {hasSegments && <Segments />}
-                  {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs />}
+                  <Segments />
+                  <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
                 )
               : (
@@ -134,7 +137,7 @@ export default function Container () {
                 {hasHelpButton && <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon.helpLabel} />}
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
-                    {hasLayers && <Layers hasInputs={false} hasSymbols />}
+                    <Layers hasInputs={false} hasSymbols />
                   </Panel>
                 )}
                 {activePanel === 'INFO' && info && !isMobile && (
@@ -147,8 +150,8 @@ export default function Container () {
                         <Draw />
                       </div>
                     )}
-                    {hasSegments && <Segments />}
-                    {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs />}
+                    <Segments />
+                    <Layers hasSymbols={!!legend.display} hasInputs />
                   </Panel>
                 )}
               </div>
@@ -179,8 +182,8 @@ export default function Container () {
                       <Draw />
                     </div>
                   )}
-                  {hasSegments && <Segments />}
-                  {hasLayers && <Layers hasSymbols={!!legend.display} hasInputs />}
+                  <Segments />
+                  <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
               )}
               {activePanel === 'HELP' && !isLegendFixed && (
@@ -215,7 +218,7 @@ export default function Container () {
               )}
               {activePanel === 'KEY' && isMobile && (
                 <Panel className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset isNotObscure>
-                  {hasLayers && <Layers hasInputs={false} hasSymbols />}
+                  <Layers hasInputs={false} hasSymbols />
                 </Panel>
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
@@ -225,8 +228,8 @@ export default function Container () {
                       <Draw />
                     </div>
                   )}
-                  {hasSegments && <Segments />}
-                  {hasLayers && <Layers hasSymbols hasInputs />}
+                  <Segments />
+                  <Layers hasSymbols hasInputs />
                 </Panel>
               )}
               {isMobile && <Actions />}

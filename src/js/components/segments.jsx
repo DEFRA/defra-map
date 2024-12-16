@@ -4,6 +4,7 @@ import SegmentGroup from './segment-group.jsx'
 
 export default function Segments () {
   const { segments, legend } = useApp()
+  if (!legend.segments) return null
 
   // Only segments with an active parent
   let groups = legend.segments.filter(s => s.parentIds ? s.parentIds.some(i => segments.includes(i)) : s)

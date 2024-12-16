@@ -124,7 +124,7 @@ export default function Search ({ instigatorRef }) {
   if (!(activePanel === 'SEARCH' || (isDesktop && search?.isExpanded))) {
     return null
   }
-  
+
   return (
     <div
       id={`${id}-search-form`} className={className}

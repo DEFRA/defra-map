@@ -36,8 +36,7 @@ export default function Actions () {
   }
 
   const handlePolygonClick = () => {
-    const detail = { resultType: 'polygon', query }
-    eventBus.dispatch(parent, events.APP_QUERY, detail)
+    eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, basemap, size, segments, layers })
   }
 
   const isDrawVisible = ['frame', 'draw'].includes(mode)

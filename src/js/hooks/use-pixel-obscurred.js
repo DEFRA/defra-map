@@ -11,7 +11,7 @@ export const usePixelObscurred = () => {
   const [isObscurred, setIsObscurred] = useState(false)
 
   useEffect(() => {
-    if (targetMarker?.coord && provider.map) {
+    if (targetMarker?.coord && provider.isLoaded) {
       let pixel = provider.getPixel(targetMarker.coord)
       const scale = size === 'large' ? 2 : 1
       pixel = pixel.map(c => c * scale)
@@ -23,7 +23,7 @@ export const usePixelObscurred = () => {
     return () => {
       setIsObscurred(false)
     }
-  }, [provider.map, isMobile, padding, info, targetMarker])
+  }, [provider, isMobile, padding, info, targetMarker])
 
   return [isObscurred]
 }

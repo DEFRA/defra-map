@@ -23,6 +23,7 @@ class Provider extends EventTarget {
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.stylesImagePath = src.STYLES
     this.isUserInitiated = false
+    this.isLoaded = false
   }
 
   init (options) {

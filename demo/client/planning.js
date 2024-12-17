@@ -167,7 +167,7 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   framework: 'esri',
-  type: 'hybrid',
+  type: 'inline',
   place: 'Ambleside',
   zoom: 16,
   minZoom: 6,
@@ -505,70 +505,70 @@ fm.addEventListener('change', e => {
 
 // Listen to map queries
 fm.addEventListener('query', e => {
-  console.log(e.detail)
-  
-  const { coord, features } = e.detail
-  const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
+  if (e.detail.resultType === 'pixel') {
+    const { coord, features } = e.detail
+    const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
 
-  if (!feature) {
-    fm.info = {
-      width: '360px',
-      label: 'Title',
-      html: `
-                <p class="govuk-body-s">No feature info</p>
-            `
+    if (!feature) {
+      fm.info = {
+        width: '360px',
+        label: 'Title',
+        html: `
+                  <p class="govuk-body-s">No feature info</p>
+              `
+      }
+      return
     }
-    return
-  }
 
-  const name = feature.layer.split('_VTP')[0]
-  const layer = vtLayers.find(l => l.n === name)
+    const name = feature.layer.split('_VTP')[0]
+    const layer = vtLayers.find(l => l.n === name)
 
-  Promise.all([
-    import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
-    import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js')
-  ]).then(modules => {
-    const FeatureLayer = modules[0].default
-    const Point = modules[1].default
-    Promise.resolve({ FeatureLayer, Point })
-  }).then((FeatureLayer, Point) => layer.m ? () => {
-    const model = new FeatureLayer({
-      url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.m}/FeatureServer`
-    })
-    model.queryFeatures({
-      geometry: new Point({ x: coord[0], y: coord[1], spatialReference: 27700 }),
-      outFields: ['*'],
-      spatialRelationship: 'intersects',
-      distance: 1,
-      units: 'meters',
-      returnGeometry: false
-    }).then(results => {
-      if (results.features.length) {
-        Promise.resolve(results.features[0].attributes)
-      } else {
-        Promise.resolve(null)
+    Promise.all([
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js')
+    ]).then(modules => {
+      const FeatureLayer = modules[0].default
+      const Point = modules[1].default
+      Promise.resolve({ FeatureLayer, Point })
+    }).then((FeatureLayer, Point) => layer.m ? () => {
+      const model = new FeatureLayer({
+        url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.m}/FeatureServer`
+      })
+      model.queryFeatures({
+        geometry: new Point({ x: coord[0], y: coord[1], spatialReference: 27700 }),
+        outFields: ['*'],
+        spatialRelationship: 'intersects',
+        distance: 1,
+        units: 'meters',
+        returnGeometry: false
+      }).then(results => {
+        if (results.features.length) {
+          Promise.resolve(results.features[0].attributes)
+        } else {
+          Promise.resolve(null)
+        }
+      })
+    } : Promise.resolve()).finally(attributes => {
+      const band = feature._symbol
+      const layerName = feature.layer
+      const isFloodZone = layerName.includes('Zone')
+      const title = isFloodZone
+        ? `<strong>Flood zone</strong>: ${band + 2}<br>`
+        : `<strong>Maximum depth:</strong> ${depthMap[band]}metres<br/>`
+      const model = attributes
+        ? `
+            <strong>Model:</strong> ${attributes.model}</br/>
+            <strong>Model year:</strong> ${attributes.model_year}
+        `
+        : ''
+      fm.info = {
+        width: '360px',
+        label: 'Title',
+        html: `
+          <p class="govuk-body-s">${title}${model}</p>
+          <p class="govuk-body-s govuk-!-margin-top-1">${layerName}</p>
+        `
       }
     })
-  } : Promise.resolve()).finally(attributes => {
-    const band = feature._symbol
-    const layerName = feature.layer
-    const isFloodZone = layerName.includes('Zone')
-    const title = isFloodZone
-      ? `<strong>Flood zone</strong>: ${band + 2}<br>`
-      : `<strong>Maximum depth:</strong> ${depthMap[band]}metres<br/>`
-    const model = attributes
-      ? `
-          <strong>Model:</strong> ${attributes.model}</br/>
-          <strong>Model year:</strong> ${attributes.model_year}
-      `
-      : ''
-    fm.info = {
-      width: '360px',
-      label: 'Title',
-      html: `
-        <p class="govuk-body-s">${title}${model}</p>
-        <p class="govuk-body-s govuk-!-margin-top-1">${layerName}</p>
-      `
-    }
-  })
+  }
 })

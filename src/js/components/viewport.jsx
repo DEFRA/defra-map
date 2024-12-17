@@ -162,7 +162,7 @@ export default function Viewport () {
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
     appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
-    eventBus.dispatch(parent, events.APP_QUERY, e.detail)
+    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, basemap, size, segments, layers })
   }
 
   // Provider style change

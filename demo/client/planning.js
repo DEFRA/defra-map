@@ -505,10 +505,7 @@ fm.addEventListener('change', e => {
 
 // Listen to map queries
 fm.addEventListener('query', e => {
-  if(e.detail.resultType === 'polygon'){
-    console.log('Polygon query',e.detail)
-    return
-  }
+  console.log(e.detail)
   
   const { coord, features } = e.detail
   const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null

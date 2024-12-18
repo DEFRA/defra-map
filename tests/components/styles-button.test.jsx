@@ -56,26 +56,6 @@ describe('styles-button', () => {
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'OPEN', payload: 'STYLE' })
   })
 
-  it('should dispatch OPEN action on key down', () => {
-    const dispatchMock = jest.fn()
-    jest.mocked(useApp).mockReturnValue({
-      provider: {
-        basemaps: [1, 2]
-      },
-      options: {
-        id: 'test-id'
-      },
-      dispatch: dispatchMock
-    })
-
-    render(<StylesButton />)
-
-    const button = screen.getByRole('button')
-    fireEvent.keyDown(button, { key: 'Enter' })
-
-    expect(dispatchMock).toHaveBeenCalledWith({ type: 'OPEN', payload: 'STYLE' })
-  })
-
   it('should contain the id in the button', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: {

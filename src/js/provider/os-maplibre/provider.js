@@ -58,16 +58,14 @@ class Provider extends EventTarget {
   addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
-    const bounds = this.validateCoords(bbox)
-    const center = this.validateCoords(centre)
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
       style: this[basemap + 'Url'],
       container: target,
-      maxBounds: maxExtent || storeDefaults.MAX_BBOX,
-      bounds,
-      center,
+      maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
+      bounds: bbox,
+      center: centre,
       zoom,
       minZoom,
       maxZoom,
@@ -81,10 +79,10 @@ class Provider extends EventTarget {
     // * Can't set global padding in constructor
     // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
-    if (bounds) {
-      map.fitBounds(bounds, { animate: false })
+    if (bbox) {
+      map.fitBounds(bbox, { animate: false })
     } else {
-      map.flyTo({ center, zoom, animate: false })
+      map.flyTo({ centre, zoom, animate: false })
     }
 
     // Disable rotation
@@ -136,13 +134,6 @@ class Provider extends EventTarget {
 
     // Add queryFeature and queryPixel behaviour
     addPointerQuery(this)
-  }
-
-  validateCoords (coords) {
-    const mb = storeDefaults.MAX_BBOX
-    const parseCoords = coords?.some(c => !c.IsNaN) ? coords : null
-    const isInRange = parseCoords?.filter((n, i) => (i % 2 && n > mb[1] && n < mb[3]) || (n > mb[0] && n < mb[2])).length
-    return isInRange && coords
   }
 
   getImagePos (style) {

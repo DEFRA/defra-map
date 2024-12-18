@@ -12,13 +12,13 @@ const getBasemap = () => {
   return window.localStorage.getItem('basemap') || 'default'
 }
 
-const getBbox = (cz, centre, bbox) => {
-  const hasValidCentre = parseCentre(cz) || centre
-  return hasValidCentre ? null : bbox || defaults.BBOX
+const getBbox = (cz, centre, bbox, srid) => {
+  const hasValidCentre = parseCentre(cz, srid) || centre
+  return hasValidCentre ? null : bbox || defaults[srid].BBOX
 }
 
-const getCentre = (cz, centre) => {
-  return parseCentre(cz) || centre || defaults.CENTRE
+const getCentre = (cz, centre, srid) => {
+  return parseCentre(cz, srid) || centre || defaults[srid].CENTRE
 }
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {
@@ -27,15 +27,16 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
 }
 
 export const initialState = (options) => {
-  const { bbox, centre, zoom, place } = options
+  const { bbox, centre, zoom, place, framework } = options
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
   const maxZoom = options.maxZoom || defaults.MAX_ZOOM
   const minZoom = options.minZoom || defaults.MIN_ZOOM
+  const srid = framework === 'esri' ? '27700' : '4326'
 
   return {
-    bbox: getBbox(cz, centre, bbox),
-    centre: getCentre(cz, centre),
+    bbox: getBbox(cz, centre, bbox, srid),
+    centre: getCentre(cz, centre, srid),
     zoom: getZoom(cz, zoom, minZoom, maxZoom),
     minZoom,
     maxZoom,
@@ -43,7 +44,7 @@ export const initialState = (options) => {
     place: !cz ? place : null,
     oZoom: zoom,
     basemap: getBasemap(),
-    size: getSize(options.framework),
+    size: getSize(framework),
     features: null,
     status: '',
     isStatusVisuallyHidden: true,

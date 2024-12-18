@@ -66,7 +66,7 @@ class Provider extends EventTarget {
     const map = new EsriMap({
       layers: [baseTileLayer, graphicsLayer]
     })
-    const geometry = this.getExtent(Extent, maxExtent)
+    const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
 
     // Create MapView
     const view = new MapView({
@@ -74,8 +74,8 @@ class Provider extends EventTarget {
       container: target,
       map,
       zoom,
-      center: this.getPoint(Point, centre),
-      extent: this.getExtent(Extent, bbox),
+      center: centre ? this.getPoint(Point, centre) : null,
+      extent: bbox ? this.getExtent(Extent, bbox) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
@@ -138,27 +138,21 @@ class Provider extends EventTarget {
   }
 
   getPoint (Point, coords) {
-    const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
-    return isValid
-      ? new Point({
-        x: coords[0],
-        y: coords[1],
-        spatialReference: { wkid: 27700 }
-      })
-      : null
+    return new Point({
+      x: coords[0],
+      y: coords[1],
+      spatialReference: { wkid: 27700 }
+    })
   }
 
   getExtent (Extent, coords) {
-    const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
-    return isValid
-      ? new Extent({
-        xmin: coords[0],
-        ymin: coords[1],
-        xmax: coords[2],
-        ymax: coords[3],
-        spatialReference: { wkid: 27700 }
-      })
-      : null
+    return new Extent({
+      xmin: coords[0],
+      ymin: coords[1],
+      xmax: coords[2],
+      ymax: coords[3],
+      spatialReference: { wkid: 27700 }
+    })
   }
 
   getImagePos (style) {

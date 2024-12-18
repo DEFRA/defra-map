@@ -29,7 +29,8 @@ export const handleBasemapChange = async (provider) => {
 export const handleStationary = async (provider) => {
   const { paddingBox } = provider
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
-  const point = [offsetLeft + (offsetWidth / 2), offsetTop + (offsetHeight / 2)]
+  const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
+  const point = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)]
   provider.isUserInitiated = false
   const detail = await getDetail(provider, point)
   provider.dispatchEvent(new CustomEvent('update', {

@@ -25,6 +25,7 @@ export default function Draw () {
   const handleDeleteClick = () => {
     provider.draw.delete()
     dispatch({ type: 'SET_MODE', payload: { query: null } })
+    eventBus.dispatch(parent, events.APP_ACTION, { type: 'deletePolygon' })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()
   }

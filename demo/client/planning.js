@@ -494,6 +494,11 @@ fm.addEventListener('ready', e => {
   })
 })
 
+// Listen for actions
+fm.addEventListener('action', e => {
+  console.log(e.detail)
+})
+
 // Listen for mode, segments, layers or style changes
 fm.addEventListener('change', e => {
   const { type, mode, basemap, segments, layers } = e.detail

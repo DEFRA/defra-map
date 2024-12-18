@@ -198,7 +198,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'ERROR' && (
-                <Panel maxWidth='300px' label={error.label} instigatorRef={viewportRef} isModal isInset>
+                <Panel className='error' maxWidth='300px' label={error.label} instigatorRef={viewportRef} isModal isInset>
                   <MapError />
                 </Panel>
               )}

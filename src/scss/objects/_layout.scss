@@ -410,7 +410,8 @@
 }
 
 // Keyboard panel
-.fm-c-panel.fm-c-panel--keyboard {
+.fm-c-panel.fm-c-panel--keyboard,
+.fm-c-panel.fm-c-panel--error {
     max-width: calc(100% - ($margin * 2));
 }
 

@@ -57,6 +57,7 @@ class Provider extends EventTarget {
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.tokenCallback()).token
+
     // Add intercepors
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
@@ -65,18 +66,16 @@ class Provider extends EventTarget {
     const map = new EsriMap({
       layers: [baseTileLayer, graphicsLayer]
     })
-    // Validate coordinates
-    bbox = this.validateCoords(bbox)
-    centre = this.validateCoords(centre)
-    const geometry = new Extent({ xmin: maxExtent[0], ymin: maxExtent[3], xmax: maxExtent[2], ymax: maxExtent[1], spatialReference: { wkid: 27700 } })
+    const geometry = this.getExtent(Extent, maxExtent)
+
     // Create MapView
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
       zoom,
-      center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
-      extent: bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null,
+      center: this.getPoint(Point, centre),
+      extent: this.getExtent(Extent, bbox),
       constraints: {
         snapToZoom: false,
         minZoom,
@@ -90,6 +89,7 @@ class Provider extends EventTarget {
       padding: getFocusPadding(paddingBox, 1),
       popupEnabled: false
     })
+
     // Tidy up canvas
     const canvasContainer = target.querySelector('.esri-view-surface')
     canvasContainer.removeAttribute('role')
@@ -118,8 +118,8 @@ class Provider extends EventTarget {
 
     // Constrain extent
     view.watch('extent', (extent) => {
-      console.log(geometry.contains(extent))
-      if (!geometry.contains(extent)) {
+      if (!geometry?.contains(extent)) {
+        // To follow
         // view.goTo(geometry, { animate: false })
       }
     })
@@ -145,9 +145,28 @@ class Provider extends EventTarget {
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
   }
 
-  validateCoords (coords) {
+  getPoint (Point, coords) {
     const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
-    return isValid ? coords : null
+    return isValid
+      ? new Point({
+        x: coords[0],
+        y: coords[1],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
+  }
+
+  getExtent (Extent, coords) {
+    const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
+    return isValid
+      ? new Extent({
+        xmin: coords[0],
+        ymin: coords[1],
+        xmax: coords[2],
+        ymax: coords[3],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
   }
 
   getImagePos (style) {

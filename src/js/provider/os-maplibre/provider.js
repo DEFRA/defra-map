@@ -141,7 +141,7 @@ class Provider extends EventTarget {
   validateCoords (coords) {
     const mb = storeDefaults.MAX_BBOX
     const parseCoords = coords?.some(c => !c.IsNaN) ? coords : null
-    const isInRange = parseCoords?.filter((n, i) => i % 2 && n > mb[1] && n < mb[3] || n > mb[0] && n < mb[2]).length
+    const isInRange = parseCoords?.filter((n, i) => (i % 2 && n > mb[1] && n < mb[3]) || (n > mb[0] && n < mb[2])).length
     return isInRange && coords
   }
 

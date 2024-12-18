@@ -173,11 +173,21 @@ export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
 }
 
 export const parseCentre = value => {
-  return value?.split(',').slice(0, 2).map(x => parseFloat(x))
+  let coords = value?.split(',')
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
+  }
+  coords = coords.slice(0, 2).map(x => parseFloat(x))
+  return !coords.some(isNaN) ? coords : null
 }
 
 export const parseZoom = value => {
-  return parseFloat(value?.split(',')[2])
+  const coords = value?.split(',')
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
+  }
+  const zoom = parseFloat(coords[2])
+  return !zoom.isNaN ? zoom : null
 }
 
 export const getSelectedIndex = (key, total, current) => {

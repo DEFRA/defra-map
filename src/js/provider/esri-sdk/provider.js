@@ -45,7 +45,7 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, pixelLayers }) {
+  async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -68,20 +68,28 @@ class Provider extends EventTarget {
     // Validate coordinates
     bbox = this.validateCoords(bbox)
     centre = this.validateCoords(centre)
+    const geometry = new Extent({ xmin: maxExtent[0], ymin: maxExtent[3], xmax: maxExtent[2], ymax: maxExtent[1], spatialReference: { wkid: 27700 } })
     // Create MapView
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
-      zoom: zoom || null,
+      zoom,
       center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
       extent: bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null,
-      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
+      constraints: {
+        snapToZoom: false,
+        minZoom,
+        maxZoom,
+        maxScale: 0,
+        geometry,
+        lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods,
+        rotationEnabled: false
+      },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
       popupEnabled: false
     })
-
     // Tidy up canvas
     const canvasContainer = target.querySelector('.esri-view-surface')
     canvasContainer.removeAttribute('role')
@@ -105,6 +113,14 @@ class Provider extends EventTarget {
     reactiveWatch(() => [view.stationary], ([stationary]) => {
       if (!stationary) {
         handleMoveStart(this)
+      }
+    })
+
+    // Constrain extent
+    view.watch('extent', (extent) => {
+      console.log(geometry.contains(extent))
+      if (!geometry.contains(extent)) {
+        // view.goTo(geometry, { animate: false })
       }
     })
 

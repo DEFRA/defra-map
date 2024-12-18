@@ -20,7 +20,13 @@ export const defaults = {
   CONTAINER_TYPE: 'buttonFirst',
   PANEL_POSITION: 'overlayRight',
   MIN_SEARCH_LENGTH: 3,
-  GEOCODE_PROVIDER: 'os-open-names'
+  GEOCODE_PROVIDER: 'os-open-names',
+  BBOX: [-5.719993, 49.955638, 1.794689, 55.825973],
+  MAX_BBOX: [-5.719993, 49.955638, 1.794689, 55.825973],
+  CENTRE: [-1.4758, 52.9219],
+  ZOOM: 12,
+  MIN_ZOOM: 6,
+  MAX_ZOOM: 16
 }
 
 export const settings = {
@@ -40,27 +46,6 @@ export const settings = {
       CLASS: 'fm-inline',
       HEIGHT: '600px'
     }
-  },
-  map: {
-    BBOX: [
-      -5.719993,
-      49.955638,
-      1.794689,
-      55.825973
-    ],
-    MAX_BBOX: [
-      -5.719993,
-      49.955638,
-      1.794689,
-      55.825973
-    ],
-    CENTRE: [
-      -1.4758,
-      52.9219
-    ],
-    ZOOM: 12,
-    MIN_ZOOM: 6,
-    MAX_ZOOM: 16
   },
   params: {
     view: 'view',

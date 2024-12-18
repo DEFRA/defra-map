@@ -12,10 +12,10 @@ import Target from './target.jsx'
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
 
-  const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
+  const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
 
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
@@ -125,6 +125,10 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
+    // Add polygonFeature
+    if (queryPolygon?.feature) {
+      provider.initDraw(queryPolygon)
+    }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
     })
@@ -188,16 +192,17 @@ export default function Viewport () {
 
   // Initial render
   useEffect(() => {
-    if (isContainerReady && !provider.map) {
+    if (isContainerReady && !provider.isLoaded) {
       provider.init({
         target: mapContainerRef.current,
-        paddingBox: paddingBoxRef.current,
+        paddingBox: frameRef.current,
         frame: frameRef.current,
         bbox,
         centre,
         zoom,
         minZoom,
         maxZoom,
+        maxExtent,
         basemap,
         size,
         featureLayers: queryFeature || [],

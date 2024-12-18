@@ -1,5 +1,5 @@
 import { parseCentre, parseZoom } from '../lib/viewport'
-import { settings } from './constants'
+import { defaults } from './constants'
 import { capabilities } from '../lib/capabilities'
 import { actionsMap } from './viewport-actions-map'
 
@@ -12,17 +12,35 @@ const getBasemap = () => {
   return window.localStorage.getItem('basemap') || 'default'
 }
 
+const getBbox = (cz, centre, bbox) => {
+  const hasValidCentre = parseCentre(cz) || centre
+  return hasValidCentre ? null : bbox || defaults.BBOX
+}
+
+const getCentre = (cz, centre) => {
+  return parseCentre(cz) || centre || defaults.CENTRE
+}
+
+const getZoom = (cz, zoom, minZoom, maxZoom) => {
+  const initZoom = parseZoom(cz) || zoom || defaults.ZOOM
+  return Math.max(Math.min(initZoom, maxZoom), minZoom)
+}
+
 export const initialState = (options) => {
   const { bbox, centre, zoom, place } = options
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
-  const initBbox = bbox || (centre && zoom ? null : settings.map.BBOX)
+  const maxZoom = options.maxZoom || defaults.MAX_ZOOM
+  const minZoom = options.minZoom || defaults.MIN_ZOOM
 
   return {
-    bbox: cz ? null : initBbox,
-    centre: cz ? parseCentre(cz) : centre || null,
-    zoom: cz ? parseZoom(cz) : zoom || null,
-    place: cz ? null : place,
+    bbox: getBbox(cz, centre, bbox),
+    centre: getCentre(cz, centre),
+    zoom: getZoom(cz, zoom, minZoom, maxZoom),
+    minZoom,
+    maxZoom,
+    maxExtent: options.maxExtent || defaults.MAX_BBOX,
+    place: !cz ? place : null,
     oZoom: zoom,
     basemap: getBasemap(),
     size: getSize(options.framework),

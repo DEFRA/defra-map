@@ -41,7 +41,7 @@ export const initialState = (options) => {
     mode: 'default',
     isFrameVisible: false,
     isTargetVisible: false,
-    query: null,
+    query: queryPolygon?.feature,
     hash: null
   }
 }

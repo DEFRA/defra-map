@@ -119,10 +119,9 @@ export default function Search ({ instigatorRef }) {
 
   // Move focus to input
   useEffect(() => {
-    if (!instigatorRef || !activePanelHasFocus) {
-      return
+    if (activePanel === 'SEARCH') {
+      activeRef.current = inputRef.current
     }
-    activeRef.current = inputRef.current
   }, [activePanel])
 
   if (!hasPanel(search, activePanel, isDesktop)) {

@@ -55,20 +55,20 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, size, featureLayers, pixelLayers }) {
+  addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
-    const bounds = bbox ? [[bbox[0], bbox[1]], [bbox[2], bbox[3]]] : null
-    const center = centre || [0, 0]
+    const bounds = this.validateCoords(bbox)
+    const center = this.validateCoords(centre)
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
       style: this[basemap + 'Url'],
       container: target,
-      maxBounds: defaults.OPTIONS.maxBounds,
+      maxBounds: maxExtent || storeDefaults.MAX_BBOX,
       bounds,
       center,
-      zoom: zoom || null,
+      zoom,
       minZoom,
       maxZoom,
       fadeDuration: 0,
@@ -136,6 +136,13 @@ class Provider extends EventTarget {
 
     // Add queryFeature and queryPixel behaviour
     addPointerQuery(this)
+  }
+
+  validateCoords (coords) {
+    const mb = storeDefaults.MAX_BBOX
+    const parseCoords = coords?.some(c => !c.IsNaN) ? coords : null
+    const isInRange = parseCoords?.filter((n, i) => i % 2 && n > mb[1] && n < mb[3] || n > mb[0] && n < mb[2]).length
+    return isInRange && coords
   }
 
   getImagePos (style) {

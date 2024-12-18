@@ -21,6 +21,13 @@ export class Draw {
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
+    // Add existing feature
+    if (options.feature) {
+      this.create(options.feature)
+      return
+    }
+
+    // Start new
     this.start('frame')
   }
 
@@ -56,7 +63,7 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(isFrame && { zoom: this.oZoom }) })
+      view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
     }
   }
 
@@ -85,6 +92,12 @@ export class Draw {
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
     this.toggleConstraints(false)
+  }
+
+  create (feature) {
+    const graphic = this.getGraphicFromFeature(feature)
+    this.oGraphic = graphic.clone()
+    this.addGraphic(graphic)
   }
 
   finish () {
@@ -179,6 +192,22 @@ export class Draw {
     })
 
     return graphic
+  }
+
+  getGraphicFromFeature = (feature) => {
+    return new Graphic({
+      geometry: {
+        type: 'polygon',
+        rings: feature.geometry.coordinates,
+        spatialReference: 27700
+      },
+      symbol: {
+        type: 'simple-line',
+        color: defaults.POLYGON_QUERY_STROKE,
+        width: '2px',
+        cap: 'square'
+      }
+    })
   }
 
   addGraphic (graphic) {

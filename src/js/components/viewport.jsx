@@ -274,11 +274,9 @@ export default function Viewport () {
 
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
-    if (!isUpdate) {
-      return
+    if (isUpdate) {
+      setQueryCz(`${centre.toString()},${zoom}`)
     }
-    provider.setPadding(null, false)
-    setQueryCz(`${centre.toString()},${zoom}`)
   }, [isUpdate])
 
   // Swap basemap on light/dark mode change

@@ -76,7 +76,7 @@ class Provider extends EventTarget {
     })
 
     // Set initial padding, bounds and centre
-    // * Can't set global padding in constructor
+    // // * Can't set global padding in constructor
     // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
     if (bbox) {
@@ -196,10 +196,9 @@ class Provider extends EventTarget {
     const padding = getFocusPadding(paddingBox, scale)
     // Search needs to set padding first before fitBbox
     this.map.setPadding(padding)
-    if (!coord) {
-      return
+    if (coord) {
+      this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }
-    this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
   }
 
   setSize (size) {

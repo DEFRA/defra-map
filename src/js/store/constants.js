@@ -60,9 +60,7 @@ export const settings = {
     view: 'view',
     centreZoom: 'cz',
     segments: 'seg',
-    layers: 'lyr',
-    featureId: 'id',
-    targetMarker: 'qxy'
+    layers: 'lyr'
   }
 }
 

@@ -32,7 +32,7 @@ export const initialState = (options) => {
   const cz = queryParams.get('cz')
   const maxZoom = options.maxZoom || defaults.MAX_ZOOM
   const minZoom = options.minZoom || defaults.MIN_ZOOM
-  const srid = framework === 'esri' ? '27700' : '4326'
+  const srid = capabilities[framework || 'default'].srid
 
   return {
     bbox: getBbox(cz, centre, bbox, srid),

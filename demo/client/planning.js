@@ -496,7 +496,7 @@ fm.addEventListener('ready', e => {
 
 // Listen for actions
 fm.addEventListener('action', e => {
-  console.log(e.detail)
+  // console.log(e.detail)
 })
 
 // Listen for mode, segments, layers or style changes

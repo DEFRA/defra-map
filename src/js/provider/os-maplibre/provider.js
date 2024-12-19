@@ -55,7 +55,7 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
+  addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
@@ -105,7 +105,6 @@ class Provider extends EventTarget {
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.scale = scale
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useMemo } from 'react'
 import { useQueryState } from '../hooks/use-query-state.js'
+import { useResizeObserver } from '../hooks/use-resize-observer.js'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
@@ -10,7 +11,7 @@ import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
 
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
@@ -38,7 +39,7 @@ export default function Viewport () {
     }
     if (!isMoving) {
       const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(paddingBoxRef.current, scale)
+      const point = getMapPixel(frameRef.current, scale)
       provider.queryPoint(point)
     }
   }
@@ -194,7 +195,6 @@ export default function Viewport () {
       provider.init({
         target: mapContainerRef.current,
         paddingBox: frameRef.current,
-        frame: frameRef.current,
         bbox,
         centre,
         zoom,
@@ -277,6 +277,7 @@ export default function Viewport () {
     if (!isUpdate) {
       return
     }
+    provider.setPadding(null, false)
     setQueryCz(`${centre.toString()},${zoom}`)
   }, [isUpdate])
 
@@ -293,6 +294,11 @@ export default function Viewport () {
   useEffect(() => {
     provider.selectFeature(featureId)
   }, [featureId, targetMarker])
+
+  // Update view padding on resize
+  useResizeObserver(viewportRef.current, () => {
+    provider.setPadding(null, false)
+  })
 
   return (
     <div

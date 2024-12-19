@@ -45,7 +45,7 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
+  async addMap ({ modules, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -93,7 +93,6 @@ class Provider extends EventTarget {
     this.graphicsLayer = graphicsLayer
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }

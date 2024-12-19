@@ -259,7 +259,6 @@ fm.addEventListener('change', e => {
 
 // Listen to map queries
 fm.addEventListener('query', e => {
-  console.log(e.detail)
   // Show info panel for feature query
   if (e.detail.resultType === 'feature') {
     const feature = e.detail.features.items[0]

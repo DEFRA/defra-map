@@ -461,7 +461,7 @@ const fm = new FloodMap('map', {
     ]
   },
   // info: {
-  //     markerCoord: [337297, 503995],
+  //     coord: [325141, 536763],
   //     hasData: true,
   //     width: '360px',
   //     label: '[dynamic title]',
@@ -512,6 +512,7 @@ fm.addEventListener('change', e => {
 
 // Listen to map queries
 fm.addEventListener('query', e => {
+  console.log(e.detail)
   if (e.detail.resultType === 'pixel') {
     const { coord, features } = e.detail
     const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null

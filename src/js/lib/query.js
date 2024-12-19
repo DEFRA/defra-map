@@ -1,6 +1,3 @@
-import { getQueryParam, hasQueryParam } from './utils'
-import { settings } from '../store/constants'
-
 export const parseSegments = (dataSegments, seg) => {
   let segments = null
   if (dataSegments) {
@@ -81,27 +78,4 @@ export const parseGroups = (data, segments, layers, zoom, hasInputs, queryLabel)
   }
 
   return groups
-}
-
-export const parseQuery = (info) => {
-  // Move to utils
-  const featureIdParam = settings.params.featureId
-  const featureId = hasQueryParam(featureIdParam) ? getQueryParam(featureIdParam) : info?.featureId
-
-  const targetMarkerParam = settings.params.targetMarker
-  let targetMarkerQuery = getQueryParam(targetMarkerParam)?.split(',')
-  targetMarkerQuery = (targetMarkerQuery?.length === 3) && {
-    coord: [parseFloat(targetMarkerQuery[0]), parseFloat(targetMarkerQuery[1])],
-    hasData: targetMarkerQuery[2] === 'true'
-  }
-
-  const targetMarker = targetMarkerQuery || (!info?.featureId && info?.markerCoord && {
-    coord: info?.markerCoord,
-    hasData: info?.hasData
-  })
-
-  return {
-    featureId,
-    targetMarker
-  }
 }

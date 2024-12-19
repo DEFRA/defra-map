@@ -19,8 +19,6 @@ export default function Viewport () {
   const viewportDispatch = useViewport().dispatch
 
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
-  const [, setQueryId] = useQueryState(settings.params.featureId)
-  const [, setQueryTarget] = useQueryState(settings.params.targetMarker)
 
   const mapContainerRef = useRef(null)
   const featureIdRef = useRef(-1)
@@ -291,13 +289,9 @@ export default function Viewport () {
     viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
-  // Set initial selected feature or target
+  // Set initial selected feature
   useEffect(() => {
     provider.selectFeature(featureId)
-    // Update query params
-    setQueryId(featureId || '')
-    const queryTarget = targetMarker ? Object.keys(targetMarker).map(k => { return targetMarker[k] }).join(',') : ''
-    setQueryTarget(queryTarget)
   }, [featureId, targetMarker])
 
   return (

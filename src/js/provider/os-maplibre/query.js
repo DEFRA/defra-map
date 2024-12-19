@@ -69,8 +69,8 @@ export const getViewport = (map) => {
 }
 
 export const getFeatures = (provider, pixel) => {
-  const { map, featureLayers, pixelLayers, frame, scale } = provider
-  const bounds = getFocusBounds(frame, scale)
+  const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, scale)
 
   // Get all features under a given pixel
   let layers = [...featureLayers, ...pixelLayers]

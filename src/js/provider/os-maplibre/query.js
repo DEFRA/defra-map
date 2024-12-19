@@ -1,6 +1,28 @@
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 
+const getPaddedBounds = map => {
+  const padding = map.getPadding()
+  const bounds = map.getBounds()
+
+  // Get the pixel coordinates for the current bounds
+  const sw = map.project([bounds.getWest(), bounds.getSouth()])
+  const ne = map.project([bounds.getEast(), bounds.getNorth()])
+
+  // Adjust for padding
+  sw.x += padding.left
+  sw.y -= padding.bottom
+  ne.x -= padding.right
+  ne.y += padding.top
+
+  // Convert back to geographical coordinates
+  const paddedSW = map.unproject(sw)
+  const paddedNE = map.unproject(ne)
+
+  // Create new bounds
+  return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
+}
+
 export const addPointerQuery = (provider) => {
   const { map, featureLayers, pixelLayers } = provider
 
@@ -34,8 +56,8 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
 }
 
 export const getViewport = (map) => {
-  const bounds = map.getBounds()
-  const bbox = [...bounds.toArray()[0], ...bounds.toArray()[1]].map(n => parseFloat(n.toFixed(defaults.PRECISION)))
+  const bounds = getPaddedBounds(map)
+  const bbox = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   let centre = map.getCenter()
   centre = centre.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   const zoom = parseFloat(map.getZoom().toFixed(defaults.PRECISION))
@@ -47,8 +69,8 @@ export const getViewport = (map) => {
 }
 
 export const getFeatures = (provider, pixel) => {
-  const { map, featureLayers, pixelLayers, frame, scale } = provider
-  const bounds = getFocusBounds(frame, scale)
+  const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, scale)
 
   // Get all features under a given pixel
   let layers = [...featureLayers, ...pixelLayers]
@@ -60,7 +82,7 @@ export const getFeatures = (provider, pixel) => {
   featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), f])).values()]
 
   // Get all 'featureLayer' features in the viewport
-  layers = layers.filter(l => featureLayers?.includes(l))
+  layers = layers?.filter(l => featureLayers?.includes(l))
   let featuresInViewport = map.queryRenderedFeatures(bounds, { layers })
   featuresInViewport = [...new Map(featuresInViewport.map(f => [(f.id || f.properties?.id), f])).values()]
   const featuresTotal = featuresInViewport.length

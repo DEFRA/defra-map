@@ -132,6 +132,11 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_QUERY, data => {
       eventBus.dispatch(this, events.QUERY, data)
     })
+
+    // Action, eg delete a polygon or confirm update
+    eventBus.on(parent, events.APP_ACTION, data => {
+      eventBus.dispatch(this, events.ACTION, data)
+    })
   }
 
   _testDevice (props) {

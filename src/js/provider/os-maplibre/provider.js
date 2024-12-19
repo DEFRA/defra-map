@@ -55,20 +55,18 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, size, featureLayers, pixelLayers }) {
+  addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
-    const bounds = bbox ? [[bbox[0], bbox[1]], [bbox[2], bbox[3]]] : null
-    const center = centre || [0, 0]
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
       style: this[basemap + 'Url'],
       container: target,
-      maxBounds: defaults.OPTIONS.maxBounds,
-      bounds,
-      center,
-      zoom: zoom || null,
+      maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
+      bounds: bbox,
+      center: centre,
+      zoom,
       minZoom,
       maxZoom,
       fadeDuration: 0,
@@ -81,10 +79,10 @@ class Provider extends EventTarget {
     // * Can't set global padding in constructor
     // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
-    if (bounds) {
-      map.fitBounds(bounds, { animate: false })
+    if (bbox) {
+      map.fitBounds(bbox, { animate: false })
     } else {
-      map.flyTo({ center, zoom, animate: false })
+      map.flyTo({ centre, zoom, animate: false })
     }
 
     // Disable rotation
@@ -107,7 +105,6 @@ class Provider extends EventTarget {
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.scale = scale
 

@@ -1,4 +1,5 @@
 import LatLon from 'geodesy/latlon-spherical.js'
+import { defaults } from '../store/constants'
 
 export const getFocusPadding = (el, scale) => {
   let padding
@@ -172,12 +173,36 @@ export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
   return place
 }
 
-export const parseCentre = value => {
-  return value?.split(',').slice(0, 2).map(x => parseFloat(x))
+export const parseCentre = (value, srid) => {
+  const mb = defaults[srid].MAX_BBOX
+  let isInRange
+  let coords = value?.split(',')
+  // Query string malformed
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
+  }
+  coords = coords.slice(0, 2).map(x => parseFloat(x))
+  coords = !coords.some(isNaN) && coords
+  // Coords are not numbers
+  if (!coords) {
+    return null
+  }
+  // Coords are within the valid range
+  if (srid === '27700') {
+    isInRange = !!coords.filter(c => Number.isInteger(c) && c >= 0).length
+  } else {
+    isInRange = (coords[0] > mb[0] && coords[0] < mb[2]) && (coords[1] > mb[1] && coords[1] < mb[3])
+  }
+  return isInRange ? coords : null
 }
 
 export const parseZoom = value => {
-  return parseFloat(value?.split(',')[2])
+  const coords = value?.split(',')
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
+  }
+  const zoom = parseFloat(coords[2])
+  return !zoom.isNaN ? zoom : null
 }
 
 export const getSelectedIndex = (key, total, current) => {

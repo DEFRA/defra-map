@@ -45,7 +45,7 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, pixelLayers }) {
+  async addMap ({ modules, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -57,6 +57,7 @@ class Provider extends EventTarget {
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.tokenCallback()).token
+
     // Add intercepors
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
@@ -65,18 +66,17 @@ class Provider extends EventTarget {
     const map = new EsriMap({
       layers: [baseTileLayer, graphicsLayer]
     })
-    // Validate coordinates
-    bbox = this.validateCoords(bbox)
-    centre = this.validateCoords(centre)
+    const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
+
     // Create MapView
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
-      zoom: zoom || null,
-      center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
-      extent: bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null,
-      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
+      zoom,
+      center: centre ? this.getPoint(Point, centre) : null,
+      extent: bbox ? this.getExtent(Extent, bbox) : null,
+      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
       popupEnabled: false
@@ -93,7 +93,6 @@ class Provider extends EventTarget {
     this.graphicsLayer = graphicsLayer
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
@@ -105,6 +104,14 @@ class Provider extends EventTarget {
     reactiveWatch(() => [view.stationary], ([stationary]) => {
       if (!stationary) {
         handleMoveStart(this)
+      }
+    })
+
+    // Constrain extent
+    view.watch('extent', (extent) => {
+      if (!geometry?.contains(extent)) {
+        // To follow
+        // view.goTo(geometry, { animate: false })
       }
     })
 
@@ -129,9 +136,22 @@ class Provider extends EventTarget {
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
   }
 
-  validateCoords (coords) {
-    const isValid = coords && !coords.flat(1).filter(c => !Number.isInteger(c) || c < 0).length
-    return isValid ? coords : null
+  getPoint (Point, coords) {
+    return new Point({
+      x: coords[0],
+      y: coords[1],
+      spatialReference: { wkid: 27700 }
+    })
+  }
+
+  getExtent (Extent, coords) {
+    return new Extent({
+      xmin: coords[0],
+      ymin: coords[1],
+      xmax: coords[2],
+      ymax: coords[3],
+      spatialReference: { wkid: 27700 }
+    })
   }
 
   getImagePos (style) {

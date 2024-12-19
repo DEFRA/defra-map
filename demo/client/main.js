@@ -224,14 +224,14 @@ const fm = new FloodMap('map', {
       }
     ]
   },
-  info: {
-    // featureId: '011WAFLE',
-    // markerCoord: [-2.934171,54.901112],
-    // hasData: true,
-    width: '360px',
-    label: '[dynamic title]',
-    html: '<p class="govuk-body-s">[dynamic body]</p>'
-  },
+  // info: {
+  //   featureId: '011WAFLE',
+  //   // coord: [-2.934171,54.901112],
+  //   // hasData: true,
+  //   width: '360px',
+  //   label: '[dynamic title]',
+  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
+  // },
   queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
   queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
 })

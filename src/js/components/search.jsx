@@ -22,7 +22,7 @@ const hasPanel = (search, activePanel, isDesktop) => {
 }
 
 export default function Search ({ instigatorRef }) {
-  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, activePanelHasFocus, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
@@ -119,10 +119,9 @@ export default function Search ({ instigatorRef }) {
 
   // Move focus to input
   useEffect(() => {
-    if (!instigatorRef || !activePanelHasFocus) {
-      return
+    if (activePanel === 'SEARCH') {
+      activeRef.current = inputRef.current
     }
-    activeRef.current = inputRef.current
   }, [activePanel])
 
   if (!hasPanel(search, activePanel, isDesktop)) {

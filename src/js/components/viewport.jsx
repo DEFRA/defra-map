@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useMemo } from 'react'
 import { useQueryState } from '../hooks/use-query-state.js'
+import { useResizeObserver } from '../hooks/use-resize-observer.js'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
@@ -10,17 +11,15 @@ import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
 
-  const { id, styles, queryFeature, queryPixel, minZoom, maxZoom } = options
+  const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
 
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
-  const [, setQueryId] = useQueryState(settings.params.featureId)
-  const [, setQueryTarget] = useQueryState(settings.params.targetMarker)
 
   const mapContainerRef = useRef(null)
   const featureIdRef = useRef(-1)
@@ -40,7 +39,7 @@ export default function Viewport () {
     }
     if (!isMoving) {
       const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(paddingBoxRef.current, scale)
+      const point = getMapPixel(frameRef.current, scale)
       provider.queryPoint(point)
     }
   }
@@ -125,6 +124,10 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
+    // Add polygonFeature
+    if (queryPolygon?.feature) {
+      provider.initDraw(queryPolygon)
+    }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
     })
@@ -188,16 +191,16 @@ export default function Viewport () {
 
   // Initial render
   useEffect(() => {
-    if (isContainerReady && !provider.map) {
+    if (isContainerReady && !provider.isLoaded) {
       provider.init({
         target: mapContainerRef.current,
-        paddingBox: paddingBoxRef.current,
-        frame: frameRef.current,
+        paddingBox: frameRef.current,
         bbox,
         centre,
         zoom,
         minZoom,
         maxZoom,
+        maxExtent,
         basemap,
         size,
         featureLayers: queryFeature || [],
@@ -274,6 +277,7 @@ export default function Viewport () {
     if (!isUpdate) {
       return
     }
+    provider.setPadding(null, false)
     setQueryCz(`${centre.toString()},${zoom}`)
   }, [isUpdate])
 
@@ -286,14 +290,15 @@ export default function Viewport () {
     viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
-  // Set initial selected feature or target
+  // Set initial selected feature
   useEffect(() => {
     provider.selectFeature(featureId)
-    // Update query params
-    setQueryId(featureId || '')
-    const queryTarget = targetMarker ? Object.keys(targetMarker).map(k => { return targetMarker[k] }).join(',') : ''
-    setQueryTarget(queryTarget)
   }, [featureId, targetMarker])
+
+  // Update view padding on resize
+  useResizeObserver(viewportRef.current, () => {
+    provider.setPadding(null, false)
+  })
 
   return (
     <div

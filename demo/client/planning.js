@@ -170,9 +170,10 @@ const fm = new FloodMap('map', {
   type: 'inline',
   place: 'Ambleside',
   zoom: 16,
-  minZoom: 6,
+  minZoom: 7,
   maxZoom: 20,
   centre: [324973, 536891],
+  maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
   hasGeoLocation: true,
   symbols,
@@ -460,7 +461,7 @@ const fm = new FloodMap('map', {
     ]
   },
   // info: {
-  //     markerCoord: [337297, 503995],
+  //     coord: [325141, 536763],
   //     hasData: true,
   //     width: '360px',
   //     label: '[dynamic title]',
@@ -476,6 +477,7 @@ const fm = new FloodMap('map', {
     darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
     minZoom: 12,
     maxZoom: 21
+    // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
   },
   queryPixel: vtLayers.map(l => l.n)
 })
@@ -490,6 +492,11 @@ fm.addEventListener('ready', e => {
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
   })
+})
+
+// Listen for actions
+fm.addEventListener('action', e => {
+  // console.log(e.detail)
 })
 
 // Listen for mode, segments, layers or style changes

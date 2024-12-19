@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
 export default function PaddingBox ({ children }) {
-  const { provider, isContainerReady, mode, viewportRef, paddingBoxRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+  const { provider, isContainerReady, mode, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate } = useViewport()
 
   // Update provider padding, need to run this before viewport action effect
@@ -43,7 +43,7 @@ export default function PaddingBox ({ children }) {
   const isFrame = mode === 'frame'
 
   return (
-    <div className={`fm-c-padding-box${isFrame ? ' fm-c-padding-box--frame-mode' : ''}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`} {...padding ? { style: padding } : {}} ref={paddingBoxRef}>
+    <div className={`fm-c-padding-box${isFrame ? ' fm-c-padding-box--frame-mode' : ''}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`} {...padding ? { style: padding } : {}}>
       <div className='fm-c-padding-box__frame' ref={frameRef} />
       {children}
     </div>

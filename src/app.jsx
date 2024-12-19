@@ -23,7 +23,6 @@ export default function App (options) {
     ...styles
   }))
   const viewportRef = useRef(null)
-  const paddingBoxRef = useRef(null)
   const frameRef = useRef(null)
   const obscurePanelRef = useRef(null)
   const activeRef = useRef(null)
@@ -71,7 +70,6 @@ export default function App (options) {
         parent,
         handleExit,
         viewportRef,
-        paddingBoxRef,
         frameRef,
         obscurePanelRef,
         activeRef

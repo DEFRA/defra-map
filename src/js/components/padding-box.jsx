@@ -8,18 +8,16 @@ export default function PaddingBox ({ children }) {
 
   // Update provider padding, need to run this before viewport action effect
   useEffect(() => {
-    if (!provider.map) {
-      return
+    if (provider.map) {
+      provider.setPadding(targetMarker?.coord, isAnimate)
     }
-    provider.setPadding(targetMarker?.coord, isAnimate)
   }, [padding])
 
   // Set initial viewport padding before provider map is initialised
   useEffect(() => {
-    if (!isContainerReady) {
-      return
+    if (isContainerReady) {
+      dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef?.current, viewport: viewportRef.current, isMobile } })
     }
-    dispatch({ type: 'SET_PADDING', payload: { panel: obscurePanelRef?.current, viewport: viewportRef.current, isMobile } })
   }, [isContainerReady])
 
   // Update padding if isMobile change, needs timeout
@@ -31,10 +29,9 @@ export default function PaddingBox ({ children }) {
 
   // Reset padding on entering draw mode
   useEffect(() => {
-    if (!['frame', 'draw'].includes(mode)) {
-      return
+    if (['frame', 'draw'].includes(mode)) {
+      dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
     }
-    dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
   }, [mode])
 
   // Template properties

@@ -20,7 +20,7 @@ export default function Actions () {
     const newQuery = provider.draw.finish()
     dispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon' })
+    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
     viewportRef.current.focus()
   }
 
@@ -28,7 +28,7 @@ export default function Actions () {
     provider.draw.cancel()
     dispatch({ type: 'SET_MODE', payload: { value: 'default' } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon' })
+    eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     viewportRef.current.focus()
   }
 

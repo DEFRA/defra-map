@@ -1,20 +1,17 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Autocomplete from '../../src/js/components/autocomplete'
 import { debounce } from '../../src/js/lib/debounce'
-import { defaults } from '../../src/js/store/constants'
 
 jest.mock('../../src/js/lib/debounce', () => ({
   debounce: jest.fn((fn) => fn)
 }))
 
 describe('autocomplete', () => {
-  let debounceUpdateSuggestMock, updateStatusMock, dispatchMock, geocodeMock, updateViewportMock
+  let dispatchMock, geocodeMock, updateViewportMock
 
   beforeEach(() => {
-    debounceUpdateSuggestMock = jest.fn()
-    updateStatusMock = jest.fn()
     dispatchMock = jest.fn()
     geocodeMock = {
       suggest: jest.fn().mockResolvedValue([
@@ -39,7 +36,7 @@ describe('autocomplete', () => {
 
     render(
       <Autocomplete
-        id="test-id"
+        id='test-id'
         state={state}
         dispatch={dispatchMock}
         geocode={geocodeMock}
@@ -67,9 +64,9 @@ describe('autocomplete', () => {
         { id: '2', text: 'Suggestion 2', marked: { __html: 'Suggestion 2' } }
       ]
     })
-  
+
     const suggestions = screen.queryAllByRole('option', { hidden: true })
- 
+
     expect(suggestions.length).toBe(2)
     expect(suggestions[0]).toHaveTextContent('Suggestion 1')
     expect(suggestions[1]).toHaveTextContent('Suggestion 2')
@@ -77,7 +74,6 @@ describe('autocomplete', () => {
 
   it('should hide suggestions list when state.isVisible is false', () => {
     renderComponent({ isVisible: false })
-    screen.debug()
     const suggestionsList = screen.getByRole('listbox', { hidden: true })
     expect(suggestionsList).not.toBeVisible()
   })

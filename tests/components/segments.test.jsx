@@ -2,10 +2,9 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import Segments from '../../src/js/components/segments'
 import { useApp } from '../../src/js/store/use-app'
-import SegmentGroup from '../../src/js/components/segment-group'
 
 jest.mock('../../src/js/store/use-app')
-jest.mock('../../src/js/components/segment-group', () => jest.fn(() => <div data-testid="segment-group"></div>))
+jest.mock('../../src/js/components/segment-group', () => jest.fn(() => <div data-testid='segment-group' />))
 
 describe('segments', () => {
   beforeEach(() => {

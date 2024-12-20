@@ -11,9 +11,6 @@ export default function Layers ({ hasSymbols, hasInputs }) {
   const { id, legend, queryPolygon } = options
   const { display, keyDisplay } = legend
   const { zoom } = useViewport()
-  if (!legend.key) {
-    return null
-  }
 
   // Derived properties
   const moreLabel = keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
@@ -31,6 +28,10 @@ export default function Layers ({ hasSymbols, hasInputs }) {
     const nextTabStop = findTabStop(lastRef, 'next')
     nextTabStop?.focus()
   }, [isKeyExpanded])
+
+  if (!legend.key) {
+    return null
+  }
 
   return (
     <div id={`${id}-key`} className='fm-c-layers'>

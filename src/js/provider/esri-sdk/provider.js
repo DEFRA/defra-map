@@ -123,7 +123,7 @@ class Provider extends EventTarget {
       handleStationary(this)
     }, defaults.DELAY)
 
-    reactiveWatch(() => [view.stationary, view.updating], ([stationary, updating]) => {
+    reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
       if (stationary) {
         debounceStationary()
       }
@@ -333,7 +333,7 @@ class Provider extends EventTarget {
     })
   }
 
-  showLocation (coord) {
+  showLocation (_coord) {
     // import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Marker"] */ 'maplibre-gl-legacy').then(module => {
     //     this.locationMarker = addLocationMarker(module.default.Marker, coord, this.map)
     // })

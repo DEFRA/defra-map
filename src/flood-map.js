@@ -112,31 +112,19 @@ export class FloodMap extends EventTarget {
       // We now have a reference to the map
       eventBus.dispatch(this, events.READY, { type: 'ready', ...data })
       // Need to call these after the component is ready
-      if (this._info) {
-        eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
-      }
-      if (this._selected) {
-        eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
-      }
-      if (this._draw) {
-        eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
-      }
+      if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
+      if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
+      if (this._draw) { eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw) }
     })
 
     // Change, eg segment, layer or style
-    eventBus.on(parent, events.APP_CHANGE, data => {
-      eventBus.dispatch(this, events.CHANGE, data)
-    })
+    eventBus.on(parent, events.APP_CHANGE, data => { eventBus.dispatch(this, events.CHANGE, data) })
 
     // Query, eg Click or keyboard
-    eventBus.on(parent, events.APP_QUERY, data => {
-      eventBus.dispatch(this, events.QUERY, data)
-    })
+    eventBus.on(parent, events.APP_QUERY, data => { eventBus.dispatch(this, events.QUERY, data) })
 
     // Action, eg delete a polygon or confirm update
-    eventBus.on(parent, events.APP_ACTION, data => {
-      eventBus.dispatch(this, events.ACTION, data)
-    })
+    eventBus.on(parent, events.APP_ACTION, data => { eventBus.dispatch(this, events.ACTION, data) })
   }
 
   _testDevice (props) {

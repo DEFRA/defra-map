@@ -8,10 +8,6 @@ export default function Reset () {
   const viewportDispatch = useViewport().dispatch
   const [isNewArea, setIsNewArea] = useState(false)
 
-  if (!options?.hasReset) {
-    return null
-  }
-
   const handleOnClick = () => {
     if (!isNewArea) {
       return
@@ -25,6 +21,10 @@ export default function Reset () {
     const isNew = oCentre && centre && rZoom && zoom && !(isSameCentre && isSameZoom)
     setIsNewArea(isNew)
   }, [bbox])
+
+  if (!options?.hasReset) {
+    return null
+  }
 
   return (
     <button onClick={handleOnClick} className='fm-c-btn fm-c-btn--reset govuk-body-s' aria-label='Reset map area' aria-disabled={!isNewArea} aria-controls={`${options.id}-viewport`}>

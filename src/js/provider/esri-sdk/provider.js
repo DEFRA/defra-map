@@ -101,15 +101,17 @@ class Provider extends EventTarget {
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
-    reactiveWatch(() => [view.stationary], ([stationary]) => {
-      if (!stationary) {
+    let isMoving = false
+    reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
+      if (!isMoving && !stationary) {
         handleMoveStart(this)
+        isMoving = true
       }
     })
 
     // Constrain extent
-    view.watch('extent', (extent) => {
-      if (!geometry?.contains(extent)) {
+    view.watch('extent', e => {
+      if (!geometry?.contains(e)) {
         // To follow
         // view.goTo(geometry, { animate: false })
       }
@@ -117,14 +119,14 @@ class Provider extends EventTarget {
 
     // All changes. Must debounce, min 300ms
     const debounceStationary = debounce(() => {
+      isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 
     reactiveWatch(() => [view.stationary, view.updating], ([stationary, updating]) => {
-      if (updating || !stationary) {
-        return
+      if (stationary) {
+        debounceStationary()
       }
-      debounceStationary()
     })
 
     // Detect user initiated map movement
@@ -332,7 +334,6 @@ class Provider extends EventTarget {
   }
 
   showLocation (coord) {
-    console.log('showLocation', coord)
     // import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Marker"] */ 'maplibre-gl-legacy').then(module => {
     //     this.locationMarker = addLocationMarker(module.default.Marker, coord, this.map)
     // })

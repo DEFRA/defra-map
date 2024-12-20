@@ -9,9 +9,9 @@ const update = (state, payload) => {
   const description = getDescription(place, centre, bbox, features)
   const original = { oBbox: bbox, oCentre: centre, rZoom: zoom, oZoom, oPlace: place }
   const panZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom)) && 'PANZOOM'
-  const updateAction = (action === 'GEOLOC' && 'GEOLOC') || (action === 'DATA' && 'DATA') || panZoom
+  const updateAction = (action === 'GEOLOC' && 'GEOLOC') || (action === 'DATA' && 'DATA') || panZoom || null
   const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
-  const status = getStatus(updateAction, place, description, direction) || state.status
+  const status = getStatus(updateAction, place, description, direction)
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),

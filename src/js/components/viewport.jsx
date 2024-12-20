@@ -139,10 +139,9 @@ export default function Viewport () {
   const handleMovestart = e => {
     const isUserInitiated = e.detail.isUserInitiated
     viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
-    if (!(isKeyboard && activePanel === 'INFO' && isUserInitiated)) {
-      return
+    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
+      appDispatch({ type: 'CLOSE' })
     }
-    appDispatch({ type: 'CLOSE' })
   }
 
   const handlePointerDown = e => {
@@ -236,7 +235,7 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('movestart', handleMovestart)
     }
-  }, [isKeyboard, activePanel])
+  }, [isKeyboard, activePanel, action])
 
   // Handle viewport action
   useEffect(() => {

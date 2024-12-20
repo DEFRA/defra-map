@@ -117,7 +117,7 @@ export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
       change = `${getDirection(oCentre, centre)}`
     } else {
       const direction = zoom > oZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, showing ${getArea(bbox)}`
+      change = `zoomed ${direction}, focus area covering ${getArea(bbox)}`
     }
     change = `${change}`
   }
@@ -131,9 +131,9 @@ export const getDescription = (place, centre, bbox, features) => {
   if (featuresTotal) {
     text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
   } else if (isPixelFeaturesAtPixel) {
-    text = 'Data at the centre coordinate'
+    text = 'Data visible at the centre coordinate'
   } else if (isPixelFeaturesInMap) {
-    text = 'No data at the centre coordinate'
+    text = 'No data visible at the centre coordinate'
   } else if (isFeaturesInMap) {
     text = 'No feature data in this area'
   } else {
@@ -161,7 +161,7 @@ export const getStatus = (action, place, description, direction) => {
       status = `${direction}. Use ALT plus I to get new details`
     }
   } else {
-    // Empty status
+    status = ''
   }
   return status
 }

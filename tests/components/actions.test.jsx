@@ -98,4 +98,33 @@ describe('actions', () => {
     expect(viewPortRefFocus).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
+
+  it('should handle click for Polygon Query', () => {
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      query: true,
+      queryPolygon: { submitLabel: 'Submit' },
+      provider: {
+        draw: {
+          finish: drawFinish
+        }
+      },
+      viewportRef: {
+        current: {
+          focus: viewPortRefFocus
+        }
+      }
+    })
+
+    render(<Actions />)
+
+    const button = screen.getByRole('button', { name: /submit/i })
+    fireEvent.click(button)
+
+    expect(screen.getByText('Submit')).toBeTruthy()
+    expect(drawFinish).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalled()
+    expect(viewPortRefFocus).toHaveBeenCalled()
+    expect(eventBus.dispatch).toHaveBeenCalled()
+  })
 })

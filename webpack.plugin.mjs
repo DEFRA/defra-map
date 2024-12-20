@@ -19,7 +19,7 @@ export default {
     path: path.resolve(dirname, 'plugin'),
     filename: 'js/[name].js',
     library: {
-      name: 'defraMap',
+      name: 'defra',
       type: 'window'
     }
   },
@@ -73,12 +73,6 @@ export default {
           },
           'sass-loader'
         ]
-      },
-      {
-        test: /\.(jpg|png)$/,
-        use: {
-          loader: 'url-loader'
-        }
       },
       {
         test: /\.jsx?$/,

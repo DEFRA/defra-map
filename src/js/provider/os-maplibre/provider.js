@@ -4,8 +4,9 @@ import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { getFocusPadding } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
-import { capabilities } from '../../store/capabilities.js'
+import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
+import { defaults as storeDefaults } from '../../store/constants.js'
 import src from './src.json'
 
 class Provider extends EventTarget {
@@ -28,10 +29,7 @@ class Provider extends EventTarget {
     this.selectedId = ''
     this.selectedCoordinate = null
     this.isLoaded = false
-    this.geocodeProvider = geocodeProvider
-    this.attribution = {
-      label: 'Ordnance Survey logo'
-    }
+    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
   }
@@ -57,20 +55,18 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, size, featureLayers, pixelLayers }) {
+  addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     const { Map: MaplibreMap, Marker } = module.default
     const scale = size === 'large' ? 2 : 1
-    const bounds = bbox ? [[bbox[0], bbox[1]], [bbox[2], bbox[3]]] : null
-    const center = centre || [0, 0]
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
       style: this[basemap + 'Url'],
       container: target,
-      maxBounds: defaults.OPTIONS.maxBounds,
-      bounds,
-      center,
-      zoom: zoom || null,
+      maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
+      bounds: bbox,
+      center: centre,
+      zoom,
       minZoom,
       maxZoom,
       fadeDuration: 0,
@@ -80,13 +76,13 @@ class Provider extends EventTarget {
     })
 
     // Set initial padding, bounds and centre
-    // * Can't set global padding in constructor
+    // // * Can't set global padding in constructor
     // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
-    if (bounds) {
-      map.fitBounds(bounds, { animate: false })
+    if (bbox) {
+      map.fitBounds(bbox, { animate: false })
     } else {
-      map.flyTo({ center, zoom, animate: false })
+      map.flyTo({ centre, zoom, animate: false })
     }
 
     // Disable rotation
@@ -109,7 +105,6 @@ class Provider extends EventTarget {
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.scale = scale
 
@@ -194,17 +189,14 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.map) {
-      return
+    if (this.map) {
+      const { paddingBox, scale } = this
+      const padding = getFocusPadding(paddingBox, scale)
+      // Search needs to set padding first before fitBbox
+      this.map.setPadding(padding)
+      // East map to new when coord is obscured
+      coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }
-    const { paddingBox, scale } = this
-    const padding = getFocusPadding(paddingBox, scale)
-    // Search needs to set padding first before fitBbox
-    this.map.setPadding(padding)
-    if (!coord) {
-      return
-    }
-    this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
   }
 
   setSize (size) {
@@ -242,14 +234,6 @@ class Provider extends EventTarget {
       this.draw = new Draw(this, draw, basemap, el)
     })
   }
-
-  // editElement (el) {
-  //   import(/* webpackChunkName: "maplibre-draw" */ './draw.js').then(module => {
-  //     const Draw = module.default
-  //     this.draw = new Draw(this)
-  //     this.draw.editElement(el)
-  //   })
-  // }
 
   setTargetMarker (coord, hasData, isVisible) {
     const { targetMarker } = this

@@ -2,33 +2,6 @@
 // Provider specific styles
 //
 
-// Maplibre
-.fm-o-viewport .fm-o-map-container {
-    height: calc(100% - 1px);
-}
-
-.fm-o-viewport--large .fm-o-map-container {
-    width: 50%;
-    height: 50%;
-}
-
-.fm-o-viewport--large.fm-u-focus-visible .fm-o-map-container::after {
-    right: calc(3px - 100%);
-    bottom: calc(3px - 100%);
-}
-
-.fm-o-viewport--large .maplibregl-canvas-container {
-    overflow: visible;
-    transform-origin: top left;
-    transform: scale(200%);
-}
-
-.fm-o-viewport--large .fm-o-map-container .fm-c-marker__inner {
-    transform-origin: center;
-    transform: scale(50%);
-    -webkit-font-smoothing: subpixel-antialiased;
-}
-
 // Controls
 .maplibregl-control-container {
     position: absolute;

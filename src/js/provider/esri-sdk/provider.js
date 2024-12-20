@@ -2,9 +2,10 @@ import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handle
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
-import { capabilities } from '../../store/capabilities.js'
+import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
+import { defaults as storeDefaults } from '../../store/constants.js'
 import src from './src.json'
 
 class Provider extends EventTarget {
@@ -15,16 +16,14 @@ class Provider extends EventTarget {
     this.requestCallback = requestCallback
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
-    this.geocodeProvider = geocodeProvider
+    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.stylesImagePath = src.STYLES
     this.isUserInitiated = false
-    this.attribution = {
-      label: 'Ordnance Survey logo'
-    }
+    this.isLoaded = false
   }
 
   init (options) {
@@ -46,7 +45,7 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, frame, bbox, centre, zoom, minZoom, maxZoom, basemap, pixelLayers }) {
+  async addMap ({ modules, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -58,23 +57,29 @@ class Provider extends EventTarget {
     const TileInfo = modules[8].default
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.tokenCallback()).token
+
     // Add intercepors
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()
-    const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
-    const extent = bbox ? new Extent({ xmin: bbox[0], ymin: bbox[1], xmax: bbox[2], ymax: bbox[3] }) : null
+    const map = new EsriMap({
+      layers: [baseTileLayer, graphicsLayer]
+    })
+    const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
+
+    // Create MapView
     const view = new MapView({
       spatialReference: 27700,
       container: target,
       map,
-      zoom: zoom || null,
-      center: centre ? new Point({ x: centre[0], y: centre[1], spatialReference: 27700 }) : null,
-      extent,
-      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
+      zoom,
+      center: centre ? this.getPoint(Point, centre) : null,
+      extent: bbox ? this.getExtent(Extent, bbox) : null,
+      constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
-      padding: getFocusPadding(paddingBox, 1)
+      padding: getFocusPadding(paddingBox, 1),
+      popupEnabled: false
     })
 
     // Tidy up canvas
@@ -88,7 +93,6 @@ class Provider extends EventTarget {
     this.graphicsLayer = graphicsLayer
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
-    this.frame = frame
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
@@ -97,22 +101,32 @@ class Provider extends EventTarget {
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
-    reactiveWatch(() => [view.stationary], ([stationary]) => {
-      if (!stationary) {
+    let isMoving = false
+    reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
+      if (!isMoving && !stationary) {
         handleMoveStart(this)
+        isMoving = true
+      }
+    })
+
+    // Constrain extent
+    view.watch('extent', e => {
+      if (!geometry?.contains(e)) {
+        // To follow
+        // view.goTo(geometry, { animate: false })
       }
     })
 
     // All changes. Must debounce, min 300ms
     const debounceStationary = debounce(() => {
+      isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 
-    reactiveWatch(() => [view.stationary, view.updating], ([stationary, updating]) => {
-      if (updating || !stationary) {
-        return
+    reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
+      if (stationary) {
+        debounceStationary()
       }
-      debounceStationary()
     })
 
     // Detect user initiated map movement
@@ -122,6 +136,24 @@ class Provider extends EventTarget {
       }
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
+  }
+
+  getPoint (Point, coords) {
+    return new Point({
+      x: coords[0],
+      y: coords[1],
+      spatialReference: { wkid: 27700 }
+    })
+  }
+
+  getExtent (Extent, coords) {
+    return new Extent({
+      xmin: coords[0],
+      ymin: coords[1],
+      xmax: coords[2],
+      ymax: coords[3],
+      spatialReference: { wkid: 27700 }
+    })
   }
 
   getImagePos (style) {
@@ -301,8 +333,7 @@ class Provider extends EventTarget {
     })
   }
 
-  showLocation (coord) {
-    console.log('showLocation', coord)
+  showLocation (_coord) {
     // import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Marker"] */ 'maplibre-gl-legacy').then(module => {
     //     this.locationMarker = addLocationMarker(module.default.Marker, coord, this.map)
     // })

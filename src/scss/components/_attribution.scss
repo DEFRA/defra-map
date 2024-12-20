@@ -1,7 +1,7 @@
 .fm-c-attribution {
-    margin: 0 0 5px 5px;
-    
-    svg {
-        display: block;
-    }
+    @include body-font(10px, 400);
+    color: var(--foreground-colour);
+    padding: 3px 5px;
+    background-color: var(--background-colour);
+    opacity: 0.75;
 }

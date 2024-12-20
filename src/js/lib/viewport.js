@@ -1,9 +1,14 @@
 import LatLon from 'geodesy/latlon-spherical.js'
+import { defaults } from '../store/constants'
+
+const getMainBoundingClientRect = (el) => {
+  return el.closest('.fm-o-main').getBoundingClientRect()
+}
 
 export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
-    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const parent = getMainBoundingClientRect(el)
     const box = el.getBoundingClientRect()
     padding = {
       top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
@@ -18,7 +23,7 @@ export const getFocusPadding = (el, scale) => {
 export const getFocusBounds = (el, scale) => {
   let bounds
   if (el) {
-    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const parent = getMainBoundingClientRect(el)
     const box = el.getBoundingClientRect()
     const m = 10
     bounds = [[
@@ -32,9 +37,14 @@ export const getFocusBounds = (el, scale) => {
   return bounds
 }
 
-export const getMapPixel = (box, scale) => {
-  const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = box
-  const point = [(offsetLeft + (offsetWidth / 2)) / scale, (offsetTop + (offsetHeight / 2)) / scale]
+export const getMapPixel = (el, scale) => {
+  const parent = getMainBoundingClientRect(el)
+  const box = el.getBoundingClientRect()
+  const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
+  const top = ((box.y || box.top) - (parent.y || parent.top)) / scale
+  const offsetLeft = (box.width / 2) / scale
+  const offsetTop = (box.height / 2) / scale
+  const point = [left + offsetLeft, top + offsetTop]
   return point
 }
 
@@ -111,9 +121,9 @@ export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
       change = `${getDirection(oCentre, centre)}`
     } else {
       const direction = zoom > oZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, showing ${getArea(bbox)}`
+      change = `zoomed ${direction}, focus area covering ${getArea(bbox)}`
     }
-    change = `${change}: Use ALT plus I to get new details`
+    change = `${change}`
   }
   return change
 }
@@ -123,11 +133,11 @@ export const getDescription = (place, centre, bbox, features) => {
   let text = ''
 
   if (featuresTotal) {
-    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this view`
+    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
   } else if (isPixelFeaturesAtPixel) {
-    text = 'Data at the centre coordinate'
+    text = 'Data visible at the centre coordinate'
   } else if (isPixelFeaturesInMap) {
-    text = 'No data at the centre coordinate'
+    text = 'No data visible at the centre coordinate'
   } else if (isFeaturesInMap) {
     text = 'No feature data in this area'
   } else {
@@ -141,17 +151,21 @@ export const getDescription = (place, centre, bbox, features) => {
     coord = `lat ${centre[1].toFixed(4)} long ${centre[0].toFixed(4)}`
   }
 
-  return `Approximate map centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
+  return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
-export const getStatus = (isPanZoom, isGeoLoc, place, description, direction) => {
+export const getStatus = (action, place, description, direction) => {
   let status = null
-  if (isPanZoom || isGeoLoc) {
+  if (action === 'DATA') {
+    return 'Map change: new data. Use ALT plus I to get new details'
+  } else if (['PANZOOM', 'GEOLOC'].includes(action)) {
     if (place) {
       status = description
     } else {
-      status = direction
+      status = `${direction}. Use ALT plus I to get new details`
     }
+  } else {
+    status = ''
   }
   return status
 }
@@ -168,25 +182,36 @@ export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
   return place
 }
 
-export const parseCentre = value => {
-  return value?.split(',').slice(0, 2).map(x => parseFloat(x))
+export const parseCentre = (value, srid) => {
+  const mb = defaults[srid].MAX_BBOX
+  let isInRange
+  let coords = value?.split(',')
+  // Query string malformed
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
+  }
+  coords = coords.slice(0, 2).map(x => parseFloat(x))
+  coords = !coords.some(isNaN) && coords
+  // Coords are not numbers
+  if (!coords) {
+    return null
+  }
+  // Coords are within the valid range
+  if (srid === '27700') {
+    isInRange = !!coords.filter(c => Number.isInteger(c) && c >= 0).length
+  } else {
+    isInRange = (coords[0] > mb[0] && coords[0] < mb[2]) && (coords[1] > mb[1] && coords[1] < mb[3])
+  }
+  return isInRange ? coords : null
 }
 
 export const parseZoom = value => {
-  return parseFloat(value?.split(',')[2])
-}
-
-export const setBasemap = (isDarkMode) => {
-  const ls = window.localStorage.getItem('basemap')
-  const oColourScheme = ls?.split(',')[1]
-  const oBasemap = ls?.split(',')[0]
-  const colourScheme = isDarkMode ? 'dark' : 'light'
-  if (colourScheme !== oColourScheme && ['default', 'dark'].includes(oBasemap)) {
-    window.localStorage.removeItem('basemap')
+  const coords = value?.split(',')
+  if (!(Array.isArray(coords) && coords?.length === 3)) {
+    return null
   }
-  const basemap = ls?.split(',')[0]
-  const reset = isDarkMode ? 'dark' : 'default'
-  return basemap || reset
+  const zoom = parseFloat(coords[2])
+  return !zoom.isNaN ? zoom : null
 }
 
 export const getSelectedIndex = (key, total, current) => {
@@ -199,7 +224,7 @@ export const getSelectedStatus = (featuresInViewport, index) => {
   const total = featuresInViewport.length
   const feature = index < featuresInViewport.length ? featuresInViewport[index] : null
   const status = feature && (
-    `${total} feature${total !== 1 ? 's' : ''} in this view. ${feature.name}. ${index + 1} of ${total} highlighted.`
+    `${total} feature${total !== 1 ? 's' : ''} in this area. ${feature.name}. ${index + 1} of ${total} highlighted.`
   )
   return status
 }

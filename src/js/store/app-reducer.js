@@ -1,10 +1,16 @@
-import { parseSegments, parseLayers, parseQuery } from '../lib/query'
+import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 
-export const initialState = (options) => {
-  const { legend, search, info, queryPolygon } = options
+const getIsDarkMode = (hasAutoMode) => {
+  const basemap = window.localStorage.getItem('basemap')
+  return basemap === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
+}
 
-  const { featureId, targetMarker } = parseQuery(info)
+export const initialState = (options) => {
+  const { legend, search, info, queryPolygon, hasAutoMode } = options
+
+  const featureId = info?.featureId
+  const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
 
   let activePanel
   if (info && (featureId || targetMarker)) {
@@ -23,6 +29,9 @@ export const initialState = (options) => {
     queryPolygon,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
+    isKeyExpanded: false,
+    isDarkMode: getIsDarkMode(hasAutoMode),
+    hasAutoMode,
     featureId,
     targetMarker: !featureId && targetMarker,
     pointerQuery: null,
@@ -32,7 +41,8 @@ export const initialState = (options) => {
     hasViewportLabel: false,
     mode: 'default',
     isFrameVisible: false,
-    query: null,
+    isTargetVisible: false,
+    query: queryPolygon?.feature,
     hash: null
   }
 }

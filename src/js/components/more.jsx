@@ -7,7 +7,7 @@ export default function More ({ id, label, isExpanded, setIsExpanded, isRemove }
   const btnRef = useRef(null)
 
   const handleClick = () => {
-    setIsExpanded(!isExpanded)
+    setIsExpanded()
     if (!isRemove) {
       return
     }

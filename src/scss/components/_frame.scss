@@ -2,8 +2,8 @@
     position: absolute;
     pointer-events: none;
     top: calc(40px + ($margin * 2));
-    right: calc(75px + ($margin * 2));
-    left: calc(75px + ($margin * 2));
+    right: calc(40px + ($margin * 2));
+    left: calc(40px + ($margin * 2));
     bottom: calc(40px + ($margin * 2));
     overflow: visible;
     display: flex;
@@ -14,6 +14,8 @@
 .fm-desktop .fm-c-padding-box {
     top: calc(75px + ($margin * 2));
     bottom: calc(75px + ($margin * 2));
+    right: calc(75px + ($margin * 2));
+    left: calc(75px + ($margin * 2));
 }
 
 // Frame

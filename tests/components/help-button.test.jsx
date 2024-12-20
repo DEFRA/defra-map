@@ -10,7 +10,9 @@ describe('help-button', () => {
   it('should show button', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: jest.fn(),
-      activePanel: null
+      activePanel: null,
+      isDesktop: false,
+      mode: 'frame'
     })
 
     render(<HelpButton />)
@@ -21,7 +23,9 @@ describe('help-button', () => {
   it('should not display button', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: jest.fn(),
-      activePanel: 'HELP'
+      activePanel: 'HELP',
+      isDesktop: false,
+      mode: 'frame'
     })
 
     const { container } = render(<HelpButton />)
@@ -34,7 +38,9 @@ describe('help-button', () => {
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      activePanel: null
+      activePanel: null,
+      isDesktop: false,
+      mode: 'frame'
     })
 
     render(<HelpButton />)

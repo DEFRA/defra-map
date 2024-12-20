@@ -12,8 +12,10 @@ describe('legend-button', () => {
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      isMobile: false,
+      isDesktop: false,
       isEditMode: false,
+      options: null,
+      mode: null,
       legend: {}
     })
 
@@ -29,8 +31,10 @@ describe('legend-button', () => {
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      isMobile: false,
+      isDesktop: false,
       isEditMode: false,
+      options: null,
+      mode: null,
       legend: { title: 'legend title' }
     })
 
@@ -44,8 +48,9 @@ describe('legend-button', () => {
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
-      isMobile: false,
+      isDesktop: false,
       isEditMode: false,
+      mode: null,
       legend: { title: 'legend title' },
       activePanel: 'LEGEND'
     })

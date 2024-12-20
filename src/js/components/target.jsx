@@ -3,19 +3,38 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { usePixelObscurred } from '../hooks/use-pixel-obscurred.js'
 
-const isCentre = (isKeyboard, targetMarker, activePanel) => {
-  return isKeyboard && !(targetMarker && activePanel === 'INFO')
+const isCentre = (interfaceType, targetMarker, activePanel) => {
+  return ['keyboard', 'touch'].includes(interfaceType) && !(targetMarker && activePanel === 'INFO')
+}
+
+const hasData = (isTargetCentre, features, targetMarker) => {
+  return isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
+}
+
+const isVisible = (interfaceType, isTargetCentre, mode, features, targetCoord, activePanel) => {
+  let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
+  // Hide when touch detected and a panel is displayed at the bottom
+  if (interfaceType === 'touch') {
+    isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
+  }
+  return isTargetVisible
 }
 
 export default function Target () {
-  const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, isKeyboard, isMobile } = useApp()
+  const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, interfaceType, isMobile } = useApp()
+  const appDispatch = useApp().dispatch
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
 
-  const isTargetCentre = isCentre(isKeyboard, targetMarker, activePanel)
-  const hasTargetData = isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
+  const isTargetCentre = isCentre(interfaceType, targetMarker, activePanel)
+  const hasTargetData = hasData(isTargetCentre, features, targetMarker)
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
-  const isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
+  const isTargetVisible = isVisible(interfaceType, isTargetCentre, mode, features, targetCoord, activePanel)
+
+  // Update app state
+  useEffect(() => {
+    appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: isTargetVisible })
+  }, [isTargetVisible])
 
   // Conditionally show target marker
   useEffect(() => {

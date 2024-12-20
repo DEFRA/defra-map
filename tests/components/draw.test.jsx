@@ -15,6 +15,8 @@ jest.mock('../../src/js/lib/viewport')
 describe('draw', () => {
   const draw = jest.fn()
   const dispatch = jest.fn()
+  const activeRef = {}
+  const viewportRef = {}
 
   jest.mocked(isFeatureSquare).mockResolvedValue(true)
 
@@ -28,6 +30,8 @@ describe('draw', () => {
   it('should handle click for Start label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
+      activeRef,
+      viewportRef,
       mode: 'frame',
       queryPolygon: {
         heading: ''
@@ -52,6 +56,8 @@ describe('draw', () => {
   it('should handle click for Edit label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
+      activeRef,
+      viewportRef,
       mode: 'draw',
       query: true,
       queryPolygon: {
@@ -77,6 +83,8 @@ describe('draw', () => {
   it('should handle click for an initial draw', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
+      activeRef,
+      viewportRef,
       queryPolygon: {
         heading: ''
       },

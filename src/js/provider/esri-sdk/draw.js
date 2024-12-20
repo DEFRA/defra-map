@@ -1,4 +1,5 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
 import Graphic from '@arcgis/core/Graphic'
 import { defaults } from './constants'
 
@@ -20,6 +21,13 @@ export class Draw {
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
+    // Add existing feature
+    if (options.feature) {
+      this.create(options.feature)
+      return
+    }
+
+    // Start new
     this.start('frame')
   }
 
@@ -55,7 +63,7 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(isFrame && { zoom: this.oZoom }) })
+      view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
     }
   }
 
@@ -84,6 +92,12 @@ export class Draw {
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
     this.toggleConstraints(false)
+  }
+
+  create (feature) {
+    const graphic = this.getGraphicFromFeature(feature)
+    this.oGraphic = graphic.clone()
+    this.addGraphic(graphic)
   }
 
   finish () {
@@ -127,8 +141,7 @@ export class Draw {
 
     this.sketchViewModel = sketchViewModel
 
-    sketchViewModel.on(['update', 'undo', 'redo'], this.handleUpdate)
-    sketchViewModel.on('create-complete', this.handleCreateComplete)
+    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
     sketchViewModel.update(this.addGraphic(graphic))
   }
 
@@ -181,6 +194,22 @@ export class Draw {
     return graphic
   }
 
+  getGraphicFromFeature = (feature) => {
+    return new Graphic({
+      geometry: {
+        type: 'polygon',
+        rings: feature.geometry.coordinates,
+        spatialReference: 27700
+      },
+      symbol: {
+        type: 'simple-line',
+        color: defaults.POLYGON_QUERY_STROKE,
+        width: '2px',
+        cap: 'square'
+      }
+    })
+  }
+
   addGraphic (graphic) {
     const { map, graphicsLayer, isDark } = this.provider
     graphicsLayer.removeAll()
@@ -209,12 +238,25 @@ export class Draw {
     }
   }
 
-  handleCreateComplete () {
-    // console.log('handleCreateComplete')
-  }
+  handleUpdateDelete (e) {
+    const toolInfoType = e.toolEventInfo?.type
+    const graphic = e.graphics[0]
 
-  handleUpdate (e) {
-    if (e.toolEventInfo?.type.includes('move-start')) {
+    // Undo draw if polygon has a zero area
+    if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
+      const area = geometryEngine.planarArea(graphic.geometry, 'square-meters')
+      if (area <= 0) {
+        this.undo()
+      }
+    }
+
+    // Undo draw if attemtped self-intersect
+    if (toolInfoType === 'reshape' && graphic?.geometry.isSelfIntersecting) {
+      this.undo()
+    }
+
+    // Canel draw if attempted polygon move
+    if (toolInfoType === 'move-start') {
       this.cancel()
     }
   }

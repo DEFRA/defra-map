@@ -6,7 +6,7 @@ export const initialState = {
   isFocusWithin: false,
   isFocusVisibleWithin: false,
   selected: -1,
-  suggestions: [],
+  suggestions: null,
   value: '',
   message: '',
   status: ''

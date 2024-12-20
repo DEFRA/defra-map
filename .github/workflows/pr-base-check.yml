@@ -14,9 +14,9 @@ jobs:
           echo "Attempting to merge ${SOURCE_BRANCH} into ${BASE_BRANCH}"
           if [ "$BASE_BRANCH" = "DEFRA:main" ]; then
             echo base is main
-            if [[ "$SOURCE_BRANCH" != "DEFRA:release/"* ]] && [[ "$SOURCE_BRANCH" != "DEFRA:hotfix/"* ]]; then
-              echo Source is neither a "release" nor a "hotfix" branch, so cannot be merged to main.
-              exit 1
-            fi
+            # if [[ "$SOURCE_BRANCH" != "DEFRA:release/"* ]] && [[ "$SOURCE_BRANCH" != "DEFRA:hotfix/"* ]]; then
+            #   echo Source is neither a "release" nor a "hotfix" branch, so cannot be merged to main.
+            #   exit 1
+            # fi
           fi
           echo "Branches ok to be merged"

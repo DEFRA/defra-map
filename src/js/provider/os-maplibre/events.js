@@ -32,7 +32,8 @@ export const handleIdle = async (provider) => {
   }
   const { paddingBox, selectedId, scale } = provider
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
-  const pixel = [offsetLeft + (offsetWidth / 2), offsetTop + (offsetHeight / 2)].map(c => c / scale)
+  const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
+  const pixel = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)].map(c => c / scale)
   const detail = await getDetail(provider, selectedId ? null : pixel)
   provider.dispatchEvent(new CustomEvent('update', {
     detail

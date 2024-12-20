@@ -8,6 +8,7 @@ const { ResizeObserver } = window
 
 export const useResizeObserver = (el, callback) => {
   const observer = useRef(null)
+  const prevWidth = useRef(null)
   const prevHeight = useRef(null)
 
   const observe = () => {
@@ -22,10 +23,10 @@ export const useResizeObserver = (el, callback) => {
     }
     observer.current = new ResizeObserver(entries => {
       for (const entry of entries) {
-        const height = entry.contentRect.height
-        if (typeof height === 'number' && height !== prevHeight.current) {
+        const { width, height } = entry.contentRect
+        if ((typeof height === 'number' && height !== prevHeight.current) || (typeof width === 'number' && width !== prevWidth.current)) {
+          prevWidth.current = width
           prevHeight.current = height
-          console.log('resize')
           callback()
         }
       }

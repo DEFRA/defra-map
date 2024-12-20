@@ -6,7 +6,7 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'buttonFirst', // 'buttonFirst',
+  type: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
@@ -20,7 +20,9 @@ const fm = new FloodMap('map', {
   symbols,
   requestCallback: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
+  hasAutoMode: true,
   styles: {
+    attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,
@@ -29,7 +31,7 @@ const fm = new FloodMap('map', {
     tritanopiaUrl: process.env.TRITANOPIA_URL
   },
   search: {
-    label: 'Search for a place',
+    country: 'england',
     isAutocomplete: true
   },
   legend: {
@@ -222,17 +224,14 @@ const fm = new FloodMap('map', {
       }
     ]
   },
-  info: {
-    // featureId: '011WAFLE',
-    // markerCoord: [-2.934171,54.901112],
-    // hasData: true,
-    width: '360px',
-    label: '[dynamic title]',
-    html: `
-            <p class="govuk-body-s">[dynamic body]</p>
-            <p class="govuk-body-s">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.</p>
-        `
-  },
+  // info: {
+  //   featureId: '011WAFLE',
+  //   // coord: [-2.934171,54.901112],
+  //   // hasData: true,
+  //   width: '360px',
+  //   label: '[dynamic title]',
+  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
+  // },
   queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
   queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
 })
@@ -296,11 +295,12 @@ fm.addEventListener('query', e => {
     fm.info = {
       width: '360px',
       label: 'Annual likelihood of flooding',
-      html: `<div class="govuk-body-s">
-                ${location}
-                ${results}
-                <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.</p>
-            </div>`
+      html: `
+        <div class="govuk-body-s">
+          ${location}
+          ${results}
+        </div>
+      `
     }
   }
 

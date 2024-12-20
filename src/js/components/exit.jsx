@@ -2,9 +2,15 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function Exit () {
-  const { options, isBack, handleExit, isDesktop } = useApp()
+  const { options, mode, isPage, isBack, handleExit, isDesktop } = useApp()
+  const isQueryMode = ['frame', 'draw'].includes(mode)
 
-  const isFixed = options.legend.display !== 'inset' && isDesktop
+  const isFixed = options?.legend.display !== 'inset' && isDesktop
+  const hasButton = !isQueryMode && isPage
+
+  if (!hasButton) {
+    return null
+  }
 
   const Path = () => {
     if (isBack) {

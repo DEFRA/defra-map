@@ -39,7 +39,9 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx?$/i, use: ['babel-loader']
+        test: /\.jsx?$/i,
+        exclude: /node_modules\/(?!event-target-polyfill).+/,
+        loader: 'babel-loader'
       },
       {
         test: /\.s?css$/i,

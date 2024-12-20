@@ -13,15 +13,17 @@
   <body>
     <script>
       /* Only needed if buttonFirst or hyrbid */
-      if (location.search.indexOf('view=map') >= 0) {
-        if (window.matchMedia('(max-width: 640px)').matches) { // Condition need for Hybrid
-          document.body.classList.add('fm-js-hidden')
-        }
-      }
+      document.body.classList.add('fm-js-hidden')
+      // }
     </script>
     <main style="padding: 20px">
       <h1 class="govuk-heading-l">Map component</h1>
-      <div id="map"></div>
+      <noscript>
+        <div class="fm-error">
+          <p class="govuk-body">Your device is not supported. A map would be a available with JavaScript enabled.</p>
+        </div>
+      </noscript>
+      <div class="map-container" id="map"></div>
     </main>
     <script src="main.js"></script>
   </body>

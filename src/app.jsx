@@ -7,15 +7,13 @@ import Container from './js/components/container.jsx'
 import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
+  const { type, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
   const mobileMQ = `(max-width: ${options.maxMobile || settings.breakpoints.MAX_MOBILE})`
   const desktopMQ = `(min-width: ${options.minDesktop || settings.breakpoints.MIN_DESKTOP})`
-  const colorSchemeMQ = '(prefers-color-scheme: dark)'
-  const { type, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
-  const [isDarkMode, setIsDarkMode] = useState(window?.matchMedia(colorSchemeMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
-  const [isKeyboard, setIsKeyboard] = useState(!!options.isKeyboard)
+  const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
 
   // Create a provider instance
   const provider = useRef(new Provider({
@@ -25,7 +23,6 @@ export default function App (options) {
     ...styles
   }))
   const viewportRef = useRef(null)
-  const paddingBoxRef = useRef(null)
   const frameRef = useRef(null)
   const obscurePanelRef = useRef(null)
   const activeRef = useRef(null)
@@ -36,7 +33,6 @@ export default function App (options) {
 
   const handleMobileMQ = e => setIsMobile(e.matches)
   const handleDesktopMQ = e => setIsDesktop(e.matches)
-  const handleColorSchemeMQ = e => setIsDarkMode(e.matches)
 
   //
   // Side effects
@@ -49,10 +45,9 @@ export default function App (options) {
     // Set media queries
     window.matchMedia(mobileMQ).addEventListener('change', handleMobileMQ)
     window.matchMedia(desktopMQ).addEventListener('change', handleDesktopMQ)
-    window.matchMedia(colorSchemeMQ).addEventListener('change', handleColorSchemeMQ)
 
-    // Keyboard events
-    eventBus.on(parent, events.SET_IS_KEYBOARD, data => setIsKeyboard(data))
+    // Keyboard and touch events
+    eventBus.on(parent, events.SET_INTERFACE_TYPE, data => setInterfaceType(data))
 
     return () => {
       window.removeEventListener('change', handleMobileMQ)
@@ -69,14 +64,12 @@ export default function App (options) {
         provider: provider.current,
         isPage,
         isMobile,
-        isDarkMode,
         isDesktop,
         isBack: window.history.state?.isBack,
-        isKeyboard,
+        interfaceType,
         parent,
         handleExit,
         viewportRef,
-        paddingBoxRef,
         frameRef,
         obscurePanelRef,
         activeRef

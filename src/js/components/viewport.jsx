@@ -1,27 +1,28 @@
 import React, { useEffect, useRef, useMemo } from 'react'
 import { useQueryState } from '../hooks/use-query-state.js'
+import { useResizeObserver } from '../hooks/use-resize-observer.js'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { setBasemap, getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
+import { getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
-import Status from './status.jsx'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
-export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, paddingBoxRef, frameRef, activePanel, activeRef, featureId, targetMarker, isKeyboard, isDarkMode } = useApp()
+const getClassName = (size, isDarkBasemap, isFocusVisible) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+}
 
-  const { id, queryFeature, queryPixel, minZoom, maxZoom } = options
+export default function Viewport () {
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
+  const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
 
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
-  const [, setQueryId] = useQueryState(settings.params.featureId)
-  const [, setQueryTarget] = useQueryState(settings.params.targetMarker)
 
   const mapContainerRef = useRef(null)
   const featureIdRef = useRef(-1)
@@ -31,6 +32,9 @@ export default function Viewport () {
   const STATUS_DELAY = 300
 
   const selectQuery = () => {
+    if (!(queryFeature || queryPixel)) {
+      return
+    }
     if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
       const fId = features.featuresInViewport[featureIdRef.current].id
       provider.queryFeature(fId)
@@ -38,7 +42,7 @@ export default function Viewport () {
     }
     if (!isMoving) {
       const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(paddingBoxRef.current, scale)
+      const point = getMapPixel(frameRef.current, scale)
       provider.queryPoint(point)
     }
   }
@@ -113,7 +117,7 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current) {
+    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
       return
     }
     const { layerX, layerY } = e.nativeEvent
@@ -123,6 +127,10 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
+    // Add polygonFeature
+    if (queryPolygon?.feature) {
+      provider.initDraw(queryPolygon)
+    }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
     })
@@ -131,10 +139,9 @@ export default function Viewport () {
   const handleMovestart = e => {
     const isUserInitiated = e.detail.isUserInitiated
     viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
-    if (!(isKeyboard && activePanel === 'INFO' && isUserInitiated)) {
-      return
+    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
+      appDispatch({ type: 'CLOSE' })
     }
-    appDispatch({ type: 'CLOSE' })
   }
 
   const handlePointerDown = e => {
@@ -160,7 +167,7 @@ export default function Viewport () {
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
     appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
-    eventBus.dispatch(parent, events.APP_QUERY, e.detail)
+    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, basemap, size, segments, layers })
   }
 
   // Provider style change
@@ -180,25 +187,27 @@ export default function Viewport () {
   }, STATUS_DELAY)
 
   // Template properties
+  const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const className = getClassName(size, isDarkBasemap, isFocusVisible)
 
   // Initial render
   useEffect(() => {
-    if (isContainerReady && !provider.map) {
+    if (isContainerReady && !provider.isLoaded) {
       provider.init({
         target: mapContainerRef.current,
-        paddingBox: paddingBoxRef.current,
-        frame: frameRef.current,
+        paddingBox: frameRef.current,
         bbox,
         centre,
         zoom,
         minZoom,
         maxZoom,
+        maxExtent,
         basemap,
         size,
-        featureLayers: queryFeature || [],
-        pixelLayers: queryPixel || []
+        featureLayers: queryFeature,
+        pixelLayers: queryPixel
       })
 
       provider.addEventListener('load', handleMapLoad)
@@ -226,7 +235,7 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('movestart', handleMovestart)
     }
-  }, [isKeyboard, activePanel])
+  }, [isKeyboard, activePanel, action])
 
   // Handle viewport action
   useEffect(() => {
@@ -254,7 +263,7 @@ export default function Viewport () {
         provider.setSize(size)
         break
       case 'BASEMAP':
-        window.localStorage.setItem('basemap', `${basemap},${isDarkMode ? 'dark' : 'light'}`)
+        window.localStorage.setItem('basemap', basemap)
         provider.setBasemap(basemap)
         break
       default:
@@ -268,10 +277,9 @@ export default function Viewport () {
 
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
-    if (!isUpdate) {
-      return
+    if (isUpdate) {
+      setQueryCz(`${centre.toString()},${zoom}`)
     }
-    setQueryCz(`${centre.toString()},${zoom}`)
   }, [isUpdate])
 
   // Swap basemap on light/dark mode change
@@ -279,22 +287,24 @@ export default function Viewport () {
     if (!provider.map) {
       return
     }
-    viewportDispatch({ type: 'SET_BASEMAP', payload: setBasemap(isDarkMode) })
-  }, [isDarkMode])
+    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
+  }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
-  // Set initial selected feature or target
+  // Set initial selected feature
   useEffect(() => {
     provider.selectFeature(featureId)
-    // Update query params
-    setQueryId(featureId || '')
-    const queryTarget = targetMarker ? Object.keys(targetMarker).map(k => { return targetMarker[k] }).join(',') : ''
-    setQueryTarget(queryTarget)
   }, [featureId, targetMarker])
+
+  // Update view padding on resize
+  useResizeObserver(viewportRef.current, () => {
+    provider.setPadding(null, false)
+  })
 
   return (
     <div
       id={`${id}-viewport`}
-      className={`fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`}
+      className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
       onClick={handleClick}
@@ -322,9 +332,18 @@ export default function Viewport () {
       </ul>
       {useMemo(() => {
         return (
-          <Status message={status} isVisuallyHidden={isStatusVisuallyHidden} />
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
+            <div className='fm-c-status__inner govuk-body-s' aria-atomic>
+              {status}
+            </div>
+          </div>
         )
       }, [status])}
+      {!isMobile && (
+        <div className='fm-o-attribution'>
+          <div className='fm-c-attribution'>{styles.attribution}</div>
+        </div>
+      )}
     </div>
   )
 }

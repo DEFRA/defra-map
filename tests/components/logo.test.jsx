@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import Attribution from '../../src/js/components/attribution'
+import Logo from '../../src/js/components/logo'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
 
@@ -20,7 +20,7 @@ describe('attribution', () => {
       basemap: 'default'
     })
 
-    const { container } = render(<Attribution />)
+    const { container } = render(<Logo />)
 
     expect(container.querySelector('path[fill="#fff"]')).toBeTruthy()
   })
@@ -30,7 +30,7 @@ describe('attribution', () => {
       basemap: 'dark'
     })
 
-    const { container } = render(<Attribution />)
+    const { container } = render(<Logo />)
 
     expect(container.querySelector('path[fill="#000"]')).toBeTruthy()
   })

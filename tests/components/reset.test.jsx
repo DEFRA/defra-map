@@ -10,7 +10,8 @@ jest.mock('../../src/js/store/use-viewport')
 
 jest.mocked(useApp).mockReturnValue({
   options: {
-    id: 'test'
+    id: 'test',
+    hasReset: true
   }
 })
 
@@ -24,6 +25,7 @@ describe('reset', () => {
       zoom: '1',
       centre: { value: '101' },
       oCentre: { value: '100' },
+      options: { hasRest: true },
       dispatch
     })
 
@@ -43,6 +45,7 @@ describe('reset', () => {
       zoom: '1',
       centre: { value: '100' },
       oCentre: { value: '100' },
+      options: { hasRest: true },
       dispatch
     })
 

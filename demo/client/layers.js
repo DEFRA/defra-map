@@ -27,27 +27,27 @@ export const queryMap = {
 export const addSources = (map) => {
   map.addSource('warning-areas', {
     type: 'vector',
-    url: 'http://localhost:8000/warning_areas'
+    url: `${process.env.TILE_SERVER_URL}/warning_areas`
   })
   map.addSource('warning-centroids', {
     type: 'vector',
-    url: 'http://localhost:8000/warning_centroids'
+    url: `${process.env.TILE_SERVER_URL}/warning_centroids`
   })
   map.addSource('station-centroids', {
     type: 'vector',
-    url: 'http://localhost:8000/station_centroids'
+    url: `${process.env.TILE_SERVER_URL}/station_centroids`
   })
   map.addSource('five-day-forecast', {
     type: 'vector',
-    url: 'http://localhost:8000/five_day_forecast_areas'
+    url: `${process.env.TILE_SERVER_URL}/five_day_forecast_areas`
   })
   map.addSource('river-sea', {
     type: 'vector',
-    url: 'http://localhost:8000/rivers_sea'
+    url: `${process.env.TILE_SERVER_URL}/rivers_sea`
   })
   map.addSource('surface-water', {
     type: 'vector',
-    url: 'http://localhost:8000/ufmfsw_enw_extent_1in30_bv,ufmfsw_enw_extent_1in100_bv,ufmfsw_enw_extent_1in1000_bv'
+    url: `${process.env.TILE_SERVER_URL}/ufmfsw_enw_extent_1in30_bv,ufmfsw_enw_extent_1in100_bv,ufmfsw_enw_extent_1in1000_bv`
   })
 }
 

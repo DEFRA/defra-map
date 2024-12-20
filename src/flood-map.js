@@ -1,10 +1,8 @@
-'use strict'
 import { events, settings } from './js/store/constants.js'
-import { capabilities } from './js/store/capabilities.js'
+import { capabilities } from './js/lib/capabilities.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
-
 // Polyfills
 import 'event-target-polyfill'
 
@@ -22,9 +20,18 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    const isSupported = capabilities[props?.provider?.name || 'default'].isSupported()
-    if (!isSupported) {
-      this._insertNotSupported(props.fallBackHTML)
+    const device = this._testDevice(props)
+
+    if (!device.isSupported) {
+      this.el.insertAdjacentHTML('beforebegin', `
+        <div class="fm-error">
+          <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
+        </div>
+      `)
+      // Remove hidden class
+      document.body.classList.remove('fm-js-hidden')
+      // Log error message
+      device.error && console.log(device.error)
       return
     }
 
@@ -38,43 +45,57 @@ export class FloodMap extends EventTarget {
     this.root = null
 
     // Get visibility
-    const { type, maxMobile } = options
-    const mobileMQ = `(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`
+    const { maxMobile } = options
+    const mobileMQ = window.matchMedia(`(max-width: ${maxMobile || settings.breakpoints.MAX_MOBILE})`)
     this.searchParams = new URLSearchParams(document.location.search)
-    this.isMobile = window?.matchMedia(mobileMQ).matches
-    this.isVisible = this.searchParams.get('view') === id || type === 'inline' || (type === 'hybrid' && !this.isMobile)
 
-    // Add app
-    if (this.isVisible) { this._importComponent() }
+    // Set isMobile and isVisible
+    this._handleMobileMQ(mobileMQ)
+
+    // Add container
+    if (this.isVisible) {
+      this._importComponent()
+    }
 
     // Add button
-    this._insertButtonHTML()
+    if (['buttonFirst', 'hybrid'].includes(props.type)) {
+      this._insertButtonHTML()
+      // Remove hidden class
+      if (!this.isVisible) {
+        document.body.classList.remove('fm-js-hidden')
+      }
+    }
 
     // Exit map
     this.props.handleExit = this._handleExit.bind(this)
 
+    // Responsive change add/remove app
+    mobileMQ.addEventListener('change', () => {
+      this._handleMobileMQ(mobileMQ)
+      this.isVisible ? this._importComponent() : this._removeComponent()
+    })
+
     // History change add/remove app
     window.addEventListener('popstate', this._handlePopstate.bind(this))
-
-    // Responsive add/remove app
-    window.matchMedia(mobileMQ).addEventListener('change', this._handleMobileMQ.bind(this))
 
     // Set initial focus
     window.addEventListener('focus', () => { setInitialFocus() })
 
-    // Set isKeyboard
+    // Set keyboard interfaceType
     window.addEventListener('keydown', this._handleKeydown.bind(this), true)
 
-    // Unset isKeyboard
+    // Set touch interfaceType
+    window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
+
+    // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
     window.addEventListener('wheel', this._handlePointerdown.bind(this))
 
     // Polyfil :focus-visible set
     const handleFocusIn = () => {
-      if (!this.isKeyboard) {
-        return
+      if (this.interfaceType === 'keyboard') {
+        document.activeElement.classList.add(cssFocusVisible)
       }
-      document.activeElement.classList.add(cssFocusVisible)
     }
     window.addEventListener('focusin', handleFocusIn)
 
@@ -87,39 +108,33 @@ export class FloodMap extends EventTarget {
       this.map = data.map
       this.modules = data.modules
       this.isReady = true
-      eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, this.isKeyboard || false)
+      eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, this.interfaceType)
       // We now have a reference to the map
       eventBus.dispatch(this, events.READY, { type: 'ready', ...data })
       // Need to call these after the component is ready
-      if (this._info) {
-        eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
-      }
-      if (this._selected) {
-        eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
-      }
-      if (this._draw) {
-        eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
-      }
+      if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
+      if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
+      if (this._draw) { eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw) }
     })
 
     // Change, eg segment, layer or style
-    eventBus.on(parent, events.APP_CHANGE, data => {
-      eventBus.dispatch(this, events.CHANGE, data)
-    })
+    eventBus.on(parent, events.APP_CHANGE, data => { eventBus.dispatch(this, events.CHANGE, data) })
 
     // Query, eg Click or keyboard
-    eventBus.on(parent, events.APP_QUERY, data => {
-      eventBus.dispatch(this, events.QUERY, data)
-    })
+    eventBus.on(parent, events.APP_QUERY, data => { eventBus.dispatch(this, events.QUERY, data) })
+
+    // Action, eg delete a polygon or confirm update
+    eventBus.on(parent, events.APP_ACTION, data => { eventBus.dispatch(this, events.ACTION, data) })
   }
 
-  _insertNotSupported (fallBackHTML) {
-    console.log('Device not supported')
-    this.el.insertAdjacentHTML('beforebegin', fallBackHTML || `
-      <div class="fm-error" role="alert">
-        <p class="govuk-body">Your device is not supporterd. A map would be a available with a more up-to-date device.</p>
-      </div>
-    `)
+  _testDevice (props) {
+    const device = framework => capabilities[framework || 'default'].getDevice()
+    const { isSupported, error } = device(props.framework)
+    const isImplementationSupported = props.deviceTestCallback ? props.deviceTestCallback() : true
+    return {
+      isSupported: isSupported && isImplementationSupported,
+      error
+    }
   }
 
   _insertButtonHTML () {
@@ -154,22 +169,18 @@ export class FloodMap extends EventTarget {
   }
 
   _handleMobileMQ (e) {
-    this.isMobile = e.matches
     const { type } = this.props
     const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === this.id
-    this.isVisible = (hasViewParam || type === 'inline' || (type === 'hybrid' && !this.isMobile))
-    if (this.isVisible) {
-      this._importComponent()
-    } else {
-      this._removeComponent()
-    }
+    this.isMobile = e.matches
+    this.isVisible = hasViewParam || type === 'inline' || (type === 'hybrid' && !e.matches)
   }
 
   _handlePopstate () {
     const { type } = this.props
+    const hasButton = type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)
     if (history.state?.isBack) {
       this._importComponent()
-    } else if (type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)) {
+    } else if (hasButton) {
       this._removeComponent()
     } else {
       // No action
@@ -180,14 +191,19 @@ export class FloodMap extends EventTarget {
     if (e.key !== 'Tab') {
       return
     }
-    this.isKeyboard = true
-    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, true)
+    this.interfaceType = 'keyboard'
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
+  }
+
+  _handleTouchstart () {
+    this.interfaceType = 'touch'
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
   }
 
   _handlePointerdown () {
-    eventBus.dispatch(this.props.parent, events.SET_IS_KEYBOARD, false)
+    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, null)
     document.activeElement.classList.remove(cssFocusVisible)
-    this.isKeyboard = false
+    this.interfaceType = null
   }
 
   _importComponent () {
@@ -200,8 +216,8 @@ export class FloodMap extends EventTarget {
     if (this.root) {
       return
     }
-    this.button.setAttribute('style', 'display: none')
-    this.root = module.default(this.el, { ...this.props, isKeyboard: this.isKeyboard })
+    this.button?.setAttribute('style', 'display: none')
+    this.root = module.default(this.el, { ...this.props, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {

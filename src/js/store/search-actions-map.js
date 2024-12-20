@@ -1,5 +1,5 @@
 import { createMessage } from '../lib/search'
-import { search } from './constants'
+import { defaults } from './constants'
 
 const expand = (state, payload) => {
   return {
@@ -54,19 +54,19 @@ const click = (state, payload) => {
 
 const change = (state, payload) => {
   let suggestions = state.suggestions
-  if (payload.length < search.MIN_CHARS) {
-    suggestions = []
+  if (payload.length < defaults.MIN_SEARCH_LENGTH) {
+    suggestions = null
   }
   return {
     ...state,
     value: payload,
     suggestions,
     message: createMessage(suggestions, -1),
-    isVisible: payload.length >= search.MIN_CHARS
+    isVisible: payload.length >= defaults.MIN_SEARCH_LENGTH
   }
 }
 
-const addSuggestions = (state, payload) => {
+const showSuggestions = (state, payload) => {
   return {
     ...state,
     suggestions: payload,
@@ -145,7 +145,7 @@ export const actionsMap = {
   MOUSEENTER: mouseenter,
   CLICK: click,
   CHANGE: change,
-  ADD_SUGGESTIONS: addSuggestions,
+  SHOW_SUGGESTIONS: showSuggestions,
   HIDE_SUGGESTIONS: hideSuggestions,
   REVIEW: review,
   SUBMIT: submit,

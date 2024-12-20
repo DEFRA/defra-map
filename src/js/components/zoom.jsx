@@ -4,7 +4,7 @@ import { useViewport } from '../store/use-viewport'
 import Tooltip from './tooltip.jsx'
 
 export default function Zoom () {
-  const { options } = useApp()
+  const { options, isMobile } = useApp()
   const { id, maxZoom, minZoom } = options
   const { zoom, action } = useViewport()
   const viewportDispatch = useViewport().dispatch
@@ -15,6 +15,10 @@ export default function Zoom () {
     }
     viewportDispatch({ type: 'MOVEEND' })
   }, [action])
+
+  if (isMobile) {
+    return null
+  }
 
   return (
     <div className='fm-c-zoom'>

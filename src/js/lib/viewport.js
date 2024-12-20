@@ -1,10 +1,14 @@
 import LatLon from 'geodesy/latlon-spherical.js'
 import { defaults } from '../store/constants'
 
+const getMainBoundingClientRect = (el) => {
+  return el.closest('.fm-o-main').getBoundingClientRect()
+}
+
 export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
-    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const parent = getMainBoundingClientRect(el)
     const box = el.getBoundingClientRect()
     padding = {
       top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
@@ -19,7 +23,7 @@ export const getFocusPadding = (el, scale) => {
 export const getFocusBounds = (el, scale) => {
   let bounds
   if (el) {
-    const parent = el.closest('.fm-o-main').getBoundingClientRect()
+    const parent = getMainBoundingClientRect(el)
     const box = el.getBoundingClientRect()
     const m = 10
     bounds = [[
@@ -34,7 +38,7 @@ export const getFocusBounds = (el, scale) => {
 }
 
 export const getMapPixel = (el, scale) => {
-  const parent = el.closest('.fm-o-main').getBoundingClientRect()
+  const parent = getMainBoundingClientRect(el)
   const box = el.getBoundingClientRect()
   const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
   const top = ((box.y || box.top) - (parent.y || parent.top)) / scale

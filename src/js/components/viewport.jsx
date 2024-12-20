@@ -10,9 +10,12 @@ import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
+const getClassName = (size, isDarkBasemap, isFocusVisible) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+}
+
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
-
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
@@ -188,6 +191,7 @@ export default function Viewport () {
   const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const className = getClassName(size, isDarkBasemap, isFocusVisible)
 
   // Initial render
   useEffect(() => {
@@ -203,8 +207,8 @@ export default function Viewport () {
         maxExtent,
         basemap,
         size,
-        featureLayers: queryFeature || [],
-        pixelLayers: queryPixel || []
+        featureLayers: queryFeature,
+        pixelLayers: queryPixel
       })
 
       provider.addEventListener('load', handleMapLoad)
@@ -301,7 +305,7 @@ export default function Viewport () {
   return (
     <div
       id={`${id}-viewport`}
-      className={`fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`}
+      className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
       onClick={handleClick}

@@ -43,7 +43,7 @@
 
 // Viewport padding box style and colours
 .fm-o-viewport.fm-u-focus-visible {
-    .fm-c-padding-box__frame {
+    .fm-c-padding-box--visible .fm-c-padding-box__frame {
         opacity: 1;
     }
 

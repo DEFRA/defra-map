@@ -10,12 +10,7 @@ export const initialState = (options) => {
   const { legend, search, info, queryPolygon, hasAutoMode } = options
 
   const featureId = info?.featureId
-  const targetMarker = info?.coord
-    ? {
-        coord: info.coord,
-        hasData: info.hasData
-      }
-    : null
+  const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
 
   let activePanel
   if (info && (featureId || targetMarker)) {

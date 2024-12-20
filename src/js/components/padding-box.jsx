@@ -2,8 +2,12 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
+const getClassName = (isFrame, isVisible, isActive) => {
+  return `fm-c-padding-box${isFrame ? ' fm-c-padding-box--frame-mode' : ''}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`
+}
+
 export default function PaddingBox ({ children }) {
-  const { provider, isContainerReady, mode, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+  const { provider, options, isContainerReady, mode, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate } = useViewport()
 
   // Update provider padding, need to run this before viewport action effect
@@ -35,12 +39,13 @@ export default function PaddingBox ({ children }) {
   }, [mode])
 
   // Template properties
-  const isVisible = interfaceType === 'keyboard' && features?.isFeaturesInMap
-  const isActive = interfaceType === 'keyboard' && features?.featuresInViewport.length
+  const isVisible = interfaceType === 'keyboard' && (options.queryPixel || options.queryFeature)
+  const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length || features?.isPixelFeaturesInMap)
   const isFrame = mode === 'frame'
+  const className = getClassName(isFrame, isVisible, isActive)
 
   return (
-    <div className={`fm-c-padding-box${isFrame ? ' fm-c-padding-box--frame-mode' : ''}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`} {...padding ? { style: padding } : {}}>
+    <div className={className} {...padding ? { style: padding } : {}}>
       <div className='fm-c-padding-box__frame' ref={frameRef} />
       {children}
     </div>

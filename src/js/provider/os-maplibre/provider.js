@@ -189,15 +189,13 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.map) {
-      return
-    }
-    const { paddingBox, scale } = this
-    const padding = getFocusPadding(paddingBox, scale)
-    // Search needs to set padding first before fitBbox
-    this.map.setPadding(padding)
-    if (coord) {
-      this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
+    if (this.map) {
+      const { paddingBox, scale } = this
+      const padding = getFocusPadding(paddingBox, scale)
+      // Search needs to set padding first before fitBbox
+      this.map.setPadding(padding)
+      // East map to new when coord is obscured
+      coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }
   }
 
@@ -236,14 +234,6 @@ class Provider extends EventTarget {
       this.draw = new Draw(this, draw, basemap, el)
     })
   }
-
-  // editElement (el) {
-  //   import(/* webpackChunkName: "maplibre-draw" */ './draw.js').then(module => {
-  //     const Draw = module.default
-  //     this.draw = new Draw(this)
-  //     this.draw.editElement(el)
-  //   })
-  // }
 
   setTargetMarker (coord, hasData, isVisible) {
     const { targetMarker } = this

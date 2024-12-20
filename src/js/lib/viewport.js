@@ -33,9 +33,14 @@ export const getFocusBounds = (el, scale) => {
   return bounds
 }
 
-export const getMapPixel = (box, scale) => {
-  const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = box
-  const point = [(offsetLeft + (offsetWidth / 2)) / scale, (offsetTop + (offsetHeight / 2)) / scale]
+export const getMapPixel = (el, scale) => {
+  const parent = el.closest('.fm-o-main').getBoundingClientRect()
+  const box = el.getBoundingClientRect()
+  const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
+  const top = ((box.y || box.top) - (parent.y || parent.top)) / scale
+  const offsetLeft = (box.width / 2) / scale
+  const offsetTop = (box.height / 2) / scale
+  const point = [left + offsetLeft, top + offsetTop]
   return point
 }
 
@@ -124,7 +129,7 @@ export const getDescription = (place, centre, bbox, features) => {
   let text = ''
 
   if (featuresTotal) {
-    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this view`
+    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
   } else if (isPixelFeaturesAtPixel) {
     text = 'Data at the centre coordinate'
   } else if (isPixelFeaturesInMap) {
@@ -142,7 +147,7 @@ export const getDescription = (place, centre, bbox, features) => {
     coord = `lat ${centre[1].toFixed(4)} long ${centre[0].toFixed(4)}`
   }
 
-  return `Approximate map centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
+  return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
 export const getStatus = (action, place, description, direction) => {
@@ -215,7 +220,7 @@ export const getSelectedStatus = (featuresInViewport, index) => {
   const total = featuresInViewport.length
   const feature = index < featuresInViewport.length ? featuresInViewport[index] : null
   const status = feature && (
-    `${total} feature${total !== 1 ? 's' : ''} in this view. ${feature.name}. ${index + 1} of ${total} highlighted.`
+    `${total} feature${total !== 1 ? 's' : ''} in this area. ${feature.name}. ${index + 1} of ${total} highlighted.`
   )
   return status
 }

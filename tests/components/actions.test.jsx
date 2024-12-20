@@ -11,7 +11,6 @@ jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 
 describe('actions', () => {
-
   const drawFinish = jest.fn()
   const dispatch = jest.fn()
   const viewPortRefFocus = jest.fn()
@@ -119,8 +118,6 @@ describe('actions', () => {
 
     render(<Actions />)
 
-
-
     const button = screen.getByRole('button', { name: /submit/i })
     fireEvent.click(button)
 
@@ -130,6 +127,4 @@ describe('actions', () => {
     expect(viewPortRefFocus).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
-
-  
 })

@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "@arcgis/core": "^4.31.6",
-    "maplibre-gl": "^4.7.1",
+    "maplibre-gl": "^5.0.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@^1.15.3",
     "preact": "^10.25.2"
   }

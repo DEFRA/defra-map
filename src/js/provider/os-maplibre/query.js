@@ -23,24 +23,27 @@ const getPaddedBounds = map => {
   return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
 }
 
-export const addPointerQuery = (provider) => {
-  const { map, featureLayers, pixelLayers } = provider
+export const addHoverBehaviour = (provider) => {
+  const { map, featureLayers, labelLayers } = provider
 
-  if (!(featureLayers || pixelLayers)) {
-    return
+  // Toggle cursor style for features
+  if (featureLayers) {
+    map.on('mouseenter', featureLayers, e => { !e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
+    map.on('mouseleave', featureLayers, () => { map.getCanvas().style.cursor = '' })
   }
-
-  // Toggle cursor style for feature layers
-  featureLayers.forEach(layer => {
-    map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer' })
-    map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = '' })
-  })
+  
+  // Toggle cursor style for labels
+  if (labelLayers) {
+    map.on('mouseenter', labelLayers, e => { e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
+    map.on('mouseleave', labelLayers, () => { map.getCanvas().style.cursor = '' })
+  }
 }
 
 export const getDetail = async (provider, pixel, isUserInitiated = false) => {
   const { map, getNearest, reverseGeocodeToken } = provider
   const viewport = getViewport(map)
   const features = getFeatures(provider, pixel)
+  const label = getHighlightedLabel(map)
   let place
   if (isUserInitiated && features.resultType === 'pixel') {
     place = await getNearest(features.coord, reverseGeocodeToken)
@@ -51,7 +54,8 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
     resultType: features.resultType,
     coord: features.coord,
     features,
-    place
+    place,
+    label
   }
 }
 
@@ -128,12 +132,48 @@ export const getFeatures = (provider, pixel) => {
 }
 
 export const toggleSelectedFeature = (map, id) => {
-  if (!map?.getStyle()) {
-    return
+  if (map?.getStyle()) {
+    const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
+    for (const layer of selectedLayers) {
+      map.setLayoutProperty(layer.id, 'visibility', id ? 'visible' : 'none')
+      map.setFilter(layer.id, ['==', 'id', id || ''])
+    }
   }
-  const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
-  for (const layer of selectedLayers) {
-    map.setLayoutProperty(layer.id, 'visibility', id ? 'visible' : 'none')
-    map.setFilter(layer.id, ['==', 'id', id || ''])
+}
+
+export const getHighlightedLabel = (map) => {
+  const features = map.queryRenderedFeatures({ layers: ['label'] })
+  if (features?.length) {
+    const feature = features[0]
+    return `${feature.layer.layout['text-field']} (${feature.properties.layer})`
   }
+}
+
+export const getLabel = (provider, pixel) => {
+  const { map, labelLayers } = provider
+  const feature = map.queryRenderedFeatures(pixel, { layers: labelLayers })[0]
+  return feature
+}
+
+export const getLabels = (provider) => {
+  const { map, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, scale)
+  const features = map.queryRenderedFeatures(bounds, { layers: provider.labelLayers })
+  const labels = features.map(f => {
+    let pixel = f.geometry.type === 'Point' && map.project(f.geometry.coordinates)
+    if (f.geometry.type !== 'Point') {
+      const coordinates = f.geometry.coordinates.flat(f.geometry.type === 'MultiLineString' ? 1 : 0)
+      const pixels = coordinates.map(c => map.project(c))
+      const xS = pixels.map(p => p.x)
+      const yS = pixels.map(p => p.y)
+      const centreX = ((Math.max(...xS) - Math.min(...xS)) / 2) + Math.min(...xS)
+      const centreY = ((Math.max(...yS) - Math.min(...yS)) / 2) + Math.min(...yS)
+      pixel = { x: centreX, y: centreY }
+    }
+    return {
+      feature: f,
+      pixel: [pixel.x, pixel.y]
+    }
+  })
+  return labels
 }

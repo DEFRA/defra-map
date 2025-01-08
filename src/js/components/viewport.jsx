@@ -27,6 +27,7 @@ export default function Viewport () {
   const mapContainerRef = useRef(null)
   const featureIdRef = useRef(-1)
   const startPixel = useRef([0, 0])
+  const labelPixel = useRef(null)
   const isDraggingRef = useRef(false)
 
   const STATUS_DELAY = 300
@@ -88,6 +89,11 @@ export default function Viewport () {
       e.preventDefault()
       cycleFeatures(e)
     }
+
+    // Disable body scroll
+    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
+      e.preventDefault()
+    }
   }
 
   const handleKeyUp = e => {
@@ -109,21 +115,35 @@ export default function Viewport () {
       provider.queryFeature(fId)
     }
 
-    // Clear selected feature
+    // Clear selected feature and label
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
+      // Triggers an update event
+      labelPixel.current = provider?.hideLabel()
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
+    }
+
+    // Select label (Alt + arrow key)
+    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
+      const direction = e.key.substring(5).toLowerCase()
+      // Triggers an update event
+      labelPixel.current = provider.showNextLabel(labelPixel.current, direction)
     }
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
-      return
+    if (!isDraggingRef.current) {
+      const { layerX, layerY } = e.nativeEvent
+      const scale = size === 'large' ? 2 : 1
+      const point = [layerX / scale, layerY / scale]
+      if (e.altKey) {
+        labelPixel.current = provider.showLabel(point)
+      } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {
+        provider.queryPoint(point)
+      } else {
+        // No action
+      }
     }
-    const { layerX, layerY } = e.nativeEvent
-    const scale = size === 'large' ? 2 : 1
-    const point = [layerX / scale, layerY / scale]
-    provider.queryPoint(point)
   }
 
   const handleMapLoad = e => {

@@ -5,6 +5,14 @@ const getMainBoundingClientRect = (el) => {
   return el.closest('.fm-o-main').getBoundingClientRect()
 }
 
+const getBearing = (coord1, coord2) => {
+  const east = coord1[0] < coord2[0] && 'east'
+  const west = coord1[0] > coord2[0] && 'west'
+  const north = coord1[1] < coord2[1] && 'north'
+  const south = coord1[1] > coord2[1] && 'south'
+  return [east, west, north, south].filter(b => b && typeof b === 'string')
+}
+
 export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
@@ -78,14 +86,6 @@ export const getUnits = (metres) => {
   return units
 }
 
-const getBearing = (coord1, coord2) => {
-  const east = coord1[0] < coord2[0] && 'east'
-  const west = coord1[0] > coord2[0] && 'west'
-  const north = coord1[1] < coord2[1] && 'north'
-  const south = coord1[1] > coord2[1] && 'south'
-  return [east, west, north, south].filter(b => b && typeof b === 'string')
-}
-
 export const getDirection = (coord1, coord2) => {
   coord1 = coord1.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
   coord2 = coord2.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
@@ -154,7 +154,7 @@ export const getDescription = (place, centre, bbox, features) => {
   return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
-export const getStatus = (action, place, description, direction) => {
+export const getStatus = (action, place, description, direction, label) => {
   let status = null
   if (action === 'DATA') {
     return 'Map change: new data. Use ALT plus I to get new details'
@@ -164,6 +164,8 @@ export const getStatus = (action, place, description, direction) => {
     } else {
       status = `${direction}. Use ALT plus I to get new details`
     }
+  } else if (label) {
+    status = label
   } else {
     status = ''
   }
@@ -240,4 +242,29 @@ export const isFeatureSquare = (feature) => {
   const coords = feature.geometry.coordinates
   const flatCoords = Array.from(new Set(coords.flat(2)))
   return flatCoords.length === 4
+}
+
+export const spatialNavigate = (direction, start, pixels) => {
+  const quadrant = pixels.filter(p => {
+    const offsetX = Math.abs(p[0] - start[0])
+    const offsetY = Math.abs(p[1] - start[1])
+    let isQuadrant = false
+    if (direction === 'up') {
+      isQuadrant = p[1] <= start[1] && offsetY >= offsetX
+    } else if (direction === 'down') {
+      isQuadrant = p[1] > start[1] && offsetY >= offsetX
+    } else if (direction === 'left') {
+      isQuadrant = p[0] <= start[0] && offsetY < offsetX
+    } else {
+      isQuadrant = p[0] > start[0] && offsetY < offsetX
+    }
+    return isQuadrant && (JSON.stringify(p) !== JSON.stringify(start))
+  })
+  if (!quadrant.length) {
+    quadrant.push(start)
+  }
+  const pythagorean = (a, b) => Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+  const distances = quadrant.map(p => pythagorean(Math.abs(start[0] - p[0]), Math.abs(start[1] - p[1])))
+  const closest = quadrant[distances.indexOf(Math.min(...distances))]
+  return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }

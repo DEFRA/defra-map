@@ -1,5 +1,5 @@
-import { getDetail } from './query'
-import { loadSymbols, addSelectedLayers } from './symbols'
+import { getDetail, addHoverBehaviour } from './query'
+import { loadSymbols, addSelectedFeatureLayers, addHighlightedLabelLayer, amendLineSymbolLayers } from './symbols'
 
 export const handleLoad = async (provider) => {
   await loadSymbols(provider)
@@ -13,34 +13,40 @@ export const handleLoad = async (provider) => {
 }
 
 export const handleStyleLoad = async (provider) => {
-  if (!provider.isLoaded) {
-    return
+  const { map } = provider
+  // Amend symbol-placement prop to so labels have a coordinate
+  amendLineSymbolLayers(map)
+  // Add highlighted label layer and source
+  addHighlightedLabelLayer(provider)
+  // Change cursor type on feature hover
+  addHoverBehaviour(provider)
+  if (provider.isLoaded) {
+    await loadSymbols(provider)
+    const { basemap } = provider
+    provider.dispatchEvent(new CustomEvent('style', {
+      detail: {
+        type: 'basemap',
+        basemap
+      }
+    }))
   }
-  await loadSymbols(provider)
-  const { basemap } = provider
-  provider.dispatchEvent(new CustomEvent('style', {
-    detail: {
-      type: 'basemap',
-      basemap
-    }
-  }))
 }
 
 export const handleIdle = async (provider) => {
-  if (!provider.map) {
-    return
+  if (provider.map) {
+    const { paddingBox, selectedId, scale } = provider
+    const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
+    const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
+    const pixel = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)].map(c => c / scale)
+    const detail = await getDetail(provider, selectedId ? null : pixel)
+    provider.dispatchEvent(new CustomEvent('update', {
+      detail
+    }))
   }
-  const { paddingBox, selectedId, scale } = provider
-  const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
-  const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
-  const pixel = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)].map(c => c / scale)
-  const detail = await getDetail(provider, selectedId ? null : pixel)
-  provider.dispatchEvent(new CustomEvent('update', {
-    detail
-  }))
 }
 
 export const handleMoveStart = (provider, e) => {
+  provider.hideLabel()
   provider.dispatchEvent(new CustomEvent('movestart', {
     detail: {
       isUserInitiated: e.isUserInitiated || !!e.originalEvent
@@ -49,16 +55,15 @@ export const handleMoveStart = (provider, e) => {
 }
 
 export const handleStyleData = (provider, e) => {
-  if (!provider.baseLayers.length) {
-    return
+  if (provider.baseLayers.length) {
+    const { map, basemap, selectedId } = provider
+    const layers = map.getStyle().layers
+    const featureLayers = layers.filter(l => provider.featureLayers.includes(l.id))
+    if (!(layers.filter(l => l.id.includes('selected')).length === featureLayers.length)) {
+      const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+      addSelectedFeatureLayers(map, featureLayers, selectedId, isDarkBasemap)
+    }
   }
-  const { map, basemap, selectedId } = provider
-  const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
-  if (map.getStyle().layers.filter(l => l.id.includes('selected')).length === featureLayers.length) {
-    return
-  }
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-  addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
 }
 
 export const handleError = (_provider, err) => {

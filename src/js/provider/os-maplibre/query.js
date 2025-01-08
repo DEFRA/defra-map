@@ -31,7 +31,7 @@ export const addHoverBehaviour = (provider) => {
     map.on('mouseenter', featureLayers, e => { !e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
     map.on('mouseleave', featureLayers, () => { map.getCanvas().style.cursor = '' })
   }
-  
+
   // Toggle cursor style for labels
   if (labelLayers) {
     map.on('mouseenter', labelLayers, e => { e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })

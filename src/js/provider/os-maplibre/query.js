@@ -43,7 +43,7 @@ const parseFeatures = (map, features) => {
       distance
     }
   })
-  
+
   return features
 }
 

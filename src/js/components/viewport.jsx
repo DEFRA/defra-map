@@ -28,6 +28,7 @@ export default function Viewport () {
   const featureIdRef = useRef(-1)
   const startPixel = useRef([0, 0])
   const labelPixel = useRef(null)
+  const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
 
   const STATUS_DELAY = 300
@@ -129,6 +130,12 @@ export default function Viewport () {
       // Triggers an update event
       labelPixel.current = provider.showNextLabel(labelPixel.current, direction)
     }
+
+    // Select label (Alt + mousehover)
+    if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current) {
+      console.log(pointerPixel.current)
+      labelPixel.current = provider.showLabel(pointerPixel.current)
+    }
   }
 
   const handleClick = e => {
@@ -144,6 +151,12 @@ export default function Viewport () {
         // No action
       }
     }
+  }
+
+  const handlePointerMove = e => {
+    const { layerX, layerY } = e.nativeEvent
+    const scale = size === 'large' ? 2 : 1
+    pointerPixel.current = [layerX / scale, layerY / scale]
   }
 
   const handleMapLoad = e => {
@@ -332,6 +345,7 @@ export default function Viewport () {
       onKeyUp={handleKeyUp}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onPointerMove={handlePointerMove}
       {...(featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {})}
       aria-owns={`${id}-viewport-features`}
       tabIndex='0'

@@ -1,4 +1,5 @@
-import LatLon from 'geodesy/latlon-spherical.js'
+import { distance as turfDistance } from '@turf/distance'
+import { point as TurfPoint } from '@turf/helpers'
 import { defaults } from '../store/constants'
 
 const getMainBoundingClientRect = (el) => {
@@ -64,9 +65,9 @@ export const getDistance = (coord1, coord2) => {
     const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
     distance = dist
   } else {
-    const p1 = new LatLon(coord1[1], coord1[0])
-    const p2 = new LatLon(coord2[1], coord2[0])
-    distance = p1.distanceTo(p2)
+    const p1 = new TurfPoint(coord1)
+    const p2 = new TurfPoint(coord2)
+    distance = turfDistance(p1, p2, { units: 'metres' })
   }
   return Math.round(distance)
 }

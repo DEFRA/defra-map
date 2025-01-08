@@ -1,3 +1,6 @@
+import { centerOfMass as turfCenterOfMass } from '@turf/center-of-mass'
+import { distance as turfDistance } from '@turf/distance'
+import { point as TurfPoint } from '@turf/helpers'
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 
@@ -23,20 +26,42 @@ const getPaddedBounds = map => {
   return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
 }
 
+const parseFeatures = (map, features) => {
+  features = features.map(f => {
+    const coord = turfCenterOfMass(f.geometry).geometry.coordinates
+    const { lng, lat } = map.getCenter()
+    const { x, y } = map.project(coord)
+    const p1 = new TurfPoint(coord)
+    const p2 = new TurfPoint([lng, lat])
+    const distance = turfDistance(p1, p2, { units: 'metres' })
+    return {
+      ...f.properties,
+      id: f.id || f.properties.id,
+      name: f.properties.name,
+      layer: f.layer.id,
+      pixel: [x, y],
+      distance
+    }
+  })
+  
+  return features
+}
+
 export const addHoverBehaviour = (provider) => {
   const { map, featureLayers, labelLayers } = provider
 
   // Toggle cursor style for features
   if (featureLayers) {
-    map.on('mouseenter', featureLayers, e => { !e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
-    map.on('mouseleave', featureLayers, () => { map.getCanvas().style.cursor = '' })
+    map.on('mouseover', featureLayers, e => { !e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
   }
 
   // Toggle cursor style for labels
   if (labelLayers) {
-    map.on('mouseenter', labelLayers, e => { e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
-    map.on('mouseleave', labelLayers, () => { map.getCanvas().style.cursor = '' })
+    map.on('mouseover', labelLayers, e => { e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
   }
+
+  // Revert cursor on mouseout
+  map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })
 }
 
 export const getDetail = async (provider, pixel, isUserInitiated = false) => {
@@ -83,7 +108,12 @@ export const getFeatures = (provider, pixel) => {
     .map(l => l.id)
   const hasPixelLayers = layers?.some(l => pixelLayers?.includes(l))
   let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
-  featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), f])).values()]
+  featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), {
+    ...f.properties,
+    id: f.id || f.properties.id,
+    name: f.properties.name,
+    layer: f.layer.id
+  }])).values()]
 
   // Get all 'featureLayer' features in the viewport
   layers = layers?.filter(l => featureLayers?.includes(l))
@@ -91,6 +121,9 @@ export const getFeatures = (provider, pixel) => {
   featuresInViewport = [...new Map(featuresInViewport.map(f => [(f.id || f.properties?.id), f])).values()]
   const featuresTotal = featuresInViewport.length
   featuresInViewport = featuresTotal <= defaults.MAX_FEATURES ? featuresInViewport : []
+
+  // Add props and sort features
+  featuresInViewport = parseFeatures(map, featuresInViewport)
 
   // Get long lat of query
   let lngLat
@@ -100,32 +133,18 @@ export const getFeatures = (provider, pixel) => {
     lngLat = lngLat.map(c => Math.round(c * Math.pow(10, defaults.PRECISION)) / Math.pow(10, defaults.PRECISION))
   }
 
+  // Set 'features' result type
   const feature = featuresAtPixel.length ? featuresAtPixel[0] : null
-  let featureType = featureLayers?.includes(feature?.layer.id) ? 'feature' : 'pixel'
-  featureType = feature ? featureType : null
+  const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (pixelLayers?.includes(feature?.layer) && 'pixel')
   const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
 
   return {
     resultType,
-    items: featuresAtPixel.map(f => {
-      return {
-        ...f.properties,
-        id: f.id || f.properties.id,
-        name: f.properties.name,
-        layer: f.layer.id
-      }
-    }),
+    items: featuresAtPixel,
     featuresTotal,
-    featuresInViewport: featuresInViewport.map(f => {
-      return {
-        ...f.properties,
-        id: f.id || f.properties.id,
-        name: f.properties.name,
-        layer: f.layer.id
-      }
-    }),
+    featuresInViewport,
     isFeaturesInMap: !!layers.length,
-    isPixelFeaturesAtPixel: pixelLayers?.includes(feature?.layer.id),
+    isPixelFeaturesAtPixel: pixelLayers?.includes(feature?.layer),
     isPixelFeaturesInMap: hasPixelLayers,
     coord: lngLat
   }

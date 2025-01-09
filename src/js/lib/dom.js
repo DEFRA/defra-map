@@ -30,7 +30,7 @@ export const toggleInert = (activeEl) => {
 
   let el = getContainer(activeEl || document.activeElement)
 
-  if (!el) {
+  if (el) {
     return
   }
 

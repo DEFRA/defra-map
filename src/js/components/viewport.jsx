@@ -95,6 +95,9 @@ export default function Viewport () {
     if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
       e.preventDefault()
     }
+
+    // Show shortcuts
+    console.log('Showing shortcuts')
   }
 
   const handleKeyUp = e => {
@@ -180,6 +183,9 @@ export default function Viewport () {
   const handlePointerDown = e => {
     startPixel.current = [e.pageX, e.pageY]
     isDraggingRef.current = false
+
+    // Hide shortcuts
+    console.log('Hiding labels')
   }
 
   const handlePointerUp = e => {
@@ -261,12 +267,12 @@ export default function Viewport () {
     }
   }, [isContainerReady])
 
-  // Add movestart event listner each time activePanel changes
+  // Movestart need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMovestart)
-
+    
     return () => {
-      provider.removeEventListener('movestart', handleMovestart)
+      provider.removeEventListener('movestart', handleMovestart)  
     }
   }, [isKeyboard, activePanel, action])
 

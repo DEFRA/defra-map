@@ -57,7 +57,10 @@ class Provider extends EventTarget {
   }
 
   addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
-    const { Map: MaplibreMap, Marker } = module.default
+    // Add ref to dynamically loaded modules
+    this.modules = module.default
+    const { Map: MaplibreMap, Marker } = this.modules
+
     const scale = size === 'large' ? 2 : 1
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
@@ -131,6 +134,7 @@ class Provider extends EventTarget {
     // Add markers
     this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
+    this.shortcutMarkers = []
   }
 
   getImagePos (style) {

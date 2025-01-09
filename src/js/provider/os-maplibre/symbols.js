@@ -1,4 +1,5 @@
 import computedStyleToInlineStyle from 'computed-style-to-inline-style'
+import { shortcutMarkerHTML } from './marker'
 import { parseSVG } from '../../lib/symbols'
 
 export const amendLineSymbolLayers = (map) => {
@@ -27,8 +28,18 @@ export const addHighlightedLabelLayer = (provider) => {
   })
 }
 
+export const addShortcuts = (provider, features) => {
+  const { map, shortcutMarkers } = provider
+  const { Marker } = provider.modules
+  shortcutMarkers.forEach(m => m.remove())
+  features.forEach((f, i) => shortcutMarkers.push(
+    new Marker({ element: shortcutMarkerHTML(i + 1) }).setLngLat(f.coord).addTo(map)
+  ))
+}
+
 export const setSelectedLabelStyle = (map, scale, basemap, feature) => {
   if (map && feature) {
+    map.moveLayer('label')
     map.getSource('label').setData({
       type: 'Feature',
       geometry: feature.geometry,

@@ -30,14 +30,13 @@ const addFeatureProperties = (map, featureCollections) => {
   const features = featureCollections.map(c => {
     const coord = turfCenterOfMass(c).geometry.coordinates
     const { lng, lat } = map.getCenter()
-    const { x, y } = map.project(coord)
     const p1 = new TurfPoint(coord)
     const p2 = new TurfPoint([lng, lat])
     const distance = turfDistance(p1, p2, { units: 'metres' })
     const f = c.features[0]
     return {
       ...f.properties,
-      pixel: [x, y],
+      coord,
       distance
     }
   })
@@ -54,6 +53,7 @@ const combineFeatures = (features) => {
     return {
       type: 'FeatureCollection',
       features: c.map(f => {
+        console.log(f)
         return {
           id: f.id || f.properties.id,
           properties: { ...f.properties, id: f.id || f.properties.id, layer: f.layer.id },
@@ -133,8 +133,7 @@ export const getFeatures = (provider, pixel) => {
   }])).values()]
 
   // Get all 'featureLayer' features in the viewport
-  layers = layers?.filter(l => featureLayers?.includes(l))
-  const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers })
+  const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers: featureLayers })
 
   // Get total 'featureLayer' features in viewport (May be more than 9)
   const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.id || f.properties.id))).length

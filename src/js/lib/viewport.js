@@ -234,8 +234,8 @@ export const getSelectedStatus = (featuresInViewport, index) => {
 
 export const getShortcutKey = (e, featuresViewport) => {
   const number = e.code.slice(-1)
-  const hasFeature = featuresViewport?.features.length >= number
-  const id = hasFeature ? featuresViewport.features[number - 1].id : ''
+  const hasFeature = featuresViewport.length >= number
+  const id = hasFeature ? featuresViewport[number - 1].id : ''
   return id
 }
 

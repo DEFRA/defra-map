@@ -173,7 +173,7 @@ export default function Container () {
               </div>
             </div>
             <div className='fm-o-middle'>
-              {activePanel === 'LEGEND' && !isLegendInset && (
+              {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                   {queryPolygon && (
                     <div className='fm-c-menu'>

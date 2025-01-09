@@ -26,25 +26,43 @@ const getPaddedBounds = map => {
   return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
 }
 
-const parseFeatures = (map, features) => {
-  features = features.map(f => {
-    const coord = turfCenterOfMass(f.geometry).geometry.coordinates
+const addFeatureProperties = (map, featureCollections) => {
+  const features = featureCollections.map(c => {
+    const coord = turfCenterOfMass(c).geometry.coordinates
     const { lng, lat } = map.getCenter()
     const { x, y } = map.project(coord)
     const p1 = new TurfPoint(coord)
     const p2 = new TurfPoint([lng, lat])
     const distance = turfDistance(p1, p2, { units: 'metres' })
+    const f = c.features[0]
     return {
       ...f.properties,
-      id: f.id || f.properties.id,
-      name: f.properties.name,
-      layer: f.layer.id,
       pixel: [x, y],
       distance
     }
   })
-
   return features
+}
+
+const combineFeatures = (features) => {
+  const combinedFeatures = []
+  features.forEach(f => {
+    const group = combinedFeatures.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
+    group?.push(f) || combinedFeatures.push([f])
+  })
+  const featureCollections = combinedFeatures.map(c => {
+    return {
+      type: 'FeatureCollection',
+      features: c.map(f => {
+        return {
+          id: f.id || f.properties.id,
+          properties: { ...f.properties, id: f.id || f.properties.id, layer: f.layer.id },
+          geometry: f.geometry
+        }
+      })
+    }
+  })
+  return featureCollections
 }
 
 export const addHoverBehaviour = (provider) => {
@@ -101,12 +119,11 @@ export const getFeatures = (provider, pixel) => {
   const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
   const bounds = getFocusBounds(paddingBox, scale)
 
-  // Get all features under a given pixel
+  // Get all visible feature and pixel layers
   let layers = [...featureLayers, ...pixelLayers]
-  layers = map.getStyle()?.layers
-    .filter(l => layers.includes(l?.id) && l?.layout?.visibility !== 'none')
-    .map(l => l.id)
-  const hasPixelLayers = layers?.some(l => pixelLayers?.includes(l))
+  layers = map.getStyle()?.layers.filter(l => layers.includes(l?.id) && l?.layout?.visibility !== 'none').map(l => l.id)
+
+  // Get all features at given pixel
   let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
   featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), {
     ...f.properties,
@@ -117,13 +134,16 @@ export const getFeatures = (provider, pixel) => {
 
   // Get all 'featureLayer' features in the viewport
   layers = layers?.filter(l => featureLayers?.includes(l))
-  let featuresInViewport = map.queryRenderedFeatures(bounds, { layers })
-  featuresInViewport = [...new Map(featuresInViewport.map(f => [(f.id || f.properties?.id), f])).values()]
-  const featuresTotal = featuresInViewport.length
-  featuresInViewport = featuresTotal <= defaults.MAX_FEATURES ? featuresInViewport : []
+  const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers })
+
+  // Get total 'featureLayer' features in viewport (May be more than 9)
+  const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.id || f.properties.id))).length
+
+  // Combine duplicate features
+  const featuresCollections = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(renderedFeaturesInViewport) : []
 
   // Add props and sort features
-  featuresInViewport = parseFeatures(map, featuresInViewport)
+  const featuresInViewport = addFeatureProperties(map, featuresCollections).sort((a, b) => a.distance - b.distance)
 
   // Get long lat of query
   let lngLat
@@ -136,6 +156,7 @@ export const getFeatures = (provider, pixel) => {
   // Set 'features' result type
   const feature = featuresAtPixel.length ? featuresAtPixel[0] : null
   const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (pixelLayers?.includes(feature?.layer) && 'pixel')
+  const hasPixelLayers = layers?.some(l => pixelLayers?.includes(l))
   const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
 
   return {

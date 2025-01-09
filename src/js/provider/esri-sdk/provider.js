@@ -208,29 +208,24 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.view) {
-      return
+    if (this.view && coord) {
+      const { paddingBox } = this
+      const padding = getFocusPadding(paddingBox, 1)
+      this.view.padding = padding
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
+        this.isUserInitiated = false
+        const Point = module.default
+        this.view.goTo({
+          target: new Point({
+            x: coord[0],
+            y: coord[1],
+            spatialReference: 27700
+          })
+        }, {
+          animation: isAnimate
+        }).catch(err => console.log(err))
+      })
     }
-    const { paddingBox } = this
-    const padding = getFocusPadding(paddingBox, 1)
-    this.view.padding = padding
-    if (!coord) {
-      return
-    }
-
-    import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
-      this.isUserInitiated = false
-      const Point = module.default
-      this.view.goTo({
-        target: new Point({
-          x: coord[0],
-          y: coord[1],
-          spatialReference: 27700
-        })
-      }, {
-        animation: isAnimate
-      }).catch(err => console.log(err))
-    })
   }
 
   setSize () {
@@ -266,25 +261,23 @@ class Provider extends EventTarget {
     import(/* webpackChunkName: 'esri-sdk' */ '@arcgis/core/Graphic.js').then(module => {
       const Graphic = module.default
       const { map, graphicsLayer, isDark } = this
-      if (!(map && coord && isVisible)) {
-        return
+      if (map && coord && isVisible) {
+        // *** Bug with graphics layer order
+        const zIndex = 99
+        map.reorder(graphicsLayer, zIndex)
+        const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
+        graphicsLayer.add(graphic)
+        this.targetMarker = graphic
       }
-      // *** Bug with graphics layer order
-      const zIndex = 99
-      map.reorder(graphicsLayer, zIndex)
-      const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
-      graphicsLayer.add(graphic)
-      this.targetMarker = graphic
     })
   }
 
   removeTargetMarker () {
     const { graphicsLayer, targetMarker } = this
-    if (!targetMarker) {
-      return
+    if (targetMarker) {
+      graphicsLayer.remove(targetMarker)
+      this.targetMarker = null
     }
-    graphicsLayer.remove(targetMarker)
-    this.targetMarker = null
   }
 
   selectFeature (_id) {

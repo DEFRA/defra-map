@@ -132,7 +132,7 @@ export default function Viewport () {
     }
 
     // Select label (Alt + mousehover)
-    if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current) {
+    if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current && provider.showLabel) {
       console.log(pointerPixel.current)
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }
@@ -143,7 +143,7 @@ export default function Viewport () {
       const { layerX, layerY } = e.nativeEvent
       const scale = size === 'large' ? 2 : 1
       const point = [layerX / scale, layerY / scale]
-      if (e.altKey) {
+      if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
       } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {
         provider.queryPoint(point)

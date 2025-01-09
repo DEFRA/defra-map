@@ -4,23 +4,20 @@ import { getInterceptors, getRequest, getEsriToken } from './request.js'
 let map, isDark, isRamp
 
 const vtLayers = [
-  { n: 'Flood_Zone_2_3_Rivers_and_Sea', s: '_N', v: '_VTP2', m: '_Model_Origin_Layer', q: 'fz' },
-  { n: 'Surface_water_spatial_planning_1in30', s: '_depth_N', v: '_depth_VTP_2', m: '_depth_Model_Origin_Layer_gdb', q: 'swhr' }, // q: 'swpdhr'
-  { n: 'Surface_water_spatial_planning_1in100', s: '_depth_N', v: '_depth', m: '_depth_Model_Origin_Layer_gdb2', q: 'swmr' }, // q: 'swpdmr'
-  { n: 'Surface_water_spatial_planning_1in1000', s: '_depth_N', v: '_depth_VTP', m: '_depth_Model_Origin_Layer_gdb', q: 'swlr' }, // q: 'swpdlr'
-  { n: 'Rivers_1in30_Sea_1in30_defended_depth', s: '_N', v: '', m: '_Model_Origin_Layer', q: 'rsdpdhr' },
-  { n: 'Rivers_1in100_Sea_1in200_defended_depth', s: '_N', v: '_VTP', m: '_Model_Origin_Layer', q: 'rsdpdmr' },
-  { n: 'Rivers_1in1000_Sea_1in1000_defended_depth', s: '_N', v: '_VTP_22', m: '_Model_Origin_Layer_gdb', q: 'rsdpdlr' },
-  { n: 'Rivers_1in100_Sea_1in200_undefended_depth', s: '_N', v: '_VTP', m: '_Model_Origin_Layer_gdb', q: 'rsupdmr' },
-  { n: 'Rivers_1in1000_Sea_1in1000_undefended_depth', s: '_N', v: '_VTP', m: '_Model_Origin_Layer_gdb', q: 'rsupdlr' },
-  // { n: 'Surface_water_spatial_planning_1in30_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'swclhr' },
-  // { n: 'Surface_water_spatial_planning_1in100_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'swclmr' },
-  // { n: 'Surface_water_spatial_planning_1in1000_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'swcllr' },
-  { n: 'Rivers_1in30_Sea_1in30_defended_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'rsdclhr' },
-  { n: 'Rivers_1in100_Sea_1in200_defended_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'rsdclmr' },
-  { n: 'Rivers_1in1000_Sea_1in1000_defended_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'rsdcllr' },
-  { n: 'Rivers_1in100_Sea_1in200_undefended_depth_CCP1', s: '_N', v: '_VTP', m: null, q: 'rsuclmr' },
-  { n: 'Rivers_1in1000_Sea_1in1000_undefended_depth_CCP1', s: '_N', v: '', m: null, q: 'rsucllr' }
+  { n: 'Flood_Zones_2_and_3_Rivers_and_Sea', s: 'Flood Zones 2 and 3 Rivers and Sea', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer', q: 'fz' },
+  { n: 'Risk_of_Flooding_from_Surface_Water_High', s: 'Risk of Flooding from Surface Water Depth', v: '_NON_PRODUCTION', m: '_depth_Model_Origin_Layer_gdb', q: 'swhr' }, // q: 'swpdhr'
+  { n: 'Risk_of_Flooding_from_Surface_Water_Medium', s: 'Risk of Flooding from Surface Water Depth', v: '_NON_PRODUCTION', m: '_depth_Model_Origin_Layer_gdb2', q: 'swmr' }, // q: 'swpdmr'
+  { n: 'Risk_of_Flooding_from_Surface_Water_Low', s: 'Risk of Flooding from Surface Water Depth', v: '_NON_PRODUCTION', m: '_depth_Model_Origin_Layer_gdb', q: 'swlr' }, // q: 'swpdlr'
+  { n: 'Rivers_1_in_30_Sea_1_in_30_Defended_Depth', s: 'Rivers 1 in 30 Sea 1 in 30 Defended Depth', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer', q: 'rsdpdhr' },
+  { n: 'Rivers_1_in_100_Sea_1_in_200_Defended_Depth', s: 'Rivers 1 in 100 Sea 1 in 200 Defended Depth', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer', q: 'rsdpdmr' },
+  { n: 'Rivers_1_in_1000_Sea_1_in_1000_Defended_Depth', s: 'Rivers 1 in 1000 Sea 1 in 1000 Defended Depth', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsdpdlr' },
+  { n: 'Rivers_1_in_100_Sea_1_in_200_Undefended_Depth', s: 'Rivers 1 in 100 Sea 1 in 200 Undefended Depth', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsupdmr' },
+  { n: 'Rivers_1_in_1000_Sea_1_in_1000_Undefended_Depth', s: 'Rivers 1 in 1000 Sea 1 in 1000 Undefended Depth', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsupdlr' },
+  { n: 'Rivers_1_in_30_Sea_1_in_30_Defended_Depth_CCP1', s: 'Rivers 1 in 30 Sea 1 in 30 Defended Depth CCP1', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer', q: 'rsdclhr' },
+  { n: 'Rivers_1_in_100_Sea_1_in_200_Defended_Depth_CCP1', s: 'Rivers 1 in 100 Sea 1 in 200 Defended Depth CCP1', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer', q: 'rsdclmr' },
+  { n: 'Rivers_1_in_1000_Sea_1_in_1000_Defended_Depth_CCP1', s: 'Rivers 1 in 1000 Sea 1 in 1000 Defended Depth CCP1', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsdcllr' },
+  { n: 'Rivers_1_in_100_Sea_1_in_200_Undefended_Depth_CCP1', s: 'Rivers 1 in 100 Sea 1 in 200 Undefended Depth CCP1', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsuclmr' },
+  { n: 'Rivers_1_in_1000_Sea_1_in_1000_Undefended_Depth_CCP1', s: 'Rivers 1 in 1000 Sea 1 in 1000 Undefended Depth CCP1', v: '_NON_PRODUCTION', m: '_Model_Origin_Layer_gdb', q: 'rsucllr' },
 ]
 
 const fLayers = [
@@ -35,9 +32,11 @@ const addLayers = (layers) => {
   ]).then(modules => {
     const VectorTileLayer = modules[0].default
     const FeatureLayer = modules[1].default
+    const bands = [0, 200, 300, 600, 900, 1200]
     vtLayers.forEach((layer, i) => {
       map.add(new VectorTileLayer({
         id: layer.n,
+        opacity: 0.75,
         style: {
           version: 8,
           sources: {
@@ -49,20 +48,19 @@ const addLayers = (layers) => {
               url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
             }
           },
-          layers: Array(i === 0 ? 2 : 7).fill(0).map((_, j) => {
+          layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
             return {
               id: layer.n + j,
               type: 'fill',
               source: 'esri',
-              'source-layer': `${layer.n + layer.s}`,
+              'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
               minzoom: 4.7597,
-              filter: ['==', '_symbol', j],
+              ...(i === 0 && { filter: ['==', '_symbol', j] }),
               layout: {
-                visibility: 'visible' // i === 0 ? getFloodZoneVisibility(layers) : 'visible'
+                visibility: 'visible'
               },
               paint: {
-                'fill-color': i === 0 ? fillFloodZones(j) : fillModel(j),
-                'fill-opacity': 0.75
+                'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
               }
             }
           })

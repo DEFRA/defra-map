@@ -1,5 +1,5 @@
-import { getDetail, addHoverBehaviour } from './query'
-import { loadSymbols, addSelectedFeatureLayers, addHighlightedLabelLayer, amendLineSymbolLayers, addShortcuts } from './symbols'
+import { getDetail, addMapHoverBehaviour } from './query'
+import { loadSymbols, addSelectedFeatureLayers, addHighlightedLabelLayer, amendLineSymbolLayers, addShortcutMarkers } from './symbols'
 
 export const handleLoad = async (provider) => {
   await loadSymbols(provider)
@@ -19,7 +19,7 @@ export const handleStyleLoad = async (provider) => {
   // Add highlighted label layer and source
   addHighlightedLabelLayer(provider)
   // Change cursor type on feature hover
-  addHoverBehaviour(provider)
+  addMapHoverBehaviour(provider)
   if (provider.isLoaded) {
     await loadSymbols(provider)
     const { basemap } = provider
@@ -39,7 +39,7 @@ export const handleIdle = async (provider) => {
     const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
     const pixel = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)].map(c => c / scale)
     const detail = await getDetail(provider, selectedId ? null : pixel)
-    addShortcuts(provider, detail?.features?.featuresInViewport)
+    addShortcutMarkers(provider, detail?.features?.featuresInViewport)
     provider.dispatchEvent(new CustomEvent('update', {
       detail
     }))

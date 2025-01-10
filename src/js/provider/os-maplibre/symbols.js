@@ -28,13 +28,14 @@ export const addHighlightedLabelLayer = (provider) => {
   })
 }
 
-export const addShortcuts = (provider, features) => {
+export const addShortcutMarkers = (provider, features) => {
   const { map, shortcutMarkers } = provider
   const { Marker } = provider.modules
   shortcutMarkers.forEach(m => m.remove())
-  features.forEach((f, i) => shortcutMarkers.push(
-    new Marker({ element: shortcutMarkerHTML(i + 1) }).setLngLat(f.coord).addTo(map)
-  ))
+  features.forEach((f, i) => {
+    const offset = f.geometryType === 'Point' ? [0, -30] : [0, 0]
+    shortcutMarkers.push(new Marker({ element: shortcutMarkerHTML(i + 1), offset }).setLngLat(f.coord).addTo(map))
+  })
 }
 
 export const highlightLabel = (map, scale, basemap, feature) => {

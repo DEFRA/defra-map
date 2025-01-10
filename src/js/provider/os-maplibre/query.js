@@ -36,6 +36,7 @@ const addFeatureProperties = (map, featureCollections) => {
     const f = c.features[0]
     return {
       ...f.properties,
+      geometryType: f.geometry.type,
       coord,
       distance
     }
@@ -64,7 +65,7 @@ const combineFeatures = (features) => {
   return featureCollections
 }
 
-export const addHoverBehaviour = (provider) => {
+export const addMapHoverBehaviour = (provider) => {
   const { map, featureLayers, labelLayers } = provider
 
   // Toggle cursor style for features

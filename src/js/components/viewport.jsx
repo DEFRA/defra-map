@@ -261,9 +261,9 @@ export default function Viewport () {
   // Movestart need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMovestart)
-    
+
     return () => {
-      provider.removeEventListener('movestart', handleMovestart)  
+      provider.removeEventListener('movestart', handleMovestart)
     }
   }, [isKeyboard, activePanel, action])
 

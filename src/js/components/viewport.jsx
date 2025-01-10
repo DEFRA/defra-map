@@ -54,17 +54,16 @@ export default function Viewport () {
   }
 
   const cycleFeatures = e => {
-    if (!features.featuresInViewport?.length) {
-      return
+    if (features.featuresInViewport?.length) {
+      const { featuresInViewport } = features
+      const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
+      featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
+      const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
+      const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
+      // Debounce status update
+      debounceUpdateStatus(statusText)
     }
-    const { featuresInViewport } = features
-    const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
-    featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-    const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
-    const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-    appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
-    // Debounce status update
-    debounceUpdateStatus(statusText)
   }
 
   const panMap = e => {

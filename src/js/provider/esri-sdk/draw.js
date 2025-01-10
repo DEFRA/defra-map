@@ -68,9 +68,9 @@ export class Draw {
   }
 
   edit () {
-    const { graphicsLayer, frame } = this.provider
+    const { graphicsLayer, paddingBox } = this.provider
     const hasExisting = graphicsLayer.graphics.length
-    const elGraphic = this.getGraphicFromElement(frame)
+    const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = hasExisting ? graphicsLayer.graphics.items[0] : elGraphic
     this.editGraphic(graphic)
   }
@@ -101,9 +101,9 @@ export class Draw {
   }
 
   finish () {
-    const { view, graphicsLayer, frame } = this.provider
+    const { view, graphicsLayer, paddingBox } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const elGraphic = this.getGraphicFromElement(frame)
+    const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()

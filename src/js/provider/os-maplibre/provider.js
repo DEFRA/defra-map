@@ -1,7 +1,7 @@
 import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
-import { setSelectedLabelStyle } from './symbols'
+import { highlightLabel } from './symbols'
 import { getFocusPadding, spatialNavigate } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
@@ -330,19 +330,19 @@ class Provider extends EventTarget {
     const pixels = labels.map(c => c.pixel)
     const index = spatialNavigate(direction, pixel || [centre.x, centre.y], pixels)
     const feature = labels[index]?.feature
-    setSelectedLabelStyle(this.map, this.scale, this.basemap, feature)
+    highlightLabel(this.map, this.scale, this.basemap, feature)
     return labels[index]?.pixel
   }
 
   showLabel (point) {
     const feature = getLabel(this, point)
-    setSelectedLabelStyle(this.map, this.scale, this.basemap, feature)
+    highlightLabel(this.map, this.scale, this.basemap, feature)
     return point
   }
 
   hideLabel () {
     if (this.map) {
-      setSelectedLabelStyle(this.map)
+      highlightLabel(this.map)
     }
   }
 }

@@ -53,7 +53,6 @@ const combineFeatures = (features) => {
     return {
       type: 'FeatureCollection',
       features: c.map(f => {
-        console.log(f)
         return {
           id: f.id || f.properties.id,
           properties: { ...f.properties, id: f.id || f.properties.id, layer: f.layer.id },
@@ -69,14 +68,12 @@ export const addHoverBehaviour = (provider) => {
   const { map, featureLayers, labelLayers } = provider
 
   // Toggle cursor style for features
-  if (featureLayers) {
-    map.on('mouseover', featureLayers, e => { !e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
-  }
-
-  // Toggle cursor style for labels
-  if (labelLayers) {
-    map.on('mouseover', labelLayers, e => { e.originalEvent.altKey && (map.getCanvas().style.cursor = 'pointer') })
-  }
+  map.on('mousemove', [...featureLayers, ...labelLayers], e => {
+    const features = map.queryRenderedFeatures(e.point, { layers: [...featureLayers, ...labelLayers] })
+    const isFeature = !e.originalEvent.altKey && features && !!features.find(f => featureLayers.includes(f.layer.id))
+    const isLabel = e.originalEvent.altKey && features && !!features.find(f => labelLayers.includes(f.layer.id))
+    map.getCanvas().style.cursor = isFeature || isLabel ? 'pointer' : ''
+  })
 
   // Revert cursor on mouseout
   map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })

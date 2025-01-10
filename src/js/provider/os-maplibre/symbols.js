@@ -21,7 +21,7 @@ export const addHighlightedLabelLayer = (provider) => {
       'text-ignore-placement': true
     },
     paint: {
-      'text-halo-width': 2,
+      'text-halo-width': 3,
       'text-halo-blur': 1,
       'text-opacity': 1
     }
@@ -37,7 +37,7 @@ export const addShortcuts = (provider, features) => {
   ))
 }
 
-export const setSelectedLabelStyle = (map, scale, basemap, feature) => {
+export const highlightLabel = (map, scale, basemap, feature) => {
   if (map && feature) {
     map.moveLayer('label')
     map.getSource('label').setData({
@@ -48,11 +48,17 @@ export const setSelectedLabelStyle = (map, scale, basemap, feature) => {
         layer: feature.layer.id
       }
     })
+    // Clone layout properties
+    const textScale = scale === 1 ? 1.5 : 1.25
     map.setLayoutProperty('label', 'symbol-placement', feature.layer.layout['symbol-placement'])
     map.setLayoutProperty('label', 'text-field', feature.layer.layout['text-field'].sections[0].text)
     map.setLayoutProperty('label', 'text-font', feature.layer.layout['text-font'])
     map.setLayoutProperty('label', 'text-letter-spacing', feature.layer.layout['text-letter-spacing'])
-    map.setLayoutProperty('label', 'text-size', feature.layer.layout['text-size'] * (scale === 1 ? 1.5 : 1.25))
+    map.setLayoutProperty('label', 'text-size', feature.layer.layout['text-size'] * textScale)
+    map.setLayoutProperty('label', 'text-anchor', feature.layer.layout['text-anchor'])
+    map.setLayoutProperty('label', 'text-justify', feature.layer.layout['text-justify'])
+    map.setLayoutProperty('label', 'text-offset', feature.layer.layout['text-offset']?.map(o => o / textScale))
+    // Clone paint properties
     map.setPaintProperty('label', 'text-color', (basemap === 'dark' ? '#ffffff' : '#000000'))
     map.setPaintProperty('label', 'text-halo-color', (basemap === 'dark' ? '#000000' : '#ffffff'))
   } else {

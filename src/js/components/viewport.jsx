@@ -21,7 +21,6 @@ export default function Viewport () {
 
   const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
-
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
   const mapContainerRef = useRef(null)
@@ -30,7 +29,6 @@ export default function Viewport () {
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-
   const STATUS_DELAY = 300
 
   const selectQuery = () => {
@@ -95,9 +93,6 @@ export default function Viewport () {
     if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
       e.preventDefault()
     }
-
-    // Show shortcuts
-    console.log('Showing shortcuts')
   }
 
   const handleKeyUp = e => {
@@ -136,7 +131,6 @@ export default function Viewport () {
 
     // Select label (Alt + mousehover)
     if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current && provider.showLabel) {
-      console.log(pointerPixel.current)
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }
   }
@@ -183,9 +177,6 @@ export default function Viewport () {
   const handlePointerDown = e => {
     startPixel.current = [e.pageX, e.pageY]
     isDraggingRef.current = false
-
-    // Hide shortcuts
-    console.log('Hiding labels')
   }
 
   const handlePointerUp = e => {

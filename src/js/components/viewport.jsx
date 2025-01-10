@@ -30,7 +30,13 @@ export default function Viewport () {
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
   const STATUS_DELAY = 300
-  
+
+  // Template properties
+  const isKeyboard = interfaceType === 'keyboard'
+  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
+  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
+
   const selectQuery = () => {
     if (!(queryFeature || queryPixel)) {
       return
@@ -122,7 +128,7 @@ export default function Viewport () {
       // Triggers an update event
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null }})
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }
 
     // Select label (Alt + arrow key)
@@ -330,12 +336,6 @@ export default function Viewport () {
     provider.setPadding(null, false)
   })
 
-  // Template properties
-  const isKeyboard = interfaceType === 'keyboard'
-  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
-  
   return (
     <div
       id={`${id}-viewport`}

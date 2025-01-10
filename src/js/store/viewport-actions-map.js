@@ -54,7 +54,8 @@ const moveStart = (state, payload) => {
     isMoving: true,
     isUpdate: false,
     isUserInitiated: payload,
-    isStatusVisuallyHidden: true
+    isStatusVisuallyHidden: true,
+    hasShortcuts: true
   }
 }
 
@@ -178,6 +179,13 @@ const setPadding = (state, payload) => {
   }
 }
 
+const toggleShortcuts = (state, payload) => {
+  return {
+    ...state,
+    hasShortcuts: payload
+  }
+}
+
 export const actionsMap = {
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
@@ -192,5 +200,6 @@ export const actionsMap = {
   SET_SIZE: setSize,
   CLEAR_STATUS: clearStatus,
   CLEAR_FEATURES: clearFeatures,
-  SET_PADDING: setPadding
+  SET_PADDING: setPadding,
+  TOGGLE_SHORTCUTS: toggleShortcuts
 }

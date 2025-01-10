@@ -55,6 +55,7 @@ export const initialState = (options) => {
     isFeaturesChange: false,
     isPanZoomChange: false,
     isUserInitiated: false,
+    hasShortcuts: true,
     padding: null,
     timestamp: Date.now()
   }

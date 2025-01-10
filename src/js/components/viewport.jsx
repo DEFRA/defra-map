@@ -10,8 +10,8 @@ import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
-const getClassName = (size, isDarkBasemap, isFocusVisible) => {
-  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
 export default function Viewport () {
@@ -19,7 +19,7 @@ export default function Viewport () {
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
@@ -30,7 +30,7 @@ export default function Viewport () {
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
   const STATUS_DELAY = 300
-
+  
   const selectQuery = () => {
     if (!(queryFeature || queryPixel)) {
       return
@@ -86,6 +86,8 @@ export default function Viewport () {
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
       e.preventDefault()
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
+      labelPixel.current = provider?.hideLabel()
       cycleFeatures(e)
     }
 
@@ -119,18 +121,21 @@ export default function Viewport () {
       e.preventDefault()
       // Triggers an update event
       labelPixel.current = provider?.hideLabel()
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null }})
     }
 
     // Select label (Alt + arrow key)
     if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
       const direction = e.key.substring(5).toLowerCase()
       // Triggers an update event
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
       labelPixel.current = provider.showNextLabel(labelPixel.current, direction)
     }
 
     // Select label (Alt + mousehover)
     if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current && provider.showLabel) {
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }
   }
@@ -215,12 +220,6 @@ export default function Viewport () {
   const debounceUpdateStatus = debounce(text => {
     viewportDispatch({ type: 'UPDATE_STATUS', payload: { status: text, isStatusVisuallyHidden: true } })
   }, STATUS_DELAY)
-
-  // Template properties
-  const isKeyboard = interfaceType === 'keyboard'
-  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-  const className = getClassName(size, isDarkBasemap, isFocusVisible)
 
   // Initial render
   useEffect(() => {
@@ -331,6 +330,12 @@ export default function Viewport () {
     provider.setPadding(null, false)
   })
 
+  // Template properties
+  const isKeyboard = interfaceType === 'keyboard'
+  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
+  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
+  
   return (
     <div
       id={`${id}-viewport`}

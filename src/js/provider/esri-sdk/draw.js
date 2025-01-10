@@ -158,17 +158,17 @@ export class Draw {
 
   getBounds (el) {
     const { view } = this.provider
-    const bRect = el.getBoundingClientRect()
+    const eRect = el.getBoundingClientRect()
     const vRect = el.closest('.fm-o-viewport').getBoundingClientRect()
-    const left = bRect.left - vRect.left
-    const top = bRect.top - vRect.top
+    const left = eRect.left - vRect.left
+    const top = eRect.top - vRect.top
     const nw = view.toMap({ x: left, y: top })
-    const se = view.toMap({ x: left + bRect.width, y: top + bRect.height })
+    const se = view.toMap({ x: left + eRect.width, y: top + eRect.height })
     return [nw.x, nw.y, se.x, se.y]
   }
 
   getGraphicFromElement (el) {
-    const bounds = this.getBounds(el) // .map(c => Math.round(c))
+    const bounds = this.getBounds(el)
     const coords = [[
       [bounds[0], bounds[1]],
       [bounds[2], bounds[1]],

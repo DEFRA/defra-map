@@ -1,5 +1,5 @@
 import { getDetail, addMapHoverBehaviour } from './query'
-import { loadSymbols, addSelectedFeatureLayers, addHighlightedLabelLayer, amendLineSymbolLayers, addShortcutMarkers } from './symbols'
+import { loadSymbols, addHighlightedLabelLayer, amendLineSymbolLayers, addShortcutMarkers, addSelectedLayers } from './symbols'
 
 export const handleLoad = async (provider) => {
   await loadSymbols(provider)
@@ -58,11 +58,11 @@ export const handleMoveStart = (provider, e) => {
 export const handleStyleData = (provider, e) => {
   if (provider.baseLayers.length) {
     const { map, basemap, selectedId } = provider
-    const layers = map.getStyle().layers
-    const featureLayers = layers.filter(l => provider.featureLayers.includes(l.id))
-    if (!(layers.filter(l => l.id.includes('selected')).length === featureLayers.length)) {
+    const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
+    const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
+    if (!(selectedLayers.length === featureLayers.length)) {
       const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-      addSelectedFeatureLayers(map, featureLayers, selectedId, isDarkBasemap)
+      provider.selectedLayers = addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
     }
   }
 }

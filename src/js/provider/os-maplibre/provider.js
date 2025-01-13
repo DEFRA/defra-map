@@ -108,6 +108,7 @@ class Provider extends EventTarget {
     this.map = map
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
+    this.selectedLayers = []
     this.paddingBox = paddingBox
     this.basemap = basemap
     this.scale = scale
@@ -245,7 +246,7 @@ class Provider extends EventTarget {
 
   selectFeature (id) {
     this.selectedId = id
-    toggleSelectedFeature(this.map, id)
+    toggleSelectedFeature(this.map, this.selectedLayers, id)
   }
 
   selectCoordinate (coord) {

@@ -1,18 +1,15 @@
-import { getDescription, getStatus, getPlace, getBoundsChange } from '../lib/viewport'
+import { getDescription, getStatus, getPlace } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
 const update = (state, payload) => {
   const { oPlace, oZoom, isUserInitiated, action } = state
-  const { bbox, centre, zoom, features, label } = payload
+  const { bbox, centre, zoom, features } = payload
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
-  const description = getDescription(place, centre, bbox, features)
   const original = { oBbox: bbox, oCentre: centre, rZoom: zoom, oZoom, oPlace: place }
-  const panZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom)) && 'PANZOOM'
-  const updateAction = (action === 'GEOLOC' && 'GEOLOC') || (action === 'DATA' && 'DATA') || panZoom || null
-  const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
-  const updateStatus = getStatus(updateAction, place, description, direction, label)
-  const status = action === 'STATUS' ? state.status : updateStatus
+  const isPanZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom))
+  const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
+  const status = getStatus(action, isPanZoom, place, state, payload)
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -20,10 +17,10 @@ const update = (state, payload) => {
     bbox,
     centre,
     zoom,
-    status,
     features,
+    status,
+    isUpdate,
     isMoving: false,
-    isUpdate: !!updateAction,
     action: null
   }
 }
@@ -37,15 +34,6 @@ const updatePlace = (state, payload) => {
     status,
     isUserInitiated: false,
     isStatusVisuallyHidden: true
-  }
-}
-
-const updateStatus = (state, payload) => {
-  return {
-    ...state,
-    status: payload.status,
-    isStatusVisuallyHidden: payload.isStatusVisuallyHidden,
-    action: 'STATUS'
   }
 }
 
@@ -191,7 +179,6 @@ const toggleShortcuts = (state, payload) => {
 export const actionsMap = {
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
-  UPDATE_STATUS: updateStatus,
   MOVE_START: moveStart,
   RESET: reset,
   SEARCH: search,

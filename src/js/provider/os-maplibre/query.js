@@ -1,4 +1,4 @@
-import { centerOfMass as turfCenterOfMass } from '@turf/center-of-mass'
+// import { polylabel } from 'polylabel'
 import { distance as turfDistance } from '@turf/distance'
 import { point as TurfPoint } from '@turf/helpers'
 import { getFocusBounds } from '../../lib/viewport'
@@ -28,8 +28,8 @@ const getPaddedBounds = map => {
 
 const addFeatureProperties = (map, featureCollections) => {
   const features = featureCollections.map(c => {
-    const coord = turfCenterOfMass(c).geometry.coordinates
     const { lng, lat } = map.getCenter()
+    const coord = [lng, lat] // turfCenterOfMass(c).geometry.coordinates
     const p1 = new TurfPoint(coord)
     const p2 = new TurfPoint([lng, lat])
     const distance = turfDistance(p1, p2, { units: 'metres' })
@@ -81,10 +81,11 @@ export const addMapHoverBehaviour = (provider) => {
 }
 
 export const getDetail = async (provider, pixel, isUserInitiated = false) => {
-  const { map, getNearest, reverseGeocodeToken } = provider
+  const { map, getNearest, reverseGeocodeToken, selectedLayers } = provider
   const viewport = getViewport(map)
   const features = getFeatures(provider, pixel)
   const label = getHighlightedLabel(map)
+  const selectedId = getSelectedFeatureId(map, selectedLayers)
   let place
   if (isUserInitiated && features.resultType === 'pixel') {
     place = await getNearest(features.coord, reverseGeocodeToken)
@@ -94,6 +95,7 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
     ...viewport,
     resultType: features.resultType,
     coord: features.coord,
+    selectedId,
     features,
     place,
     label
@@ -168,12 +170,11 @@ export const getFeatures = (provider, pixel) => {
   }
 }
 
-export const toggleSelectedFeature = (map, id) => {
+export const toggleSelectedFeature = (map, selectedLayers, id) => {
   if (map?.getStyle()) {
-    const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
     for (const layer of selectedLayers) {
-      map.setLayoutProperty(layer.id, 'visibility', id ? 'visible' : 'none')
-      map.setFilter(layer.id, ['==', 'id', id || ''])
+      map.setLayoutProperty(layer, 'visibility', id ? 'visible' : 'none')
+      map.setFilter(layer, ['==', 'id', id || ''])
     }
   }
 }
@@ -184,6 +185,11 @@ export const getHighlightedLabel = (map) => {
     const feature = features[0]
     return `${feature.layer.layout['text-field']} (${feature.properties.layer})`
   }
+}
+
+export const getSelectedFeatureId = (map, selectedLayers) => {
+  const features = map.queryRenderedFeatures({ layers: selectedLayers })
+  return features.length ? (features[0]?.id || features[0].properties?.id) : null
 }
 
 export const getLabel = (provider, pixel) => {

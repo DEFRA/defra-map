@@ -155,16 +155,18 @@ export const getDescription = (place, centre, bbox, features) => {
   return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
-export const getStatus = (action, place, description, direction, label) => {
+export const getStatus = (action, isPanZoom, place, state, current) => {
+  const { centre, bbox, zoom, features, label, selectedId } = current
   let status = null
-  if (action === 'DATA') {
-    return 'Map change: new data. Use ALT plus I to get new details'
-  } else if (['PANZOOM', 'GEOLOC'].includes(action)) {
-    if (place) {
-      status = description
-    } else {
-      status = `${direction}. Use ALT plus I to get new details`
-    }
+  if (selectedId) {
+    const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
+    status = selected
+  } else if (action === 'DATA') {
+    status = 'Map change: new data. Use ALT plus I to get new details'
+  } else if (isPanZoom || action === 'GEOLOC') {
+    const description = getDescription(place, centre, bbox, features)
+    const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
+    status = place ? description : `${direction}. Use ALT plus I to get new details`
   } else if (label) {
     status = label
   } else {
@@ -223,13 +225,10 @@ export const getSelectedIndex = (key, total, current) => {
   return key === 'PageDown' ? increase : decrease
 }
 
-export const getSelectedStatus = (featuresInViewport, index) => {
+export const getSelectedStatus = (featuresInViewport, id) => {
   const total = featuresInViewport.length
-  const feature = index < featuresInViewport.length ? featuresInViewport[index] : null
-  const status = feature && (
-    `${total} feature${total !== 1 ? 's' : ''} in this area. ${feature.name}. ${index + 1} of ${total} highlighted.`
-  )
-  return status
+  const index = featuresInViewport.findIndex(f => f.id === id)
+  return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
 }
 
 export const getShortcutKey = (e, featuresViewport) => {

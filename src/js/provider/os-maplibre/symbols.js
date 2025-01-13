@@ -70,7 +70,8 @@ export const highlightLabel = (map, scale, basemap, feature) => {
   }
 }
 
-export const addSelectedFeatureLayers = (map, layers, selectedId, isDarkBasemap) => {
+export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
+  const selectedLayers = []
   for (const layer of layers) {
     layer.id = `${layer.id}-selected`
     layer.filter = ['==', 'id', selectedId || '']
@@ -84,8 +85,10 @@ export const addSelectedFeatureLayers = (map, layers, selectedId, isDarkBasemap)
     if (map.getLayer(layer.id)) {
       map.removeLayer(layer.id)
     }
+    selectedLayers.push(layer.id)
     map.addLayer(layer)
   }
+  return selectedLayers
 }
 
 export const loadSymbols = (provider) => {

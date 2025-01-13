@@ -5,7 +5,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
+import { getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
@@ -58,11 +58,8 @@ export default function Viewport () {
       const { featuresInViewport } = features
       const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-      const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
       const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
-      // Debounce status update
-      debounceUpdateStatus(statusText)
     }
   }
 
@@ -200,7 +197,13 @@ export default function Viewport () {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
 
-  // Provider map click
+  // Update place after Alt + i
+  const debounceUpdatePlace = debounce(async (coord) => {
+    const place = await provider.getNearest(coord)
+    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
+  }, STATUS_DELAY)
+
+  // Provider query
   const handleMapQuery = e => {
     const { resultType } = e.detail
     const { items, isPixelFeaturesAtPixel, coord } = e.detail.features
@@ -214,17 +217,6 @@ export default function Viewport () {
   const handleMapStyle = e => {
     eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, size, mode, segments, layers })
   }
-
-  // Update place
-  const debounceUpdatePlace = debounce(async (coord) => {
-    const place = await provider.getNearest(coord)
-    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
-  }, STATUS_DELAY)
-
-  // Update status
-  const debounceUpdateStatus = debounce(text => {
-    viewportDispatch({ type: 'UPDATE_STATUS', payload: { status: text, isStatusVisuallyHidden: true } })
-  }, STATUS_DELAY)
 
   // Initial render
   useEffect(() => {

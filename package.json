@@ -49,7 +49,6 @@
     "babel-loader": "^9.2.1",
     "computed-style-to-inline-style": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
-    "core-js": "^3.39.0",
     "css-loader": "^7.1.2",
     "dotenv": "^16.4.7",
     "event-target-polyfill": "^0.0.4",

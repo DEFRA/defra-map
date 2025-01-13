@@ -208,6 +208,7 @@ export class FloodMap extends EventTarget {
 
   _importComponent () {
     import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
+
       this._addComponent(module)
     })
   }

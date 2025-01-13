@@ -158,7 +158,7 @@ export const getFeatures = (provider, pixel) => {
   const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.id || f.properties.id))).length
 
   // Get geometry that intersects bounds
-  const intersectingFeatures = intersectFeatures(getPaddedBounds(map).flat(), renderedFeaturesInViewport)
+  const intersectingFeatures = intersectFeatures(getPaddedBounds(map).flat(1), renderedFeaturesInViewport)
 
   // Split multi polygons and combine duplicate features
   const polygonFeatures = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFeatures) : []

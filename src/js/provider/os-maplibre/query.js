@@ -1,6 +1,9 @@
-// import { polylabel } from 'polylabel'
+import polylabel from 'polylabel'
+import { area as turfArea } from '@turf/area'
 import { distance as turfDistance } from '@turf/distance'
-import { point as TurfPoint } from '@turf/helpers'
+import { bboxPolygon as turfBboxPolygon } from '@turf/bbox-polygon'
+import { point as TurfPoint, polygon as TurfPolygon } from '@turf/helpers'
+import * as martinez from 'martinez-polygon-clipping'
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 
@@ -26,14 +29,13 @@ const getPaddedBounds = map => {
   return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
 }
 
-const addFeatureProperties = (map, featureCollections) => {
-  const features = featureCollections.map(c => {
+const addFeatureProperties = (map, features) => {
+  return features.map(f => {
     const { lng, lat } = map.getCenter()
-    const coord = [lng, lat] // turfCenterOfMass(c).geometry.coordinates
-    const p1 = new TurfPoint(coord)
+    const coord = f.geometry.type === 'Polygon' ? polylabel(f.geometry.coordinates, 0.00001) : f.geometry.coordinates
+    const p1 = new TurfPoint([coord[0], coord[1]])
     const p2 = new TurfPoint([lng, lat])
     const distance = turfDistance(p1, p2, { units: 'metres' })
-    const f = c.features[0]
     return {
       ...f.properties,
       geometryType: f.geometry.type,
@@ -41,28 +43,45 @@ const addFeatureProperties = (map, featureCollections) => {
       distance
     }
   })
+}
+
+const intersectFeatures = (bounds, features) => {
+  const boundsPolygon = turfBboxPolygon(bounds)
+  features = features.map(f => {
+    if (['Polygon', 'MultiPolygon'].includes(f.geometry.type)) {
+      const clippedGeometry = martinez.intersection(boundsPolygon.geometry.coordinates, f.geometry.coordinates)
+      f.geometry.coordinates = clippedGeometry
+    }
+    return f
+  })
   return features
 }
 
 const combineFeatures = (features) => {
-  const combinedFeatures = []
+  const combined = []
   features.forEach(f => {
-    const group = combinedFeatures.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
-    group?.push(f) || combinedFeatures.push([f])
-  })
-  const featureCollections = combinedFeatures.map(c => {
-    return {
-      type: 'FeatureCollection',
-      features: c.map(f => {
-        return {
-          id: f.id || f.properties.id,
-          properties: { ...f.properties, id: f.id || f.properties.id, layer: f.layer.id },
-          geometry: f.geometry
-        }
+    const group = combined.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
+    // Get largest single polygon and add area
+    if (f.geometry.type === 'MultiPolygon') {
+      const features = f.geometry.coordinates.map(c => {
+        const polygon = new TurfPolygon([c[0]])
+        polygon.properties = { area: turfArea(polygon) }
+        return polygon
       })
+      const largest = features.find(f => f.properties.area === Math.max(...features.map(f => f.properties.area)))
+      f.geometry = largest.geometry
+      f.properties.area = largest.properties.area
+    } else if (f.geometry.type === 'Polygon') {
+      const polygon = new TurfPolygon(f.geometry.coordinates[0])
+      f.properties.area = turfArea(polygon)
+      f.geometry.coordinates = f.geometry.coordinates[0]
+    } else {
+      f.properties.area = 0
     }
+    group?.push(f) || combined.push([f])
   })
-  return featureCollections
+  // Return largest single polygon
+  return combined.map(g => g.find(f => f.properties.area === Math.max(...g.map(f => f.properties.area))))
 }
 
 export const addMapHoverBehaviour = (provider) => {
@@ -138,11 +157,14 @@ export const getFeatures = (provider, pixel) => {
   // Get total 'featureLayer' features in viewport (May be more than 9)
   const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.id || f.properties.id))).length
 
-  // Combine duplicate features
-  const featuresCollections = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(renderedFeaturesInViewport) : []
+  // Get geometry that intersects bounds
+  const intersectingFeatures = intersectFeatures(getPaddedBounds(map).flat(), renderedFeaturesInViewport)
+
+  // Split multi polygons and combine duplicate features
+  const polygonFeatures = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFeatures) : []
 
   // Add props and sort features
-  const featuresInViewport = addFeatureProperties(map, featuresCollections).sort((a, b) => a.distance - b.distance)
+  const featuresInViewport = addFeatureProperties(map, polygonFeatures).sort((a, b) => a.distance - b.distance)
 
   // Get long lat of query
   let lngLat

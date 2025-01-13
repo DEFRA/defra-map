@@ -122,7 +122,7 @@ export default function Viewport () {
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
       // Triggers an update event
-      labelPixel.current = provider?.hideLabel()
+      labelPixel.current = provider.hideLabel && provider.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }

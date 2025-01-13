@@ -14,6 +14,84 @@ const getBearing = (coord1, coord2) => {
   return [east, west, north, south].filter(b => b && typeof b === 'string')
 }
 
+const getDistance = (coord1, coord2) => {
+  let distance
+  if (coord1[0] > 1000) {
+    const x = Math.abs(coord1[0] - coord2[0])
+    const y = Math.abs(coord1[1] - coord2[1])
+    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
+    distance = dist
+  } else {
+    const p1 = new TurfPoint(coord1)
+    const p2 = new TurfPoint(coord2)
+    distance = turfDistance(p1, p2, { units: 'metres' })
+  }
+  return Math.round(distance)
+}
+
+const getUnits = (metres) => {
+  const MAX_METRES = 800
+  const MAX_MILES = 5000
+  const RATIO = 0.621371
+  let units
+  if (metres < MAX_METRES) {
+    units = `${metres} metres`
+  } else if (metres < MAX_MILES) {
+    units = (metres / 1000 * RATIO).toFixed(1) + ' miles'
+  } else {
+    units = Math.round((metres / 1000) * RATIO) + ' miles'
+  }
+  return units
+}
+
+const getDirection = (coord1, coord2) => {
+  coord1 = coord1.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
+  coord2 = coord2.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
+  const ns1 = [coord1[0], coord1[1]]
+  const ns2 = [coord1[0], coord2[1]]
+  const ew1 = [coord1[0], coord1[1]]
+  const ew2 = [coord2[0], coord1[1]]
+  const nsd = getDistance(ns1, ns2)
+  const ewd = getDistance(ew1, ew2)
+  const bearing = getBearing(coord1, coord2)
+  const ewc = bearing.filter(b => ['east', 'west'].includes(b)).join('')
+  const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
+  const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
+  const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
+  return ns + (ewc && nsc ? ', ' : '') + ew
+}
+
+const getArea = (bbox) => {
+  const ew = getDistance([bbox[0], bbox[1]], [bbox[2], bbox[1]])
+  const ns = getDistance([bbox[0], bbox[1]], [bbox[0], bbox[3]])
+  return `${getUnits(ew)} by ${getUnits(ns)}`
+}
+
+const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
+  const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
+  const isSameZoom = oZoom === zoom
+  const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
+  let change
+  if (isMove) {
+    if (!isSameCentre && !isSameZoom) {
+      change = 'New area'
+    } else if (!isSameCentre) {
+      change = `${getDirection(oCentre, centre)}`
+    } else {
+      const direction = zoom > oZoom ? 'in' : 'out'
+      change = `zoomed ${direction}, focus area covering ${getArea(bbox)}`
+    }
+    change = `${change}`
+  }
+  return change
+}
+
+const getSelectedStatus = (featuresInViewport, id) => {
+  const total = featuresInViewport.length
+  const index = featuresInViewport.findIndex(f => f.id === id)
+  return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
+}
+
 export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
@@ -55,78 +133,6 @@ export const getMapPixel = (el, scale) => {
   const offsetTop = (box.height / 2) / scale
   const point = [left + offsetLeft, top + offsetTop]
   return point
-}
-
-export const getDistance = (coord1, coord2) => {
-  let distance
-  if (coord1[0] > 1000) {
-    const x = Math.abs(coord1[0] - coord2[0])
-    const y = Math.abs(coord1[1] - coord2[1])
-    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
-    distance = dist
-  } else {
-    const p1 = new TurfPoint(coord1)
-    const p2 = new TurfPoint(coord2)
-    distance = turfDistance(p1, p2, { units: 'metres' })
-  }
-  return Math.round(distance)
-}
-
-export const getUnits = (metres) => {
-  const MAX_METRES = 800
-  const MAX_MILES = 5000
-  const RATIO = 0.621371
-  let units
-  if (metres < MAX_METRES) {
-    units = `${metres} metres`
-  } else if (metres < MAX_MILES) {
-    units = (metres / 1000 * RATIO).toFixed(1) + ' miles'
-  } else {
-    units = Math.round((metres / 1000) * RATIO) + ' miles'
-  }
-  return units
-}
-
-export const getDirection = (coord1, coord2) => {
-  coord1 = coord1.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
-  coord2 = coord2.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
-  const ns1 = [coord1[0], coord1[1]]
-  const ns2 = [coord1[0], coord2[1]]
-  const ew1 = [coord1[0], coord1[1]]
-  const ew2 = [coord2[0], coord1[1]]
-  const nsd = getDistance(ns1, ns2)
-  const ewd = getDistance(ew1, ew2)
-  const bearing = getBearing(coord1, coord2)
-  const ewc = bearing.filter(b => ['east', 'west'].includes(b)).join('')
-  const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
-  const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
-  const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
-  return ns + (ewc && nsc ? ', ' : '') + ew
-}
-
-export const getArea = (bbox) => {
-  const ew = getDistance([bbox[0], bbox[1]], [bbox[2], bbox[1]])
-  const ns = getDistance([bbox[0], bbox[1]], [bbox[0], bbox[3]])
-  return `${getUnits(ew)} by ${getUnits(ns)}`
-}
-
-export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
-  const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
-  const isSameZoom = oZoom === zoom
-  const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
-  let change
-  if (isMove) {
-    if (!isSameCentre && !isSameZoom) {
-      change = 'New area'
-    } else if (!isSameCentre) {
-      change = `${getDirection(oCentre, centre)}`
-    } else {
-      const direction = zoom > oZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, focus area covering ${getArea(bbox)}`
-    }
-    change = `${change}`
-  }
-  return change
 }
 
 export const getDescription = (place, centre, bbox, features) => {
@@ -223,12 +229,6 @@ export const getSelectedIndex = (key, total, current) => {
   const increase = current === total - 1 ? 0 : current + 1
   const decrease = current > 0 ? current - 1 : total - 1
   return key === 'PageDown' ? increase : decrease
-}
-
-export const getSelectedStatus = (featuresInViewport, id) => {
-  const total = featuresInViewport.length
-  const index = featuresInViewport.findIndex(f => f.id === id)
-  return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
 }
 
 export const getShortcutKey = (e, featuresViewport) => {

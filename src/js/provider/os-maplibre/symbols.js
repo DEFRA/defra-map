@@ -51,8 +51,9 @@ export const highlightLabel = (map, scale, basemap, feature) => {
     })
     // Clone layout properties
     const textScale = scale === 1 ? 1.5 : 1.25
+    const textField = feature.layer.layout['text-field']
     map.setLayoutProperty('label', 'symbol-placement', feature.layer.layout['symbol-placement'])
-    map.setLayoutProperty('label', 'text-field', feature.layer.layout['text-field'].sections[0].text)
+    map.setLayoutProperty('label', 'text-field', textField.sections ? textField.sections[0].text : textField)
     map.setLayoutProperty('label', 'text-font', feature.layer.layout['text-font'])
     map.setLayoutProperty('label', 'text-letter-spacing', feature.layer.layout['text-letter-spacing'])
     map.setLayoutProperty('label', 'text-size', feature.layer.layout['text-size'] * textScale)

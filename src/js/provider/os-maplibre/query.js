@@ -2,7 +2,7 @@ import polylabel from 'polylabel'
 import { area as turfArea } from '@turf/area'
 import { distance as turfDistance } from '@turf/distance'
 import { point as TurfPoint, polygon as TurfPolygon, multiPolygon as TurfMultiPolygon } from '@turf/helpers'
-import { bboxClip as TurfBboxClip} from '@turf/bbox-clip'
+import { bboxClip as TurfBboxClip } from '@turf/bbox-clip'
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 

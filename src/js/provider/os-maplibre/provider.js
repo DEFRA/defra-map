@@ -43,7 +43,7 @@ class Provider extends EventTarget {
     } else {
       Promise.all([
         import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy'),
-        import(/* webpackChunkName: "maplibre-legacy" */ './polyfills.js')
+        import(/* webpackChunkName: "maplibre-legacy" */ 'array-flat-polyfill')
       ]).then(promises => {
         this.addMap({ module: promises[0], ...options })
       })

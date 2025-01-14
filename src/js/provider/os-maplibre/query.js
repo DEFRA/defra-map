@@ -1,9 +1,8 @@
 import polylabel from 'polylabel'
 import { area as turfArea } from '@turf/area'
 import { distance as turfDistance } from '@turf/distance'
-import { bboxPolygon as turfBboxPolygon } from '@turf/bbox-polygon'
-import { point as TurfPoint, polygon as TurfPolygon } from '@turf/helpers'
-import * as martinez from 'martinez-polygon-clipping'
+import { point as TurfPoint, polygon as TurfPolygon, multiPolygon as TurfMultiPolygon } from '@turf/helpers'
+import { bboxClip as TurfBboxClip} from '@turf/bbox-clip'
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 
@@ -46,11 +45,14 @@ const addFeatureProperties = (map, features) => {
 }
 
 const intersectFeatures = (bounds, features) => {
-  const boundsPolygon = turfBboxPolygon(bounds)
   features = features.map(f => {
     if (['Polygon', 'MultiPolygon'].includes(f.geometry.type)) {
-      const clippedGeometry = martinez.intersection(boundsPolygon.geometry.coordinates, f.geometry.coordinates)
-      f.geometry.coordinates = clippedGeometry
+      const polygon = f.geometry.type === 'Polygon' ? new TurfPolygon(f.geometry.coordinates) : new TurfMultiPolygon(f.geometry.coordinates)
+      const clipped = TurfBboxClip(polygon, bounds)
+      // Remove empty rings
+      clipped.geometry.coordinates = clipped.geometry.coordinates.filter(c => c.length)
+      // const clippedGeometry = martinez.intersection(boundsPolygon.geometry.coordinates, f.geometry.coordinates)
+      f.geometry = clipped.geometry
     }
     return f
   })
@@ -61,8 +63,8 @@ const combineFeatures = (features) => {
   const combined = []
   features.forEach(f => {
     const group = combined.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
-    // Get largest single polygon and add area
     if (f.geometry.type === 'MultiPolygon') {
+      // Get largest single polygon, outer shape (excluding holes) and add area
       const features = f.geometry.coordinates.map(c => {
         const polygon = new TurfPolygon([c[0]])
         polygon.properties = { area: turfArea(polygon) }
@@ -72,9 +74,10 @@ const combineFeatures = (features) => {
       f.geometry = largest.geometry
       f.properties.area = largest.properties.area
     } else if (f.geometry.type === 'Polygon') {
-      const polygon = new TurfPolygon(f.geometry.coordinates[0])
+      // Get out shape (excluding holes) and add area
+      const polygon = new TurfPolygon([f.geometry.coordinates[0]])
       f.properties.area = turfArea(polygon)
-      f.geometry.coordinates = f.geometry.coordinates[0]
+      f.geometry = polygon.geometry
     } else {
       f.properties.area = 0
     }

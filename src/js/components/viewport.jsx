@@ -38,18 +38,17 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
 
   const selectQuery = () => {
-    if (!(queryFeature || queryPixel)) {
-      return
-    }
-    if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-      const fId = features.featuresInViewport[featureIdRef.current].id
-      provider.queryFeature(fId)
-      return
-    }
-    if (!isMoving) {
-      const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(frameRef.current, scale)
-      provider.queryPoint(point)
+    if (queryFeature || queryPixel) {
+      if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
+        const fId = features.featuresInViewport[featureIdRef.current].id
+        provider.queryFeature(fId)
+        return
+      }
+      if (!isMoving) {
+        const scale = size === 'large' ? 2 : 1
+        const point = getMapPixel(frameRef.current, scale)
+        provider.queryPoint(point)
+      }
     }
   }
 
@@ -59,6 +58,7 @@ export default function Viewport () {
       const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
       const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
+      console.log('cycleFeatures', featureIdRef.current, fId)
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
     }
   }

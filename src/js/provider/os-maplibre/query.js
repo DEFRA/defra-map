@@ -204,8 +204,8 @@ export const toggleSelectedFeature = (map, selectedLayers, id) => {
 export const getHighlightedLabel = (map) => {
   const features = map.queryRenderedFeatures({ layers: ['label'] })
   if (features?.length) {
-    const feature = features[0]
-    return `${feature.layer.layout['text-field']} (${feature.properties.layer})`
+    const label = map.getStyle()?.layers.find(l => l.id === 'label')?.layout['text-field']
+    return `${label} (${features[0].properties.layer})`
   }
 }
 

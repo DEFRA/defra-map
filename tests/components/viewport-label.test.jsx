@@ -1,6 +1,5 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-
 import ViewportLabel from '../../src/js/components/viewport-label'
 import { useApp } from '../../src/js/store/use-app'
 

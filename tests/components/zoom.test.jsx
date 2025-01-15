@@ -8,6 +8,8 @@ jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 
 describe('zoom', () => {
+  const viewportDispatchMock = jest.fn()
+
   beforeEach(() => {
     jest.mocked(useApp).mockReturnValue({
       options: {
@@ -21,7 +23,7 @@ describe('zoom', () => {
     jest.mocked(useViewport).mockReturnValue({
       zoom: 5,
       action: jest.fn(),
-      dispatch: jest.fn()
+      dispatch: viewportDispatchMock
     })
   })
 
@@ -38,34 +40,16 @@ describe('zoom', () => {
   })
 
   it('should dispatch ZOOM_IN action on zoom in button click', () => {
-    const viewportDispatchMock = jest.fn()
-    jest.mocked(useViewport).mockReturnValue({
-      zoom: 5,
-      action: jest.fn(),
-      dispatch: viewportDispatchMock
-    })
-
     render(<Zoom />)
-
     const zoomInButton = screen.getByRole('button', { name: /zoom in/i })
     fireEvent.click(zoomInButton)
-
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_IN' })
   })
 
   it('should dispatch ZOOM_OUT action on zoom out button click', () => {
-    const viewportDispatchMock = jest.fn()
-    jest.mocked(useViewport).mockReturnValue({
-      zoom: 5,
-      action: jest.fn(),
-      dispatch: viewportDispatchMock
-    })
-
     render(<Zoom />)
-
     const zoomOutButton = screen.getByRole('button', { name: /zoom out/i })
     fireEvent.click(zoomOutButton)
-
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_OUT' })
   })
 })

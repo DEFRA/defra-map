@@ -58,7 +58,6 @@ export default function Viewport () {
       const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
       featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
       const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      console.log('cycleFeatures', featureIdRef.current, fId)
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
     }
   }
@@ -173,7 +172,7 @@ export default function Viewport () {
     })
   }
 
-  const handleMovestart = e => {
+  const handleMoveStart = e => {
     const isUserInitiated = e.detail.isUserInitiated
     viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
     if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
@@ -256,10 +255,10 @@ export default function Viewport () {
 
   // Movestart need access to some state
   useEffect(() => {
-    provider.addEventListener('movestart', handleMovestart)
+    provider.addEventListener('movestart', handleMoveStart)
 
     return () => {
-      provider.removeEventListener('movestart', handleMovestart)
+      provider.removeEventListener('movestart', handleMoveStart)
     }
   }, [isKeyboard, activePanel, action])
 

@@ -10,6 +10,7 @@ const update = (state, payload) => {
   const isPanZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const status = getStatus(action, isPanZoom, place, state, payload)
+
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),

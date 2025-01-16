@@ -24,7 +24,7 @@ export default function Viewport () {
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
   const mapContainerRef = useRef(null)
-  const featureIdRef = useRef(-1)
+  const featureIndexRef = useRef(-1)
   const startPixel = useRef([0, 0])
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
@@ -39,8 +39,8 @@ export default function Viewport () {
 
   const selectQuery = () => {
     if (queryFeature || queryPixel) {
-      if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-        const fId = features.featuresInViewport[featureIdRef.current].id
+      if (featureIndexRef.current >= 0 && features.featuresInViewport?.length) {
+        const fId = features.featuresInViewport[featureIndexRef.current].id
         provider.queryFeature(fId)
         return
       }
@@ -55,23 +55,18 @@ export default function Viewport () {
   const cycleFeatures = e => {
     if (features.featuresInViewport?.length) {
       const { featuresInViewport } = features
-      const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
-      featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
+      const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIndexRef.current)
+      featureIndexRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
       const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
     }
   }
 
-  const panMap = e => {
-    e.preventDefault()
-    const offset = offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()]
-    provider.panBy(offset)
-  }
-
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
-      panMap(e)
+      e.preventDefault()
+      provider.panBy(offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()])
     }
 
     // Zoom map (+ or -)
@@ -172,14 +167,6 @@ export default function Viewport () {
     })
   }
 
-  const handleMoveStart = e => {
-    const isUserInitiated = e.detail.isUserInitiated
-    viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
-    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
-      appDispatch({ type: 'CLOSE' })
-    }
-  }
-
   const handlePointerDown = e => {
     startPixel.current = [e.pageX, e.pageY]
     isDraggingRef.current = false
@@ -191,18 +178,27 @@ export default function Viewport () {
     isDraggingRef.current = diffX >= offsets.drag || diffY >= offsets.drag
   }
 
-  // Get new bbox after map moveend
-  const handleUpdate = e => {
-    viewportDispatch({ type: 'UPDATE', payload: e.detail })
-  }
-
   // Update place after Alt + i
   const debounceUpdatePlace = debounce(async (coord) => {
     const place = await provider.getNearest(coord)
     viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
   }, STATUS_DELAY)
 
-  // Provider query
+  // Provider events
+  const handleMoveStart = e => {
+    const isUserInitiated = e.detail.isUserInitiated
+    viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
+    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
+      appDispatch({ type: 'CLOSE' })
+    }
+  }
+
+  // Get new bbox after map has moved
+  const handleUpdate = e => {
+    viewportDispatch({ type: 'UPDATE', payload: e.detail })
+  }
+
+  // Map query
   const handleMapQuery = e => {
     const { resultType } = e.detail
     const { items, isPixelFeaturesAtPixel, coord } = e.detail.features

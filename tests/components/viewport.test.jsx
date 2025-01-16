@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { render, screen, act, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { AppProvider, AppContext } from '../../src/js/store/app-provider'
-import { ViewportProvider, ViewportContext } from '../../src/js/store/viewport-provider'
+import { ViewportProvider } from '../../src/js/store/viewport-provider'
 import Viewport from '../../src/js/components/viewport'
 
 Object.defineProperty(window, 'matchMedia', {
@@ -24,21 +24,18 @@ const AppContextProvider = ({ children, mockState }) => {
   )
 }
 
-const ViewportContextProvider = ({ children, mockState }) => {
-  const context = useContext(ViewportContext)
-  return (
-    <ViewportContext.Provider value={{ ...context, ...mockState }}>
-      {children}
-    </ViewportContext.Provider>
-  )
-}
-
 describe('viewport', () => {
   let providerMock
   const eventHandlers = {}
 
   const parentElement = document.createElement('div')
   document.body.appendChild(parentElement)
+
+  const queryFeature = jest.fn()
+  const queryPoint = jest.fn()
+  const zoomIn = jest.fn()
+  const panBy = jest.fn()
+  const getNearest = jest.fn()
 
   beforeEach(() => {
     providerMock = {
@@ -60,6 +57,11 @@ describe('viewport', () => {
       tileRequestCallback: jest.fn(),
       setTargetMarker: jest.fn(),
       selectFeature: jest.fn(),
+      queryFeature,
+      queryPoint,
+      getNearest,
+      zoomIn,
+      panBy,
       hideLabel: jest.fn(),
       remove: jest.fn()
     }
@@ -100,12 +102,7 @@ describe('viewport', () => {
         }}
         >
           <ViewportProvider options={options}>
-            <ViewportContextProvider mockState={{
-              features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
-            }}
-            >
-              <Viewport />
-            </ViewportContextProvider>
+            <Viewport featureIndex={overides.featureIndex} />
           </ViewportProvider>
         </AppContextProvider>
       </AppProvider>
@@ -118,6 +115,8 @@ describe('viewport', () => {
     expect(viewportElement).toBeTruthy()
   })
 
+  // Test that viewport responds correctly to provider events
+
   it('should handle provider \'movestart\' event', async () => {
     const { container } = renderComponent()
     const statusElement = container.querySelector('.fm-c-status__inner')
@@ -128,7 +127,12 @@ describe('viewport', () => {
   })
 
   it('should handle provider \'update\' event with a new centre', async () => {
-    const { container } = renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    const { container } = renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null
+    })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
     const updateEvent = new CustomEvent('update', { detail: { bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.902397, 54.901112], zoom: 11.111696, features: { featuresTotal: null, featuresInViewport: [] } } })
@@ -137,7 +141,12 @@ describe('viewport', () => {
   })
 
   it('should handle provider \'update\' event with a new label', async () => {
-    const { container } = renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    const { container } = renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null
+    })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
     const updateEvent = new CustomEvent('update', { detail: { label: 'Test label', bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.902397, 54.901112], zoom: 11.111696, resultType: null, selectedId: null, features: { featuresTotal: null, featuresInViewport: [] } } })
@@ -146,7 +155,12 @@ describe('viewport', () => {
   })
 
   it('should handle provider \'mapquery\' event with a map move', async () => {
-    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null
+    })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     const mapQueryEvent = new CustomEvent('mapquery', { detail: { resultType: 'feature', coord: [-2.926546, 54.915543], features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] } } })
@@ -168,21 +182,83 @@ describe('viewport', () => {
     }))
   })
 
+  // Test that viewport responds correctly to keydown events
+
   it('should handle \'keydown\' event with \'PageDown\' press', async () => {
-    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
-    act(() => { fireEvent.keyDown(viewportElement, { key: 'PageDown', code: 'PageDown', keyCode: 34 }) })
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'PageDown' }) })
     expect(viewportElement).toHaveAttribute('aria-activedescendant', 'map-feature-1000')
   })
 
-  // JSDOM can't use el.closest??
-  // it('should handle \'keydown\' event with \'Enter\' press', async () => {
-  //   renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+  it('should handle \'keydown\' event with \'Enter\' press with no selected feature', async () => {
+    renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 0, items: [], featuresInViewport: [] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter' }) })
+    expect(queryPoint).toHaveBeenCalled()
+  })
+
+  it('should handle \'keydown\' event with \'Enter\' press with selected feature', async () => {
+    renderComponent({
+      featureIndex: 0,
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter' }) })
+    expect(queryFeature).toHaveBeenCalled()
+  })
+
+  it('should handle \'keydown\' event with \'=\' press', async () => {
+    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyDown(viewportElement, { key: '=' }) })
+    expect(zoomIn).toHaveBeenCalled()
+  })
+
+  it('should handle \'keydown\' event with \'ArrowRight\' press', async () => {
+    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'ArrowRight' }) })
+    expect(panBy).toHaveBeenCalledWith([100, 0])
+  })
+
+  // Test that viewport responds correctly to keyup events
+
+  // it('should handle \'keyup\' event with \'Alt + I\' press', async () => {
+  //   jest.useFakeTimers()
+  //   renderComponent({
+  //     bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+  //     centre: [-2.934171, 54.901112],
+  //     zoom: 11.111696,
+  //     place: null,
+  //     features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+  //   })
+  //   act(() => jest.advanceTimersByTime(1000))
   //   const viewportElement = screen.getByRole('application')
   //   expect(viewportElement).toBeTruthy()
-  //   act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter', code: 'Enter', keyCode: 13 }) })
-  //   expect(viewportElement).toBeTruthy()
-  //   expect(viewportElement).toHaveAttribute('aria-activedescendant', 'map-feature-1000')
+  //   act(() => { fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true }) })
+  //   expect(screen.getByText('Test')).toBeInTheDocument()
+  //   // await waitFor(() => expect(screen.getByText('Test')).toBeInTheDocument())
   // })
 })

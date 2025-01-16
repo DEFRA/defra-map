@@ -78,7 +78,7 @@ class Provider extends EventTarget {
       extent: bbox ? this.getExtent(Extent, bbox) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
-      padding: getFocusPadding(paddingBox, 1),
+      padding: getFocusPadding(paddingBox, target, 1),
       popupEnabled: false
     })
 
@@ -88,6 +88,7 @@ class Provider extends EventTarget {
     canvasContainer.tabIndex = -1
 
     this.map = map
+    this.target = target
     this.view = view
     this.baseTileLayer = baseTileLayer
     this.graphicsLayer = graphicsLayer
@@ -208,22 +209,24 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (this.view && coord) {
-      const { paddingBox } = this
-      const padding = getFocusPadding(paddingBox, 1)
+    if (this.view) {
+      const { target, paddingBox } = this
+      const padding = getFocusPadding(paddingBox, target, 1)
       this.view.padding = padding
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
-        this.isUserInitiated = false
-        const Point = module.default
-        this.view.goTo({
-          target: new Point({
-            x: coord[0],
-            y: coord[1],
-            spatialReference: 27700
-          })
-        }, {
-          animation: isAnimate
-        }).catch(err => console.log(err))
+        if (coord) {
+          this.isUserInitiated = false
+          const Point = module.default
+          this.view.goTo({
+            target: new Point({
+              x: coord[0],
+              y: coord[1],
+              spatialReference: 27700
+            })
+          }, {
+            animation: isAnimate
+          }).catch(err => console.log(err))
+        }
       })
     }
   }

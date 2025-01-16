@@ -14,7 +14,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
   return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
-export default function Viewport () {
+export default function Viewport ({ featureIndex }) {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
@@ -24,7 +24,7 @@ export default function Viewport () {
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
   const mapContainerRef = useRef(null)
-  const featureIndexRef = useRef(-1)
+  const featureIndexRef = useRef(featureIndex)
   const startPixel = useRef([0, 0])
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
@@ -37,18 +37,16 @@ export default function Viewport () {
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
 
-  const selectQuery = () => {
-    if (queryFeature || queryPixel) {
-      if (featureIndexRef.current >= 0 && features.featuresInViewport?.length) {
-        const fId = features.featuresInViewport[featureIndexRef.current].id
-        provider.queryFeature(fId)
-        return
-      }
-      if (!isMoving) {
-        const scale = size === 'large' ? 2 : 1
-        const point = getMapPixel(frameRef.current, scale)
-        provider.queryPoint(point)
-      }
+  const mapQuery = () => {
+    if (queryFeature && featureIndexRef.current >= 0 && features.featuresInViewport?.length) {
+      const fId = features.featuresInViewport[featureIndexRef.current].id
+      provider.queryFeature(fId)
+      return
+    }
+    if (queryPixel && !isMoving) {
+      const scale = size === 'large' ? 2 : 1
+      const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)
+      provider.queryPoint(point)
     }
   }
 
@@ -76,7 +74,7 @@ export default function Viewport () {
 
     // Select feature or query centre (Enter or Space)
     if (['Enter', 'Space'].includes(e.key) && mode === 'default') {
-      selectQuery()
+      mapQuery()
     }
 
     // Cycle through feature list (PageUp and PageDown)

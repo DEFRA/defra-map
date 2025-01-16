@@ -27,7 +27,7 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
 }
 
 export const initialState = (options) => {
-  const { bbox, centre, zoom, place, framework } = options
+  const { bbox, centre, zoom, place, framework, features } = options
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
   const maxZoom = options.maxZoom || defaults.MAX_ZOOM
@@ -45,7 +45,7 @@ export const initialState = (options) => {
     oZoom: zoom,
     basemap: getBasemap(),
     size: getSize(framework),
-    features: null,
+    features,
     status: '',
     isStatusVisuallyHidden: true,
     error: null,

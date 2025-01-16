@@ -81,7 +81,7 @@ class Provider extends EventTarget {
     // Set initial padding, bounds and centre
     // // * Can't set global padding in constructor
     // map.showPadding = true
-    map.setPadding(getFocusPadding(paddingBox, scale))
+    map.setPadding(getFocusPadding(paddingBox, target, scale))
     if (bbox) {
       map.fitBounds(bbox, { animate: false })
     } else {
@@ -189,8 +189,8 @@ class Provider extends EventTarget {
 
   setPadding (coord, isAnimate) {
     if (this.map) {
-      const { paddingBox, scale } = this
-      const padding = getFocusPadding(paddingBox, scale)
+      const { paddingBox, target, scale } = this
+      const padding = getFocusPadding(paddingBox, target, scale)
       // Search needs to set padding first before fitBbox
       this.map.setPadding(padding)
       // East map to new when coord is obscured

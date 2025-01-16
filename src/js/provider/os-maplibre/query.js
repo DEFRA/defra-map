@@ -138,8 +138,8 @@ export const getViewport = (map) => {
 }
 
 export const getFeatures = (provider, pixel) => {
-  const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
-  const bounds = getFocusBounds(paddingBox, scale)
+  const { map, target, featureLayers, pixelLayers, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, target, scale)
 
   // Get all visible feature and pixel layers
   let layers = [...featureLayers, ...pixelLayers]

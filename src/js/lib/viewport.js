@@ -2,10 +2,6 @@ import { distance as turfDistance } from '@turf/distance'
 import { point as TurfPoint } from '@turf/helpers'
 import { defaults } from '../store/constants'
 
-const getMainBoundingClientRect = (el) => {
-  return el.closest('.fm-o-main').getBoundingClientRect()
-}
-
 const getBearing = (coord1, coord2) => {
   const east = coord1[0] < coord2[0] && 'east'
   const west = coord1[0] > coord2[0] && 'west'
@@ -92,10 +88,10 @@ const getSelectedStatus = (featuresInViewport, id) => {
   return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
 }
 
-export const getFocusPadding = (el, scale) => {
+export const getFocusPadding = (el, offsetEl, scale) => {
   let padding
   if (el) {
-    const parent = getMainBoundingClientRect(el)
+    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
     const box = el.getBoundingClientRect()
     padding = {
       top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
@@ -107,10 +103,10 @@ export const getFocusPadding = (el, scale) => {
   return padding
 }
 
-export const getFocusBounds = (el, scale) => {
+export const getFocusBounds = (el, offsetEl, scale) => {
   let bounds
   if (el) {
-    const parent = getMainBoundingClientRect(el)
+    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
     const box = el.getBoundingClientRect()
     const m = 10
     bounds = [[
@@ -124,8 +120,8 @@ export const getFocusBounds = (el, scale) => {
   return bounds
 }
 
-export const getMapPixel = (el, scale) => {
-  const parent = getMainBoundingClientRect(el)
+export const getMapPixel = (el, offsetEl, scale) => {
+  const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
   const box = el.getBoundingClientRect()
   const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
   const top = ((box.y || box.top) - (parent.y || parent.top)) / scale
@@ -136,7 +132,7 @@ export const getMapPixel = (el, scale) => {
 }
 
 export const getDescription = (place, centre, bbox, features) => {
-  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features
+  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
   let text = ''
 
   if (featuresTotal) {

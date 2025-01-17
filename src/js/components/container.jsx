@@ -99,21 +99,17 @@ export default function Container () {
         {isLegendFixed && (
           <div className='fm-o-side'>
             <Exit />
-            {!isQueryMode
-              ? (
-                <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
-                  {queryPolygon && (
-                    <div className='fm-c-menu'>
-                      <Draw />
-                    </div>
-                  )}
-                  <Segments />
-                  <Layers hasSymbols={!!legend.display} hasInputs />
-                </Panel>
-                )
-              : (
-                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} html={queryPolygon.html} />
+            {!isQueryMode && (
+              <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
+                {queryPolygon && (
+                  <div className='fm-c-menu'>
+                    <Draw />
+                  </div>
                 )}
+                <Segments />
+                <Layers hasSymbols={!!legend.display} hasInputs />
+              </Panel>
+            )}
           </div>
         )}
         <div className='fm-o-main'>
@@ -184,7 +180,7 @@ export default function Container () {
                   <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
               )}
-              {activePanel === 'HELP' && !isLegendFixed && (
+              {activePanel === 'HELP' && (
                 <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryPolygon.html} isModal />
               )}
               {activePanel === 'STYLE' && (

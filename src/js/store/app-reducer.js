@@ -9,7 +9,7 @@ const getIsDarkMode = (hasAutoMode) => {
 export const initialState = (options) => {
   const { legend, search, info, queryPolygon, hasAutoMode } = options
 
-  const featureId = info?.featureId
+  const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
 
   let activePanel

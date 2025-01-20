@@ -1,9 +1,14 @@
 import React, { useContext } from 'react'
-import { render, screen, act, fireEvent } from '@testing-library/react'
+import { render, screen, act, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { AppProvider, AppContext } from '../../src/js/store/app-provider'
 import { ViewportProvider } from '../../src/js/store/viewport-provider'
 import Viewport from '../../src/js/components/viewport'
+import { debounce } from '../../src/js/lib/debounce'
+
+jest.mock('../../src/js/lib/debounce', () => ({
+  debounce: jest.fn((fn) => fn)
+}))
 
 Object.defineProperty(window, 'matchMedia', {
   value: jest.fn(() => {
@@ -102,7 +107,7 @@ describe('viewport', () => {
         }}
         >
           <ViewportProvider options={options}>
-            <Viewport featureIndex={overides.featureIndex} />
+            <Viewport />
           </ViewportProvider>
         </AppContextProvider>
       </AppProvider>
@@ -208,13 +213,13 @@ describe('viewport', () => {
     })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
-    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter' }) })
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter', altKey: false }) })
     expect(queryPoint).toHaveBeenCalled()
   })
 
   it('should call \'provider.queryFeature\' when \'Enter\' is pressed and a feature is selected', async () => {
     renderComponent({
-      featureIndex: 0,
+      featureId: '1000',
       bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
       centre: [-2.934171, 54.901112],
       zoom: 11.111696,
@@ -223,7 +228,7 @@ describe('viewport', () => {
     })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
-    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter' }) })
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'Enter', altKey: false }) })
     expect(queryFeature).toHaveBeenCalled()
   })
 
@@ -245,19 +250,19 @@ describe('viewport', () => {
 
   // Test that viewport responds correctly to keyup events
 
-  // it('should handle \'keyup\' event with \'Alt + I\' press', async () => {
-  //   jest.useFakeTimers()
-  //   renderComponent({
-  //     bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-  //     centre: [-2.934171, 54.901112],
-  //     zoom: 11.111696,
-  //     place: null,
-  //     features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
-  //   })
-  //   const viewportElement = screen.getByRole('application')
-  //   expect(viewportElement).toBeTruthy()
-  //   fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true })
-  //   await act(async () => { jest.runAllTimers() })
-  //   await waitFor(() => expect(screen.getByText('Test')).toBeInTheDocument())
-  // })
+  it('should call \'debounce\' with coordinate when \'Alt + I\' is pressed', async () => {
+    const mockDebouncedFn = jest.fn()
+    debounce.mockReturnValue(mockDebouncedFn)
+    renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true }) })
+    waitFor(() => { expect(mockDebouncedFn).toHaveBeenCalled([-2.902397, 54.901112]) })
+  })
 })

@@ -14,7 +14,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
   return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
-export default function Viewport ({ featureIndex }) {
+export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
@@ -66,7 +66,7 @@ export default function Viewport ({ featureIndex }) {
       e.preventDefault()
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport }})
+      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
     }
 
     // Disable body scroll

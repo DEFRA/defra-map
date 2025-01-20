@@ -221,12 +221,6 @@ export const parseZoom = value => {
   return !zoom.isNaN ? zoom : null
 }
 
-export const getSelectedIndex = (key, total, current) => {
-  const increase = current === total - 1 ? 0 : current + 1
-  const decrease = current > 0 ? current - 1 : total - 1
-  return key === 'PageDown' ? increase : decrease
-}
-
 export const getShortcutKey = (e, featuresViewport) => {
   const number = e.code.slice(-1)
   const hasFeature = featuresViewport.length >= number

@@ -5,7 +5,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
+import { getShortcutKey, getMapPixel } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
@@ -24,7 +24,6 @@ export default function Viewport ({ featureIndex }) {
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
   const mapContainerRef = useRef(null)
-  const featureIndexRef = useRef(featureIndex)
   const startPixel = useRef([0, 0])
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
@@ -36,29 +35,7 @@ export default function Viewport ({ featureIndex }) {
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
-
-  const mapQuery = () => {
-    if (queryFeature && featureIndexRef.current >= 0 && features.featuresInViewport?.length) {
-      const fId = features.featuresInViewport[featureIndexRef.current].id
-      provider.queryFeature(fId)
-      return
-    }
-    if (queryPixel && !isMoving) {
-      const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)
-      provider.queryPoint(point)
-    }
-  }
-
-  const cycleFeatures = e => {
-    if (features.featuresInViewport?.length) {
-      const { featuresInViewport } = features
-      const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIndexRef.current)
-      featureIndexRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-      const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
-    }
-  }
+  const scale = size === 'large' ? 2 : 1
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -74,15 +51,22 @@ export default function Viewport ({ featureIndex }) {
 
     // Select feature or query centre (Enter or Space)
     if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
-      mapQuery()
+      if (queryFeature && featureId) {
+        provider.queryFeature(featureId)
+      } else if (queryPixel && !isMoving) {
+        const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)
+        provider.queryPoint(point)
+      } else {
+        // No action
+      }
     }
 
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
       e.preventDefault()
-      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       labelPixel.current = provider?.hideLabel()
-      cycleFeatures(e)
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
+      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport }})
     }
 
     // Disable body scroll

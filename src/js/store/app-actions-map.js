@@ -45,6 +45,25 @@ const setSelected = (state, payload) => {
   }
 }
 
+const setNextSelected = (state, payload) => {
+  let featureId = state.featureId
+  const { key, features } = payload
+  if (features.length) {
+    const current = features.findIndex(f => f.id === featureId) || 0
+    const total = features.length
+    const down = current === total - 1 ? 0 : current + 1
+    const up = current > 0 ? current - 1 : total - 1
+    let nextIndex = key === 'PageDown' ? down : up
+    nextIndex = nextIndex < features.length ? nextIndex : 0
+    featureId = features[nextIndex]?.id || features[0]?.id
+  }
+  return {
+    ...state,
+    featureId,
+    activePanel: null
+  }
+}
+
 const error = (state, payload) => {
   return {
     ...state,
@@ -148,11 +167,12 @@ export const actionsMap = {
   SET_AVAILABILITY: setSearch,
   SET_INFO: setInfo,
   SET_DRAW: setDraw,
-  SET_SELECTED: setSelected,
   ERROR: error,
   OPEN: open,
   CLOSE: close,
   SET_MODE: setMode,
+  SET_SELECTED: setSelected,
+  SET_NEXT_SELECTED: setNextSelected,
   SET_IS_DARK_MODE: setIsDarkMode,
   SET_IS_TARGET_VISIBLE: setIsTargetVisible,
   TOGGLE_SEGMENTS: toggleSegments,

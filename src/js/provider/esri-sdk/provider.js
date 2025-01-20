@@ -6,7 +6,6 @@ import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
-import src from './src.json'
 
 class Provider extends EventTarget {
   constructor ({ requestCallback, tokenCallback, interceptorsCallback, geocodeProvider, defaultUrl, darkUrl, aerialUrl }) {
@@ -21,7 +20,6 @@ class Provider extends EventTarget {
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
-    this.stylesImagePath = src.STYLES
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -155,19 +153,6 @@ class Provider extends EventTarget {
       ymax: coords[3],
       spatialReference: { wkid: 27700 }
     })
-  }
-
-  getImagePos (style) {
-    return {
-      default: '0 0',
-      dark: '0 -120px',
-      aerial: '0 -240px',
-      deuteranopia: '0 -360px',
-      tritanopia: '0 -480px',
-      'high-contrast': '0 -600px',
-      small: '0 -720px',
-      large: '0 -840px'
-    }[style]
   }
 
   getPixel (coord) {

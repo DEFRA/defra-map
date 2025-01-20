@@ -2,13 +2,15 @@ import React, { useRef, useState, createRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
+import { getImagePos } from '../lib/utils.js'
 import { capabilities } from '../lib/capabilities.js'
+import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
   const { options, provider, activeRef } = useApp()
   const { id, framework } = options
-  const { basemaps, stylesImagePath, getImagePos } = provider
+  const { basemaps } = provider
   const { basemap, size } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -59,7 +61,7 @@ export default function Styles () {
             <div key={name} className='fm-c-layers__item govuk-body-s'>
               <button className='fm-c-layers__button' value={name} aria-pressed={currentBasemap === name} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
                 <div className='fm-c-layers__image'>
-                  <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
+                  <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
                 </div>
                 {{
                   default: 'Default',
@@ -84,7 +86,7 @@ export default function Styles () {
               <div key={name} className='fm-c-layers__item govuk-body-s'>
                 <button className='fm-c-layers__button' value={name} aria-pressed={currentSize === name} onClick={handleSizeClick}>
                   <div className='fm-c-layers__image'>
-                    <img src={stylesImagePath} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
+                    <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
                   </div>
                   {name[0].toUpperCase() + name.slice(1)}
                 </button>

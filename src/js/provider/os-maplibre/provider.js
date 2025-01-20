@@ -8,7 +8,6 @@ import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
-import src from './src.json'
 
 class Provider extends EventTarget {
   constructor ({ requestCallback, tileRequestCallback, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
@@ -25,7 +24,6 @@ class Provider extends EventTarget {
     this.map = null
     this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia', 'high-contrast'].filter(b => this[b + 'Url'])
     this.symbols = symbols
-    this.stylesImagePath = src.STYLES
     this.baseLayers = []
     this.selectedId = ''
     this.selectedCoordinate = null
@@ -135,19 +133,6 @@ class Provider extends EventTarget {
     this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.shortcutMarkers = []
-  }
-
-  getImagePos (style) {
-    return {
-      default: '0 0',
-      dark: '0 -120px',
-      aerial: '0 -240px',
-      deuteranopia: '0 -360px',
-      tritanopia: '0 -480px',
-      'high-contrast': '0 -600px',
-      small: '0 -720px',
-      large: '0 -840px'
-    }[style]
   }
 
   getPixel (coord) {

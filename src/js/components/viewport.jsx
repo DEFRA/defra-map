@@ -73,7 +73,7 @@ export default function Viewport ({ featureIndex }) {
     }
 
     // Select feature or query centre (Enter or Space)
-    if (['Enter', 'Space'].includes(e.key) && mode === 'default') {
+    if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
       mapQuery()
     }
 
@@ -127,8 +127,8 @@ export default function Viewport ({ featureIndex }) {
       labelPixel.current = provider.showNextLabel(labelPixel.current, direction)
     }
 
-    // Select label (Alt + mousehover)
-    if (e.altKey && e.code.slice(-1) === 'L' && pointerPixel.current && provider.showLabel) {
+    // Select label (Alt + Enter with mousehover)
+    if (e.altKey && ['Enter', 'Space'].includes(e.key) && pointerPixel.current && provider.showLabel) {
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }

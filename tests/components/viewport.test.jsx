@@ -184,7 +184,7 @@ describe('viewport', () => {
 
   // Test that viewport responds correctly to keydown events
 
-  it('should handle \'keydown\' event with \'PageDown\' press', async () => {
+  it('should add \'aria-activedescendant\' when \'PageDown\' is pressed and features are in the viewport', async () => {
     renderComponent({
       bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
       centre: [-2.934171, 54.901112],
@@ -198,7 +198,7 @@ describe('viewport', () => {
     expect(viewportElement).toHaveAttribute('aria-activedescendant', 'map-feature-1000')
   })
 
-  it('should handle \'keydown\' event with \'Enter\' press with no selected feature', async () => {
+  it('should call \'provider.queryPoint\' when \'Enter\' is pressed and no feature is selected', async () => {
     renderComponent({
       bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
       centre: [-2.934171, 54.901112],
@@ -212,7 +212,7 @@ describe('viewport', () => {
     expect(queryPoint).toHaveBeenCalled()
   })
 
-  it('should handle \'keydown\' event with \'Enter\' press with selected feature', async () => {
+  it('should call \'provider.queryFeature\' when \'Enter\' is pressed and a feature is selected', async () => {
     renderComponent({
       featureIndex: 0,
       bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
@@ -227,7 +227,7 @@ describe('viewport', () => {
     expect(queryFeature).toHaveBeenCalled()
   })
 
-  it('should handle \'keydown\' event with \'=\' press', async () => {
+  it('should call \'provider.zoomIn\' when \'=\' is pressed', async () => {
     renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
@@ -235,7 +235,7 @@ describe('viewport', () => {
     expect(zoomIn).toHaveBeenCalled()
   })
 
-  it('should handle \'keydown\' event with \'ArrowRight\' press', async () => {
+  it('should call \'provider.panBy\' when \'ArrowRight\' key is pressed', async () => {
     renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
@@ -254,11 +254,10 @@ describe('viewport', () => {
   //     place: null,
   //     features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
   //   })
-  //   act(() => jest.advanceTimersByTime(1000))
   //   const viewportElement = screen.getByRole('application')
   //   expect(viewportElement).toBeTruthy()
-  //   act(() => { fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true }) })
-  //   expect(screen.getByText('Test')).toBeInTheDocument()
-  //   // await waitFor(() => expect(screen.getByText('Test')).toBeInTheDocument())
+  //   fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true })
+  //   await act(async () => { jest.runAllTimers() })
+  //   await waitFor(() => expect(screen.getByText('Test')).toBeInTheDocument())
   // })
 })

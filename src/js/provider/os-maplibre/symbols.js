@@ -1,9 +1,12 @@
 import computedStyleToInlineStyle from 'computed-style-to-inline-style'
+import { defaults } from './constants'
 import { shortcutMarkerHTML } from './marker'
 import { parseSVG } from '../../lib/symbols'
 
 const SYMBOL_PLACEMENT = 'symbol-placement'
 const TEXT_FIELD = 'text-field'
+const SCALE_FACTOR_SMALL = 1.5
+const SCALE_FACTOR_LARGE = 1.25
 
 export const amendLineSymbolLayers = (map) => {
   const lineSymbolLayers = map.getStyle().layers.filter(l => l.layout && (SYMBOL_PLACEMENT in l.layout) && l.layout[SYMBOL_PLACEMENT] === 'line')
@@ -13,7 +16,7 @@ export const amendLineSymbolLayers = (map) => {
 export const addHighlightedLabelLayer = (provider) => {
   const { map } = provider
   const layers = map.getStyle().layers
-  provider.labelLayers = layers.filter(l => l.id !== 'label' && l.layout && l.layout[TEXT_FIELD]).map(l => l.id)
+  provider.labelLayers = layers.filter(l => l.id !== 'label' && l.layout ? l.layout[TEXT_FIELD] : null).map(l => l.id)
   map.addSource('label', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
   map.addLayer({
     id: 'label',
@@ -36,7 +39,7 @@ export const addShortcutMarkers = (provider, features) => {
   const { Marker } = provider.modules
   shortcutMarkers.forEach(m => m.remove())
   features.forEach((f, i) => {
-    const offset = f.geometryType === 'Point' ? [0, -30] : [0, 0]
+    const offset = f.geometryType === 'Point' ? [0, defaults.SHORTCUT_LABEL_OFFSET] : [0, 0]
     shortcutMarkers.push(new Marker({ element: shortcutMarkerHTML(i + 1), offset }).setLngLat(f.coord).addTo(map))
   })
 }
@@ -53,9 +56,9 @@ export const highlightLabel = (map, scale, basemap, feature) => {
       }
     })
     // Clone layout properties
-    const textScale = scale === 1 ? 1.5 : 1.25
+    const textScale = scale === 1 ? SCALE_FACTOR_SMALL : SCALE_FACTOR_LARGE
     const textField = feature.layer.layout[TEXT_FIELD]
-    map.setLayoutProperty('label', 'symbol-placement', feature.layer.layout['symbol-placement'])
+    map.setLayoutProperty('label', SYMBOL_PLACEMENT, feature.layer.layout[SYMBOL_PLACEMENT])
     map.setLayoutProperty('label', TEXT_FIELD, textField.sections ? textField.sections[0].text : textField)
     map.setLayoutProperty('label', 'text-font', feature.layer.layout['text-font'])
     map.setLayoutProperty('label', 'text-letter-spacing', feature.layer.layout['text-letter-spacing'])

@@ -70,7 +70,7 @@ const combineFeatures = (features) => {
         polygon.properties = { area: turfArea(polygon) }
         return polygon
       })
-      const largest = parts.find(p => p.properties.area === Math.max(...parts.map(p => p.properties.area)))
+      const largest = parts.find(p => p.properties.area === Math.max(...parts.map(b => b.properties.area)))
       f.geometry = largest.geometry
       f.properties.area = largest.properties.area
     } else if (f.geometry.type === 'Polygon') {
@@ -84,7 +84,7 @@ const combineFeatures = (features) => {
     group?.push(f) || combined.push([f])
   })
   // Return largest single polygon
-  return combined.map(g => g.find(f => f.properties.area === Math.max(...g.map(f => f.properties.area))))
+  return combined.map(g => g.find(f => f.properties.area === Math.max(...g.map(b => b.properties.area))))
 }
 
 export const addMapHoverBehaviour = (provider) => {
@@ -206,10 +206,12 @@ export const toggleSelectedFeature = (map, selectedLayers, id) => {
 
 export const getHighlightedLabel = (map) => {
   const features = map.queryRenderedFeatures({ layers: ['label'] })
+  let text
   if (features?.length) {
     const label = map.getStyle()?.layers.find(l => l.id === 'label')?.layout['text-field']
-    return `${label} (${features[0].properties.layer})`
+    text = `${label} (${features[0].properties.layer})`
   }
+  return text
 }
 
 export const getSelectedFeatureId = (map, selectedLayers) => {

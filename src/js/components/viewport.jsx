@@ -98,7 +98,7 @@ export default function Viewport () {
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
       // Triggers an update event
-      labelPixel.current = provider.hideLabel && provider.hideLabel()
+      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }
@@ -121,7 +121,6 @@ export default function Viewport () {
   const handleClick = e => {
     if (!isDraggingRef.current) {
       const { layerX, layerY } = e.nativeEvent
-      const scale = size === 'large' ? 2 : 1
       const point = [layerX / scale, layerY / scale]
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
@@ -135,7 +134,6 @@ export default function Viewport () {
 
   const handlePointerMove = e => {
     const { layerX, layerY } = e.nativeEvent
-    const scale = size === 'large' ? 2 : 1
     pointerPixel.current = [layerX / scale, layerY / scale]
   }
 

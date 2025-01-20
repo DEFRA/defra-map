@@ -65,12 +65,12 @@ const combineFeatures = (features) => {
     const group = combined.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
     if (f.geometry.type === 'MultiPolygon') {
       // Get largest single polygon, outer shape (excluding holes) and add area
-      const features = f.geometry.coordinates.map(c => {
+      const parts = f.geometry.coordinates.map(c => {
         const polygon = new TurfPolygon([c[0]])
         polygon.properties = { area: turfArea(polygon) }
         return polygon
       })
-      const largest = features.find(f => f.properties.area === Math.max(...features.map(f => f.properties.area)))
+      const largest = parts.find(p => p.properties.area === Math.max(...parts.map(p => p.properties.area)))
       f.geometry = largest.geometry
       f.properties.area = largest.properties.area
     } else if (f.geometry.type === 'Polygon') {

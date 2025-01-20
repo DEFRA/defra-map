@@ -51,7 +51,7 @@ export default function Viewport () {
 
     // Select feature or query centre (Enter or Space)
     if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
-      if (queryFeature && featureId) {
+      if (featureId) {
         provider.queryFeature(featureId)
       } else if (queryPixel && !isMoving) {
         const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)

@@ -2,15 +2,18 @@ import computedStyleToInlineStyle from 'computed-style-to-inline-style'
 import { shortcutMarkerHTML } from './marker'
 import { parseSVG } from '../../lib/symbols'
 
+const SYMBOL_PLACEMENT = 'symbol-placement'
+const TEXT_FIELD = 'text-field'
+
 export const amendLineSymbolLayers = (map) => {
-  const lineSymbolLayers = map.getStyle().layers.filter(l => l.layout && ('symbol-placement' in l.layout) && l.layout['symbol-placement'] === 'line')
-  lineSymbolLayers.forEach(l => map.setLayoutProperty(l.id, 'symbol-placement', 'line-center'))
+  const lineSymbolLayers = map.getStyle().layers.filter(l => l.layout && (SYMBOL_PLACEMENT in l.layout) && l.layout[SYMBOL_PLACEMENT] === 'line')
+  lineSymbolLayers.forEach(l => map.setLayoutProperty(l.id, SYMBOL_PLACEMENT, 'line-center'))
 }
 
 export const addHighlightedLabelLayer = (provider) => {
   const { map } = provider
   const layers = map.getStyle().layers
-  provider.labelLayers = layers.filter(l => l.id !== 'label' && l.layout && l.layout['text-field']).map(l => l.id)
+  provider.labelLayers = layers.filter(l => l.id !== 'label' && l.layout && l.layout[TEXT_FIELD]).map(l => l.id)
   map.addSource('label', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
   map.addLayer({
     id: 'label',
@@ -51,9 +54,9 @@ export const highlightLabel = (map, scale, basemap, feature) => {
     })
     // Clone layout properties
     const textScale = scale === 1 ? 1.5 : 1.25
-    const textField = feature.layer.layout['text-field']
+    const textField = feature.layer.layout[TEXT_FIELD]
     map.setLayoutProperty('label', 'symbol-placement', feature.layer.layout['symbol-placement'])
-    map.setLayoutProperty('label', 'text-field', textField.sections ? textField.sections[0].text : textField)
+    map.setLayoutProperty('label', TEXT_FIELD, textField.sections ? textField.sections[0].text : textField)
     map.setLayoutProperty('label', 'text-font', feature.layer.layout['text-font'])
     map.setLayoutProperty('label', 'text-letter-spacing', feature.layer.layout['text-letter-spacing'])
     map.setLayoutProperty('label', 'text-size', feature.layer.layout['text-size'] * textScale)

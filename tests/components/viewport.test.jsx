@@ -30,7 +30,7 @@ const AppContextProvider = ({ children, mockState }) => {
 }
 
 describe('viewport', () => {
-  let providerMock
+  let providerMock, appDispatchMock
   const eventHandlers = {}
 
   const parentElement = document.createElement('div')
@@ -43,6 +43,7 @@ describe('viewport', () => {
   const getNearest = jest.fn()
 
   beforeEach(() => {
+    appDispatchMock = jest.fn()
     providerMock = {
       addEventListener: jest.fn((eventType, handler) => {
         if (!eventHandlers[eventType]) {
@@ -72,7 +73,7 @@ describe('viewport', () => {
     }
   })
 
-  const renderComponent = (overides = {}) => {
+  const renderComponent = (mockOptions = {}, appMockState = { id: 'map', isContainerReady: true }) => {
     const app = {
       provider: providerMock,
       isPage: false,
@@ -84,6 +85,8 @@ describe('viewport', () => {
       viewportRef: { current: null },
       frameRef: { current: null },
       obscurePanelRef: { current: null },
+      id: 'map',
+      isContainerReady: true,
       activeRef: null
     }
 
@@ -96,17 +99,13 @@ describe('viewport', () => {
       framework: null,
       styles: { attribution: null },
       queryFeature: ['mock-layer-name'],
-      ...overides
+      ...mockOptions
     }
 
     return render(
       <AppProvider app={app} options={options}>
-        <AppContextProvider mockState={{
-          id: 'map',
-          isContainerReady: true
-        }}
-        >
-          <ViewportProvider options={options}>
+        <AppContextProvider mockState={appMockState}>
+          <ViewportProvider options={mockOptions}>
             <Viewport />
           </ViewportProvider>
         </AppContextProvider>
@@ -264,5 +263,27 @@ describe('viewport', () => {
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true }) })
     waitFor(() => { expect(mockDebouncedFn).toHaveBeenCalled([-2.902397, 54.901112]) })
+  })
+
+  it('should call appDispatch with { type: \'OPEN\', payload: \'KEYBOARD\' } when \'Alt + K\' is pressed', async () => {
+    renderComponent({}, { id: 'map', isContainerReady: true, dispatch: appDispatchMock })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyUp(viewportElement, { key: 'K', code: 'KeyK', altKey: true }) })
+    expect(appDispatchMock).toHaveBeenCalledWith({ type: 'OPEN', payload: 'KEYBOARD' })
+  })
+
+  it('should call \'provider.queryFeature\' with when \'Alt + 1\' is pressed', async () => {
+    renderComponent({
+      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
+      centre: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyUp(viewportElement, { key: '1', code: 'Key1', altKey: true }) })
+    expect(queryFeature).toHaveBeenCalledWith('1000')
   })
 })

@@ -5,7 +5,8 @@ export const defaults = {
     curve: 0
   },
   DELAY: 300,
-  MAX_FEATURES: 9
+  MAX_FEATURES: 9,
+  SHORTCUT_LABEL_OFFSET: -30
 }
 
 export const css = {

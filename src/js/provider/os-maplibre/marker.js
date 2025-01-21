@@ -11,3 +11,10 @@ export const targetMarkerHTML = () => {
   el.innerHTML = '<div class="fm-c-marker__inner"><svg width="69" height="69" viewBox="0 0 69 69" fill-rule="evenodd" fill="none" stroke="currentColor"><circle cx="34.5" cy="34.5" r="33" stroke-width="2"/><path d="M1.5 34.5H31m3.5-33V31m0 36.5V38m33-3.5H38"/></svg></div>'
   return el
 }
+
+export const shortcutMarkerHTML = (key) => {
+  const el = document.createElement('div')
+  el.className = 'fm-c-marker fm-c-marker--shortcut'
+  el.innerHTML = `<div class="fm-c-marker__inner">${key}</div>`
+  return el
+}

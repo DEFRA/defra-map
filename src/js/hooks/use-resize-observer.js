@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
+import { ResizeObserver } from 'resize-observer'
 
 /**
 * Hook that alerts panel size change
 */
-
-const { ResizeObserver } = window
 
 export const useResizeObserver = (el, callback) => {
   const observer = useRef(null)

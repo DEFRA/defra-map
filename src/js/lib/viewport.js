@@ -1,54 +1,16 @@
-import LatLon from 'geodesy/latlon-spherical.js'
+import { distance as turfDistance } from '@turf/distance'
+import { point as TurfPoint } from '@turf/helpers'
 import { defaults } from '../store/constants'
 
-const getMainBoundingClientRect = (el) => {
-  return el.closest('.fm-o-main').getBoundingClientRect()
+const getBearing = (coord1, coord2) => {
+  const east = coord1[0] < coord2[0] && 'east'
+  const west = coord1[0] > coord2[0] && 'west'
+  const north = coord1[1] < coord2[1] && 'north'
+  const south = coord1[1] > coord2[1] && 'south'
+  return [east, west, north, south].filter(b => b && typeof b === 'string')
 }
 
-export const getFocusPadding = (el, scale) => {
-  let padding
-  if (el) {
-    const parent = getMainBoundingClientRect(el)
-    const box = el.getBoundingClientRect()
-    padding = {
-      top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
-      left: ((box.x || box.left) - (parent.x || parent.left)) / scale,
-      right: (parent.width - box.width - ((box.x || box.left) - (parent.x || parent.left))) / scale,
-      bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
-    }
-  }
-  return padding
-}
-
-export const getFocusBounds = (el, scale) => {
-  let bounds
-  if (el) {
-    const parent = getMainBoundingClientRect(el)
-    const box = el.getBoundingClientRect()
-    const m = 10
-    bounds = [[
-      ((box.x || box.left) - (parent.x || parent.left) + m) / scale,
-      (((box.y || box.top) - (parent.y || parent.top)) + box.height - m) / scale
-    ], [
-      (box.width + ((box.x || box.left) - (parent.x || parent.left)) - m) / scale,
-      ((box.y || box.top) - (parent.y || parent.top) + m) / scale
-    ]]
-  }
-  return bounds
-}
-
-export const getMapPixel = (el, scale) => {
-  const parent = getMainBoundingClientRect(el)
-  const box = el.getBoundingClientRect()
-  const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
-  const top = ((box.y || box.top) - (parent.y || parent.top)) / scale
-  const offsetLeft = (box.width / 2) / scale
-  const offsetTop = (box.height / 2) / scale
-  const point = [left + offsetLeft, top + offsetTop]
-  return point
-}
-
-export const getDistance = (coord1, coord2) => {
+const getDistance = (coord1, coord2) => {
   let distance
   if (coord1[0] > 1000) {
     const x = Math.abs(coord1[0] - coord2[0])
@@ -56,14 +18,14 @@ export const getDistance = (coord1, coord2) => {
     const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
     distance = dist
   } else {
-    const p1 = new LatLon(coord1[1], coord1[0])
-    const p2 = new LatLon(coord2[1], coord2[0])
-    distance = p1.distanceTo(p2)
+    const p1 = new TurfPoint(coord1)
+    const p2 = new TurfPoint(coord2)
+    distance = turfDistance(p1, p2, { units: 'metres' })
   }
   return Math.round(distance)
 }
 
-export const getUnits = (metres) => {
+const getUnits = (metres) => {
   const MAX_METRES = 800
   const MAX_MILES = 5000
   const RATIO = 0.621371
@@ -78,15 +40,7 @@ export const getUnits = (metres) => {
   return units
 }
 
-const getBearing = (coord1, coord2) => {
-  const east = coord1[0] < coord2[0] && 'east'
-  const west = coord1[0] > coord2[0] && 'west'
-  const north = coord1[1] < coord2[1] && 'north'
-  const south = coord1[1] > coord2[1] && 'south'
-  return [east, west, north, south].filter(b => b && typeof b === 'string')
-}
-
-export const getDirection = (coord1, coord2) => {
+const getDirection = (coord1, coord2) => {
   coord1 = coord1.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
   coord2 = coord2.map(n => n > 1000 ? Math.round(n) : Math.round(n * 100000) / 100000)
   const ns1 = [coord1[0], coord1[1]]
@@ -103,13 +57,13 @@ export const getDirection = (coord1, coord2) => {
   return ns + (ewc && nsc ? ', ' : '') + ew
 }
 
-export const getArea = (bbox) => {
+const getArea = (bbox) => {
   const ew = getDistance([bbox[0], bbox[1]], [bbox[2], bbox[1]])
   const ns = getDistance([bbox[0], bbox[1]], [bbox[0], bbox[3]])
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
+const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
   const isSameZoom = oZoom === zoom
   const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
@@ -128,8 +82,57 @@ export const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
   return change
 }
 
+const getSelectedStatus = (featuresInViewport, id) => {
+  const total = featuresInViewport.length
+  const index = featuresInViewport.findIndex(f => f.id === id)
+  return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
+}
+
+export const getFocusPadding = (el, offsetEl, scale) => {
+  let padding
+  if (el) {
+    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const box = el.getBoundingClientRect()
+    padding = {
+      top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
+      left: ((box.x || box.left) - (parent.x || parent.left)) / scale,
+      right: (parent.width - box.width - ((box.x || box.left) - (parent.x || parent.left))) / scale,
+      bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
+    }
+  }
+  return padding
+}
+
+export const getFocusBounds = (el, offsetEl, scale) => {
+  let bounds
+  if (el) {
+    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const box = el.getBoundingClientRect()
+    const m = 10
+    bounds = [[
+      ((box.x || box.left) - (parent.x || parent.left) + m) / scale,
+      (((box.y || box.top) - (parent.y || parent.top)) + box.height - m) / scale
+    ], [
+      (box.width + ((box.x || box.left) - (parent.x || parent.left)) - m) / scale,
+      ((box.y || box.top) - (parent.y || parent.top) + m) / scale
+    ]]
+  }
+  return bounds
+}
+
+export const getMapPixel = (el, offsetEl, scale) => {
+  const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+  const box = el.getBoundingClientRect()
+  const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
+  const top = ((box.y || box.top) - (parent.y || parent.top)) / scale
+  const offsetLeft = (box.width / 2) / scale
+  const offsetTop = (box.height / 2) / scale
+  const point = [left + offsetLeft, top + offsetTop]
+  return point
+}
+
 export const getDescription = (place, centre, bbox, features) => {
-  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features
+  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
   let text = ''
 
   if (featuresTotal) {
@@ -154,16 +157,20 @@ export const getDescription = (place, centre, bbox, features) => {
   return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
 }
 
-export const getStatus = (action, place, description, direction) => {
+export const getStatus = (action, isPanZoom, place, state, current) => {
+  const { centre, bbox, zoom, features, label, selectedId } = current
   let status = null
-  if (action === 'DATA') {
-    return 'Map change: new data. Use ALT plus I to get new details'
-  } else if (['PANZOOM', 'GEOLOC'].includes(action)) {
-    if (place) {
-      status = description
-    } else {
-      status = `${direction}. Use ALT plus I to get new details`
-    }
+  if (selectedId) {
+    const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
+    status = selected
+  } else if (action === 'DATA') {
+    status = 'Map change: new data. Use ALT plus I to get new details'
+  } else if (isPanZoom || action === 'GEOLOC') {
+    const description = getDescription(place, centre, bbox, features)
+    const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
+    status = place ? description : `${direction}. Use ALT plus I to get new details`
+  } else if (label) {
+    status = label
   } else {
     status = ''
   }
@@ -214,25 +221,10 @@ export const parseZoom = value => {
   return !zoom.isNaN ? zoom : null
 }
 
-export const getSelectedIndex = (key, total, current) => {
-  const increase = current === total - 1 ? 0 : current + 1
-  const decrease = current > 0 ? current - 1 : total - 1
-  return key === 'PageDown' ? increase : decrease
-}
-
-export const getSelectedStatus = (featuresInViewport, index) => {
-  const total = featuresInViewport.length
-  const feature = index < featuresInViewport.length ? featuresInViewport[index] : null
-  const status = feature && (
-    `${total} feature${total !== 1 ? 's' : ''} in this area. ${feature.name}. ${index + 1} of ${total} highlighted.`
-  )
-  return status
-}
-
 export const getShortcutKey = (e, featuresViewport) => {
   const number = e.code.slice(-1)
-  const hasFeature = featuresViewport?.features.length >= number
-  const id = hasFeature ? featuresViewport.features[number - 1].id : ''
+  const hasFeature = featuresViewport.length >= number
+  const id = hasFeature ? featuresViewport[number - 1].id : ''
   return id
 }
 
@@ -240,4 +232,29 @@ export const isFeatureSquare = (feature) => {
   const coords = feature.geometry.coordinates
   const flatCoords = Array.from(new Set(coords.flat(2)))
   return flatCoords.length === 4
+}
+
+export const spatialNavigate = (direction, start, pixels) => {
+  const quadrant = pixels.filter(p => {
+    const offsetX = Math.abs(p[0] - start[0])
+    const offsetY = Math.abs(p[1] - start[1])
+    let isQuadrant = false
+    if (direction === 'up') {
+      isQuadrant = p[1] <= start[1] && offsetY >= offsetX
+    } else if (direction === 'down') {
+      isQuadrant = p[1] > start[1] && offsetY >= offsetX
+    } else if (direction === 'left') {
+      isQuadrant = p[0] <= start[0] && offsetY < offsetX
+    } else {
+      isQuadrant = p[0] > start[0] && offsetY < offsetX
+    }
+    return isQuadrant && (JSON.stringify(p) !== JSON.stringify(start))
+  })
+  if (!quadrant.length) {
+    quadrant.push(start)
+  }
+  const pythagorean = (a, b) => Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+  const distances = quadrant.map(p => pythagorean(Math.abs(start[0] - p[0]), Math.abs(start[1] - p[1])))
+  const closest = quadrant[distances.indexOf(Math.min(...distances))]
+  return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }

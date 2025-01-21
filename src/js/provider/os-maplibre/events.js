@@ -67,6 +67,6 @@ export const handleStyleData = (provider, e) => {
   }
 }
 
-export const handleError = (_provider, err) => {
+export const handleError = (_provider, _err) => {
   // console.log(err)
 }

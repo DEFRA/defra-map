@@ -1,13 +1,14 @@
 import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events'
-import { addPointerQuery, toggleSelectedFeature, getDetail } from './query'
+import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
-import { getFocusPadding } from '../../lib/viewport'
+import { highlightLabel } from './symbols'
+import { getFocusPadding, spatialNavigate } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
+import { getScale } from '../../lib/utils.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
-import src from './src.json'
 
 class Provider extends EventTarget {
   constructor ({ requestCallback, tileRequestCallback, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
@@ -24,7 +25,6 @@ class Provider extends EventTarget {
     this.map = null
     this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia', 'high-contrast'].filter(b => this[b + 'Url'])
     this.symbols = symbols
-    this.stylesImagePath = src.STYLES
     this.baseLayers = []
     this.selectedId = ''
     this.selectedCoordinate = null
@@ -42,9 +42,8 @@ class Provider extends EventTarget {
     } else {
       Promise.all([
         import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy'),
-        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["install"] */ 'resize-observer')
+        import(/* webpackChunkName: "maplibre-legacy" */ 'array-flat-polyfill')
       ]).then(promises => {
-        promises[1].install()
         this.addMap({ module: promises[0], ...options })
       })
     }
@@ -56,8 +55,11 @@ class Provider extends EventTarget {
   }
 
   addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
-    const { Map: MaplibreMap, Marker } = module.default
-    const scale = size === 'large' ? 2 : 1
+    // Add ref to dynamically loaded modules
+    this.modules = module.default
+    const { Map: MaplibreMap, Marker } = this.modules
+
+    const scale = getScale(size)
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
@@ -78,7 +80,7 @@ class Provider extends EventTarget {
     // Set initial padding, bounds and centre
     // // * Can't set global padding in constructor
     // map.showPadding = true
-    map.setPadding(getFocusPadding(paddingBox, scale))
+    map.setPadding(getFocusPadding(paddingBox, target, scale))
     if (bbox) {
       map.fitBounds(bbox, { animate: false })
     } else {
@@ -104,6 +106,7 @@ class Provider extends EventTarget {
     this.map = map
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
+    this.selectedLayers = []
     this.paddingBox = paddingBox
     this.basemap = basemap
     this.scale = scale
@@ -130,22 +133,7 @@ class Provider extends EventTarget {
     // Add markers
     this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
-
-    // Add queryFeature and queryPixel behaviour
-    addPointerQuery(this)
-  }
-
-  getImagePos (style) {
-    return {
-      default: '0 0',
-      dark: '0 -120px',
-      aerial: '0 -240px',
-      deuteranopia: '0 -360px',
-      tritanopia: '0 -480px',
-      'high-contrast': '0 -600px',
-      small: '0 -720px',
-      large: '0 -840px'
-    }[style]
+    this.shortcutMarkers = []
   }
 
   getPixel (coord) {
@@ -158,10 +146,9 @@ class Provider extends EventTarget {
   }
 
   panBy (offset, isUserInitiated = true) {
-    if (!this.map) {
-      return
+    if (this.map) {
+      this.map.panBy(offset, { ...defaults.ANIMATION }, { isUserInitiated })
     }
-    this.map.panBy(offset, { ...defaults.ANIMATION }, { isUserInitiated })
   }
 
   panTo (coord) {
@@ -169,17 +156,15 @@ class Provider extends EventTarget {
   }
 
   zoomIn () {
-    if (!this.map) {
-      return
+    if (this.map) {
+      this.map.zoomIn(defaults.ANIMATION)
     }
-    this.map.zoomIn(defaults.ANIMATION)
   }
 
   zoomOut () {
-    if (!this.map) {
-      return
+    if (this.map) {
+      this.map.zoomOut(defaults.ANIMATION)
     }
-    this.map.zoomOut(defaults.ANIMATION)
   }
 
   async setBasemap (basemap) {
@@ -190,17 +175,17 @@ class Provider extends EventTarget {
 
   setPadding (coord, isAnimate) {
     if (this.map) {
-      const { paddingBox, scale } = this
-      const padding = getFocusPadding(paddingBox, scale)
+      const { paddingBox, target, scale } = this
+      const padding = getFocusPadding(paddingBox, target, scale)
       // Search needs to set padding first before fitBbox
       this.map.setPadding(padding)
-      // East map to new when coord is obscured
+      // Ease map to new when coord is obscured
       coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }
   }
 
   setSize (size) {
-    const scale = size === 'large' ? 2 : 1
+    const scale = getScale(size)
     this.scale = scale
     this.setPadding()
     if (this.map.setPixelRatio) {
@@ -222,10 +207,9 @@ class Provider extends EventTarget {
   }
 
   setCentre (coord, _zoom) {
-    if (!this.map) {
-      return
+    if (this.map) {
+      this.map.flyTo({ center: coord, ...defaults.ANIMATION })
     }
-    this.map.flyTo({ center: coord, ...defaults.ANIMATION })
   }
 
   initDraw (draw, basemap, el) {
@@ -237,18 +221,17 @@ class Provider extends EventTarget {
 
   setTargetMarker (coord, hasData, isVisible) {
     const { targetMarker } = this
-    if (!targetMarker) {
-      return
+    if (targetMarker) {
+      targetMarker.setLngLat(coord || [0, 0])
+      const el = targetMarker.getElement() // addClassName not supported in v1.15
+      el.classList.toggle('fm-c-marker--has-data', hasData)
+      el.classList.toggle(css.MARKER_VISIBLE, isVisible && coord)
     }
-    targetMarker.setLngLat(coord || [0, 0])
-    const el = targetMarker.getElement() // addClassName not supported in v1.15
-    el.classList.toggle('fm-c-marker--has-data', hasData)
-    el.classList.toggle(css.MARKER_VISIBLE, isVisible && coord)
   }
 
   selectFeature (id) {
     this.selectedId = id
-    toggleSelectedFeature(this.map, id)
+    toggleSelectedFeature(this.map, this.selectedLayers, id)
   }
 
   selectCoordinate (coord) {
@@ -256,20 +239,18 @@ class Provider extends EventTarget {
   }
 
   async queryFeature (id) {
-    if (!id) {
-      return
+    if (id) {
+      const detail = await getDetail(this, null, false)
+      detail.features.items = [detail.features.items.find(f => f.id === id)]
+      this.dispatchEvent(new CustomEvent('mapquery', { detail }))
     }
-    const detail = await getDetail(this, null, false)
-    detail.features.items = [detail.features.items.find(f => f.id === id)]
-    this.dispatchEvent(new CustomEvent('mapquery', {
-      detail
-    }))
   }
 
   async queryPoint (point) {
     const { getNearest } = this
     const detail = await getDetail(this, point)
     const place = await getNearest(detail.coord)
+    this.hideLabel()
     this.dispatchEvent(new CustomEvent('mapquery', {
       detail: {
         resultType: detail.features.resultType,
@@ -326,6 +307,29 @@ class Provider extends EventTarget {
   showLocation (coord) {
     const { locationMarker } = this
     locationMarker.setLngLat(coord).addClassName(css.MARKER_VISIBLE)
+  }
+
+  showNextLabel (pixel, direction) {
+    const labels = getLabels(this)
+    const { lng, lat } = this.map.getCenter()
+    const centre = this.map.project([lng, lat])
+    const pixels = labels.map(c => c.pixel)
+    const index = spatialNavigate(direction, pixel || [centre.x, centre.y], pixels)
+    const feature = labels[index]?.feature
+    highlightLabel(this.map, this.scale, this.basemap, feature)
+    return labels[index]?.pixel
+  }
+
+  showLabel (point) {
+    const feature = getLabel(this, point)
+    highlightLabel(this.map, this.scale, this.basemap, feature)
+    return point
+  }
+
+  hideLabel () {
+    if (this.map) {
+      highlightLabel(this.map)
+    }
   }
 }
 

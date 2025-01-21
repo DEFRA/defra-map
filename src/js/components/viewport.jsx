@@ -5,13 +5,14 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getSelectedStatus, getShortcutKey, getSelectedIndex, getMapPixel } from '../lib/viewport.js'
+import { getShortcutKey, getMapPixel } from '../lib/viewport.js'
+import { getScale, getPoint } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
-const getClassName = (size, isDarkBasemap, isFocusVisible) => {
-  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
 export default function Viewport () {
@@ -19,58 +20,29 @@ export default function Viewport () {
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
-
   const [, setQueryCz] = useQueryState(settings.params.centreZoom)
 
   const mapContainerRef = useRef(null)
-  const featureIdRef = useRef(-1)
   const startPixel = useRef([0, 0])
+  const labelPixel = useRef(null)
+  const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-
   const STATUS_DELAY = 300
 
-  const selectQuery = () => {
-    if (!(queryFeature || queryPixel)) {
-      return
-    }
-    if (featureIdRef.current >= 0 && features.featuresInViewport?.length) {
-      const fId = features.featuresInViewport[featureIdRef.current].id
-      provider.queryFeature(fId)
-      return
-    }
-    if (!isMoving) {
-      const scale = size === 'large' ? 2 : 1
-      const point = getMapPixel(frameRef.current, scale)
-      provider.queryPoint(point)
-    }
-  }
-
-  const cycleFeatures = e => {
-    if (!features.featuresInViewport?.length) {
-      return
-    }
-    const { featuresInViewport } = features
-    const selectedIndex = getSelectedIndex(e.key, featuresInViewport.length, featureIdRef.current)
-    featureIdRef.current = selectedIndex < featuresInViewport.length ? selectedIndex : 0
-    const statusText = getSelectedStatus(featuresInViewport, selectedIndex)
-    const fId = featuresInViewport[selectedIndex]?.id || featuresInViewport[0]?.id
-    appDispatch({ type: 'SET_SELECTED', payload: { featureId: fId, activePanel: null } })
-    // Debounce status update
-    debounceUpdateStatus(statusText)
-  }
-
-  const panMap = e => {
-    e.preventDefault()
-    const offset = offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()]
-    provider.panBy(offset)
-  }
+  // Template properties
+  const isKeyboard = interfaceType === 'keyboard'
+  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
+  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
+  const scale = getScale(size)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
-      panMap(e)
+      e.preventDefault()
+      provider.panBy(offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()])
     }
 
     // Zoom map (+ or -)
@@ -79,14 +51,28 @@ export default function Viewport () {
     }
 
     // Select feature or query centre (Enter or Space)
-    if (['Enter', 'Space'].includes(e.key) && mode === 'default') {
-      selectQuery()
+    if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
+      if (featureId) {
+        provider.queryFeature(featureId)
+      } else if (queryPixel && !isMoving) {
+        const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)
+        provider.queryPoint(point)
+      } else {
+        // No action
+      }
     }
 
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
       e.preventDefault()
-      cycleFeatures(e)
+      labelPixel.current = provider?.hideLabel()
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
+      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
+    }
+
+    // Disable body scroll
+    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
+      e.preventDefault()
     }
   }
 
@@ -109,21 +95,46 @@ export default function Viewport () {
       provider.queryFeature(fId)
     }
 
-    // Clear selected feature
+    // Clear selected feature and label
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
+      // Triggers an update event
+      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
+    }
+
+    // Select label (Alt + arrow key)
+    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
+      const direction = e.key.substring(5).toLowerCase()
+      // Triggers an update event
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
+      labelPixel.current = provider.showNextLabel(labelPixel.current, direction)
+    }
+
+    // Select label (Alt + Enter with mousehover)
+    if (e.altKey && ['Enter', 'Space'].includes(e.key) && pointerPixel.current && provider.showLabel) {
+      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
+      labelPixel.current = provider.showLabel(pointerPixel.current)
     }
   }
 
   const handleClick = e => {
-    if (mode !== 'default' || isDraggingRef.current || !(queryFeature || queryPixel)) {
-      return
+    if (!isDraggingRef.current) {
+      const point = getPoint(viewportRef.current, e, scale)
+      if (e.altKey && provider.showLabel) {
+        labelPixel.current = provider.showLabel(point)
+      } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {
+        provider.queryPoint(point)
+      } else {
+        // No action
+      }
     }
+  }
+
+  const handlePointerMove = e => {
     const { layerX, layerY } = e.nativeEvent
-    const scale = size === 'large' ? 2 : 1
-    const point = [layerX / scale, layerY / scale]
-    provider.queryPoint(point)
+    pointerPixel.current = [layerX / scale, layerY / scale]
   }
 
   const handleMapLoad = e => {
@@ -134,14 +145,6 @@ export default function Viewport () {
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
     })
-  }
-
-  const handleMovestart = e => {
-    const isUserInitiated = e.detail.isUserInitiated
-    viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
-    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
-      appDispatch({ type: 'CLOSE' })
-    }
   }
 
   const handlePointerDown = e => {
@@ -155,12 +158,27 @@ export default function Viewport () {
     isDraggingRef.current = diffX >= offsets.drag || diffY >= offsets.drag
   }
 
-  // Get new bbox after map moveend
+  // Update place after Alt + i
+  const debounceUpdatePlace = debounce(async (coord) => {
+    const place = await provider.getNearest(coord)
+    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
+  }, STATUS_DELAY)
+
+  // Provider events
+  const handleMoveStart = e => {
+    const isUserInitiated = e.detail.isUserInitiated
+    viewportDispatch({ type: 'MOVE_START', payload: isUserInitiated })
+    if (isKeyboard && activePanel === 'INFO' && isUserInitiated) {
+      appDispatch({ type: 'CLOSE' })
+    }
+  }
+
+  // Get new bbox after map has moved
   const handleUpdate = e => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
 
-  // Provider map click
+  // Map query
   const handleMapQuery = e => {
     const { resultType } = e.detail
     const { items, isPixelFeaturesAtPixel, coord } = e.detail.features
@@ -174,23 +192,6 @@ export default function Viewport () {
   const handleMapStyle = e => {
     eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, size, mode, segments, layers })
   }
-
-  // Update place
-  const debounceUpdatePlace = debounce(async (coord) => {
-    const place = await provider.getNearest(coord)
-    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
-  }, STATUS_DELAY)
-
-  // Update status
-  const debounceUpdateStatus = debounce(text => {
-    viewportDispatch({ type: 'UPDATE_STATUS', payload: { status: text, isStatusVisuallyHidden: true } })
-  }, STATUS_DELAY)
-
-  // Template properties
-  const isKeyboard = interfaceType === 'keyboard'
-  const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
-  const className = getClassName(size, isDarkBasemap, isFocusVisible)
 
   // Initial render
   useEffect(() => {
@@ -228,12 +229,12 @@ export default function Viewport () {
     }
   }, [isContainerReady])
 
-  // Add movestart event listner each time activePanel changes
+  // Movestart need access to some state
   useEffect(() => {
-    provider.addEventListener('movestart', handleMovestart)
+    provider.addEventListener('movestart', handleMoveStart)
 
     return () => {
-      provider.removeEventListener('movestart', handleMovestart)
+      provider.removeEventListener('movestart', handleMoveStart)
     }
   }, [isKeyboard, activePanel, action])
 
@@ -312,6 +313,7 @@ export default function Viewport () {
       onKeyUp={handleKeyUp}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onPointerMove={handlePointerMove}
       {...(featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {})}
       aria-owns={`${id}-viewport-features`}
       tabIndex='0'

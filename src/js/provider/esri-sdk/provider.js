@@ -6,7 +6,6 @@ import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
-import src from './src.json'
 
 class Provider extends EventTarget {
   constructor ({ requestCallback, tokenCallback, interceptorsCallback, geocodeProvider, defaultUrl, darkUrl, aerialUrl }) {
@@ -21,7 +20,6 @@ class Provider extends EventTarget {
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
-    this.stylesImagePath = src.STYLES
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -78,7 +76,7 @@ class Provider extends EventTarget {
       extent: bbox ? this.getExtent(Extent, bbox) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
-      padding: getFocusPadding(paddingBox, 1),
+      padding: getFocusPadding(paddingBox, target, 1),
       popupEnabled: false
     })
 
@@ -88,6 +86,7 @@ class Provider extends EventTarget {
     canvasContainer.tabIndex = -1
 
     this.map = map
+    this.target = target
     this.view = view
     this.baseTileLayer = baseTileLayer
     this.graphicsLayer = graphicsLayer
@@ -156,19 +155,6 @@ class Provider extends EventTarget {
     })
   }
 
-  getImagePos (style) {
-    return {
-      default: '0 0',
-      dark: '0 -120px',
-      aerial: '0 -240px',
-      deuteranopia: '0 -360px',
-      tritanopia: '0 -480px',
-      'high-contrast': '0 -600px',
-      small: '0 -720px',
-      large: '0 -840px'
-    }[style]
-  }
-
   getPixel (coord) {
     const pixel = this.view.toScreen({ x: coord[0], y: coord[1] })
     return [Math.round(pixel.x), Math.round(pixel.y)]
@@ -208,29 +194,26 @@ class Provider extends EventTarget {
   }
 
   setPadding (coord, isAnimate) {
-    if (!this.view) {
-      return
+    if (this.view) {
+      const { target, paddingBox } = this
+      const padding = getFocusPadding(paddingBox, target, 1)
+      this.view.padding = padding
+      import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
+        if (coord) {
+          this.isUserInitiated = false
+          const Point = module.default
+          this.view.goTo({
+            target: new Point({
+              x: coord[0],
+              y: coord[1],
+              spatialReference: 27700
+            })
+          }, {
+            animation: isAnimate
+          }).catch(err => console.log(err))
+        }
+      })
     }
-    const { paddingBox } = this
-    const padding = getFocusPadding(paddingBox, 1)
-    this.view.padding = padding
-    if (!coord) {
-      return
-    }
-
-    import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
-      this.isUserInitiated = false
-      const Point = module.default
-      this.view.goTo({
-        target: new Point({
-          x: coord[0],
-          y: coord[1],
-          spatialReference: 27700
-        })
-      }, {
-        animation: isAnimate
-      }).catch(err => console.log(err))
-    })
   }
 
   setSize () {
@@ -266,25 +249,23 @@ class Provider extends EventTarget {
     import(/* webpackChunkName: 'esri-sdk' */ '@arcgis/core/Graphic.js').then(module => {
       const Graphic = module.default
       const { map, graphicsLayer, isDark } = this
-      if (!(map && coord && isVisible)) {
-        return
+      if (map && coord && isVisible) {
+        // *** Bug with graphics layer order
+        const zIndex = 99
+        map.reorder(graphicsLayer, zIndex)
+        const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
+        graphicsLayer.add(graphic)
+        this.targetMarker = graphic
       }
-      // *** Bug with graphics layer order
-      const zIndex = 99
-      map.reorder(graphicsLayer, zIndex)
-      const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
-      graphicsLayer.add(graphic)
-      this.targetMarker = graphic
     })
   }
 
   removeTargetMarker () {
     const { graphicsLayer, targetMarker } = this
-    if (!targetMarker) {
-      return
+    if (targetMarker) {
+      graphicsLayer.remove(targetMarker)
+      this.targetMarker = null
     }
-    graphicsLayer.remove(targetMarker)
-    this.targetMarker = null
   }
 
   selectFeature (_id) {

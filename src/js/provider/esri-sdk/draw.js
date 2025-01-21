@@ -68,9 +68,9 @@ export class Draw {
   }
 
   edit () {
-    const { graphicsLayer, frame } = this.provider
+    const { graphicsLayer, paddingBox } = this.provider
     const hasExisting = graphicsLayer.graphics.length
-    const elGraphic = this.getGraphicFromElement(frame)
+    const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = hasExisting ? graphicsLayer.graphics.items[0] : elGraphic
     this.editGraphic(graphic)
   }
@@ -101,9 +101,9 @@ export class Draw {
   }
 
   finish () {
-    const { view, graphicsLayer, frame } = this.provider
+    const { view, graphicsLayer, paddingBox } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const elGraphic = this.getGraphicFromElement(frame)
+    const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
@@ -158,17 +158,17 @@ export class Draw {
 
   getBounds (el) {
     const { view } = this.provider
-    const bRect = el.getBoundingClientRect()
+    const eRect = el.getBoundingClientRect()
     const vRect = el.closest('.fm-o-viewport').getBoundingClientRect()
-    const left = bRect.left - vRect.left
-    const top = bRect.top - vRect.top
+    const left = eRect.left - vRect.left
+    const top = eRect.top - vRect.top
     const nw = view.toMap({ x: left, y: top })
-    const se = view.toMap({ x: left + bRect.width, y: top + bRect.height })
+    const se = view.toMap({ x: left + eRect.width, y: top + eRect.height })
     return [nw.x, nw.y, se.x, se.y]
   }
 
   getGraphicFromElement (el) {
-    const bounds = this.getBounds(el) // .map(c => Math.round(c))
+    const bounds = this.getBounds(el)
     const coords = [[
       [bounds[0], bounds[1]],
       [bounds[2], bounds[1]],

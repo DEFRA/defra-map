@@ -2,6 +2,10 @@
 // Provider specific styles
 //
 
+.maplibregl-canvas-container canvas {
+    image-rendering: pixelated;
+}
+
 // Controls
 .maplibregl-control-container {
     position: absolute;

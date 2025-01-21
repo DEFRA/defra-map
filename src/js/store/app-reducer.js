@@ -6,20 +6,24 @@ const getIsDarkMode = (hasAutoMode) => {
   return basemap === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
+const getActivePanel = (info, featureId, targetMarker, legend) => {
+  let panel
+  if (info && (featureId || targetMarker)) {
+    panel = 'INFO'
+  } else if (legend?.isVisible) {
+    panel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
+  } else {
+    panel = null
+  }
+  return panel
+}
+
 export const initialState = (options) => {
   const { legend, search, info, queryPolygon, hasAutoMode } = options
 
-  const featureId = info?.featureId
+  const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-
-  let activePanel
-  if (info && (featureId || targetMarker)) {
-    activePanel = 'INFO'
-  } else if (legend?.isVisible) {
-    activePanel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
-  } else {
-    activePanel = null
-  }
+  const activePanel = getActivePanel(info, featureId, targetMarker, legend)
 
   return {
     isContainerReady: false,

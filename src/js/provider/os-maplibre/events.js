@@ -60,7 +60,7 @@ export const handleStyleData = (provider, e) => {
     const { map, basemap, selectedId } = provider
     const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
     const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
-    if (!(selectedLayers.length === featureLayers.length)) {
+    if (selectedLayers.length !== featureLayers.length) {
       const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
       provider.selectedLayers = addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
     }

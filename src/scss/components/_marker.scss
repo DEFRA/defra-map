@@ -84,6 +84,17 @@
     text-align: center;
 }
 
+.fm-c-marker--shortcut .fm-c-marker__inner {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@supports (hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none) {
+    .fm-c-marker__inner {
+        will-change: transform; /* Safari-specific fix */
+    }
+}
+
 .fm-o-viewport--large .fm-c-marker--shortcut {
     font-size: 1.65rem;
 }

@@ -6,6 +6,7 @@ import { getFocusPadding, spatialNavigate } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
+import { getScale } from '../../lib/utils.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
@@ -58,7 +59,7 @@ class Provider extends EventTarget {
     this.modules = module.default
     const { Map: MaplibreMap, Marker } = this.modules
 
-    const scale = size === 'large' ? 2 : 1
+    const scale = getScale(size)
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
@@ -178,13 +179,13 @@ class Provider extends EventTarget {
       const padding = getFocusPadding(paddingBox, target, scale)
       // Search needs to set padding first before fitBbox
       this.map.setPadding(padding)
-      // East map to new when coord is obscured
+      // Ease map to new when coord is obscured
       coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }
   }
 
   setSize (size) {
-    const scale = size === 'large' ? 2 : 1
+    const scale = getScale(size)
     this.scale = scale
     this.setPadding()
     if (this.map.setPixelRatio) {

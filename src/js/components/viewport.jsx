@@ -6,6 +6,7 @@ import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
 import { getShortcutKey, getMapPixel } from '../lib/viewport.js'
+import { getScale, getPoint } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
@@ -35,7 +36,7 @@ export default function Viewport () {
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
-  const scale = size === 'large' ? 2 : 1
+  const scale = getScale(size)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -120,8 +121,7 @@ export default function Viewport () {
 
   const handleClick = e => {
     if (!isDraggingRef.current) {
-      const { layerX, layerY } = e.nativeEvent
-      const point = [layerX / scale, layerY / scale]
+      const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
       } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {

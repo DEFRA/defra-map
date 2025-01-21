@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport.js'
+import { getScale } from '../lib/utils.js'
 
 // Hook that alerts if pixel is obscured
 
@@ -13,7 +14,7 @@ export const usePixelObscurred = () => {
   useEffect(() => {
     if (targetMarker?.coord && provider.isLoaded) {
       let pixel = provider.getPixel(targetMarker.coord)
-      const scale = size === 'large' ? 2 : 1
+      const scale = getScale(size)
       pixel = pixel.map(c => c * scale)
       const { top, left } = viewportRef.current.getBoundingClientRect()
       const topEl = document.elementFromPoint(pixel[0] + left, pixel[1] + top)

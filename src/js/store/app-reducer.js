@@ -1,5 +1,5 @@
 import { parseSegments, parseLayers } from '../lib/query'
-import { getBasemap } from '../lib/utils'
+import { getBasemap } from '../lib/viewport'
 import { actionsMap } from './app-actions-map'
 
 const getIsDarkMode = (basemap, hasAutoMode) => {

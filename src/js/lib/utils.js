@@ -25,13 +25,3 @@ export const hasQueryParam = (name) => {
 export const getImagePos = (style) => {
   return { default: '0 0', dark: '0 -120px', aerial: '0 -240px', deuteranopia: '0 -360px', tritanopia: '0 -480px' }[style]
 }
-
-export const getBasemap = (styles) => {
-  let basemap
-  if (styles) {
-    const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
-    const localBasemap = window.localStorage.getItem('basemap')
-    basemap = validStyles.includes(localBasemap) ? localBasemap : 'default'
-  }
-  return basemap
-}

@@ -45,9 +45,9 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add area'))
+    fireEvent.click(screen.getByText('Add'))
 
-    expect(screen.getByText('Add area')).toBeTruthy()
+    expect(screen.getByText('Add')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
@@ -72,9 +72,9 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Edit area'))
+    fireEvent.click(screen.getByText('Edit'))
 
-    expect(screen.getByText('Edit area')).toBeTruthy()
+    expect(screen.getByText('Edit')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
@@ -96,7 +96,7 @@ describe('draw', () => {
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add area'))
+    fireEvent.click(screen.getByText('Add'))
 
     expect(draw).toHaveBeenCalled()
   })

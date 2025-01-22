@@ -262,7 +262,7 @@ export const spatialNavigate = (direction, start, pixels) => {
 }
 
 export const getScale = (size) => {
-  return { small: 1, medium: 1.5, large: 2 }[size]
+  return { small: 1, medium: 1.5, large: 2 }[size] || 1
 }
 
 export const getPoint = (el, e, scale) => {
@@ -271,4 +271,14 @@ export const getPoint = (el, e, scale) => {
   const x = clientX - left
   const y = clientY - top
   return [x / scale, y / scale]
+}
+
+export const getBasemap = (styles) => {
+  let basemap
+  if (styles) {
+    const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
+    const localBasemap = window.localStorage.getItem('basemap')
+    basemap = validStyles.includes(localBasemap) ? localBasemap : 'default'
+  }
+  return basemap
 }

@@ -1,8 +1,7 @@
-import { parseCentre, parseZoom } from '../lib/viewport'
+import { parseCentre, parseZoom, getBasemap } from '../lib/viewport'
 import { defaults } from './constants'
 import { capabilities } from '../lib/capabilities'
 import { actionsMap } from './viewport-actions-map'
-import { getBasemap } from '../lib/utils'
 
 const getSize = (framework) => {
   const hasSize = capabilities[framework || 'default'].hasSize

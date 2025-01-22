@@ -1,5 +1,3 @@
-import { defaults } from '../store/constants'
-
 export const parseAttribute = a => {
   try {
     return JSON.parse(a)

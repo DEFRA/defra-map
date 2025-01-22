@@ -1,4 +1,4 @@
-import { defaults } from  '../store/constants'
+import { defaults } from '../store/constants'
 
 export const parseAttribute = a => {
   try {
@@ -27,8 +27,11 @@ export const getImagePos = (style) => {
 }
 
 export const getBasemap = (styles) => {
-  const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
-  const basemap = window.localStorage.getItem('basemap') || 'default'
-  const isValid = validStyles.includes(basemap)
-  return isValid ? basemap : 'default'
+  let basemap
+  if (styles) {
+    const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
+    const localBasemap = window.localStorage.getItem('basemap')
+    basemap = validStyles.includes(localBasemap) ? localBasemap : 'default'
+  }
+  return basemap
 }

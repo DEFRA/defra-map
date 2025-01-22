@@ -250,7 +250,7 @@ fm.addEventListener('ready', e => {
   const dev = document.getElementById('dev')
   dev.innerHTML = `<p>${navigator.userAgent}</p><p>isSmartTV: ${isSmartTV}</p><p id="input">Input</p>`
   window.addEventListener('mousemove', e => {
-    console.log(e)
+    if (isSmartTV) e.preventDefault()
     document.getElementById('input').innerHTML = `mousemove: ${e.clientX}, ${e.clientY}`
   })
 })

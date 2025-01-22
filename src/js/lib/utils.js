@@ -1,3 +1,5 @@
+import { defaults } from  '../store/constants'
+
 export const parseAttribute = a => {
   try {
     return JSON.parse(a)
@@ -22,4 +24,11 @@ export const hasQueryParam = (name) => {
 
 export const getImagePos = (style) => {
   return { default: '0 0', dark: '0 -120px', aerial: '0 -240px', deuteranopia: '0 -360px', tritanopia: '0 -480px' }[style]
+}
+
+export const getBasemap = (styles) => {
+  const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
+  const basemap = window.localStorage.getItem('basemap') || 'default'
+  const isValid = validStyles.includes(basemap)
+  return isValid ? basemap : 'default'
 }

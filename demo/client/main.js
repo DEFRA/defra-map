@@ -249,8 +249,10 @@ fm.addEventListener('ready', e => {
   const isSmartTV = /smart-tv|smarttv|appletv|googletv|hbbtv|netcast|tizen|webos|roku|viera|samsungtv|panasonictv|sonytv|lgnetcast|nettv/.test(userAgent)
   const dev = document.getElementById('dev')
   dev.innerHTML = `<p>${navigator.userAgent}</p><p>isSmartTV: ${isSmartTV}</p><p id="input">Input</p>`
+  window.addEventListener('pointermove', e => {
+    document.getElementById('input').innerHTML = `pointermove: ${e.clientX}, ${e.clientY}`
+  })
   window.addEventListener('mousemove', e => {
-    if (isSmartTV) e.preventDefault()
     document.getElementById('input').innerHTML = `mousemove: ${e.clientX}, ${e.clientY}`
   })
 })

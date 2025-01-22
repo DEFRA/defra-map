@@ -2,11 +2,10 @@ import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLo
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate } from '../../lib/viewport'
+import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
-import { getScale } from '../../lib/utils.js'
 import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
@@ -42,8 +41,12 @@ class Provider extends EventTarget {
     } else {
       Promise.all([
         import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy'),
+        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["install"] */ 'resize-observer'),
         import(/* webpackChunkName: "maplibre-legacy" */ 'array-flat-polyfill')
       ]).then(promises => {
+        if (!window.ResizeObserver) {
+          promises[1].install()
+        }
         this.addMap({ module: promises[0], ...options })
       })
     }
@@ -175,10 +178,10 @@ class Provider extends EventTarget {
 
   setPadding (coord, isAnimate) {
     if (this.map) {
-      const { paddingBox, target, scale } = this
+      const { map, paddingBox, target, scale } = this
       const padding = getFocusPadding(paddingBox, target, scale)
       // Search needs to set padding first before fitBbox
-      this.map.setPadding(padding)
+      this.map.setPadding(padding || map.getPadding())
       // Ease map to new when coord is obscured
       coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
     }

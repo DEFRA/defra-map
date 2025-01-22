@@ -13,7 +13,7 @@ const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, leg
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
-  const label = `Search for a place${search.country && (' in ' + search.country.charAt(0).toUpperCase() + search.country.slice(1))}`
+  const label = `Search for a place${search.country ? ' in ' + search.country.charAt(0).toUpperCase() + search.country.slice(1) : ''}`
   return { geocode, searchWidth, hasClear, className, formClassName, label }
 }
 

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { ResizeObserver } from 'resize-observer'
 
 /**
 * Hook that alerts panel size change
@@ -17,10 +16,13 @@ export const useResizeObserver = (el, callback) => {
   }
 
   useEffect(() => {
+    if (!window.ResizeObserver) {
+      return
+    }
     if (observer.current && el) {
       observer.current.unobserve(el)
     }
-    observer.current = new ResizeObserver(entries => {
+    observer.current = new window.ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect
         if ((typeof height === 'number' && height !== prevHeight.current) || (typeof width === 'number' && width !== prevWidth.current)) {
@@ -37,5 +39,5 @@ export const useResizeObserver = (el, callback) => {
         observer.current.unobserve(el)
       }
     }
-  }, [el])
+  }, [el, window.ResizeObserver])
 }

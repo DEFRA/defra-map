@@ -100,7 +100,9 @@ export const getFocusPadding = (el, offsetEl, scale) => {
       bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
     }
   }
-  return padding
+  // Addresses repid browser resizing
+  const isValid = Object.values(padding).every(i => i >= 0)
+  return isValid && padding
 }
 
 export const getFocusBounds = (el, offsetEl, scale) => {
@@ -257,4 +259,16 @@ export const spatialNavigate = (direction, start, pixels) => {
   const distances = quadrant.map(p => pythagorean(Math.abs(start[0] - p[0]), Math.abs(start[1] - p[1])))
   const closest = quadrant[distances.indexOf(Math.min(...distances))]
   return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
+}
+
+export const getScale = (size) => {
+  return { small: 1, medium: 1.5, large: 2 }[size]
+}
+
+export const getPoint = (el, e, scale) => {
+  const { left, top } = el.getBoundingClientRect()
+  const { clientX, clientY } = e.nativeEvent
+  const x = clientX - left
+  const y = clientY - top
+  return [x / scale, y / scale]
 }

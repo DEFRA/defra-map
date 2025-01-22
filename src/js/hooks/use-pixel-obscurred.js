@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport.js'
-import { getScale } from '../lib/utils.js'
+import { getScale } from '../lib/viewport.js'
 
 // Hook that alerts if pixel is obscured
 

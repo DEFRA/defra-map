@@ -147,12 +147,14 @@ export const getFeatures = (provider, pixel) => {
 
   // Get all features at given pixel
   let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
-  featuresAtPixel = [...new Map(featuresAtPixel.map(f => [(f.id || f.properties?.id), {
-    ...f.properties,
-    id: f.id || f.properties.id,
-    name: f.properties.name,
-    layer: f.layer.id
-  }])).values()]
+  featuresAtPixel = (featuresAtPixel.map(f => {
+    return {
+      ...f.properties,
+      id: f.id || f.properties.id,
+      name: f.properties.name,
+      layer: f.layer.id
+    }
+  }))
 
   // Get all 'featureLayer' features in the viewport
   const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers: featureLayers })

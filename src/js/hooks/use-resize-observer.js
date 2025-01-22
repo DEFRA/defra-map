@@ -16,23 +16,22 @@ export const useResizeObserver = (el, callback) => {
   }
 
   useEffect(() => {
-    if (!window.ResizeObserver) {
-      return
-    }
     if (observer.current && el) {
       observer.current.unobserve(el)
     }
-    observer.current = new window.ResizeObserver(entries => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        if ((typeof height === 'number' && height !== prevHeight.current) || (typeof width === 'number' && width !== prevWidth.current)) {
-          prevWidth.current = width
-          prevHeight.current = height
-          callback()
+    if (window.ResizeObserver) {
+      observer.current = new window.ResizeObserver(entries => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect
+          if ((typeof height === 'number' && height !== prevHeight.current) || (typeof width === 'number' && width !== prevWidth.current)) {
+            prevWidth.current = width
+            prevHeight.current = height
+            callback()
+          }
         }
-      }
-    })
-    observe()
+      })
+      observe()
+    }
 
     return () => {
       if (observer.current && el) {

@@ -93,11 +93,15 @@ export const getFocusPadding = (el, offsetEl, scale) => {
   if (el) {
     const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
     const box = el.getBoundingClientRect()
+    const boxX = box.x || box.left
+    const boxY = box.y || box.top
+    const parentX = parent.x || parent.left
+    const parentY = parent.y || parent.top
     padding = {
-      top: ((box.y || box.top) - (parent.y || parent.top)) / scale,
-      left: ((box.x || box.left) - (parent.x || parent.left)) / scale,
-      right: (parent.width - box.width - ((box.x || box.left) - (parent.x || parent.left))) / scale,
-      bottom: (parent.height - box.height - ((box.y || box.top) - (parent.y || parent.top))) / scale
+      top: (boxY - parentY) / scale,
+      left: (boxX - parentX) / scale,
+      right: (parent.width - box.width - (boxX - parentX)) / scale,
+      bottom: (parent.height - box.height - (boxY - parentY)) / scale
     }
   }
   // Addresses repid browser resizing

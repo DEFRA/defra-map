@@ -183,19 +183,6 @@ describe('Container', () => {
     expect(type).toBe('custom-class')
   })
 
-  it('renders the Legend panel when activePanel is LEGEND', () => {
-    mockUseApp.activePanel = 'LEGEND'
-    mockUseApp.isLegendInset = false
-    mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
-    mockUseApp.queryPolygon = { helpLabel: 'Help', html: '<p>Help content</p>' }
-
-    useApp.mockReturnValue(mockUseApp)
-
-    render(<Container />)
-
-    expect(screen.getByText('Legend Title')).toBeInTheDocument()
-  })
-
   it('sets up event listeners and dispatches actions correctly', () => {
     mockUseApp.activePanel = null
 

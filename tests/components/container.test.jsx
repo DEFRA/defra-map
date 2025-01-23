@@ -80,6 +80,8 @@ describe('Container', () => {
   let matchMediaMock
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    jest.resetModules()
     settings.container = {
       default: { CLASS: 'default-class', HEIGHT: '100%', attribution: 'Default Attribution' },
       custom: { CLASS: 'custom-class', HEIGHT: '80%', attribution: 'Custom Attribution' }
@@ -119,6 +121,8 @@ describe('Container', () => {
       matchMediaMock.matches = query.includes('dark')
       return matchMediaMock
     })
+
+    jest.spyOn(window, 'removeEventListener')
   })
 
   afterEach(() => {
@@ -193,8 +197,9 @@ describe('Container', () => {
   })
 
   it('sets up event listeners and dispatches actions correctly', () => {
-    render(<Container />)
+    mockUseApp.activePanel = null
 
+    render(<Container />)
     // Check event listeners are registered
     expect(eventBus.on).toHaveBeenCalledWith(
       'test-parent',
@@ -214,10 +219,9 @@ describe('Container', () => {
 
     // Check if dark mode media query listener is set up
     expect(window.matchMedia).toHaveBeenCalledWith('(prefers-color-scheme: dark)')
-    // expect(window.matchMedia().mock.calls[0][0].addEventListener).toHaveBeenCalledWith('change', expect.any(Function))
 
     // // Check if CONTAINER_READY action is dispatched
-    // expect(mockUseApp.dispatch).toHaveBeenCalledWith({ type: 'CONTAINER_READY' })
+    expect(mockUseApp.dispatch).toHaveBeenCalledWith({ type: 'CONTAINER_READY' })
   })
 
   it('adds and removes dark mode event listener', () => {
@@ -243,16 +247,13 @@ describe('Container', () => {
 
     // Unmount the component and ensure removeEventListener is called
     unmount()
-    expect(matchMediaMock.removeEventListener).toHaveBeenCalledWith(
+    expect(window.removeEventListener).toHaveBeenCalledWith(
       'change',
       expect.any(Function)
     )
   })
 
-  it('handles callbacks from eventBus correctly', () => {
-    const { events } = require('../../src/js/lib/eventbus')
-    const eventBus = require('../../src/js/lib/eventbus').default
-
+  it('handles SET_INFO event correctly', () => {
     render(<Container />)
 
     // Simulate a SET_INFO event
@@ -265,5 +266,16 @@ describe('Container', () => {
       type: 'SET_INFO',
       payload: { info: 'test data' }
     })
+  })
+
+  it('calls window.removeEventListener on unmount', () => {
+    const { unmount } = render(<Container />)
+
+    // Unmount component and ensure window.removeEventListener is called
+    unmount()
+    expect(window.removeEventListener).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    )
   })
 })

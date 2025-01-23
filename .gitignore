@@ -5,6 +5,9 @@
 ._.*
 ._*
 
+# Launch file
+.vscode/launch.json
+
 # Ignore local editor
 .project
 .settings

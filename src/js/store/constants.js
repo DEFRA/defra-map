@@ -23,6 +23,7 @@ export const defaults = {
   PANEL_POSITION: 'overlayRight',
   MIN_SEARCH_LENGTH: 3,
   GEOCODE_PROVIDER: 'os-open-names',
+  STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   4326: {
     BBOX: [-5.719993, 49.955638, 1.794689, 55.825973],
     MAX_BBOX: [-5.719993, 49.955638, 1.794689, 55.825973],

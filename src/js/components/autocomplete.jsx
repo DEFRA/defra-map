@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from 'react'
 import { debounce } from '../lib/debounce'
 import { defaults } from '../store/constants'
 
-export default function Autocomplete ({ id, state, dispatch, geocode, updateViewport }) {
+export default function Autocomplete ({ id, state, dispatch, geocode, errorText, updateViewport }) {
   const SUGGEST_DELAY = 350
   const STATUS_DELAY = 500
   const selectedRef = useRef()
@@ -59,7 +59,7 @@ export default function Autocomplete ({ id, state, dispatch, geocode, updateView
         )
       }, [state.status])}
       {(state.value?.length >= defaults.MIN_SEARCH_LENGTH) && state.suggestions && !state.suggestions.length && (
-        <div className='fm-c-search__hint'>No results are available</div>
+        <div className='fm-c-search__hint'>{errorText || 'No results are available'}</div>
       )}
       <ul id={`${id}-suggestions`} role='listbox' aria-labelledby={`${id}-search`} className='fm-c-search__list' {...(!state.isVisible ? { style: { display: 'none' } } : {})} onMouseEnter={() => dispatch({ type: 'MOUSEENTER' })}>
         {state.suggestions?.map((item, i) =>

@@ -13,7 +13,7 @@ export default function Pan () {
 
     return (
         <Tooltip id={`${id}-pan-label`} cssModifier='location' position='left' text='Pan the map'>
-            <button onMouseDown={handleMouseDown} className='fm-c-btn fm-c-btn--pan govuk-body-s' aria-labelledby={`${id}-pan-label`} aria-controls={`${id}-viewport`} />
+            <div onMouseDown={handleMouseDown} className='fm-c-btn fm-c-btn--pan govuk-body-s' aria-labelledby={`${id}-pan-label`} aria-controls={`${id}-viewport`} />
         </Tooltip>
     )
 }

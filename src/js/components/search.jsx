@@ -189,7 +189,7 @@ export default function Search ({ instigatorRef }) {
         When search results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.
       </div>
       {isAutocomplete && (
-        <Autocomplete id={id} state={state} dispatch={dispatch} geocode={geocode} updateViewport={updateViewport} />
+        <Autocomplete id={id} state={state} dispatch={dispatch} geocode={geocode} errorText={search.errorText} updateViewport={updateViewport} />
       )}
     </div>
   )

@@ -40,10 +40,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
-    "@turf/area": "^7.2.0",
-    "@turf/bbox-clip": "^7.2.0",
-    "@turf/distance": "^7.2.0",
-    "@turf/helpers": "^7.2.0",
     "@types/jest": "^29.5.14",
     "array-flat-polyfill": "^1.0.1",
     "babel-jest": "^29.7.0",
@@ -84,6 +80,10 @@
   },
   "dependencies": {
     "@arcgis/core": "^4.31.6",
+    "@turf/area": "^7.2.0",
+    "@turf/bbox-clip": "^7.2.0",
+    "@turf/distance": "^7.2.0",
+    "@turf/helpers": "^7.2.0",
     "maplibre-gl": "^4.7.1",
     "maplibre-gl-legacy": "npm:maplibre-gl@^1.15.3",
     "preact": "^10.25.2"

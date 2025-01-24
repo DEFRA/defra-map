@@ -6,9 +6,14 @@ export default function Pan () {
     const { options } = useApp()
     const { id } = options
 
+    const handleMouseDown = e => {
+        e.target.blur()
+        console.log(document.activeElement)
+    }
+
     return (
         <Tooltip id={`${id}-pan-label`} cssModifier='location' position='left' text='Pan the map'>
-            <button className='fm-c-btn fm-c-btn--pan govuk-body-s' aria-labelledby={`${id}-pan-label`} aria-controls={`${id}-viewport`} />
+            <button onMouseDown={handleMouseDown} className='fm-c-btn fm-c-btn--pan govuk-body-s' aria-labelledby={`${id}-pan-label`} aria-controls={`${id}-viewport`} />
         </Tooltip>
     )
 }

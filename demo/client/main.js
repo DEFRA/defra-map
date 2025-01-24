@@ -249,21 +249,18 @@ fm.addEventListener('ready', e => {
   const isSmartTV = /smart-tv|smarttv|appletv|googletv|hbbtv|netcast|tizen|webos|roku|viera|samsungtv|panasonictv|sonytv|lgnetcast|nettv/.test(userAgent)
   const dev = document.getElementById('dev')
   dev.innerHTML = `<p>${navigator.userAgent}</p><p>isSmartTV: ${isSmartTV}</p><p id="input">Input</p>`
-  const viewport = document.getElementById('map-viewport')
-  viewport.addEventListener('keydown', e => {
-    document.getElementById('input').innerHTML = `keydown: ${e.key}, ${e.code}`
-  })
-  viewport.addEventListener('pointermove', e => {
-    document.getElementById('input').innerHTML = `pointermove: ${e.clientX}, ${e.clientY}`
-  })
-  viewport.addEventListener('pointerdown', e => {
-    document.getElementById('input').innerHTML = `pointerdown: ${e.clientX}, ${e.clientY}`
-  })
-  viewport.addEventListener('mousemove', e => {
+  const btn = document.getElementsByClassName('fm-c-btn--pan')[0]
+  btn.addEventListener('mousemove', e => {
     document.getElementById('input').innerHTML = `mousemove: ${e.clientX}, ${e.clientY}`
   })
-  viewport.addEventListener('mousedown', e => {
+  btn.addEventListener('mousedown', e => {
     document.getElementById('input').innerHTML = `mousedown: ${e.clientX}, ${e.clientY}`
+  })
+  btn.addEventListener('keydown', e => {
+    document.getElementById('input').innerHTML = `keydown: ${e.key}, ${e.code}`
+  })
+  btn.addEventListener('keyup', e => {
+    document.getElementById('input').innerHTML = `keyup: ${e.key}, ${e.code}`
   })
 })
 

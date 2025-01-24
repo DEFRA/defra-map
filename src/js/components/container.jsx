@@ -17,6 +17,7 @@ import LegendButton from './legend-button.jsx'
 import KeyButton from './key-button.jsx'
 import SearchButton from './search-button.jsx'
 import StylesButton from './styles-button.jsx'
+import Pan from './pan.jsx'
 import Zoom from './zoom.jsx'
 import Reset from './reset.jsx'
 import Location from './location.jsx'
@@ -164,6 +165,7 @@ export default function Container () {
                     <Reset />
                     <Location provider={provider} />
                     <Zoom />
+                    <Pan />
                   </>
                 )}
               </div>

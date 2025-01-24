@@ -3,7 +3,6 @@ import { loadSymbols, addHighlightedLabelLayer, amendLineSymbolLayers, addShortc
 
 export const handleLoad = async (provider) => {
   await loadSymbols(provider)
-  provider.baseLayers = provider.map.getStyle().layers
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
@@ -14,6 +13,8 @@ export const handleLoad = async (provider) => {
 
 export const handleStyleLoad = async (provider) => {
   const { map } = provider
+  // Store ref to baselayers when a new style is loaded
+  provider.baseLayers = map.getStyle().layers
   // Amend symbol-placement prop to so labels have a coordinate
   amendLineSymbolLayers(map)
   // Add highlighted label layer and source

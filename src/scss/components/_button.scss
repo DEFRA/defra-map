@@ -61,6 +61,7 @@
 // Open map button
 .fm-c-btn-open-map {
     @extend %fm-c-btn;
+    @include body-font(16px, 400);
     border: 1px solid govuk-colour('black');
     background-color: govuk-colour('white');
     padding: 9px 12px;

@@ -140,7 +140,7 @@ export class FloodMap extends EventTarget {
   _insertButtonHTML () {
     const { buttonText, buttonType } = this.props
     this.el.insertAdjacentHTML('beforebegin', `
-      <a href="${location.pathname}?view=${this.id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')} govuk-body-s" ${this.isVisible ? 'style="display:none"' : ''} role="button">
+      <a href="${location.pathname}?view=${this.id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')}" ${this.isVisible ? 'style="display:none"' : ''} role="button">
           <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
           <span class='fm-u-visually-hidden'>(Visual only)</span>
       </a>

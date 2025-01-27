@@ -1,44 +1,67 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import { getFocusPadding } from '../../lib/viewport'
+
+const styles = ['defaultUrl', 'darkUrl', 'aerialUrl', 'deuteranopiaUrl', 'tritanopiaUrl']
 
 export class Draw {
-  constructor (provider, draw, basemap, focusBox) {
+  constructor (provider, options) {
     const { map } = provider
-    this.basemap = basemap
     this.provider = provider
-    this.focusBox = focusBox
-    Object.assign(this, draw)
+    Object.assign(this, options)
 
-    const styles = ['defaultUrl', 'darkUrl', 'aerialUrl', 'deuteranopiaUrl', 'tritanopiaUrl']
-    styles.forEach(s => {
-      this[s + 'Org'] = provider[s]
-      provider[s] = this[s] || provider[s]
-    })
-    this.styles = styles
+    // Reference to original styles
+    styles.forEach(s => { this[s + 'Org'] = provider[s] })
 
+    // Reference to original zoom constraints
     this.maxZoomO = map.getMaxZoom()
     this.minZoomO = map.getMinZoom()
-    map.setMaxZoom(draw.maxZoom)
-    map.setMinZoom(draw.minZoom)
 
-    if (!this[basemap + 'Url']) {
+    // Provider needs ref to draw moudule and draw need ref to provider
+    provider.draw = this
+
+    // Add existing feature
+    if (options.feature) {
+      this.editGeoJSON(options.feature)
       return
     }
-    provider.setBasemap(basemap)
+
+    // Start new
+    this.start('frame')
   }
 
-  remove () {
-    const { provider, draw, styles, maxZoomO, minZoomO } = this
-    const { map } = provider
-    styles.forEach(s => { provider[s] = this[s + 'Org'] })
-    map.setMaxZoom(maxZoomO)
-    map.setMinZoom(minZoomO)
-    if (map.hasControl(draw)) {
-      map.removeControl(draw)
-    }
-    if (!this[provider.basemap + 'Url']) {
+  start (mode) {
+    const isFrame = mode === 'frame'
+    this.toggleConstraints(true)
+
+    // Remove any existing feature
+    if (isFrame) {
+      console.log('Remove any graphics')
       return
     }
-    provider.setBasemap(provider.basemap)
+
+    // Edit existing feature
+    this.editGeoJSON(this.oFeature)
+  }
+
+  toggleConstraints (hasConstraints) {
+    const { provider, maxZoom, maxZoomO, minZoomO, minZoom, oFeature } = this
+    const { map } = provider
+
+    // Toggle min and max zoom
+    map.setMaxZoom(hasConstraints ? maxZoom : maxZoomO)
+    map.setMinZoom(hasConstraints ? minZoom : minZoomO)
+
+    // Toggle basemaps
+    styles.forEach(s => { provider[s] = hasConstraints ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
+    if (this[provider.basemap + 'Url']) {
+      provider.setBasemap(provider.basemap)
+    }
+
+    // Zoom to extent if we have an existing graphic
+    if (hasConstraints && oFeature) {
+      console.log('Fit bounds of graphic')
+      // map.fitBounds(bounds, { animate: false })
+    }
   }
 
   isSameFeature (a, b) {
@@ -47,9 +70,21 @@ export class Draw {
   }
 
   edit () {
-    const { focusBox } = this
-    const feature = this.getFeature(focusBox)
+    const { paddingBox } = this.provider
+    const feature = this.getFeatureFromElement(paddingBox)
     this.oFeature = feature
+    this.editGeoJSON(feature)
+  }
+
+  cancel () {
+    const { draw } = this
+    const { map } = this.provider
+    map.removeControl(draw)
+  }
+
+  finish () {
+    const { paddingBox } = this.provider
+    const feature = this.getFeatureFromElement(paddingBox)
     this.editGeoJSON(feature)
   }
 
@@ -66,7 +101,8 @@ export class Draw {
 
     map.addControl(draw)
     draw.add(feature)
-    draw.changeMode('direct_select', { featureId: 'shape' })
+    // draw.changeMode('direct_select', { featureId: 'shape' })
+    draw.changeMode('simple_select', { featureId: 'shape' })
 
     this.draw = draw
   }
@@ -82,25 +118,27 @@ export class Draw {
     return isSame ? null : feature
   }
 
-  getBounds () {
-    const el = this.focusBox
-    const { map } = this.provider
-    const box = el.getBoundingClientRect()
-    const nw = map.unproject([el.offsetLeft, el.offsetTop])
-    const se = map.unproject([el.offsetLeft + box.width, el.offsetTop + box.height])
-    return [nw.lng, nw.lat, se.lng, se.lat]
+   getBoundsFromFeature(feature) {
+    const coordinates = feature.geometry.coordinates[0]
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    coordinates.forEach(coord => {
+        const [x, y] = coord
+        minX = x < minX ? x : minX
+        minY = y < minY ? y : minY
+        maxX = x > maxX ? x : maxX
+        maxY = y > maxY ? y : maxY
+    })
+    return [minX, minY, maxX, maxY]
   }
 
-  getFeature () {
-    const el = this.focusBox
-    const bounds = this.getBounds(el)
-    const coords = [[
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[1]],
-      [bounds[2], bounds[3]],
-      [bounds[0], bounds[3]],
-      [bounds[0], bounds[1]]
-    ]]
+  getFeatureFromElement (el) {
+    const { map, target, scale } = this.provider
+    const box = el.getBoundingClientRect()
+    const padding = getFocusPadding(el, target, scale)
+    const nw = map.unproject([padding.left, padding.top])
+    const se = map.unproject([padding.left + box.width, padding.top + box.height])
+    const b = [nw.lng, nw.lat, se.lng, se.lat]
+    const coords = [[[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]]]]
     return {
       id: 'shape',
       type: 'Feature',

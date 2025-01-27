@@ -316,12 +316,12 @@ const fm = new FloodMap('map', {
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
     html: '<p class="govuk-body-s">Instructions</p>',
-    defaultUrl: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
-    darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
+    // defaultUrl: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
+    // darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
     minZoom: 12,
-    maxZoom: 21
-    // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
-  },
+    maxZoom: 21,
+    feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
+  }
   // queryPixel: []
 })
 

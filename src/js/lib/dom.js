@@ -30,7 +30,7 @@ export const toggleInert = (activeEl) => {
 
   let el = getContainer(activeEl || document.activeElement)
 
-  if (el) {
+  if (!el) {
     return
   }
 
@@ -59,11 +59,9 @@ export const setInitialFocus = () => {
   const viewport = isPage && !isWithinContainer && container.querySelector('[data-fm-viewport]')
   el = modal || viewport
 
-  if (!el) {
-    return
+  if (el) {
+    el.focus()
   }
-
-  el.focus()
 }
 
 export const constrainFocus = e => {

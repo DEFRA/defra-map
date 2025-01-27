@@ -188,7 +188,8 @@ const fm = new FloodMap('map', {
   },
   search: {
     country: 'england',
-    isAutocomplete: true
+    isAutocomplete: true,
+    errorText: 'No results available. Enter a town or postcode'
   },
   legend: {
     width: '280px',
@@ -196,7 +197,7 @@ const fm = new FloodMap('map', {
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',
-    keyDisplay: 'min',
+    // keyDisplay: 'min',
     segments: [
       {
         heading: 'Datasets',

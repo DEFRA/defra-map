@@ -190,7 +190,7 @@ export const getFeatures = (provider, pixel) => {
     items: featuresAtPixel,
     featuresTotal,
     featuresInViewport,
-    isFeaturesInMap: !!layers.length,
+    isFeaturesInMap: !!layers?.length,
     isPixelFeaturesAtPixel: pixelLayers?.includes(feature?.layer),
     isPixelFeaturesInMap: hasPixelLayers,
     coord: lngLat

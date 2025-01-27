@@ -84,7 +84,7 @@ export default function Container () {
   useEffect(() => {
     updateTitle()
     toggleInert(activeRef.current)
-    activeRef.current?.focus()
+    activeRef.current?.focus({ preventScroll: true })
   }, [isPage, activePanel])
 
   return (

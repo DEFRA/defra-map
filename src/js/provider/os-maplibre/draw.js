@@ -1,7 +1,56 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import { DisabledMode } from './draw-modes'
 import { getFocusPadding } from '../../lib/viewport'
+import { defaults as storeDefaults } from '../../store/constants'
 
-const styles = ['defaultUrl', 'darkUrl', 'aerialUrl', 'deuteranopiaUrl', 'tritanopiaUrl']
+const styles = [
+  {
+    id: 'stroke-active',
+    type: 'line',
+    filter: ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'true']],
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    paint: {
+      'line-color': '#ff0000',
+      'line-width': 2,
+      'line-opacity': 1
+    }
+  },
+  {
+    id: 'stroke-inactive',
+    type: 'line',
+    filter: ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'false']],
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    paint: {
+      'line-color': '#ff0000',
+      'line-width': 2,
+      'line-opacity': 0.8
+    }
+  },
+  {
+    id: 'midpoint',
+    type: 'circle',
+    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint']],
+    paint: {
+      'circle-radius': 5,
+      'circle-color': '#0000ff'
+    }
+  },
+  {
+    id: 'vertex',
+    type: 'circle',
+    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
+    paint: {
+      'circle-radius': 7,
+      'circle-color': '#ff0000'
+    }
+  }
+]
 
 export class Draw {
   constructor (provider, options) {
@@ -10,7 +59,7 @@ export class Draw {
     Object.assign(this, options)
 
     // Reference to original styles
-    styles.forEach(s => { this[s + 'Org'] = provider[s] })
+    storeDefaults.STYLES.forEach(s => { this[`${s}UrlOrg`] = provider[`${s}Url`] })
 
     // Reference to original zoom constraints
     this.maxZoomO = map.getMaxZoom()
@@ -21,7 +70,7 @@ export class Draw {
 
     // Add existing feature
     if (options.feature) {
-      this.editGeoJSON(options.feature)
+      this.drawFeature(options.feature)
       return
     }
 
@@ -29,18 +78,48 @@ export class Draw {
     this.start('frame')
   }
 
+  // Add or edit
   start (mode) {
+    const { draw, oFeature } = this
+    const { map } = this.provider
     const isFrame = mode === 'frame'
     this.toggleConstraints(true)
 
-    // Remove any existing feature
-    if (isFrame) {
-      console.log('Remove any graphics')
-      return
+    // Remove existing feature
+    if (isFrame && map.hasControl(draw)) {
+      map.removeControl(this.draw)
     }
 
-    // Edit existing feature
-    this.editGeoJSON(this.oFeature)
+    // Draw existing feature
+    if (!isFrame && oFeature) {
+      this.drawFeature(oFeature)
+    }
+  }
+
+  // Cancel
+  cancel () {
+    const { draw, oFeature } = this
+    const { map } = this.provider
+    // Disable interactions
+    if (map.hasControl(draw)) {
+      draw.changeMode('disabled')
+    }
+    // Re-draw original feature
+    if (oFeature) {
+      this.drawFeature(oFeature)
+    }
+    this.toggleConstraints(false)
+  }
+
+  // Confirm or update
+  finish () {
+    const { map, paddingBox } = this.provider
+    if (!map.hasControl(this.draw)) {
+      const feature = this.getFeatureFromElement(paddingBox)
+      this.drawFeature(feature)
+    }
+    this.toggleConstraints(false)
+    return this.draw.get('shape')
   }
 
   toggleConstraints (hasConstraints) {
@@ -52,73 +131,45 @@ export class Draw {
     map.setMinZoom(hasConstraints ? minZoom : minZoomO)
 
     // Toggle basemaps
-    styles.forEach(s => { provider[s] = hasConstraints ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
+    storeDefaults.STYLES.forEach(s => { provider[`${s}Url`] = hasConstraints ? (this[`${s}Url`] || provider[`${s}Url`]) : this[`${s}UrlOrg`] })
     if (this[provider.basemap + 'Url']) {
       provider.setBasemap(provider.basemap)
     }
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oFeature) {
+      const bounds = this.getBoundsFromFeature(oFeature)
       console.log('Fit bounds of graphic')
-      // map.fitBounds(bounds, { animate: false })
+      map.fitBounds(bounds, { animate: false })
     }
   }
-
-  isSameFeature (a, b) {
-    const numRings = 5
-    return a.geometry.coordinates.flat(numRings).toString() === b.geometry.coordinates.flat(numRings).toString()
-  }
-
-  edit () {
-    const { paddingBox } = this.provider
-    const feature = this.getFeatureFromElement(paddingBox)
+  
+  drawFeature (feature) {
+    const { map } = this.provider
     this.oFeature = feature
-    this.editGeoJSON(feature)
-  }
-
-  cancel () {
-    const { draw } = this
-    const { map } = this.provider
-    map.removeControl(draw)
-  }
-
-  finish () {
-    const { paddingBox } = this.provider
-    const feature = this.getFeatureFromElement(paddingBox)
-    this.editGeoJSON(feature)
-  }
-
-  editGeoJSON (feature) {
-    const { map } = this.provider
 
     MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
     MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
     MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group'
 
+    const modes = MapboxDraw.modes
+    modes.disabled = DisabledMode
+
     const draw = new MapboxDraw({
-      displayControlsDefault: false
+      modes,
+      styles,
+      displayControlsDefault: false,
     })
 
     map.addControl(draw)
     draw.add(feature)
+    draw.changeMode('disabled')
     // draw.changeMode('direct_select', { featureId: 'shape' })
-    draw.changeMode('simple_select', { featureId: 'shape' })
 
     this.draw = draw
   }
 
-  finishEdit () {
-    const { draw, oFeature } = this
-    const { map } = this.provider
-    const feature = draw.get('shape')
-    const isSame = this.isSameFeature(oFeature, feature)
-    if (isSame && map.hasControl(draw)) {
-      map.removeControl(draw)
-    }
-    return isSame ? null : feature
-  }
-
-   getBoundsFromFeature(feature) {
+  getBoundsFromFeature(feature) {
     const coordinates = feature.geometry.coordinates[0]
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
     coordinates.forEach(coord => {
@@ -149,6 +200,29 @@ export class Draw {
       }
     }
   }
+
+  isSameFeature (a, b) {
+    const numRings = 5
+    return a.geometry.coordinates.flat(numRings).toString() === b.geometry.coordinates.flat(numRings).toString()
+  }
+
+  // getDrawFeature () {
+  //   const { draw, oFeature } = this
+  //   const { map } = this.provider
+  //   const feature = draw.get('shape')
+  //   const isSame = this.isSameFeature(oFeature, feature)
+  //   if (isSame && map.hasControl(draw)) {
+  //     draw.changeMode('disabled')
+  //   }
+  //   return isSame ? null : feature
+  // }
+
+  // edit () {
+  //   const { paddingBox } = this.provider
+  //   const feature = this.getFeatureFromElement(paddingBox)
+  //   this.oFeature = feature
+  //   this.drawFeature(feature)
+  // }
 }
 
 export default Draw

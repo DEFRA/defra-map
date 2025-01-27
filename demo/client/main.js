@@ -38,7 +38,7 @@ const fm = new FloodMap('map', {
     title: 'Menu',
     width: '360px',
     display: 'inset',
-    // isVisible: true,
+    isVisible: true,
     keyDisplay: 'min', // 'all'
     isPersistInUrl: true,
     segments: [
@@ -224,14 +224,14 @@ const fm = new FloodMap('map', {
       }
     ]
   },
-  info: {
-    featureId: '011WAFLE',
-    // coord: [-2.934171,54.901112],
-    // hasData: true,
-    width: '360px',
-    label: '[dynamic title]',
-    html: '<p class="govuk-body-s" id="dev">[dynamic body]</p>'
-  },
+  // info: {
+  //   featureId: '011WAFLE',
+  //   // coord: [-2.934171,54.901112],
+  //   // hasData: true,
+  //   width: '360px',
+  //   label: '[dynamic title]',
+  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
+  // },
   queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
   queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
 })
@@ -244,24 +244,6 @@ fm.addEventListener('ready', e => {
   addSources(map)
   addLayers(map, isDarkBasemap)
   toggleVisibility(map, e.detail)
-
-  const userAgent = navigator.userAgent.toLowerCase()
-  const isSmartTV = /smart-tv|smarttv|appletv|googletv|hbbtv|netcast|tizen|webos|roku|viera|samsungtv|panasonictv|sonytv|lgnetcast|nettv/.test(userAgent)
-  const debug = document.getElementById('debug')
-  debug.innerHTML = `<p>${navigator.userAgent}</p><p>isSmartTV: ${isSmartTV}</p><p id="input">Input</p>`
-  const viewport = document.getElementById('map-viewport')
-  viewport.addEventListener('mousemove', e => {
-    document.getElementById('input').innerHTML = `mousemove: ${e.clientX}, ${e.clientY}`
-  })
-  viewport.addEventListener('mousedown', e => {
-    document.getElementById('input').innerHTML = `mousedown: ${e.clientX}, ${e.clientY}`
-  })
-  viewport.addEventListener('keydown', e => {
-    document.getElementById('input').innerHTML = `keydown: ${e.key}, ${e.code}`
-  })
-  viewport.addEventListener('keyup', e => {
-    document.getElementById('input').innerHTML = `keyup: ${e.key}, ${e.code}`
-  })
 })
 
 // Listen for segments, layers or style changes

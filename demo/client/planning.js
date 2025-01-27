@@ -197,7 +197,7 @@ const fm = new FloodMap('map', {
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',
-    keyDisplay: 'min',
+    // keyDisplay: 'min',
     segments: [
       {
         heading: 'Datasets',

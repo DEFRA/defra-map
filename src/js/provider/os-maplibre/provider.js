@@ -215,6 +215,13 @@ class Provider extends EventTarget {
     }
   }
 
+  initDraw (draw, basemap, el) {
+    import(/* webpackChunkName: "maplibre-draw" */ './draw.js').then(module => {
+      const Draw = module.default
+      this.draw = new Draw(this, draw, basemap, el)
+    })
+  }
+
   setTargetMarker (coord, hasData, isVisible) {
     const { targetMarker } = this
     if (targetMarker) {

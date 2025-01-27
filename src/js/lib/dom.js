@@ -31,19 +31,17 @@ export const toggleInert = (activeEl) => {
   let el = getContainer(activeEl || document.activeElement)
 
   if (el) {
-    return
-  }
-
-  while (el.parentNode && el !== document.body) {
-    let sibling = el.parentNode.firstChild
-    while (sibling) {
-      if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute(ARIA_HIDDEN)) {
-        sibling.setAttribute(ARIA_HIDDEN, true)
-        sibling.setAttribute('data-fm-inert', '')
+    while (el.parentNode && el !== document.body) {
+      let sibling = el.parentNode.firstChild
+      while (sibling) {
+        if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute(ARIA_HIDDEN)) {
+          sibling.setAttribute(ARIA_HIDDEN, true)
+          sibling.setAttribute('data-fm-inert', '')
+        }
+        sibling = sibling.nextSibling
       }
-      sibling = sibling.nextSibling
+      el = el.parentNode
     }
-    el = el.parentNode
   }
 }
 
@@ -59,11 +57,9 @@ export const setInitialFocus = () => {
   const viewport = isPage && !isWithinContainer && container.querySelector('[data-fm-viewport]')
   el = modal || viewport
 
-  if (!el) {
-    return
+  if (el) {
+    el.focus()
   }
-
-  el.focus()
 }
 
 export const constrainFocus = e => {

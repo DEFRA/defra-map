@@ -30,18 +30,20 @@ export const toggleInert = (activeEl) => {
 
   let el = getContainer(activeEl || document.activeElement)
 
-  if (el) {
-    while (el.parentNode && el !== document.body) {
-      let sibling = el.parentNode.firstChild
-      while (sibling) {
-        if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute(ARIA_HIDDEN)) {
-          sibling.setAttribute(ARIA_HIDDEN, true)
-          sibling.setAttribute('data-fm-inert', '')
-        }
-        sibling = sibling.nextSibling
+  if (!el) {
+    return
+  }
+
+  while (el.parentNode && el !== document.body) {
+    let sibling = el.parentNode.firstChild
+    while (sibling) {
+      if (sibling.nodeType === 1 && sibling !== el && !sibling.hasAttribute(ARIA_HIDDEN)) {
+        sibling.setAttribute(ARIA_HIDDEN, true)
+        sibling.setAttribute('data-fm-inert', '')
       }
-      el = el.parentNode
+      sibling = sibling.nextSibling
     }
+    el = el.parentNode
   }
 }
 

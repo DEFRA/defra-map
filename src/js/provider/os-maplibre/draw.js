@@ -59,13 +59,13 @@ export class Draw {
   edit () {
     const { map, paddingBox } = this.provider
     const hasDraw = map.hasControl(this.draw)
-    
-    // Draw feature 
+
+    // Draw feature
     if (!hasDraw) {
       const feature = this.getFeatureFromElement(paddingBox)
       this.drawFeature(feature)
     }
-    
+
     // Set edit mode
     this.draw.changeMode('direct_select', { featureId: 'shape' })
   }
@@ -128,7 +128,7 @@ export class Draw {
     const { draw } = this
     const { map } = this.provider
     this.oFeature = undefined
-    
+
     // Remove draw
     map.removeControl(draw)
     this.draw = undefined
@@ -154,7 +154,7 @@ export class Draw {
       map.fitBounds(bounds, { animate: false })
     }
   }
-  
+
   drawFeature (feature) {
     const { map } = this.provider
 
@@ -168,7 +168,7 @@ export class Draw {
     const draw = new MapboxDraw({
       modes,
       styles: drawStyles,
-      displayControlsDefault: false,
+      displayControlsDefault: false
     })
 
     map.addControl(draw)
@@ -178,15 +178,15 @@ export class Draw {
     this.draw = draw
   }
 
-  getBoundsFromFeature(feature) {
+  getBoundsFromFeature (feature) {
     const coordinates = feature.geometry.coordinates[0]
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    let minX = Infinity; let minY = Infinity; let maxX = -Infinity; let maxY = -Infinity
     coordinates.forEach(coord => {
-        const [x, y] = coord
-        minX = x < minX ? x : minX
-        minY = y < minY ? y : minY
-        maxX = x > maxX ? x : maxX
-        maxY = y > maxY ? y : maxY
+      const [x, y] = coord
+      minX = x < minX ? x : minX
+      minY = y < minY ? y : minY
+      maxX = x > maxX ? x : maxX
+      maxY = y > maxY ? y : maxY
     })
     return [minX, minY, maxX, maxY]
   }

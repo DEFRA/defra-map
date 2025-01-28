@@ -126,8 +126,8 @@ export const getFocusBounds = (el, scale) => {
   return bounds
 }
 
-export const getMapPixel = (el, offsetEl, scale) => {
-  const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+export const getMapPixel = (el, scale) => {
+  const parent = el.closest('[data-fm-main]').getBoundingClientRect()
   const box = el.getBoundingClientRect()
   const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
   const top = ((box.y || box.top) - (parent.y || parent.top)) / scale

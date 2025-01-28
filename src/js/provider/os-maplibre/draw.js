@@ -69,6 +69,19 @@ export class Draw {
 
     // Set edit mode
     this.draw.changeMode('direct_select', { featureId: 'shape' })
+
+    // Selected vertex
+    map.on('draw.selectionchange', e => {
+      const point = e.points[0]
+      console.log(point)
+    })
+
+    // Disable simple select
+    map.on('draw.modechange', e => {
+      if (e.mode === 'simple_select') {
+        this.draw.changeMode('direct_select', { featureId: 'shape' })
+      }
+    })
   }
 
   // Reset to square

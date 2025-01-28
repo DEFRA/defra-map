@@ -1,56 +1,8 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { DisabledMode } from './draw-modes'
+import { DisabledMode } from './modes'
+import { draw as drawStyles } from './styles'
 import { getFocusPadding } from '../../lib/viewport'
 import { defaults as storeDefaults } from '../../store/constants'
-
-const styles = [
-  {
-    id: 'stroke-active',
-    type: 'line',
-    filter: ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'true']],
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    paint: {
-      'line-color': '#ff0000',
-      'line-width': 2,
-      'line-opacity': 1
-    }
-  },
-  {
-    id: 'stroke-inactive',
-    type: 'line',
-    filter: ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'false']],
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    paint: {
-      'line-color': '#ff0000',
-      'line-width': 2,
-      'line-opacity': 0.8
-    }
-  },
-  {
-    id: 'midpoint',
-    type: 'circle',
-    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint']],
-    paint: {
-      'circle-radius': 5,
-      'circle-color': '#0000ff'
-    }
-  },
-  {
-    id: 'vertex',
-    type: 'circle',
-    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
-    paint: {
-      'circle-radius': 7,
-      'circle-color': '#ff0000'
-    }
-  }
-]
 
 export class Draw {
   constructor (provider, options) {
@@ -71,6 +23,7 @@ export class Draw {
     // Add existing feature
     if (options.feature) {
       this.drawFeature(options.feature)
+      this.oFeature = options.feature
       return
     }
 
@@ -78,48 +31,107 @@ export class Draw {
     this.start('frame')
   }
 
-  // Add or edit
+  // Add or edit query
   start (mode) {
     const { draw, oFeature } = this
     const { map } = this.provider
     const isFrame = mode === 'frame'
+    const hasDraw = map.hasControl(draw)
     this.toggleConstraints(true)
 
     // Remove existing feature
-    if (isFrame && map.hasControl(draw)) {
+    if (isFrame && hasDraw) {
       map.removeControl(this.draw)
     }
 
     // Draw existing feature
-    if (!isFrame && oFeature) {
+    if (!isFrame && !hasDraw) {
       this.drawFeature(oFeature)
+    }
+
+    // Enable direct select mode
+    if (!isFrame && hasDraw) {
+      draw.changeMode('direct_select', { featureId: 'shape' })
     }
   }
 
-  // Cancel
+  // Edit nodes
+  edit () {
+    const { map, paddingBox } = this.provider
+    const hasDraw = map.hasControl(this.draw)
+    
+    // Draw feature 
+    if (!hasDraw) {
+      const feature = this.getFeatureFromElement(paddingBox)
+      this.drawFeature(feature)
+    }
+    
+    // Set edit mode
+    this.draw.changeMode('direct_select', { featureId: 'shape' })
+  }
+
+  // Reset to square
+  reset () {
+    const { map } = this.provider
+    map.removeControl(this.draw)
+  }
+
+  // Cancel update
   cancel () {
     const { draw, oFeature } = this
     const { map } = this.provider
+    const hasDraw = map.hasControl(draw)
+
     // Disable interactions
-    if (map.hasControl(draw)) {
+    if (oFeature && hasDraw) {
       draw.changeMode('disabled')
     }
+
     // Re-draw original feature
-    if (oFeature) {
+    if (oFeature && !hasDraw) {
       this.drawFeature(oFeature)
     }
+
+    // Remove draw feature
+    if (!oFeature && hasDraw) {
+      map.removeControl(draw)
+    }
+
     this.toggleConstraints(false)
   }
 
   // Confirm or update
   finish () {
     const { map, paddingBox } = this.provider
-    if (!map.hasControl(this.draw)) {
-      const feature = this.getFeatureFromElement(paddingBox)
-      this.drawFeature(feature)
+    const hasDraw = map.hasControl(this.draw)
+
+    // Disable interactions
+    if (hasDraw) {
+      this.draw.changeMode('disabled')
     }
+
+    // Draw feature
+    if (!hasDraw) {
+      const elFeature = this.getFeatureFromElement(paddingBox)
+      this.drawFeature(elFeature)
+    }
+
+    // Sert ref to feature
+    this.oFeature = this.draw.get('shape')
+
     this.toggleConstraints(false)
-    return this.draw.get('shape')
+    return this.oFeature
+  }
+
+  // Delete feature
+  delete () {
+    const { draw } = this
+    const { map } = this.provider
+    this.oFeature = undefined
+    
+    // Remove draw
+    map.removeControl(draw)
+    this.draw = undefined
   }
 
   toggleConstraints (hasConstraints) {
@@ -139,14 +151,12 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oFeature) {
       const bounds = this.getBoundsFromFeature(oFeature)
-      console.log('Fit bounds of graphic')
       map.fitBounds(bounds, { animate: false })
     }
   }
   
   drawFeature (feature) {
     const { map } = this.provider
-    this.oFeature = feature
 
     MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
     MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
@@ -157,14 +167,13 @@ export class Draw {
 
     const draw = new MapboxDraw({
       modes,
-      styles,
+      styles: drawStyles,
       displayControlsDefault: false,
     })
 
     map.addControl(draw)
     draw.add(feature)
     draw.changeMode('disabled')
-    // draw.changeMode('direct_select', { featureId: 'shape' })
 
     this.draw = draw
   }
@@ -200,29 +209,6 @@ export class Draw {
       }
     }
   }
-
-  isSameFeature (a, b) {
-    const numRings = 5
-    return a.geometry.coordinates.flat(numRings).toString() === b.geometry.coordinates.flat(numRings).toString()
-  }
-
-  // getDrawFeature () {
-  //   const { draw, oFeature } = this
-  //   const { map } = this.provider
-  //   const feature = draw.get('shape')
-  //   const isSame = this.isSameFeature(oFeature, feature)
-  //   if (isSame && map.hasControl(draw)) {
-  //     draw.changeMode('disabled')
-  //   }
-  //   return isSame ? null : feature
-  // }
-
-  // edit () {
-  //   const { paddingBox } = this.provider
-  //   const feature = this.getFeatureFromElement(paddingBox)
-  //   this.oFeature = feature
-  //   this.drawFeature(feature)
-  // }
 }
 
 export default Draw

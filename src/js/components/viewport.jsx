@@ -54,7 +54,7 @@ export default function Viewport () {
       if (featureId) {
         provider.queryFeature(featureId)
       } else if (queryPixel && !isMoving) {
-        const point = getMapPixel(frameRef.current, mapContainerRef.current, scale)
+        const point = getMapPixel(frameRef.current, scale)
         provider.queryPoint(point)
       } else {
         // No action

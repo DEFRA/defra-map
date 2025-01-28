@@ -138,8 +138,8 @@ export const getViewport = (map) => {
 }
 
 export const getFeatures = (provider, pixel) => {
-  const { map, target, featureLayers, pixelLayers, paddingBox, scale } = provider
-  const bounds = getFocusBounds(paddingBox, target, scale)
+  const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, scale)
 
   // Get all visible feature and pixel layers
   let layers = [...featureLayers, ...pixelLayers]
@@ -228,8 +228,8 @@ export const getLabel = (provider, pixel) => {
 }
 
 export const getLabels = (provider) => {
-  const { map, target, paddingBox, scale } = provider
-  const bounds = getFocusBounds(paddingBox, target, scale)
+  const { map, paddingBox, scale } = provider
+  const bounds = getFocusBounds(paddingBox, scale)
   const features = map.queryRenderedFeatures(bounds, { layers: provider.labelLayers })
   const labels = features.map(f => {
     let pixel = f.geometry.type === 'Point' && map.project(f.geometry.coordinates)

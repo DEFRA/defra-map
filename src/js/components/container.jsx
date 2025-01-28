@@ -112,7 +112,7 @@ export default function Container () {
             )}
           </div>
         )}
-        <div className='fm-o-main'>
+        <div className='fm-o-main' data-fm-main>
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
             <div className='fm-o-top'>

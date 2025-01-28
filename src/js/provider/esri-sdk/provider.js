@@ -76,7 +76,7 @@ class Provider extends EventTarget {
       extent: bbox ? this.getExtent(Extent, bbox) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
-      padding: getFocusPadding(paddingBox, target, 1),
+      padding: getFocusPadding(paddingBox, 1),
       popupEnabled: false
     })
 
@@ -195,8 +195,8 @@ class Provider extends EventTarget {
 
   setPadding (coord, isAnimate) {
     if (this.view) {
-      const { target, paddingBox } = this
-      const padding = getFocusPadding(paddingBox, target, 1)
+      const { paddingBox } = this
+      const padding = getFocusPadding(paddingBox, 1)
       this.view.padding = padding
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Point.js').then(module => {
         if (coord) {

@@ -88,10 +88,10 @@ const getSelectedStatus = (featuresInViewport, id) => {
   return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
 }
 
-export const getFocusPadding = (el, offsetEl, scale) => {
+export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
-    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const parent = (el.closest('[data-fm-main]') || document.body).getBoundingClientRect()
     const box = el.getBoundingClientRect()
     const boxX = box.x || box.left
     const boxY = box.y || box.top
@@ -109,10 +109,10 @@ export const getFocusPadding = (el, offsetEl, scale) => {
   return isValid && padding
 }
 
-export const getFocusBounds = (el, offsetEl, scale) => {
+export const getFocusBounds = (el, scale) => {
   let bounds
   if (el) {
-    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const parent = (el.closest('[data-fm-main]') || document.body).getBoundingClientRect()
     const box = el.getBoundingClientRect()
     const m = 10
     bounds = [[
@@ -126,8 +126,8 @@ export const getFocusBounds = (el, offsetEl, scale) => {
   return bounds
 }
 
-export const getMapPixel = (el, offsetEl, scale) => {
-  const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+export const getMapPixel = (el, scale) => {
+  const parent = (el.closest('[data-fm-main]') || document.body).getBoundingClientRect()
   const box = el.getBoundingClientRect()
   const left = ((box.x || box.left) - (parent.x || parent.left)) / scale
   const top = ((box.y || box.top) - (parent.y || parent.top)) / scale

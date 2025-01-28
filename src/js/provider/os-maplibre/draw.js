@@ -187,7 +187,7 @@ export class Draw {
     const box = el.getBoundingClientRect()
     const padding = getFocusPadding(el, target, scale)
     const nw = map.unproject([padding.left, padding.top])
-    const se = map.unproject([padding.left + box.width, padding.top + box.height])
+    const se = map.unproject([padding.left + (box.width / scale), padding.top + (box.height / scale)])
     const b = [nw.lng, nw.lat, se.lng, se.lat]
     const coords = [[[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]]]]
     return {

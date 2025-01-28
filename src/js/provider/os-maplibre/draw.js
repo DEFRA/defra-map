@@ -2,6 +2,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding } from '../../lib/viewport'
+import { defaults } from './constants'
 import { defaults as storeDefaults } from '../../store/constants'
 
 export class Draw {
@@ -154,7 +155,7 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oFeature) {
       const bounds = this.getBoundsFromFeature(oFeature)
-      map.fitBounds(bounds, { animate: false })
+      map.fitBounds(bounds, { duration: defaults.ANIMATION.duration })
     }
   }
 

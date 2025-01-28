@@ -194,8 +194,11 @@
 
     .fm-c-tooltip {
         display: inline-block;
-        margin-left: auto;
     }
+}
+
+.fm-o-top__column:last-child .fm-c-tooltip {
+    margin-left: auto;
 }
 
 .fm-tablet .fm-o-top__column:last-child,

@@ -329,7 +329,6 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   const map = fm.map
-  console.log('Ready')
 })
 
 // Listen for segments, layers or style changes

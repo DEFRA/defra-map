@@ -82,19 +82,22 @@ export class Draw {
     const { map } = this.provider
     const hasDraw = map.hasControl(draw)
 
-    // Disable interactions
-    if (oFeature && hasDraw) {
+    // Re-draw original feature and disable interactions
+    // Requires three conditions for performance
+    if (hasDraw && oFeature) {
+      draw.delete(['shape'])
+      draw.add(oFeature)
       draw.changeMode('disabled')
     }
 
-    // Re-draw original feature
-    if (oFeature && !hasDraw) {
-      this.drawFeature(oFeature)
+    // Remove draw
+    if (hasDraw && !oFeature) {
+      map.removeControl(draw)
     }
 
-    // Remove draw feature
-    if (!oFeature && hasDraw) {
-      map.removeControl(draw)
+    // Draw original feature
+    if (!hasDraw && oFeature) {
+      this.drawFeature(oFeature)
     }
 
     this.toggleConstraints(false)

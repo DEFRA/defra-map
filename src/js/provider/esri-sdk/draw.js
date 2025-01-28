@@ -1,9 +1,8 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
 import Graphic from '@arcgis/core/Graphic'
+import { defaults as storeDefaults } from '../../store/constants'
 import { defaults } from './constants'
-
-const styles = ['defaultUrl', 'darkUrl', 'aerialUrl', 'deuteranopiaUrl', 'tritanopiaUrl']
 
 export class Draw {
   constructor (provider, options) {
@@ -12,7 +11,7 @@ export class Draw {
     Object.assign(this, options)
 
     // Reference to original styles
-    styles.forEach(s => { this[s + 'Org'] = provider[s] })
+    storeDefaults.STYLES.forEach(s => { this[`${s}UrlOrg`] = provider[`${s}Url`] })
 
     // Reference to original view constraints
     this.maxZoomO = view.constraints.maxZoom
@@ -55,7 +54,7 @@ export class Draw {
     view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
 
     // Toggle basemaps
-    styles.forEach(s => { provider[s] = hasConstraints ? (this[s] || provider[s]) : (this[s + 'Org'] || provider[s]) })
+    storeDefaults.STYLES.forEach(s => { provider[`${s}Url`] = hasConstraints ? (this[`${s}Url`] || provider[`${s}Url`]) : this[`${s}UrlOrg`] })
     if (this[provider.basemap + 'Url']) {
       provider.setBasemap(provider.basemap)
     }

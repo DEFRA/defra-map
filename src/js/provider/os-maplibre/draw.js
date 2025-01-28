@@ -183,9 +183,9 @@ export class Draw {
   }
 
   getFeatureFromElement (el) {
-    const { map, target, scale } = this.provider
+    const { map, scale } = this.provider
     const box = el.getBoundingClientRect()
-    const padding = getFocusPadding(el, target, scale)
+    const padding = getFocusPadding(el, scale)
     const nw = map.unproject([padding.left, padding.top])
     const se = map.unproject([padding.left + (box.width / scale), padding.top + (box.height / scale)])
     const b = [nw.lng, nw.lat, se.lng, se.lat]

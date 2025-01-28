@@ -88,10 +88,10 @@ const getSelectedStatus = (featuresInViewport, id) => {
   return index >= 0 && `${total} feature${total !== 1 ? 's' : ''} in this area. ${featuresInViewport[index].name}. ${index + 1} of ${total} highlighted.`
 }
 
-export const getFocusPadding = (el, offsetEl, scale) => {
+export const getFocusPadding = (el, scale) => {
   let padding
   if (el) {
-    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const parent = el.closest('[data-fm-main]').getBoundingClientRect()
     const box = el.getBoundingClientRect()
     const boxX = box.x || box.left
     const boxY = box.y || box.top
@@ -109,10 +109,10 @@ export const getFocusPadding = (el, offsetEl, scale) => {
   return isValid && padding
 }
 
-export const getFocusBounds = (el, offsetEl, scale) => {
+export const getFocusBounds = (el, scale) => {
   let bounds
   if (el) {
-    const parent = offsetEl.parentNode.parentNode.getBoundingClientRect()
+    const parent = el.closest('[data-fm-main]').getBoundingClientRect()
     const box = el.getBoundingClientRect()
     const m = 10
     bounds = [[

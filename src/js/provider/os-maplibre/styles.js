@@ -44,5 +44,14 @@ export const draw = [
       'circle-radius': 7,
       'circle-color': '#ff0000'
     }
+  },
+  {
+    id: 'vertex-active',
+    type: 'circle',
+    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex'], ['==', 'active', 'true']],
+    paint: {
+      'circle-radius': 7,
+      'circle-color': '#008000'
+    }
   }
 ]

@@ -477,7 +477,7 @@ const fm = new FloodMap('map', {
     darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
     minZoom: 12,
     maxZoom: 21,
-    feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
+    // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
   },
   queryPixel: vtLayers.map(l => l.n)
 })

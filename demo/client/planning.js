@@ -181,6 +181,7 @@ const fm = new FloodMap('map', {
   // geocodeProvider: 'esri-world-geocoder',
   styles: {
     attribution: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,
+    backgroundColor: 'default: #a9ddef, dark: #2C2C2C',
     tokenCallback: getEsriToken,
     interceptorsCallback: getInterceptors,
     defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,

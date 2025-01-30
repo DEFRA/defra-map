@@ -58,6 +58,8 @@ class Provider extends EventTarget {
 
     // Add intercepors
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
+
+    // Define layers
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer()

@@ -23,6 +23,7 @@ const fm = new FloodMap('map', {
   hasAutoMode: true,
   styles: {
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+    backgroundColor: 'default: #f5f5f0, dark: #162639',
     tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,

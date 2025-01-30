@@ -3,6 +3,9 @@ import { reColourMarkers } from './marker'
 
 export const handleBaseTileLayerLoaded = (provider) => {
   const { map, view, modules } = provider
+
+  // console.log(provider.baseTileLayer.currentStyleInfo)
+
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {

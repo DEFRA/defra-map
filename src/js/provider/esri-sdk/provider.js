@@ -61,8 +61,8 @@ class Provider extends EventTarget {
 
     // Define layers
     basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
-    const baseTileLayer = new VectorTileLayer({ url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
-    const graphicsLayer = new GraphicsLayer()
+    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
+    const graphicsLayer = new GraphicsLayer({ id: 'graphicslayer' })
     const map = new EsriMap({
       layers: [baseTileLayer, graphicsLayer]
     })

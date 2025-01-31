@@ -25,7 +25,8 @@ export const getViewport = async (provider) => {
   const { xmin, ymin, xmax, ymax } = view.extent
   const bbox = [xmin, ymin, xmax, ymax]
   const { x, y } = view.center
-  const centre = [x, y].map(n => Math.round(n))
+  // Easting and northings rounded (10cm) precision
+  const centre = [x, y].map(n => Math.round(n * 10) / 10)
   const zoom = parseFloat(view.zoom.toFixed(defaults.PRECISION))
   return { bbox, centre, zoom }
 }

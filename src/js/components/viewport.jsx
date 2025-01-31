@@ -6,6 +6,7 @@ import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
 import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport.js'
+import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
@@ -36,6 +37,7 @@ export default function Viewport () {
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
+  const backgroundColor = getColor(styles?.backgroundColor, basemap)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -313,7 +315,8 @@ export default function Viewport () {
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
-      {...(featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {})}
+      {...featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {}}
+      {...backgroundColor ? { style: { backgroundColor } } : {}}
       aria-owns={`${id}-viewport-features`}
       tabIndex='0'
       ref={viewportRef}

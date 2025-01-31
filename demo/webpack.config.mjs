@@ -13,9 +13,6 @@ export default {
     main: [
       path.join(__dirname, 'client/main.js'),
       path.join(__dirname, 'client/main.scss')
-    ],
-    draw: [
-      path.join(__dirname, 'client/draw.js')
     ]
   },
   devtool: 'source-map',

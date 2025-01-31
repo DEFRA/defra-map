@@ -204,19 +204,19 @@ export const parseCentre = (value, srid) => {
   const mb = defaults[srid].MAX_BBOX
   let isInRange
   let coords = value?.split(',')
-  // Query string malformed
+  // Query string formed correctly
   if (!(Array.isArray(coords) && coords?.length === 3)) {
     return null
   }
+  // Coords are numbers
   coords = coords.slice(0, 2).map(x => parseFloat(x))
   coords = !coords.some(isNaN) && coords
-  // Coords are not numbers
   if (!coords) {
     return null
   }
   // Coords are within the valid range
   if (srid === '27700') {
-    isInRange = !!coords.filter(c => Number.isInteger(c) && c >= 0).length
+    isInRange = !!coords.filter(c => c >= 0).length
   } else {
     isInRange = (coords[0] > mb[0] && coords[0] < mb[2]) && (coords[1] > mb[1] && coords[1] < mb[3])
   }

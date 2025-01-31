@@ -4,6 +4,8 @@
     line-height: 1rem;
 
     &__heading {
+        @include body-font(1.125rem, 400);
+        color: var(--foreground-colour);
         font-weight: 700;
         margin-bottom: 0;
         padding-bottom: 15px;

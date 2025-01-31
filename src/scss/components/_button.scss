@@ -61,9 +61,10 @@
 // Open map button
 .fm-c-btn-open-map {
     @extend %fm-c-btn;
+    @include body-font(16px, 400);
     border: 1px solid govuk-colour('black');
     background-color: govuk-colour('white');
-    padding: 9px 12px;
+    padding: 7px 12px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -252,7 +253,8 @@
     margin-right: 5px;
 }
 
-.fm-c-btn--help svg {
+.fm-tablet .fm-c-btn--help svg,
+.fm-desktop .fm-c-btn--help svg {
     margin-right: 5px;
 }
 
@@ -416,6 +418,7 @@
     -webkit-font-smoothing: antialiased;
 
     svg {
+        color: var(--foreground-colour);
         margin-right: 7px;
     }
 

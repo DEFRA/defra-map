@@ -12,6 +12,7 @@ describe('help-button', () => {
       dispatch: jest.fn(),
       activePanel: null,
       isDesktop: false,
+      options: { id: 'test' },
       mode: 'frame'
     })
 
@@ -25,6 +26,7 @@ describe('help-button', () => {
       dispatch: jest.fn(),
       activePanel: 'HELP',
       isDesktop: false,
+      options: { id: 'test' },
       mode: 'frame'
     })
 
@@ -40,6 +42,7 @@ describe('help-button', () => {
       dispatch,
       activePanel: null,
       isDesktop: false,
+      options: { id: 'test' },
       mode: 'frame'
     })
 

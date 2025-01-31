@@ -5,6 +5,7 @@ import { useViewport } from '../store/use-viewport'
 import { events } from '../store/constants'
 import eventBus from '../lib/eventbus.js'
 import { parseSVG } from '../lib/symbols'
+import { getColor } from '../lib/utils.js'
 
 const getDerivedProps = (group, layers, hasInputs) => {
   const ROW_WIDTH = 300
@@ -25,12 +26,6 @@ const getLabels = (group, item, checkedRadioId, layers) => {
 
 const getDisplay = (group, item) => {
   return group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
-}
-
-const getFill = (item, basemap) => {
-  const fills = item?.fill?.replace(/\s/g, '').split(',').map(f => f.includes(':') ? f : `default:${f}`)
-  const fill = fills?.length ? (fills.find(f => f.includes(basemap)) || fills[0]).split(':')[1] : null
-  return fill
 }
 
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
@@ -75,7 +70,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
 
   const keySymbol = ({ item, display }) => {
-    const fill = getFill(item, basemap)
+    const fill = getColor(item?.fill, basemap)
 
     return (
       <>
@@ -145,7 +140,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
       const icons = {}
       texts.forEach((text, i) => {
         const item = items[i]
-        const fill = getFill(item, basemap)
+        const fill = getColor(item?.fill, basemap)
         icons[item.icon] = { __html: parseSVG(item.icon, fill, text, isDarkBasemap) }
       })
       setSvg(icons)

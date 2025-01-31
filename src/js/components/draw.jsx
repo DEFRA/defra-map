@@ -32,9 +32,9 @@ export default function Draw () {
 
   return (
     <div className='fm-c-menu__group'>
-      <h2 className='fm-c-menu__heading govuk-body-s'>{queryPolygon.heading}</h2>
+      <h2 className='fm-c-menu__heading'>{queryPolygon.heading}</h2>
       <div className='fm-c-menu__item'>
-        <button className='fm-c-btn-menu govuk-body-s' onClick={handleStartClick} ref={startBtnRef}>
+        <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
           {isFrameMode
             ? (
               <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
@@ -58,7 +58,7 @@ export default function Draw () {
       </div>
       {query && (
         <div className='fm-c-menu__item'>
-          <button className='fm-c-btn-menu govuk-body-s' onClick={handleDeleteClick}>
+          <button className='fm-c-btn-menu' onClick={handleDeleteClick}>
             <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
               <path d='M3 5.963H2V3.989h4V2h8v1.989h4v1.974h-.956V18H3V5.963zm12 0H5.044v10.063H15V5.963z' fill='currentColor' />
               <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2' />

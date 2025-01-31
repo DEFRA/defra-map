@@ -37,10 +37,10 @@ $govuk-new-typography-scale: true;
 }
 
 // Disable page elements when map is fullscreen on mobile
-// body.js-enabled:not([data-fm-error]) {
-//     main > .govuk-heading-l {
-//         @include mq ($until: tablet) {
-//             display: none;
-//         }
-//     }
-// }
+body.js-enabled:not([data-fm-error]) {
+    main > .govuk-heading-l {
+        @include mq ($until: tablet) {
+            display: none;
+        }
+    }
+}

@@ -13,7 +13,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#002C2C"
+        "background-color": "rgb(44,44,44)"
       }
     },
     {
@@ -24,7 +24,7 @@
       "maxzoom": 11,
       "layout": {},
       "paint": {
-        "fill-color": "#060606"
+        "fill-color": "rgb(6,6,6)"
       }
     },
     {

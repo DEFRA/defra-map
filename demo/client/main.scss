@@ -38,7 +38,7 @@ $govuk-new-typography-scale: true;
 
 // Disable page elements when map is fullscreen on mobile
 body:not([data-fm-error]) {
-    h1.govuk-heading-l {
+    main > .govuk-heading-l {
         @include mq ($until: tablet) {
             display: none;
         }

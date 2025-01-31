@@ -18,7 +18,7 @@ export class Draw {
     this.maxZoomO = map.getMaxZoom()
     this.minZoomO = map.getMinZoom()
 
-    // Provider needs ref to draw moudule and draw need ref to provider
+    // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
 
     // Add existing feature

@@ -96,6 +96,7 @@ class Provider extends EventTarget {
     this.paddingBox = paddingBox
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
+    this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
 
     // Map ready event (first load)

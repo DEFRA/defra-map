@@ -30,6 +30,8 @@ export class FloodMap extends EventTarget {
       `)
       // Remove hidden class
       document.body.classList.remove('fm-js-hidden')
+      // Add error flag to body
+      document.body.setAttribute('data-fm-error', '')
       // Log error message
       device.error && console.log(device.error)
       return

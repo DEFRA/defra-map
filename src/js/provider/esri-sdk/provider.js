@@ -95,6 +95,7 @@ class Provider extends EventTarget {
     this.pixelLayers = pixelLayers
     this.paddingBox = paddingBox
     this.basemap = basemap
+    this.esriConfig = esriConfig
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
 

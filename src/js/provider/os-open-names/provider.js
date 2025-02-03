@@ -70,7 +70,7 @@ const suggestion = (query, { ID, NAME1, COUNTY_UNITARY, DISTRICT_BOROUGH, POSTCO
   }
 }
 
-const parseResults = async (query, requestCallback) => {
+const parseResults = async (query, transformSearchRequest) => {
   if (!query) {
     return []
   }
@@ -78,7 +78,7 @@ const parseResults = async (query, requestCallback) => {
   url = url.replace('{query}', encodeURI(query)).replace('{maxresults}', isPostcode(query) ? 1 : 100)
   let results = []
   try {
-    const response = await fetch(await requestCallback(url))
+    const response = await fetch(await transformSearchRequest(url))
     const json = await response.json()
     if (json.error || json.header.totalresults === 0) {
       return []
@@ -94,15 +94,15 @@ const parseResults = async (query, requestCallback) => {
 }
 
 class Provider {
-  constructor (requestCallback) {
-    this.requestCallback = requestCallback
+  constructor (transformSearchRequest) {
+    this.transformSearchRequest = transformSearchRequest
   }
 
   async suggest (query) {
     if (!query) {
       return []
     }
-    const results = await parseResults(query, this.requestCallback)
+    const results = await parseResults(query, this.transformSearchRequest)
     return results.map(l => suggestion(query, l.GAZETTEER_ENTRY))
   }
 
@@ -110,7 +110,7 @@ class Provider {
     if (!query) {
       return null
     }
-    const results = await parseResults(query, this.requestCallback)
+    const results = await parseResults(query, this.transformSearchRequest)
     return results.length ? place(results[0].GAZETTEER_ENTRY) : null
   }
 }

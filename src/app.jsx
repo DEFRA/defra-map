@@ -7,7 +7,7 @@ import Container from './js/components/container.jsx'
 import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
-  const { behaviour, parent, container, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
+  const { behaviour, parent, container, handleExit, styles, transformSearchRequest, geocodeProvider, symbols } = options
   const mobileMQ = `(max-width: ${options.maxMobile || settings.breakpoints.MAX_MOBILE})`
   const desktopMQ = `(min-width: ${options.minDesktop || settings.breakpoints.MIN_DESKTOP})`
 
@@ -17,7 +17,7 @@ export default function App (options) {
 
   // Create a provider instance
   const provider = useRef(new Provider({
-    requestCallback,
+    transformSearchRequest,
     geocodeProvider,
     symbols,
     ...styles

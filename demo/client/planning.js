@@ -175,7 +175,7 @@ const fm = new FloodMap('map', {
   height: '100%',
   hasGeoLocation: true,
   symbols,
-  requestCallback: getRequest,
+  transformSearchRequest: getRequest,
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',

@@ -1,6 +1,6 @@
 import { distance as turfDistance } from '@turf/distance'
 import { point as TurfPoint } from '@turf/helpers'
-import { defaults } from '../store/constants'
+import { defaults, constructorOptions } from '../store/constants'
 
 const getBearing = (coord1, coord2) => {
   const east = coord1[0] < coord2[0] && 'east'
@@ -291,3 +291,7 @@ export const getBasemap = (styles) => {
   }
   return basemap
 }
+
+export const filterFrameworkOptions = (options) => {
+  return Object.fromEntries(Object.entries(options).filter(([key]) => !constructorOptions.includes(key)))
+} 

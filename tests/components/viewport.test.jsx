@@ -59,7 +59,7 @@ describe('viewport', () => {
         eventHandlers[eventType] = eventHandlers[eventType]?.filter(h => h !== handler)
       }),
       init: jest.fn(),
-      requestCallback: jest.fn(),
+      transformSearchRequest: jest.fn(),
       tileRequestCallback: jest.fn(),
       setTargetMarker: jest.fn(),
       selectFeature: jest.fn(),

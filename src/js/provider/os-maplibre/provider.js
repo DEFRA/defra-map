@@ -2,7 +2,7 @@ import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLo
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
+import { getFocusPadding, spatialNavigate, getScale, filterFrameworkOptions } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
@@ -10,11 +10,11 @@ import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ requestCallback, transformRequest, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
+  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
-    this.requestCallback = requestCallback
+    this.transformSearchRequest = transformSearchRequest
     this.transformRequest = transformRequest
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
@@ -36,7 +36,7 @@ class Provider extends EventTarget {
   init (options) {
     if (this.capabilities.isLatest) {
       import(/* webpackChunkName: "maplibre", webpackExports: ["Map", "Marker"] */ 'maplibre-gl').then(module => {
-        this.addMap({ module, ...options })
+        this.addMap(module, options )
       })
     } else {
       Promise.all([
@@ -47,7 +47,7 @@ class Provider extends EventTarget {
         if (!window.ResizeObserver) {
           promises[1].install()
         }
-        this.addMap({ module: promises[0], ...options })
+        this.addMap(promises[0], options)
       })
     }
   }
@@ -57,15 +57,18 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap (options) {
-    const { module, container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds, basemap, size, featureLayers, pixelLayers, transformRequest } = options
-    // Add ref to dynamically loaded modules
-    this.modules = module.default
-    const { Map: MaplibreMap, Marker } = this.modules
+  addMap (module, options) {
+    const { container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds, basemap, size, featureLayers, pixelLayers } = options
+    const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
 
+    // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
+    const filteredOptions = filterFrameworkOptions(options)
+    console.log(filteredOptions)
+
     const map = new MaplibreMap({
+      ...filteredOptions,
       container,
       style: this[basemap + 'Url'],
       maxBounds: maxBounds || storeDefaults['4326'].MAX_BOUNDS,
@@ -77,7 +80,6 @@ class Provider extends EventTarget {
       fadeDuration: 0,
       attributionControl: false,
       dragRotate: false,
-      transformRequest
     })
 
     // Set initial padding, bounds and center
@@ -137,6 +139,9 @@ class Provider extends EventTarget {
     this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.shortcutMarkers = []
+
+    // Return ref to dynamically loaded modules
+    this.modules = { MaplibreMap, Marker }
 
     // Return ref to framework methods
     this.framework = { map }
@@ -277,12 +282,12 @@ class Provider extends EventTarget {
       const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.requestCallback)
+      response = await getNearest(coord, this.transformSearchRequest)
     } else {
       const { getNearest } = isEsri
         ? await import(/* webpackChunkName: "maplibre-legacy" */ '../esri-world-geocoder/nearest.js')
         : await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.requestCallback)
+      response = await getNearest(coord, this.transformSearchRequest)
     }
 
     return response

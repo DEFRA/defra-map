@@ -36,7 +36,7 @@ class Provider extends EventTarget {
   init (options) {
     if (this.capabilities.isLatest) {
       import(/* webpackChunkName: "maplibre", webpackExports: ["Map", "Marker"] */ 'maplibre-gl').then(module => {
-        this.addMap(module, options )
+        this.addMap(module, options)
       })
     } else {
       Promise.all([
@@ -79,7 +79,7 @@ class Provider extends EventTarget {
       maxZoom,
       fadeDuration: 0,
       attributionControl: false,
-      dragRotate: false,
+      dragRotate: false
     })
 
     // Set initial padding, bounds and center

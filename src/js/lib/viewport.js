@@ -294,4 +294,4 @@ export const getBasemap = (styles) => {
 
 export const filterFrameworkOptions = (options) => {
   return Object.fromEntries(Object.entries(options).filter(([key]) => !constructorOptions.includes(key)))
-} 
+}

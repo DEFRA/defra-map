@@ -208,7 +208,8 @@ describe('viewport', () => {
       center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
-      features: { featuresTotal: 0, items: [], featuresInViewport: [] }
+      features: { featuresTotal: 0, items: [], featuresInViewport: [] },
+      queryPixel: ['test']
     })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()

@@ -70,7 +70,7 @@ class Provider extends EventTarget {
 
     // Filter all keys so only valid MapView options can be passed to the constructor
     const filteredOptions = filterFrameworkOptions(options)
-    
+
     // Create MapView
     const view = new MapView({
       ...filteredOptions,

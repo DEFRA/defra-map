@@ -65,7 +65,6 @@ class Provider extends EventTarget {
 
     // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
     const filteredOptions = filterFrameworkOptions(options)
-    console.log(filteredOptions)
 
     const map = new MaplibreMap({
       ...filteredOptions,

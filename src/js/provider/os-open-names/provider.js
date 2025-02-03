@@ -32,7 +32,7 @@ const markString = (string, find) => {
 }
 
 const place = ({ ID, NAME1, MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, GEOMETRY_Y }) => {
-  const bbox = MBR_XMIN
+  const bounds = MBR_XMIN
     ? [
         (new OsGridRef(MBR_XMIN, MBR_YMIN)).toLatLon().lon,
         (new OsGridRef(MBR_XMIN, MBR_YMIN)).toLatLon().lat,
@@ -45,7 +45,7 @@ const place = ({ ID, NAME1, MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, 
         (new OsGridRef(GEOMETRY_X + config.POINT_BUFFER, GEOMETRY_Y + config.POINT_BUFFER)).toLatLon().lon,
         (new OsGridRef(GEOMETRY_X + config.POINT_BUFFER, GEOMETRY_Y + config.POINT_BUFFER)).toLatLon().lat]
         .map(n => Math.round(n * 1000000) / 1000000)
-  const centre = GEOMETRY_X
+  const center = GEOMETRY_X
     ? [(new OsGridRef(GEOMETRY_X, GEOMETRY_Y)).toLatLon().lon,
         (new OsGridRef(GEOMETRY_X, GEOMETRY_Y)).toLatLon().lat]
         .map(n => Math.round(n * 1000000) / 1000000)
@@ -54,8 +54,8 @@ const place = ({ ID, NAME1, MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, 
   return {
     id: ID,
     text: NAME1,
-    bbox,
-    centre
+    bounds,
+    center
   }
 }
 

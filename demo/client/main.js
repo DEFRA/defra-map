@@ -11,20 +11,21 @@ const fm = new FloodMap('map', {
   zoom: 14,
   minZoom: 8,
   maxZoom: 18,
-  // centre: [-2.938769, 54.893806],
-  bbox: [-2.989707, 54.864555, -2.878635, 54.937635],
+  // center: [-2.938769, 54.893806],
+  bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   // hasReset: true,
   hasGeoLocation: true,
   height: '600px',
   // buttonType: 'anchor',
   symbols,
+  transformRequest: getTileRequest,
   requestCallback: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
   styles: {
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     backgroundColor: 'default: #f5f5f0, dark: #162639',
-    tileRequestCallback: getTileRequest,
+    // tileRequestCallback: getTileRequest,
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,
     aerialUrl: process.env.AERIAL_URL,
@@ -236,6 +237,8 @@ const fm = new FloodMap('map', {
   queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
   queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
 })
+
+console.log(fm)
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'

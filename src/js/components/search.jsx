@@ -58,8 +58,8 @@ export default function Search ({ instigatorRef }) {
     if (!location) {
       return
     }
-    const { bbox, centre, zoom, text } = location
-    viewportDispatch({ type: 'SEARCH', payload: { bbox, centre, zoom, place: text } })
+    const { bounds, center, zoom, text } = location
+    viewportDispatch({ type: 'SEARCH', payload: { bounds, center, zoom, place: text } })
   }
 
   const handleFocus = () => {

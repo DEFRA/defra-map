@@ -23,7 +23,7 @@ export default function Location () {
     if (hasSession) {
       return
     }
-    viewportDispatch({ type: 'GEOLOC', payload: { centre: coord, place } })
+    viewportDispatch({ type: 'GEOLOC', payload: { center: coord, place } })
   }
 
   const handleGeoLocationError = (err) => {
@@ -35,7 +35,7 @@ export default function Location () {
   const handleOnClick = () => {
     const geoloc = JSON.parse(sessionStorage.getItem('geoloc'))
     if (geoloc) {
-      viewportDispatch({ type: 'GEOLOC', payload: { centre: geoloc.coord, place: geoloc.place } })
+      viewportDispatch({ type: 'GEOLOC', payload: { center: geoloc.coord, place: geoloc.place } })
       return
     }
     provider.getGeoLocation(handleGeoLocationSuccess, handleGeoLocationError)

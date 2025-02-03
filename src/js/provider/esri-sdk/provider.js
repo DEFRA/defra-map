@@ -43,7 +43,7 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
+  async addMap ({ modules, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -74,8 +74,8 @@ class Provider extends EventTarget {
       container: target,
       map,
       zoom,
-      center: centre ? this.getPoint(Point, centre) : null,
-      extent: bbox ? this.getExtent(Extent, bbox) : null,
+      center: center ? this.getPoint(Point, center) : null,
+      extent: bounds ? this.getExtent(Extent, bounds) : null,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
@@ -138,6 +138,9 @@ class Provider extends EventTarget {
       }
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
+
+    // Return ref to framework methods
+    this.framework = { map, view, esriConfig }
   }
 
   getPoint (Point, coords) {
@@ -223,14 +226,14 @@ class Provider extends EventTarget {
     console.log('setSize')
   }
 
-  fitBbox (bbox) {
+  fitBounds (bounds) {
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Extent.js').then(module => {
       const Extent = module.default
       this.view.goTo(new Extent({
-        xmin: bbox[0],
-        ymin: bbox[1],
-        xmax: bbox[2],
-        ymax: bbox[3]
+        xmin: bounds[0],
+        ymin: bounds[1],
+        xmax: bounds[2],
+        ymax: bounds[3]
       })).catch(err => console.log(err))
     })
   }

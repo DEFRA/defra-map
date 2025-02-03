@@ -4,10 +4,10 @@ import { margin } from './constants'
 
 const update = (state, payload) => {
   const { oPlace, oZoom, isUserInitiated, action } = state
-  const { bbox, centre, zoom, features } = payload
+  const { bounds, center, zoom, features } = payload
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
-  const original = { oBbox: bbox, oCentre: centre, rZoom: zoom, oZoom, oPlace: place }
-  const isPanZoom = !(isSame(state.centre, centre) && isSame(state.zoom, zoom))
+  const original = { oBbox: bounds, oCentre: center, rZoom: zoom, oZoom, oPlace: place }
+  const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const status = getStatus(action, isPanZoom, place, state, payload)
 
@@ -15,8 +15,8 @@ const update = (state, payload) => {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
     place,
-    bbox,
-    centre,
+    bounds,
+    center,
     zoom,
     features,
     status,
@@ -27,8 +27,8 @@ const update = (state, payload) => {
 }
 
 const updatePlace = (state, payload) => {
-  const { centre, bbox, features } = state
-  const status = getDescription(payload, centre, bbox, features)
+  const { center, bounds, features } = state
+  const status = getDescription(payload, center, bounds, features)
   return {
     ...state,
     place: payload,
@@ -62,8 +62,8 @@ const reset = (state) => {
 const search = (state, payload) => {
   return {
     ...state,
-    bbox: payload.bbox,
-    centre: payload.centre,
+    bounds: payload.bounds,
+    center: payload.center,
     zoom: payload.zoom,
     place: payload.place,
     action: 'SEARCH',
@@ -78,8 +78,8 @@ const geoloc = (state, payload) => {
   return {
     ...state,
     place: payload.place,
-    centre: payload.centre,
-    bbox: null,
+    center: payload.center,
+    bounds: null,
     status: '',
     isStatusVisuallyHidden: true,
     action: 'GEOLOC',

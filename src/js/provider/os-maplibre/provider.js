@@ -57,7 +57,7 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
+  addMap ({ module, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
     // Add ref to dynamically loaded modules
     this.modules = module.default
     const { Map: MaplibreMap, Marker } = this.modules
@@ -69,8 +69,8 @@ class Provider extends EventTarget {
       style: this[basemap + 'Url'],
       container: target,
       maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
-      bounds: bbox,
-      center: centre,
+      bounds,
+      center: center,
       zoom,
       minZoom,
       maxZoom,
@@ -80,14 +80,14 @@ class Provider extends EventTarget {
       transformRequest: this.tileRequestCallback
     })
 
-    // Set initial padding, bounds and centre
+    // Set initial padding, bounds and center
     // // * Can't set global padding in constructor
     // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
-    if (bbox) {
-      map.fitBounds(bbox, { animate: false })
+    if (bounds) {
+      map.fitBounds(bounds, { animate: false })
     } else {
-      map.flyTo({ centre, zoom, animate: false })
+      map.flyTo({ center, zoom, animate: false })
     }
 
     // Disable rotation
@@ -183,7 +183,7 @@ class Provider extends EventTarget {
     if (this.map) {
       const { map, paddingBox, scale } = this
       const padding = getFocusPadding(paddingBox, scale)
-      // Search needs to set padding first before fitBbox
+      // Search needs to set padding first before fitBounds
       this.map.setPadding(padding || map.getPadding())
       // Ease map to new when coord is obscured
       coord && this.map.easeTo({ center: coord, animate: isAnimate, ...defaults.ANIMATION })
@@ -207,8 +207,8 @@ class Provider extends EventTarget {
     }, defaults.DELAY)
   }
 
-  fitBbox (bbox, isAnimate = true) {
-    const bounds = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]]
+  fitBounds (bounds, isAnimate = true) {
+    bounds = [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]
     this.map.fitBounds(bounds, { animate: isAnimate, linear: true, duration: defaults.ANIMATION.duration })
   }
 
@@ -311,9 +311,9 @@ class Provider extends EventTarget {
   showNextLabel (pixel, direction) {
     const labels = getLabels(this)
     const { lng, lat } = this.map.getCenter()
-    const centre = this.map.project([lng, lat])
+    const center = this.map.project([lng, lat])
     const pixels = labels.map(c => c.pixel)
-    const index = spatialNavigate(direction, pixel || [centre.x, centre.y], pixels)
+    const index = spatialNavigate(direction, pixel || [center.x, center.y], pixels)
     const feature = labels[index]?.feature
     highlightLabel(this.map, this.scale, this.basemap, feature)
     return labels[index]?.pixel

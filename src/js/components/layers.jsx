@@ -43,7 +43,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
         </Fragment>
       ))}
       {(maxRow < (groups.length - 1)) && (
-        <div className='fm-c-layers__more fm-c-layers__more--centre'>
+        <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-key`} label={moreLabel} isExpanded={isKeyExpanded} setIsExpanded={setIsExpanded} isRemove />
         </div>
       )}

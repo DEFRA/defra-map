@@ -59,7 +59,7 @@ export const settings = {
   },
   params: {
     view: 'view',
-    centreZoom: 'cz',
+    centerZoom: 'cz',
     segments: 'seg',
     layers: 'lyr'
   }

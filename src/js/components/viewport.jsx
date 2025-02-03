@@ -20,9 +20,9 @@ export default function Viewport () {
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
-  const [, setQueryCz] = useQueryState(settings.params.centreZoom)
+  const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
   const mapContainerRef = useRef(null)
   const startPixel = useRef([0, 0])
@@ -51,7 +51,7 @@ export default function Viewport () {
       ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
     }
 
-    // Select feature or query centre (Enter or Space)
+    // Select feature or query center (Enter or Space)
     if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
@@ -82,7 +82,7 @@ export default function Viewport () {
     if (provider.getNearest && e.altKey && e.code.slice(-1) === 'I') {
       viewportDispatch({ type: 'CLEAR_STATUS' })
       // Debounce place update
-      debounceUpdatePlace(centre)
+      debounceUpdatePlace(center)
     }
 
     // Open keyboard controls (Alt + k)
@@ -174,7 +174,7 @@ export default function Viewport () {
     }
   }
 
-  // Get new bbox after map has moved
+  // Get new bounds after map has moved
   const handleUpdate = e => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
@@ -200,8 +200,8 @@ export default function Viewport () {
       provider.init({
         target: mapContainerRef.current,
         paddingBox: frameRef.current,
-        bbox,
-        centre,
+        bounds,
+        center,
         zoom,
         minZoom,
         maxZoom,
@@ -245,14 +245,14 @@ export default function Viewport () {
 
     switch (action) {
       case 'SEARCH':
-        bbox ? provider.fitBbox(bbox) : provider.setCentre(centre, zoom)
+        bounds ? provider.fitBounds(bounds) : provider.setCentre(center, zoom)
         break
       case 'RESET':
         provider.setCentre(oCentre, rZoom)
         break
       case 'GEOLOC':
-        provider.setCentre(centre, oZoom)
-        provider.showLocation(centre)
+        provider.setCentre(center, oZoom)
+        provider.showLocation(center)
         break
       case 'ZOOM_IN':
         provider.zoomIn()
@@ -280,7 +280,7 @@ export default function Viewport () {
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
     if (isUpdate) {
-      setQueryCz(`${centre.toString()},${zoom}`)
+      setQueryCz(`${center.toString()},${zoom}`)
     }
   }, [isUpdate])
 

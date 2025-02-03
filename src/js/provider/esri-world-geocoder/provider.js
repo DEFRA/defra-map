@@ -27,15 +27,15 @@ const markString = (string, find) => {
 const place = (result) => {
   const { xmin, ymin, xmax, ymax } = result.extent
   const { x, y } = result.location
-  const bbox = [xmin, ymin, xmax, ymax].map(n => Math.round(n * 1000000) / 1000000)
-  const centre = [x, y].map(n => Math.round(n * 1000000) / 1000000)
+  const bounds = [xmin, ymin, xmax, ymax].map(n => Math.round(n * 1000000) / 1000000)
+  const center = [x, y].map(n => Math.round(n * 1000000) / 1000000)
   const { PlaceName } = result.attributes
 
   return {
     id: null,
     text: PlaceName,
-    bbox,
-    centre
+    bounds,
+    center
   }
 }
 

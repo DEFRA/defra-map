@@ -125,14 +125,14 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
 }
 
 export const getViewport = (map) => {
-  const bounds = getPaddedBounds(map)
-  const bbox = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
-  let centre = map.getCenter()
-  centre = centre.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
+  let bounds = getPaddedBounds(map)
+  bounds = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
+  let center = map.getCenter()
+  center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   const zoom = parseFloat(map.getZoom().toFixed(defaults.PRECISION))
   return {
-    bbox,
-    centre,
+    bounds,
+    center,
     zoom
   }
 }
@@ -238,9 +238,9 @@ export const getLabels = (provider) => {
       const pixels = coordinates.map(c => map.project(c))
       const xS = pixels.map(p => p.x)
       const yS = pixels.map(p => p.y)
-      const centreX = ((Math.max(...xS) - Math.min(...xS)) / 2) + Math.min(...xS)
-      const centreY = ((Math.max(...yS) - Math.min(...yS)) / 2) + Math.min(...yS)
-      pixel = { x: centreX, y: centreY }
+      const centerX = ((Math.max(...xS) - Math.min(...xS)) / 2) + Math.min(...xS)
+      const centerY = ((Math.max(...yS) - Math.min(...yS)) / 2) + Math.min(...yS)
+      pixel = { x: centerX, y: centerY }
     }
     return {
       feature: f,

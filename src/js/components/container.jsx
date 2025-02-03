@@ -27,8 +27,8 @@ import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 
-const getClassNames = (isDarkMode, device, type, isQueryMode) => {
-  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`
+const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
+  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
 }
 
 export default function Container () {
@@ -44,8 +44,8 @@ export default function Container () {
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
-  const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
-  const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.type].HEIGHT
+  const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
+  const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.behaviour].HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
   const isLegendFixed = isDesktop && !isLegendInset
@@ -90,7 +90,7 @@ export default function Container () {
   return (
     <ViewportProvider options={options}>
       <div
-        className={getClassNames(isDarkMode, device, type, isQueryMode)}
+        className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
         onKeyDown={constrainFocus}
         style={{ height }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}

@@ -6,7 +6,7 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'hybrid', // 'buttonFirst | inline',
+  behaviour: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
@@ -237,8 +237,6 @@ const fm = new FloodMap('map', {
   queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
   queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
 })
-
-console.log(fm)
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'

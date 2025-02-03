@@ -60,7 +60,7 @@ export class FloodMap extends EventTarget {
     }
 
     // Add button
-    if (['buttonFirst', 'hybrid'].includes(props.type)) {
+    if (['buttonFirst', 'hybrid'].includes(props.behaviour)) {
       this._insertButtonHTML()
       // Remove hidden class
       if (!this.isVisible) {
@@ -171,15 +171,15 @@ export class FloodMap extends EventTarget {
   }
 
   _handleMobileMQ (e) {
-    const { type } = this.props
+    const { behaviour } = this.props
     const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === this.id
     this.isMobile = e.matches
-    this.isVisible = hasViewParam || type === 'inline' || (type === 'hybrid' && !e.matches)
+    this.isVisible = hasViewParam || behaviour === 'inline' || (behaviour === 'hybrid' && !e.matches)
   }
 
   _handlePopstate () {
-    const { type } = this.props
-    const hasButton = type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)
+    const { behaviour } = this.props
+    const hasButton = behaviour === 'buttonFirst' || (behaviour === 'hybrid' && this.isMobile)
     if (history.state?.isBack) {
       this._importComponent()
     } else if (hasButton) {

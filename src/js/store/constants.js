@@ -86,3 +86,22 @@ export const margin = {
   BOTTOM: 15,
   LEFT: 70
 }
+
+export const constructorOptions = [
+  'type',
+  'place',
+  'hasAutoMode',
+  'hasGeoLocation',
+  'hasReset',
+  'height',
+  'buttonType',
+  'symbols',
+  'geocodeProvider',
+  'styles',
+  'search',
+  'legend',
+  'info',
+  'queryPixel',
+  'queryFeature',
+  'queryPolygon'
+]

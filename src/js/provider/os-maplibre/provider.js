@@ -57,7 +57,9 @@ class Provider extends EventTarget {
     this.map = null
   }
 
-  addMap ({ module, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers }) {
+  addMap (options) {
+    const { module, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers } = options
+    console.log(options)
     // Add ref to dynamically loaded modules
     this.modules = module.default
     const { Map: MaplibreMap, Marker } = this.modules
@@ -70,7 +72,7 @@ class Provider extends EventTarget {
       container: target,
       maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
       bounds,
-      center: center,
+      center,
       zoom,
       minZoom,
       maxZoom,

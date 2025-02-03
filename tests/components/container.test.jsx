@@ -95,7 +95,7 @@ describe('Container', () => {
       isMobile: false,
       hasLengedHeading: true,
       provider: {},
-      options: { type: 'default', legend: { title: 'Legend Title', display: 'fixed' }, hasAutoMode: true },
+      options: { behaviour: 'default', legend: { title: 'Legend Title', display: 'fixed' }, hasAutoMode: true },
       dispatch: jest.fn(),
       activeRef: { current: null },
       viewportRef: { current: null },
@@ -177,10 +177,10 @@ describe('Container', () => {
         custom: { CLASS: 'custom-class' }
       }
     }
-    const options = { type: 'custom' }
+    const options = { behaviour: 'custom' }
     const defaults = { CONTAINER_TYPE: 'default' }
-    const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
-    expect(type).toBe('custom-class')
+    const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
+    expect(behaviour).toBe('custom-class')
   })
 
   it('sets up event listeners and dispatches actions correctly', () => {

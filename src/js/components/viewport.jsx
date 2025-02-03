@@ -20,7 +20,7 @@ export default function Viewport () {
   const { id, backgroundColor, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxBounds, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -206,7 +206,6 @@ export default function Viewport () {
         zoom,
         minZoom,
         maxZoom,
-        maxBounds,
         basemap,
         size,
         featureLayers: queryFeature,

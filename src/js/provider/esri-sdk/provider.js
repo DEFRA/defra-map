@@ -45,7 +45,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds: maxExtent, basemap, pixelLayers } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, basemap, pixelLayers } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -79,8 +79,9 @@ class Provider extends EventTarget {
       container,
       map,
       zoom,
-      center: center ? this.getPoint(Point, center) : null,
-      extent: bounds ? this.getExtent(Extent, bounds) : null,
+      center: this.getPoint(Point, center),
+      extent: this.getExtent(Extent, bounds),
+      maxExtent: maxExtent || storeDefaults['27700'].MAX_BOUNDS,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
@@ -150,21 +151,21 @@ class Provider extends EventTarget {
   }
 
   getPoint (Point, coords) {
-    return new Point({
+    return coords ? new Point({
       x: coords[0],
       y: coords[1],
       spatialReference: { wkid: 27700 }
-    })
+    }) : null
   }
 
   getExtent (Extent, coords) {
-    return new Extent({
+    return coords ? new Extent({
       xmin: coords[0],
       ymin: coords[1],
       xmax: coords[2],
       ymax: coords[3],
       spatialReference: { wkid: 27700 }
-    })
+    }) : null
   }
 
   getPixel (coord) {

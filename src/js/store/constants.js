@@ -25,14 +25,14 @@ export const defaults = {
   GEOCODE_PROVIDER: 'os-open-names',
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   4326: {
-    BBOX: [-5.719993, 49.955638, 1.794689, 55.825973],
+    BOUNDS: [-5.719993, 49.955638, 1.794689, 55.825973],
     MAX_BOUNDS: [-5.719993, 49.955638, 1.794689, 55.825973],
-    CENTRE: [-1.4758, 52.9219]
+    CENTER: [-1.4758, 52.9219]
   },
   27700: {
-    BBOX: [167161, 13123, 670003, 663805], // xmin, ymin, xmax, ymax
+    BOUNDS: [167161, 13123, 670003, 663805], // xmin, ymin, xmax, ymax
     MAX_BOUNDS: [167161, 13123, 670003, 663805],
-    CENTRE: [435341, 336182]
+    CENTER: [435341, 336182]
   },
   ZOOM: 12,
   MIN_ZOOM: 6,

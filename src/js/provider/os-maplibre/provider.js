@@ -59,7 +59,7 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds, basemap, size, featureLayers, pixelLayers } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, basemap, size, featureLayers, pixelLayers } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)

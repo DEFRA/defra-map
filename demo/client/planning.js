@@ -166,8 +166,8 @@ const attribution = `${String.fromCharCode(169)} Crown copyright and database ri
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
-  framework: 'esri',
   behaviour: 'inline',
+  framework: 'esri',
   place: 'Ambleside',
   zoom: 16,
   minZoom: 7,

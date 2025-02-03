@@ -97,7 +97,7 @@ describe('viewport', () => {
       center: null,
       zoom: null,
       framework: null,
-      styles: { attribution: null },
+      styles: [],
       queryFeature: ['mock-layer-name'],
       ...mockOptions
     }

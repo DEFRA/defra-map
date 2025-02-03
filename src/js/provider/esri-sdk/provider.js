@@ -1,7 +1,7 @@
 import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
-import { getFocusPadding } from '../../lib/viewport.js'
+import { getFocusPadding, getStyle } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults, mapViewExcludeOptions } from './constants'
 import { targetMarkerGraphic } from './marker'
@@ -9,7 +9,7 @@ import { filterOptions } from '../../lib/utils.js'
 import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider, styles }) {
+  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
@@ -17,10 +17,6 @@ class Provider extends EventTarget {
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
     this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
-    this.defaultUrl = styles.defaultUrl
-    this.darkUrl = styles.darkUrl
-    this.aerialUrl = styles.aerialUrl
-    this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -45,7 +41,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, basemap, locationLayers } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -62,11 +58,10 @@ class Provider extends EventTarget {
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
 
     // Define layers
-    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
+    const styleUrl = getStyle(styles, basemap)?.url
+    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: styleUrl, visible: true })
     const graphicsLayer = new GraphicsLayer({ id: 'graphicslayer' })
-    const map = new EsriMap({
-      layers: [baseTileLayer, graphicsLayer]
-    })
+    const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
     const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
 
     // Filter all keys so only valid MapView options can be passed to the constructor
@@ -100,6 +95,7 @@ class Provider extends EventTarget {
     this.graphicsLayer = graphicsLayer
     this.locationLayers = locationLayers
     this.paddingBox = paddingBox
+    this.styles = styles
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.esriConfig = esriConfig
@@ -202,9 +198,10 @@ class Provider extends EventTarget {
   }
 
   setBasemap (basemap) {
+    const style = getStyle(this.styles, basemap)
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
-    this.baseTileLayer.loadStyle(this[basemap + 'Url']).then(() => {
+    this.baseTileLayer.loadStyle(style.url).then(() => {
       handleBasemapChange(this)
     })
   }

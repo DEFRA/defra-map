@@ -161,6 +161,8 @@ const getSymbols = () => {
 
 const symbols = getSymbols()
 
+const attribution = `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`
+
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
@@ -183,11 +185,15 @@ const fm = new FloodMap('map', {
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
   backgroundColor: 'default: #f5f5f0, dark: #060606',
-  styles: {
-    attribution: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,
-    defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,
-    darkUrl: process.env.OS_VTAPI_DARK_URL
-  },
+  styles: [{
+    name: 'default',
+    url: process.env.OS_VTAPI_DEFAULT_URL,
+    attribution
+  }, {
+    name: 'dark',
+    url: process.env.OS_VTAPI_DARK_URL,
+    attribution
+  }],
   search: {
     country: 'england',
     isAutocomplete: true,

@@ -23,14 +23,27 @@ const fm = new FloodMap('map', {
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
-  styles: {
+  styles: [{
+    name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-    defaultUrl: process.env.DEFAULT_URL,
-    darkUrl: process.env.DARK_URL,
-    aerialUrl: process.env.AERIAL_URL,
-    deuteranopiaUrl: process.env.DEUTERANOPIA_URL,
-    tritanopiaUrl: process.env.TRITANOPIA_URL
-  },
+    url: process.env.DEFAULT_URL
+  }, {
+    name: 'dark',
+    attribution: 'Test',
+    url: process.env.DARK_URL
+  },{
+    name: 'aerial',
+    attribution: 'Test',
+    url: process.env.AERIAL_URL
+  },{
+    name: 'deuteranopia',
+    attribution: 'Test',
+    url: process.env.DEUTERANOPIA_URL
+  },{
+    name: 'tritanopia',
+    attribution: 'Test',
+    url: process.env.TRITANOPIA_URL
+  }],
   search: {
     country: 'england',
     isAutocomplete: true

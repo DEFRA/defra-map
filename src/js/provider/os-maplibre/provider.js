@@ -2,7 +2,7 @@ import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLo
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
+import { getFocusPadding, spatialNavigate, getScale, getStyle } from '../../lib/viewport'
 import { filterOptions } from '../../lib/utils'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
@@ -11,19 +11,12 @@ import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols, styles }) {
+  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
     this.transformSearchRequest = transformSearchRequest
     this.transformRequest = transformRequest
-    this.defaultUrl = styles.defaultUrl
-    this.darkUrl = styles.darkUrl
-    this.aerialUrl = styles.aerialUrl
-    this.deuteranopiaUrl = styles.deuteranopiaUrl
-    this.tritanopiaUrl = styles.tritanopiaUrl
-    this.map = null
-    this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'].filter(b => this[b + 'Url'])
     this.symbols = symbols
     this.baseLayers = []
     this.selectedId = ''
@@ -59,10 +52,11 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, basemap, size, featureLayers, locationLayers } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
+    const style = getStyle(styles, basemap)?.url
 
     // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
     const filteredOptions = filterOptions(options, constructorOptions)
@@ -70,7 +64,7 @@ class Provider extends EventTarget {
     const map = new MaplibreMap({
       ...filteredOptions,
       container,
-      style: this[basemap + 'Url'],
+      style,
       maxBounds: maxBounds || storeDefaults['4326'].MAX_BOUNDS,
       bounds,
       center,
@@ -113,6 +107,7 @@ class Provider extends EventTarget {
     this.locationLayers = locationLayers
     this.selectedLayers = []
     this.paddingBox = paddingBox
+    this.styles = styles
     this.basemap = basemap
     this.scale = scale
 
@@ -178,9 +173,10 @@ class Provider extends EventTarget {
     }
   }
 
-  async setBasemap (basemap) {
+  setBasemap (basemap) {
+    const style = getStyle(this.styles, basemap)
     this.basemap = basemap
-    this.map.setStyle(this[basemap + 'Url'], { diff: false })
+    this.map.setStyle(style.url, { diff: false })
   }
 
   setPadding (coord, isAnimate) {

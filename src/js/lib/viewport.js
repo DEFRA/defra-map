@@ -282,12 +282,13 @@ export const getPoint = (el, e, scale) => {
   return [x / scale, y / scale]
 }
 
-export const getBasemap = (styles) => {
-  let basemap
-  if (styles) {
-    const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
-    const localBasemap = window.localStorage.getItem('basemap')
-    basemap = validStyles.includes(localBasemap) ? localBasemap : 'default'
-  }
-  return basemap
+export const getBasemap = (styles = []) => {
+  const validStyles = styles.filter(s => defaults.STYLES.includes(s.name))
+  const localBasemap = window.localStorage.getItem('basemap')
+  const style = validStyles.find(s => s.name === localBasemap)
+  return style?.name || 'default'
+}
+
+export const getStyle = (styles, basemap) => {
+  return styles?.find(s => s.name === basemap)
 }

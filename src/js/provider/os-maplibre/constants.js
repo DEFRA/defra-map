@@ -1,7 +1,7 @@
 export const defaults = {
   PRECISION: 6,
   ANIMATION: {
-    duration: 250,
+    duration: 500,
     curve: 0
   },
   DELAY: 300,

@@ -5,7 +5,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport.js'
+import { getShortcutKey, getMapPixel, getScale, getPoint, getStyle } from '../lib/viewport.js'
 import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
@@ -38,6 +38,7 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, basemap)
+  const style = getStyle(styles, basemap)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -343,9 +344,9 @@ export default function Viewport () {
           </div>
         )
       }, [status])}
-      {!isMobile && (
+      {!isMobile && style?.attribution && (
         <div className='fm-o-attribution'>
-          <div className='fm-c-attribution'>{styles.attribution}</div>
+          <div className='fm-c-attribution'>{style?.attribution}</div>
         </div>
       )}
     </div>

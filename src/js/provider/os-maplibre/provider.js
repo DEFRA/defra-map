@@ -137,6 +137,9 @@ class Provider extends EventTarget {
     this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
     this.shortcutMarkers = []
+
+    // Return ref to framework methods
+    this.framework = { map }
   }
 
   getPixel (coord) {

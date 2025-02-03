@@ -107,7 +107,7 @@ export class FloodMap extends EventTarget {
 
     // Component ready
     eventBus.on(parent, events.APP_READY, data => {
-      this.map = data.map
+      Object.assign(this, data.framework)
       this.modules = data.modules
       this.isReady = true
       eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, this.interfaceType)

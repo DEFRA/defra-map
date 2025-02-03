@@ -22,9 +22,9 @@ const fm = new FloodMap('map', {
   transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
+  backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: {
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
     defaultUrl: process.env.DEFAULT_URL,
     darkUrl: process.env.DARK_URL,
     aerialUrl: process.env.AERIAL_URL,

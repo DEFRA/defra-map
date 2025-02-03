@@ -4,3 +4,8 @@ export const defaults = {
   POLYGON_QUERY_STROKE_DARK: '#ffffff',
   DELAY: 300
 }
+
+export const mapViewExcludeOptions = [
+  'tokenCallback',
+  'interceptorsCallback'
+]

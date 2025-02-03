@@ -17,7 +17,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
-  const { id, styles, queryFeature, queryPixel, queryPolygon } = options
+  const { id, backgroundColor, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
   const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxBounds, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -37,7 +37,7 @@ export default function Viewport () {
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
-  const backgroundColor = getColor(styles?.backgroundColor, basemap)
+  const bgColor = getColor(backgroundColor, basemap)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -317,7 +317,7 @@ export default function Viewport () {
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
       {...featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {}}
-      {...backgroundColor ? { style: { backgroundColor } } : {}}
+      {...backgroundColor ? { style: { backgroundColor: bgColor } } : {}}
       aria-owns={`${id}-viewport-features`}
       tabIndex='0'
       ref={viewportRef}

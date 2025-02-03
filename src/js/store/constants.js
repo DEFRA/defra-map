@@ -88,6 +88,7 @@ export const margin = {
 }
 
 export const constructorOptions = [
+  'backgroundColor',
   'basemap',
   'behaviour',
   'bounds',

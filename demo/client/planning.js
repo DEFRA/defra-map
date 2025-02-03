@@ -176,14 +176,14 @@ const fm = new FloodMap('map', {
   hasGeoLocation: true,
   symbols,
   transformSearchRequest: getRequest,
+  tokenCallback: getEsriToken,
+  interceptorsCallback: getInterceptors,
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
+  backgroundColor: 'default: #f5f5f0, dark: #060606',
   styles: {
     attribution: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,
-    backgroundColor: 'default: #f5f5f0, dark: #060606',
-    tokenCallback: getEsriToken,
-    interceptorsCallback: getInterceptors,
     defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,
     darkUrl: process.env.OS_VTAPI_DARK_URL
   },

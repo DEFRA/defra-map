@@ -1,14 +1,15 @@
 import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
-import { getFocusPadding, filterFrameworkOptions } from '../../lib/viewport.js'
+import { getFocusPadding } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
-import { defaults } from './constants'
+import { defaults, mapViewExcludeOptions } from './constants'
 import { targetMarkerGraphic } from './marker'
-import { defaults as storeDefaults } from '../../store/constants.js'
+import { filterOptions } from '../../lib/utils.js'
+import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider, defaultUrl, darkUrl, aerialUrl }) {
+  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider, styles }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
@@ -16,9 +17,9 @@ class Provider extends EventTarget {
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
     this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
-    this.defaultUrl = defaultUrl
-    this.darkUrl = darkUrl
-    this.aerialUrl = aerialUrl
+    this.defaultUrl = styles.defaultUrl
+    this.darkUrl = styles.darkUrl
+    this.aerialUrl = styles.aerialUrl
     this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.isUserInitiated = false
     this.isLoaded = false
@@ -69,7 +70,7 @@ class Provider extends EventTarget {
     const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
 
     // Filter all keys so only valid MapView options can be passed to the constructor
-    const filteredOptions = filterFrameworkOptions(options)
+    const filteredOptions = filterOptions(options, [...constructorOptions, ...mapViewExcludeOptions])
 
     // Create MapView
     const view = new MapView({
@@ -145,6 +146,7 @@ class Provider extends EventTarget {
 
     // Return ref to framework methods
     this.framework = { map, view, esriConfig }
+    this.modules = modules
   }
 
   getPoint (Point, coords) {

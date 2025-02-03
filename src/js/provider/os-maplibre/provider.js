@@ -2,25 +2,26 @@ import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLo
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate, getScale, filterFrameworkOptions } from '../../lib/viewport'
+import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
+import { filterOptions } from '../../lib/utils'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
-import { defaults as storeDefaults } from '../../store/constants.js'
+import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
+  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols, styles }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
     this.transformSearchRequest = transformSearchRequest
     this.transformRequest = transformRequest
-    this.defaultUrl = defaultUrl
-    this.darkUrl = darkUrl
-    this.aerialUrl = aerialUrl
-    this.deuteranopiaUrl = deuteranopiaUrl
-    this.tritanopiaUrl = tritanopiaUrl
+    this.defaultUrl = styles.defaultUrl
+    this.darkUrl = styles.darkUrl
+    this.aerialUrl = styles.aerialUrl
+    this.deuteranopiaUrl = styles.deuteranopiaUrl
+    this.tritanopiaUrl = styles.tritanopiaUrl
     this.map = null
     this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'].filter(b => this[b + 'Url'])
     this.symbols = symbols
@@ -64,7 +65,7 @@ class Provider extends EventTarget {
     const scale = getScale(size)
 
     // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
-    const filteredOptions = filterFrameworkOptions(options)
+    const filteredOptions = filterOptions(options, constructorOptions)
 
     const map = new MaplibreMap({
       ...filteredOptions,

@@ -43,7 +43,9 @@ class Provider extends EventTarget {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
+  async addMap (options) {
+    const { modules, container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds: maxExtent, basemap, pixelLayers } = options
+    console.log(options)
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -60,7 +62,6 @@ class Provider extends EventTarget {
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
 
     // Define layers
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
     const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
     const graphicsLayer = new GraphicsLayer({ id: 'graphicslayer' })
     const map = new EsriMap({
@@ -71,7 +72,7 @@ class Provider extends EventTarget {
     // Create MapView
     const view = new MapView({
       spatialReference: 27700,
-      container: target,
+      container,
       map,
       zoom,
       center: center ? this.getPoint(Point, center) : null,
@@ -83,12 +84,12 @@ class Provider extends EventTarget {
     })
 
     // Tidy up canvas
-    const canvasContainer = target.querySelector('.esri-view-surface')
+    const canvasContainer = container.querySelector('.esri-view-surface')
     canvasContainer.removeAttribute('role')
     canvasContainer.tabIndex = -1
 
     this.map = map
-    this.target = target
+    this.container = container
     this.view = view
     this.baseTileLayer = baseTileLayer
     this.graphicsLayer = graphicsLayer
@@ -191,7 +192,6 @@ class Provider extends EventTarget {
   }
 
   setBasemap (basemap) {
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'default' : basemap
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)
     this.baseTileLayer.loadStyle(this[basemap + 'Url']).then(() => {

@@ -171,7 +171,7 @@ const fm = new FloodMap('map', {
   minZoom: 7,
   maxZoom: 20,
   center: [324973, 536891],
-  maxExtent: [167161, 13123, 670003, 663805],
+  maxBounds: [167161, 13123, 670003, 663805],
   height: '100%',
   hasGeoLocation: true,
   symbols,

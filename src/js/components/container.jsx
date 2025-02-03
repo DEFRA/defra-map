@@ -45,7 +45,7 @@ export default function Container () {
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
   const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
-  const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.behaviour].HEIGHT
+  const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour].HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
   const isLegendFixed = isDesktop && !isLegendInset

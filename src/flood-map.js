@@ -40,7 +40,7 @@ export class FloodMap extends EventTarget {
     // Merge props
     const dataset = { ...this.el.dataset }
     Object.keys(dataset).forEach(key => { dataset[key] = parseAttribute(dataset[key]) })
-    const parent = document.getElementById(dataset.target || props.target || id)
+    const parent = document.getElementById(dataset.container || props.container || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
     this.id = id

@@ -10,19 +10,19 @@ import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ requestCallback, tileRequestCallback, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
+  constructor ({ requestCallback, transformRequest, geocodeProvider, symbols, defaultUrl, darkUrl, aerialUrl, deuteranopiaUrl, tritanopiaUrl }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
     this.requestCallback = requestCallback
-    this.tileRequestCallback = tileRequestCallback
+    this.transformRequest = transformRequest
     this.defaultUrl = defaultUrl
     this.darkUrl = darkUrl
     this.aerialUrl = aerialUrl
     this.deuteranopiaUrl = deuteranopiaUrl
     this.tritanopiaUrl = tritanopiaUrl
     this.map = null
-    this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia', 'high-contrast'].filter(b => this[b + 'Url'])
+    this.basemaps = ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'].filter(b => this[b + 'Url'])
     this.symbols = symbols
     this.baseLayers = []
     this.selectedId = ''
@@ -58,19 +58,17 @@ class Provider extends EventTarget {
   }
 
   addMap (options) {
-    const { module, target, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxExtent, basemap, size, featureLayers, pixelLayers } = options
-    console.log(options)
+    const { module, container, paddingBox, bounds, center, zoom, minZoom, maxZoom, maxBounds, basemap, size, featureLayers, pixelLayers, transformRequest } = options
     // Add ref to dynamically loaded modules
     this.modules = module.default
     const { Map: MaplibreMap, Marker } = this.modules
 
     const scale = getScale(size)
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
 
     const map = new MaplibreMap({
+      container,
       style: this[basemap + 'Url'],
-      container: target,
-      maxBounds: maxExtent || storeDefaults['4326'].MAX_BBOX,
+      maxBounds: maxBounds || storeDefaults['4326'].MAX_BOUNDS,
       bounds,
       center,
       zoom,
@@ -79,7 +77,7 @@ class Provider extends EventTarget {
       fadeDuration: 0,
       attributionControl: false,
       dragRotate: false,
-      transformRequest: this.tileRequestCallback
+      transformRequest
     })
 
     // Set initial padding, bounds and center
@@ -107,7 +105,7 @@ class Provider extends EventTarget {
     canvas.removeAttribute('aria-label')
     canvas.style.display = 'block'
 
-    this.target = target
+    this.container = container
     this.map = map
     this.featureLayers = featureLayers
     this.pixelLayers = pixelLayers
@@ -176,7 +174,6 @@ class Provider extends EventTarget {
   }
 
   async setBasemap (basemap) {
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'default' : basemap
     this.basemap = basemap
     this.map.setStyle(this[basemap + 'Url'], { diff: false })
   }

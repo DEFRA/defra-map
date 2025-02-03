@@ -7,7 +7,7 @@ import Container from './js/components/container.jsx'
 import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
-  const { behaviour, parent, target, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
+  const { behaviour, parent, container, handleExit, styles, requestCallback, geocodeProvider, symbols } = options
   const mobileMQ = `(max-width: ${options.maxMobile || settings.breakpoints.MAX_MOBILE})`
   const desktopMQ = `(min-width: ${options.minDesktop || settings.breakpoints.MIN_DESKTOP})`
 
@@ -75,7 +75,7 @@ export default function App (options) {
         activeRef
       }}
     >
-      {target ? createPortal(<Container />, parent) : <Container />}
+      {container ? createPortal(<Container />, parent) : <Container />}
     </AppProvider>
   )
 }

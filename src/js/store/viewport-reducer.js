@@ -36,7 +36,7 @@ export const initialState = (options) => {
     zoom: getZoom(cz, zoom, minZoom, maxZoom),
     minZoom,
     maxZoom,
-    maxExtent: options.maxExtent || defaults.MAX_BBOX,
+    maxBounds: options.maxBounds || defaults.MAX_BOUNDS,
     place: !cz ? place : null,
     oZoom: zoom,
     basemap: getBasemap(styles),

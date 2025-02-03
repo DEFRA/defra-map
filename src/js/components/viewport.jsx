@@ -20,7 +20,7 @@ export default function Viewport () {
   const { id, styles, queryFeature, queryPixel, queryPolygon } = options
   const appDispatch = useApp().dispatch
 
-  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxBounds, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -198,14 +198,15 @@ export default function Viewport () {
   useEffect(() => {
     if (isContainerReady && !provider.isLoaded) {
       provider.init({
-        target: mapContainerRef.current,
+        ...options,
+        container: mapContainerRef.current,
         paddingBox: frameRef.current,
         bounds,
         center,
         zoom,
         minZoom,
         maxZoom,
-        maxExtent,
+        maxBounds,
         basemap,
         size,
         featureLayers: queryFeature,

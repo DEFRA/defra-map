@@ -201,7 +201,7 @@ export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
 }
 
 export const parseCentre = (value, srid) => {
-  const mb = defaults[srid].MAX_BBOX
+  const mb = defaults[srid].MAX_BOUNDS
   let isInRange
   let coords = value?.split(',')
   // Query string formed correctly

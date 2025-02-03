@@ -151,21 +151,25 @@ class Provider extends EventTarget {
   }
 
   getPoint (Point, coords) {
-    return coords ? new Point({
-      x: coords[0],
-      y: coords[1],
-      spatialReference: { wkid: 27700 }
-    }) : null
+    return coords
+      ? new Point({
+        x: coords[0],
+        y: coords[1],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
   }
 
   getExtent (Extent, coords) {
-    return coords ? new Extent({
-      xmin: coords[0],
-      ymin: coords[1],
-      xmax: coords[2],
-      ymax: coords[3],
-      spatialReference: { wkid: 27700 }
-    }) : null
+    return coords
+      ? new Extent({
+        xmin: coords[0],
+        ymin: coords[1],
+        xmax: coords[2],
+        ymax: coords[3],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
   }
 
   getPixel (coord) {

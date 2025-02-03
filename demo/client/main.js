@@ -233,8 +233,12 @@ const fm = new FloodMap('map', {
   //   label: '[dynamic title]',
   //   html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
-  queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+  queryLocation: {
+    layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
+  },
+  queryFeature: {
+    layers: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+  }
 })
 
 // Component is ready and we have access to map

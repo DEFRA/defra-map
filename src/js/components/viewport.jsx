@@ -17,7 +17,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
-  const { id, backgroundColor, styles, queryFeature, queryPixel, queryPolygon } = options
+  const { id, backgroundColor, styles, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
   const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -55,7 +55,7 @@ export default function Viewport () {
     if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
-      } else if (queryPixel && !isMoving) {
+      } else if (queryLocation?.layers && !isMoving) {
         const point = getMapPixel(frameRef.current, scale)
         provider.queryPoint(point)
       } else {
@@ -125,7 +125,7 @@ export default function Viewport () {
       const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
-      } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {
+      } else if (!(mode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
         provider.queryPoint(point)
       } else {
         // No action
@@ -140,8 +140,8 @@ export default function Viewport () {
 
   const handleMapLoad = e => {
     // Add polygonFeature
-    if (queryPolygon?.feature) {
-      provider.initDraw(queryPolygon)
+    if (queryArea?.feature) {
+      provider.initDraw(queryArea)
     }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
@@ -208,8 +208,8 @@ export default function Viewport () {
         maxZoom,
         basemap,
         size,
-        featureLayers: queryFeature,
-        pixelLayers: queryPixel
+        featureLayers: queryFeature?.layers,
+        locationLayers: queryLocation?.layers
       })
 
       provider.addEventListener('load', handleMapLoad)

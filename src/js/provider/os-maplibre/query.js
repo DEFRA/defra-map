@@ -138,11 +138,11 @@ export const getViewport = (map) => {
 }
 
 export const getFeatures = (provider, pixel) => {
-  const { map, featureLayers, pixelLayers, paddingBox, scale } = provider
+  const { map, featureLayers, locationLayers, paddingBox, scale } = provider
   const bounds = getFocusBounds(paddingBox, scale)
 
   // Get all visible feature and pixel layers
-  let layers = [...featureLayers, ...pixelLayers]
+  let layers = [...featureLayers, ...locationLayers]
   layers = map.getStyle()?.layers.filter(l => layers.includes(l?.id) && l?.layout?.visibility !== 'none').map(l => l.id)
 
   // Get all features at given pixel
@@ -181,8 +181,8 @@ export const getFeatures = (provider, pixel) => {
 
   // Set 'features' result type
   const feature = featuresAtPixel.length ? featuresAtPixel[0] : null
-  const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (pixelLayers?.includes(feature?.layer) && 'pixel')
-  const hasPixelLayers = layers?.some(l => pixelLayers?.includes(l))
+  const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (locationLayers?.includes(feature?.layer) && 'pixel')
+  const hasPixelLayers = layers?.some(l => locationLayers?.includes(l))
   const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
 
   return {
@@ -191,7 +191,7 @@ export const getFeatures = (provider, pixel) => {
     featuresTotal,
     featuresInViewport,
     isFeaturesInMap: !!layers?.length,
-    isPixelFeaturesAtPixel: pixelLayers?.includes(feature?.layer),
+    isPixelFeaturesAtPixel: locationLayers?.includes(feature?.layer),
     isPixelFeaturesInMap: hasPixelLayers,
     coord: lngLat
   }

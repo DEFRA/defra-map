@@ -6,7 +6,7 @@ import eventBus from '../lib/eventbus.js'
 import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function Draw () {
-  const { provider, parent, queryPolygon, segments, layers, dispatch, query, activeRef, viewportRef } = useApp()
+  const { provider, parent, queryArea, segments, layers, dispatch, query, activeRef, viewportRef } = useApp()
   const { size, basemap } = useViewport()
 
   const startBtnRef = useRef(null)
@@ -15,7 +15,7 @@ export default function Draw () {
   const drawMode = isFrameMode ? 'frame' : 'draw'
 
   const handleStartClick = () => {
-    provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryPolygon)
+    provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryArea)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, basemap, size, segments, layers })
     activeRef.current = viewportRef.current
@@ -32,7 +32,7 @@ export default function Draw () {
 
   return (
     <div className='fm-c-menu__group'>
-      <h2 className='fm-c-menu__heading'>{queryPolygon.heading}</h2>
+      <h2 className='fm-c-menu__heading'>{queryArea.heading}</h2>
       <div className='fm-c-menu__item'>
         <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
           {isFrameMode

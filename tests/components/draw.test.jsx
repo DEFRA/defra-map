@@ -33,7 +33,7 @@ describe('draw', () => {
       activeRef,
       viewportRef,
       mode: 'frame',
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {
@@ -60,7 +60,7 @@ describe('draw', () => {
       viewportRef,
       mode: 'draw',
       query: true,
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {
@@ -85,7 +85,7 @@ describe('draw', () => {
       dispatch,
       activeRef,
       viewportRef,
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {

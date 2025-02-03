@@ -103,7 +103,7 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       query: true,
-      queryPolygon: { submitLabel: 'Submit' },
+      queryArea: { submitLabel: 'Submit' },
       provider: {
         draw: {
           finish: drawFinish

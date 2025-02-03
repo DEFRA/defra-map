@@ -32,14 +32,14 @@ export const getViewport = async (provider) => {
 }
 
 export const getFeatures = async (provider, point) => {
-  const { view, map, pixelLayers } = provider
+  const { view, map, locationLayers } = provider
 
-  const hasVisiblePixelLayers = map.layers.some(l => pixelLayers?.includes(l.id) && l.visible)
+  const hasVisiblePixelLayers = map.layers.some(l => locationLayers?.includes(l.id) && l.visible)
 
   // Get all features at a given pixel
   const pixel = { x: point[0], y: point[1] }
   const hits = await view.hitTest(pixel)
-  const featuresAtPixel = hits.results.filter(r => pixelLayers.some(l => r.layer.id === l))
+  const featuresAtPixel = hits.results.filter(r => locationLayers.some(l => r.layer.id === l))
   const items = featuresAtPixel.map(f => {
     return {
       ...f.graphic.attributes,

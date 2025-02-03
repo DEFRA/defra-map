@@ -90,7 +90,7 @@ describe('Container', () => {
       activePanel: 'LEGEND',
       isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
-      queryPolygon: { helpLabel: 'Help', html: '<p>Help content</p>' },
+      queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
       isLegendFixed: false,
       isMobile: false,
       hasLengedHeading: true,
@@ -134,7 +134,7 @@ describe('Container', () => {
     mockUseApp.activePanel = 'LEGEND'
     mockUseApp.isLegendInset = false
     mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
-    mockUseApp.queryPolygon = { helpLabel: 'Help', html: '<p>Help content</p>' }
+    mockUseApp.queryArea = { helpLabel: 'Help', html: '<p>Help content</p>' }
 
     // Mock the hook to return these values
     useApp.mockReturnValue(mockUseApp)

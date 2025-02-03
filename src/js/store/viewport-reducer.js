@@ -29,7 +29,7 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
   maxZoom = maxZoom || defaults.MAX_ZOOM
   minZoom = minZoom || defaults.MIN_ZOOM
   bounds = getBounds(cz, center, (bounds || extent), srid)
-  center = !bounds ? getCentre(cz, center, srid) : null
+  center = !bounds ? getCentre(cz, center, srid) : undefined
   zoom = getZoom(cz, zoom, minZoom, maxZoom)
 
   return {

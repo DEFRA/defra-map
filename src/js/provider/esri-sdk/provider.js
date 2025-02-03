@@ -45,7 +45,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, basemap, pixelLayers } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, basemap, locationLayers } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -98,7 +98,7 @@ class Provider extends EventTarget {
     this.view = view
     this.baseTileLayer = baseTileLayer
     this.graphicsLayer = graphicsLayer
-    this.pixelLayers = pixelLayers
+    this.locationLayers = locationLayers
     this.paddingBox = paddingBox
     this.basemap = basemap
     this.isDark = ['dark', 'aerial'].includes(basemap)

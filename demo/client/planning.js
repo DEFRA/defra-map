@@ -167,11 +167,11 @@ const fm = new FloodMap('map', {
   framework: 'esri',
   behaviour: 'inline',
   place: 'Ambleside',
-  // zoom: 16,
+  zoom: 16,
   minZoom: 7,
   maxZoom: 20,
-  // center: [324973, 536891],
-  extent: [338388, 554644, 340881, 557137],
+  center: [324973, 536891],
+  // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
   hasGeoLocation: true,
@@ -468,7 +468,7 @@ const fm = new FloodMap('map', {
   //     label: '[dynamic title]',
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryPolygon: {
+  queryArea: {
     heading: 'Site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
@@ -480,7 +480,9 @@ const fm = new FloodMap('map', {
     maxZoom: 21,
     // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
   },
-  queryPixel: vtLayers.map(l => l.n)
+  queryLocation: {
+    layers: vtLayers.map(l => l.n)
+  }
 })
 
 // Component is ready and we have access to map

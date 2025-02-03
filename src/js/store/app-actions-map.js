@@ -30,7 +30,7 @@ const setInfo = (state, payload) => {
 const setDraw = (state, payload) => {
   return {
     ...state,
-    queryPolygon: payload,
+    queryArea: payload,
     targetMarker: null
   }
 }

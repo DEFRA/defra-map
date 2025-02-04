@@ -171,7 +171,9 @@ export const getDescription = (place, center, bounds, features) => {
 export const getStatus = (action, isPanZoom, place, state, current) => {
   const { center, bounds, zoom, features, label, selectedId } = current
   let status = null
-  if (selectedId) {
+  if (label) {
+    status = label
+  } else if (selectedId) {
     const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
     status = selected
   } else if (action === 'DATA') {
@@ -180,8 +182,6 @@ export const getStatus = (action, isPanZoom, place, state, current) => {
     const description = getDescription(place, center, bounds, features)
     const direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
     status = place ? description : `${direction}. Use ALT plus I to get new details`
-  } else if (label) {
-    status = label
   } else {
     status = ''
   }

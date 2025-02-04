@@ -9,11 +9,7 @@ export const AppProvider = ({ options, app, children }) => {
   const store = useMemo(() => ({
     ...app,
     ...state,
-    options: {
-      ...options,
-      queryFeature: options.queryFeature || [],
-      queryPixel: options.queryPixel || []
-    },
+    options,
     dispatch
   }))
 

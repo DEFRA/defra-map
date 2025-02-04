@@ -30,7 +30,7 @@ In your html, will need to add a map placeholder container
 <div id="map"></div>
 ```
 
-And finally, if using buttonFirst or hybrid type, a script tag to prevent the floodmap widget "flashing" on page load/reload.
+And finally, if using buttonFirst or hybrid behaviour, a script tag to prevent the floodmap widget "flashing" on page load/reload.
 
 ```html
     <script>document.body.classList.add('fm-js-hidden')</script>

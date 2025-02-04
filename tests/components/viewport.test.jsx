@@ -59,7 +59,7 @@ describe('viewport', () => {
         eventHandlers[eventType] = eventHandlers[eventType]?.filter(h => h !== handler)
       }),
       init: jest.fn(),
-      requestCallback: jest.fn(),
+      transformSearchRequest: jest.fn(),
       tileRequestCallback: jest.fn(),
       setTargetMarker: jest.fn(),
       selectFeature: jest.fn(),
@@ -92,12 +92,12 @@ describe('viewport', () => {
 
     const options = {
       id: 'map',
-      bbox: [-2.989707, 54.864555, -2.878635, 54.937635],
+      bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
       place: 'Carlisle',
-      centre: null,
+      center: null,
       zoom: null,
       framework: null,
-      styles: { attribution: null },
+      styles: [],
       queryFeature: ['mock-layer-name'],
       ...mockOptions
     }
@@ -130,38 +130,38 @@ describe('viewport', () => {
     expect(screen.getByText('Map move')).toBeInTheDocument()
   })
 
-  it('should handle provider \'update\' event with a new centre', async () => {
+  it('should handle provider \'update\' event with a new center', async () => {
     const { container } = renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null
     })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
-    const updateEvent = new CustomEvent('update', { detail: { bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.902397, 54.901112], zoom: 11.111696, features: { featuresTotal: null, featuresInViewport: [] } } })
+    const updateEvent = new CustomEvent('update', { detail: { bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.902397, 54.901112], zoom: 11.111696, features: { featuresTotal: null, featuresInViewport: [] } } })
     act(() => { providerMock.dispatchEvent(updateEvent) })
     expect(screen.getByText('east 1.3 miles. Use ALT plus I to get new details')).toBeInTheDocument()
   })
 
   it('should handle provider \'update\' event with a new label', async () => {
     const { container } = renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null
     })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
-    const updateEvent = new CustomEvent('update', { detail: { label: 'Test label', bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.902397, 54.901112], zoom: 11.111696, resultType: null, selectedId: null, features: { featuresTotal: null, featuresInViewport: [] } } })
+    const updateEvent = new CustomEvent('update', { detail: { label: 'Test label', bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.902397, 54.901112], zoom: 11.111696, resultType: null, selectedId: null, features: { featuresTotal: null, featuresInViewport: [] } } })
     act(() => { providerMock.dispatchEvent(updateEvent) })
     expect(screen.getByText('Test label')).toBeInTheDocument()
   })
 
   it('should handle provider \'mapquery\' event with a map move', async () => {
     renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null
     })
@@ -190,8 +190,8 @@ describe('viewport', () => {
 
   it('should add \'aria-activedescendant\' when \'PageDown\' is pressed and features are in the viewport', async () => {
     renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
       features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
@@ -204,11 +204,12 @@ describe('viewport', () => {
 
   it('should call \'provider.queryPoint\' when \'Enter\' is pressed and no feature is selected', async () => {
     renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
-      features: { featuresTotal: 0, items: [], featuresInViewport: [] }
+      features: { featuresTotal: 0, items: [], featuresInViewport: [] },
+      queryLocation: { layers: ['test'] }
     })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
@@ -219,8 +220,8 @@ describe('viewport', () => {
   it('should call \'provider.queryFeature\' when \'Enter\' is pressed and a feature is selected', async () => {
     renderComponent({
       featureId: '1000',
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
       features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
@@ -232,7 +233,7 @@ describe('viewport', () => {
   })
 
   it('should call \'provider.zoomIn\' when \'=\' is pressed', async () => {
-    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    renderComponent({ bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.934171, 54.901112], zoom: 11.111696, place: null })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyDown(viewportElement, { key: '=' }) })
@@ -240,7 +241,7 @@ describe('viewport', () => {
   })
 
   it('should call \'provider.panBy\' when \'ArrowRight\' key is pressed', async () => {
-    renderComponent({ bbox: [-2.965945, 54.864555, -2.838848, 54.937635], centre: [-2.934171, 54.901112], zoom: 11.111696, place: null })
+    renderComponent({ bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.934171, 54.901112], zoom: 11.111696, place: null })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyDown(viewportElement, { key: 'ArrowRight' }) })
@@ -253,8 +254,8 @@ describe('viewport', () => {
     const mockDebouncedFn = jest.fn()
     debounce.mockReturnValue(mockDebouncedFn)
     renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
       features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
@@ -275,8 +276,8 @@ describe('viewport', () => {
 
   it('should call \'provider.queryFeature\' with when \'Alt + 1\' is pressed', async () => {
     renderComponent({
-      bbox: [-2.965945, 54.864555, -2.838848, 54.937635],
-      centre: [-2.934171, 54.901112],
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
       zoom: 11.111696,
       place: null,
       features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }

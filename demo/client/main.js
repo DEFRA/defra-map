@@ -6,31 +6,44 @@ import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 const symbols = getSymbols()
 
 const fm = new FloodMap('map', {
-  type: 'hybrid', // 'buttonFirst | inline',
+  behaviour: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
   maxZoom: 18,
-  // centre: [-2.938769, 54.893806],
-  bbox: [-2.989707, 54.864555, -2.878635, 54.937635],
+  // center: [-2.938769, 54.893806],
+  bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   // hasReset: true,
   hasGeoLocation: true,
   height: '600px',
   // buttonType: 'anchor',
   symbols,
-  requestCallback: getRequest,
+  transformRequest: getTileRequest,
+  transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
-  styles: {
+  backgroundColor: 'default: #f5f5f0, dark: #162639',
+  styles: [{
+    name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
-    tileRequestCallback: getTileRequest,
-    defaultUrl: process.env.DEFAULT_URL,
-    darkUrl: process.env.DARK_URL,
-    aerialUrl: process.env.AERIAL_URL,
-    deuteranopiaUrl: process.env.DEUTERANOPIA_URL,
-    tritanopiaUrl: process.env.TRITANOPIA_URL
-  },
+    url: process.env.DEFAULT_URL
+  }, {
+    name: 'dark',
+    attribution: 'Test',
+    url: process.env.DARK_URL
+  },{
+    name: 'aerial',
+    attribution: 'Test',
+    url: process.env.AERIAL_URL
+  },{
+    name: 'deuteranopia',
+    attribution: 'Test',
+    url: process.env.DEUTERANOPIA_URL
+  },{
+    name: 'tritanopia',
+    attribution: 'Test',
+    url: process.env.TRITANOPIA_URL
+  }],
   search: {
     country: 'england',
     isAutocomplete: true
@@ -233,8 +246,12 @@ const fm = new FloodMap('map', {
   //   label: '[dynamic title]',
   //   html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryPixel: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill'],
-  queryFeature: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+  queryLocation: {
+    layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
+  },
+  queryFeature: {
+    layers: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+  }
 })
 
 // Component is ready and we have access to map
@@ -263,11 +280,11 @@ fm.addEventListener('query', e => {
   // Show info panel for feature query
   if (e.detail.resultType === 'feature') {
     const feature = e.detail.features.items[0]
-    fm.info = {
+    fm.setInfo({
       width: '360px',
       label: feature.name,
       html: '<p class="govuk-body-s">Feature content2</p>'
-    }
+    })
   }
 
   // Show info panel for pixel query
@@ -293,7 +310,7 @@ fm.addEventListener('query', e => {
         </p>`
     const results = sorted.map(a => `<p><strong>${a.source}:</strong> ${a.chance}</p>`).join('')
 
-    fm.info = {
+    fm.setInfo({
       width: '360px',
       label: 'Annual likelihood of flooding',
       html: `
@@ -302,11 +319,11 @@ fm.addEventListener('query', e => {
           ${results}
         </div>
       `
-    }
+    })
   }
 
   // Hide info panel and clear selected feature
   if (!e.detail.resultType) {
-    fm.info = null
+    fm.setInfo(null)
   }
 })

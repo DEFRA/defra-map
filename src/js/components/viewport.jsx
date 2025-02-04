@@ -5,7 +5,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport.js'
+import { getShortcutKey, getMapPixel, getScale, getPoint, getStyle } from '../lib/viewport.js'
 import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
@@ -17,12 +17,12 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
-  const { id, styles, queryFeature, queryPixel, queryPolygon } = options
+  const { id, backgroundColor, styles, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
-  const { bbox, centre, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, maxExtent, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
-  const [, setQueryCz] = useQueryState(settings.params.centreZoom)
+  const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
   const mapContainerRef = useRef(null)
   const startPixel = useRef([0, 0])
@@ -37,7 +37,8 @@ export default function Viewport () {
   const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
-  const backgroundColor = getColor(styles?.backgroundColor, basemap)
+  const bgColor = getColor(backgroundColor, basemap)
+  const style = getStyle(styles, basemap)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -51,11 +52,11 @@ export default function Viewport () {
       ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
     }
 
-    // Select feature or query centre (Enter or Space)
+    // Select feature or query center (Enter or Space)
     if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
-      } else if (queryPixel && !isMoving) {
+      } else if (queryLocation?.layers && !isMoving) {
         const point = getMapPixel(frameRef.current, scale)
         provider.queryPoint(point)
       } else {
@@ -82,7 +83,7 @@ export default function Viewport () {
     if (provider.getNearest && e.altKey && e.code.slice(-1) === 'I') {
       viewportDispatch({ type: 'CLEAR_STATUS' })
       // Debounce place update
-      debounceUpdatePlace(centre)
+      debounceUpdatePlace(center)
     }
 
     // Open keyboard controls (Alt + k)
@@ -125,7 +126,7 @@ export default function Viewport () {
       const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
-      } else if (!(mode !== 'default' || !(queryFeature || queryPixel))) {
+      } else if (!(mode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
         provider.queryPoint(point)
       } else {
         // No action
@@ -140,8 +141,8 @@ export default function Viewport () {
 
   const handleMapLoad = e => {
     // Add polygonFeature
-    if (queryPolygon?.feature) {
-      provider.initDraw(queryPolygon)
+    if (queryArea?.feature) {
+      provider.initDraw(queryArea)
     }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, basemap, size
@@ -174,7 +175,7 @@ export default function Viewport () {
     }
   }
 
-  // Get new bbox after map has moved
+  // Get new bounds after map has moved
   const handleUpdate = e => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
@@ -198,18 +199,18 @@ export default function Viewport () {
   useEffect(() => {
     if (isContainerReady && !provider.isLoaded) {
       provider.init({
-        target: mapContainerRef.current,
+        ...options,
+        container: mapContainerRef.current,
         paddingBox: frameRef.current,
-        bbox,
-        centre,
+        bounds,
+        center,
         zoom,
         minZoom,
         maxZoom,
-        maxExtent,
         basemap,
         size,
-        featureLayers: queryFeature,
-        pixelLayers: queryPixel
+        featureLayers: queryFeature?.layers,
+        locationLayers: queryLocation?.layers
       })
 
       provider.addEventListener('load', handleMapLoad)
@@ -245,14 +246,14 @@ export default function Viewport () {
 
     switch (action) {
       case 'SEARCH':
-        bbox ? provider.fitBbox(bbox) : provider.setCentre(centre, zoom)
+        bounds ? provider.fitBounds(bounds) : provider.setCentre(center, zoom)
         break
       case 'RESET':
         provider.setCentre(oCentre, rZoom)
         break
       case 'GEOLOC':
-        provider.setCentre(centre, oZoom)
-        provider.showLocation(centre)
+        provider.setCentre(center, oZoom)
+        provider.showLocation(center)
         break
       case 'ZOOM_IN':
         provider.zoomIn()
@@ -280,7 +281,7 @@ export default function Viewport () {
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
     if (isUpdate) {
-      setQueryCz(`${centre.toString()},${zoom}`)
+      setQueryCz(`${center.toString()},${zoom}`)
     }
   }, [isUpdate])
 
@@ -316,7 +317,7 @@ export default function Viewport () {
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
       {...featureId ? { 'aria-activedescendant': `${id}-feature-${featureId}` } : {}}
-      {...backgroundColor ? { style: { backgroundColor } } : {}}
+      {...backgroundColor ? { style: { backgroundColor: bgColor } } : {}}
       aria-owns={`${id}-viewport-features`}
       tabIndex='0'
       ref={viewportRef}
@@ -343,9 +344,9 @@ export default function Viewport () {
           </div>
         )
       }, [status])}
-      {!isMobile && (
+      {!isMobile && style?.attribution && (
         <div className='fm-o-attribution'>
-          <div className='fm-c-attribution'>{styles.attribution}</div>
+          <div className='fm-c-attribution'>{style?.attribution}</div>
         </div>
       )}
     </div>

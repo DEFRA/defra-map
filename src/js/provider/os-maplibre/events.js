@@ -6,7 +6,7 @@ export const handleLoad = async (provider) => {
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
-      map: provider.map
+      framework: { map: provider.map }
     }
   }))
 }

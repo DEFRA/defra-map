@@ -120,11 +120,11 @@ const getName = path => {
 
 const loadImage = (name, text, map, isDarkBasemap) => {
   const parsed = parseSVG(name, null, text, isDarkBasemap, 2)
-  const target = map.getCanvasContainer()
-  target.insertAdjacentHTML('beforeend', parsed)
-  const el = target.lastChild
+  const container = map.getCanvasContainer()
+  container.insertAdjacentHTML('beforeend', parsed)
+  const el = container.lastChild
   computedStyleToInlineStyle(el, { recursive: true, properties: ['stroke', 'fill'] })
-  const base64 = 'data:image/svg+xml;base64,' + btoa(target.lastChild.outerHTML)
+  const base64 = 'data:image/svg+xml;base64,' + btoa(container.lastChild.outerHTML)
   const img = document.createElement('img')
   el?.remove()
   return new Promise((resolve, reject) => {

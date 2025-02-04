@@ -13,7 +13,6 @@ export class FloodMap extends EventTarget {
   _search
   _info
   _selected
-  _draw
 
   constructor (id, props) {
     super()
@@ -40,7 +39,7 @@ export class FloodMap extends EventTarget {
     // Merge props
     const dataset = { ...this.el.dataset }
     Object.keys(dataset).forEach(key => { dataset[key] = parseAttribute(dataset[key]) })
-    const parent = document.getElementById(dataset.target || props.target || id)
+    const parent = document.getElementById(dataset.container || props.container || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
     this.id = id
@@ -60,7 +59,7 @@ export class FloodMap extends EventTarget {
     }
 
     // Add button
-    if (['buttonFirst', 'hybrid'].includes(props.type)) {
+    if (['buttonFirst', 'hybrid'].includes(props.behaviour)) {
       this._insertButtonHTML()
       // Remove hidden class
       if (!this.isVisible) {
@@ -107,7 +106,7 @@ export class FloodMap extends EventTarget {
 
     // Component ready
     eventBus.on(parent, events.APP_READY, data => {
-      this.map = data.map
+      Object.assign(this, data.framework)
       this.modules = data.modules
       this.isReady = true
       eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, this.interfaceType)
@@ -116,7 +115,6 @@ export class FloodMap extends EventTarget {
       // Need to call these after the component is ready
       if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
       if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
-      if (this._draw) { eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw) }
     })
 
     // Change, eg segment, layer or style
@@ -171,15 +169,15 @@ export class FloodMap extends EventTarget {
   }
 
   _handleMobileMQ (e) {
-    const { type } = this.props
+    const { behaviour } = this.props
     const hasViewParam = (new URLSearchParams(document.location.search)).get('view') === this.id
     this.isMobile = e.matches
-    this.isVisible = hasViewParam || type === 'inline' || (type === 'hybrid' && !e.matches)
+    this.isVisible = hasViewParam || behaviour === 'inline' || (behaviour === 'hybrid' && !e.matches)
   }
 
   _handlePopstate () {
-    const { type } = this.props
-    const hasButton = type === 'buttonFirst' || (type === 'hybrid' && this.isMobile)
+    const { behaviour } = this.props
+    const hasButton = behaviour === 'buttonFirst' || (behaviour === 'hybrid' && this.isMobile)
     if (history.state?.isBack) {
       this._importComponent()
     } else if (hasButton) {
@@ -234,11 +232,9 @@ export class FloodMap extends EventTarget {
     toggleInert()
   }
 
-  get info () {
-    return this._info
-  }
+  // Public methods
 
-  set info (value) {
+  setInfo (value) {
     this._info = value
     if (!this.isReady) {
       return
@@ -246,27 +242,11 @@ export class FloodMap extends EventTarget {
     eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
   }
 
-  get select () {
-    return this._selected
-  }
-
-  set select (value) {
+  setSelected (value) {
     this._selected = value
     if (!this.isReady) {
       return
     }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
-  }
-
-  get draw () {
-    return this._draw
-  }
-
-  set draw (value) {
-    this._draw = value
-    if (!this.isReady) {
-      return
-    }
-    eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
   }
 }

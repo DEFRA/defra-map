@@ -2,14 +2,12 @@ import { getDetail } from './query'
 import { reColourMarkers } from './marker'
 
 export const handleBaseTileLayerLoaded = (provider) => {
-  const { map, view, modules, esriConfig } = provider
+  const { framework, modules } = provider
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
-      map,
-      view,
-      esriConfig,
-      modules
+      modules,
+      framework
     }
   }))
 }

@@ -57,14 +57,14 @@ const getDirection = (coord1, coord2) => {
   return ns + (ewc && nsc ? ', ' : '') + ew
 }
 
-const getArea = (bbox) => {
-  const ew = getDistance([bbox[0], bbox[1]], [bbox[2], bbox[1]])
-  const ns = getDistance([bbox[0], bbox[1]], [bbox[0], bbox[3]])
+const getArea = (bounds) => {
+  const ew = getDistance([bounds[0], bounds[1]], [bounds[2], bounds[1]])
+  const ns = getDistance([bounds[0], bounds[1]], [bounds[0], bounds[3]])
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
-  const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
+const getBoundsChange = (oCentre, oZoom, center, zoom, bounds) => {
+  const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
   const isSameZoom = oZoom === zoom
   const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
   let change
@@ -72,10 +72,10 @@ const getBoundsChange = (oCentre, oZoom, centre, zoom, bbox) => {
     if (!isSameCentre && !isSameZoom) {
       change = 'New area'
     } else if (!isSameCentre) {
-      change = `${getDirection(oCentre, centre)}`
+      change = `${getDirection(oCentre, center)}`
     } else {
       const direction = zoom > oZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, focus area covering ${getArea(bbox)}`
+      change = `zoomed ${direction}, focus area covering ${getArea(bounds)}`
     }
     change = `${change}`
   }
@@ -142,16 +142,16 @@ export const getMapPixel = (el, scale) => {
   return point
 }
 
-export const getDescription = (place, centre, bbox, features) => {
+export const getDescription = (place, center, bounds, features) => {
   const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
   let text = ''
 
   if (featuresTotal) {
     text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
   } else if (isPixelFeaturesAtPixel) {
-    text = 'Data visible at the centre coordinate'
+    text = 'Data visible at the center coordinate'
   } else if (isPixelFeaturesInMap) {
-    text = 'No data visible at the centre coordinate'
+    text = 'No data visible at the center coordinate'
   } else if (isFeaturesInMap) {
     text = 'No feature data in this area'
   } else {
@@ -159,29 +159,29 @@ export const getDescription = (place, centre, bbox, features) => {
   }
 
   let coord
-  if (centre[0] > 1000) {
-    coord = `easting ${Math.round(centre[0])} long ${Math.round(centre[1])}`
+  if (center[0] > 1000) {
+    coord = `easting ${Math.round(center[0])} long ${Math.round(center[1])}`
   } else {
-    coord = `lat ${centre[1].toFixed(4)} long ${centre[0].toFixed(4)}`
+    coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
   }
 
-  return `Focus area approximate centre ${place || coord}. Covering ${getArea(bbox)}. ${text}`
+  return `Focus area approximate center ${place || coord}. Covering ${getArea(bounds)}. ${text}`
 }
 
 export const getStatus = (action, isPanZoom, place, state, current) => {
-  const { centre, bbox, zoom, features, label, selectedId } = current
+  const { center, bounds, zoom, features, label, selectedId } = current
   let status = null
-  if (selectedId) {
+  if (label) {
+    status = label
+  } else if (selectedId) {
     const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
     status = selected
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
   } else if (isPanZoom || action === 'GEOLOC') {
-    const description = getDescription(place, centre, bbox, features)
-    const direction = getBoundsChange(state.centre, state.zoom, centre, zoom, bbox)
+    const description = getDescription(place, center, bounds, features)
+    const direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
     status = place ? description : `${direction}. Use ALT plus I to get new details`
-  } else if (label) {
-    status = label
   } else {
     status = ''
   }
@@ -201,7 +201,7 @@ export const getPlace = (isUserInitiated, action, oPlace, newPlace) => {
 }
 
 export const parseCentre = (value, srid) => {
-  const mb = defaults[srid].MAX_BBOX
+  const mb = defaults[`MAX_BOUNDS_${srid}`]
   let isInRange
   let coords = value?.split(',')
   // Query string formed correctly
@@ -282,12 +282,13 @@ export const getPoint = (el, e, scale) => {
   return [x / scale, y / scale]
 }
 
-export const getBasemap = (styles) => {
-  let basemap
-  if (styles) {
-    const validStyles = defaults.STYLES.map(s => styles[s + 'Url'] && s).filter(b => !!b)
-    const localBasemap = window.localStorage.getItem('basemap')
-    basemap = validStyles.includes(localBasemap) ? localBasemap : 'default'
-  }
-  return basemap
+export const getBasemap = (styles = []) => {
+  const validStyles = styles.filter(s => defaults.STYLES.includes(s.name))
+  const localBasemap = window.localStorage.getItem('basemap')
+  const style = validStyles.find(s => s.name === localBasemap)
+  return style?.name || 'default'
+}
+
+export const getStyle = (styles, basemap) => {
+  return styles?.find(s => s.name === basemap)
 }

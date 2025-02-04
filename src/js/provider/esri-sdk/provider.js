@@ -3,7 +3,7 @@ import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding, getStyle } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
-import { defaults, mapViewExcludeOptions } from './constants'
+import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
 import { filterOptions } from '../../lib/utils.js'
 import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
@@ -41,7 +41,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers, init } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers, callBack } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -64,8 +64,8 @@ class Provider extends EventTarget {
     const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
     const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
 
-    // Filter all keys so only valid MapView options can be passed to the constructor
-    const filteredOptions = filterOptions(options, [...constructorOptions, ...mapViewExcludeOptions])
+    // Filter all keys so only valid arguments can be passed to MapView
+    const filteredOptions = Object.fromEntries(Object.entries(options).filter(([key]) => !['height', 'size'].includes(key)))
 
     // Create MapView
     const view = new MapView({
@@ -138,8 +138,8 @@ class Provider extends EventTarget {
     this.modules = modules
 
     // Implementation callback after initialisation
-    if (init) {
-      init(this)
+    if (callBack) {
+      callBack(this)
     }
   }
 

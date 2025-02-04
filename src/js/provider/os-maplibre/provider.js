@@ -3,7 +3,6 @@ import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
 import { getFocusPadding, spatialNavigate, getScale, getStyle } from '../../lib/viewport'
-import { filterOptions } from '../../lib/utils'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
@@ -52,17 +51,14 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, init } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, callBack } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
     const style = getStyle(styles, basemap)?.url
 
-    // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
-    const filteredOptions = filterOptions(options, constructorOptions)
-
     const map = new MaplibreMap({
-      ...filteredOptions,
+      ...options,
       container,
       style,
       maxBounds: maxBounds || storeDefaults.MAX_BOUNDS_4326,
@@ -142,8 +138,8 @@ class Provider extends EventTarget {
     this.framework = { map }
 
     // Implementation callback after initialisation
-    if (init) {
-      init(this)
+    if (callBack) {
+      callBack(this)
     }
   }
 

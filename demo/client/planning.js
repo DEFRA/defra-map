@@ -535,8 +535,8 @@ fm.addEventListener('query', e => {
         width: '360px',
         label: 'Title',
         html: `
-                  <p class="govuk-body-s">No feature info</p>
-              `
+          <p class="govuk-body-s">No feature info</p>
+        `
       })
       return
     }

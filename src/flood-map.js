@@ -234,7 +234,7 @@ export class FloodMap extends EventTarget {
 
   // Public methods
 
-  setInfo(value) {
+  setInfo (value) {
     this._info = value
     if (!this.isReady) {
       return
@@ -242,7 +242,7 @@ export class FloodMap extends EventTarget {
     eventBus.dispatch(this.props.parent, events.SET_INFO, this._info)
   }
 
-  setSelected(value) {
+  setSelected (value) {
     this._selected = value
     if (!this.isReady) {
       return

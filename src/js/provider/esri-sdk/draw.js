@@ -14,8 +14,8 @@ export class Draw {
     this.drawStyles = options.styles
 
     // Reference to zoom constraints
-    const maxZoomO = map.getMaxZoom()
-    const minZoomO = map.getMinZoom()
+    const maxZoomO = view.constraints.maxZoom
+    const minZoomO = view.constraints.minZoom
     this.maxZoomO = maxZoomO
     this.minZoomO = minZoomO
     this.maxZoom = options.maxZoom || maxZoomO

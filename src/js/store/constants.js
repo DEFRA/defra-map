@@ -9,7 +9,6 @@ export const events = {
   APP_ACTION: 'appaction',
   SET_SEARCH: 'setsearch',
   SET_INFO: 'setinfo',
-  SET_DRAW: 'setdraw',
   SET_SELECTED: 'setselected',
   SET_INTERFACE_TYPE: 'setinterfacetype',
   MAP_QUERY: 'mapquery',

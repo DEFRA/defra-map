@@ -13,7 +13,6 @@ export class FloodMap extends EventTarget {
   _search
   _info
   _selected
-  _draw
 
   constructor (id, props) {
     super()
@@ -116,7 +115,6 @@ export class FloodMap extends EventTarget {
       // Need to call these after the component is ready
       if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
       if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
-      if (this._draw) { eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw) }
     })
 
     // Change, eg segment, layer or style
@@ -256,17 +254,5 @@ export class FloodMap extends EventTarget {
       return
     }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
-  }
-
-  get draw () {
-    return this._draw
-  }
-
-  set draw (value) {
-    this._draw = value
-    if (!this.isReady) {
-      return
-    }
-    eventBus.dispatch(this.props.parent, events.SET_DRAW, this._draw)
   }
 }

@@ -16,8 +16,7 @@ jest.mock('../../src/js/store/constants', () => ({
   defaults: { CONTAINER_TYPE: 'default' },
   events: {
     SET_INFO: 'SET_INFO',
-    SET_SELECTED: 'SET_SELECTED',
-    SET_DRAW: 'SET_DRAW'
+    SET_SELECTED: 'SET_SELECTED'
   },
   settings: {
     container: {
@@ -196,11 +195,6 @@ describe('Container', () => {
     expect(eventBus.on).toHaveBeenCalledWith(
       'test-parent',
       events.SET_SELECTED,
-      expect.any(Function)
-    )
-    expect(eventBus.on).toHaveBeenCalledWith(
-      'test-parent',
-      events.SET_DRAW,
       expect.any(Function)
     )
 

@@ -27,14 +27,6 @@ const setInfo = (state, payload) => {
   }
 }
 
-const setDraw = (state, payload) => {
-  return {
-    ...state,
-    queryArea: payload,
-    targetMarker: null
-  }
-}
-
 const setSelected = (state, payload) => {
   return {
     ...state,
@@ -166,7 +158,6 @@ export const actionsMap = {
   CONTAINER_READY: containerReady,
   SET_AVAILABILITY: setSearch,
   SET_INFO: setInfo,
-  SET_DRAW: setDraw,
   ERROR: error,
   OPEN: open,
   CLOSE: close,

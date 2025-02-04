@@ -517,7 +517,7 @@ fm.addEventListener('action', e => {
 fm.addEventListener('change', e => {
   const { type, mode, basemap, segments, layers } = e.detail
   if (['layer', 'segment'].includes(type)) {
-    fm.info = null
+    fm.setInfo(null)
   }
   isDark = basemap === 'dark'
   isRamp = layers.includes('md')
@@ -531,13 +531,13 @@ fm.addEventListener('query', e => {
     const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
 
     if (!feature) {
-      fm.info = {
+      fm.setInfo({
         width: '360px',
         label: 'Title',
         html: `
                   <p class="govuk-body-s">No feature info</p>
               `
-      }
+      })
       return
     }
 
@@ -582,14 +582,14 @@ fm.addEventListener('query', e => {
             <strong>Model year:</strong> ${attributes.model_year}
         `
         : ''
-      fm.info = {
+      fm.setInfo({
         width: '360px',
         label: 'Title',
         html: `
           <p class="govuk-body-s">${title}${model}</p>
           <p class="govuk-body-s govuk-!-margin-top-1">${layerName}</p>
         `
-      }
+      })
     })
   }
 })

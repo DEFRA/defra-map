@@ -280,11 +280,11 @@ fm.addEventListener('query', e => {
   // Show info panel for feature query
   if (e.detail.resultType === 'feature') {
     const feature = e.detail.features.items[0]
-    fm.info = {
+    fm.setInfo({
       width: '360px',
       label: feature.name,
       html: '<p class="govuk-body-s">Feature content2</p>'
-    }
+    })
   }
 
   // Show info panel for pixel query
@@ -310,7 +310,7 @@ fm.addEventListener('query', e => {
         </p>`
     const results = sorted.map(a => `<p><strong>${a.source}:</strong> ${a.chance}</p>`).join('')
 
-    fm.info = {
+    fm.setInfo({
       width: '360px',
       label: 'Annual likelihood of flooding',
       html: `
@@ -319,11 +319,11 @@ fm.addEventListener('query', e => {
           ${results}
         </div>
       `
-    }
+    })
   }
 
   // Hide info panel and clear selected feature
   if (!e.detail.resultType) {
-    fm.info = null
+    fm.setInfo(null)
   }
 })

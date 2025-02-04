@@ -10,11 +10,11 @@ const getSize = (framework) => {
 
 const getBounds = (cz, center, bounds, srid) => {
   const hasValidCentre = !!(parseCentre(cz, srid) || center)
-  return hasValidCentre ? null : bounds || defaults[srid].BOUNDS
+  return hasValidCentre ? null : bounds
 }
 
 const getCentre = (cz, center, srid) => {
-  return parseCentre(cz, srid) || center || defaults[srid].CENTER
+  return parseCentre(cz, srid) || center
 }
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {

@@ -76,7 +76,7 @@ class Provider extends EventTarget {
       zoom,
       center: this.getPoint(Point, center),
       extent: this.getExtent(Extent, bounds),
-      maxExtent: maxExtent || storeDefaults['27700'].MAX_BOUNDS,
+      maxExtent: maxExtent || storeDefaults['MAX_BOUNDS_27700'],
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),

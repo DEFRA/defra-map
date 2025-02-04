@@ -24,16 +24,8 @@ export const defaults = {
   MIN_SEARCH_LENGTH: 3,
   GEOCODE_PROVIDER: 'os-open-names',
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
-  4326: {
-    BOUNDS: [-5.719993, 49.955638, 1.794689, 55.825973],
-    MAX_BOUNDS: [-5.719993, 49.955638, 1.794689, 55.825973],
-    CENTER: [-1.4758, 52.9219]
-  },
-  27700: {
-    BOUNDS: [167161, 13123, 670003, 663805], // xmin, ymin, xmax, ymax
-    MAX_BOUNDS: [167161, 13123, 670003, 663805],
-    CENTER: [435341, 336182]
-  },
+  MAX_BOUNDS_4326: [-5.719993, 49.955638, 1.794689, 55.825973],
+  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805],
   ZOOM: 12,
   MIN_ZOOM: 6,
   MAX_ZOOM: 16

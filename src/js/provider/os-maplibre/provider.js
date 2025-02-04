@@ -65,7 +65,7 @@ class Provider extends EventTarget {
       ...filteredOptions,
       container,
       style,
-      maxBounds: maxBounds || storeDefaults['4326'].MAX_BOUNDS,
+      maxBounds: maxBounds || storeDefaults['MAX_BOUNDS_4326'],
       bounds,
       center,
       zoom,

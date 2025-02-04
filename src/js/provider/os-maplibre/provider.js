@@ -3,12 +3,11 @@ import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
 import { getFocusPadding, spatialNavigate, getScale, getStyle } from '../../lib/viewport'
-import { filterOptions } from '../../lib/utils'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
-import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
+import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols }) {
@@ -52,17 +51,14 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, callBack } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
     const style = getStyle(styles, basemap)?.url
 
-    // Filter all keys so only valid MapLibre MapOptions can be passed to the constructor
-    const filteredOptions = filterOptions(options, constructorOptions)
-
     const map = new MaplibreMap({
-      ...filteredOptions,
+      ...options,
       container,
       style,
       maxBounds: maxBounds || storeDefaults.MAX_BOUNDS_4326,
@@ -140,6 +136,11 @@ class Provider extends EventTarget {
 
     // Return ref to framework methods
     this.framework = { map }
+
+    // Implementation callback after initialisation
+    if (callBack) {
+      callBack(this)
+    }
   }
 
   getPixel (coord) {

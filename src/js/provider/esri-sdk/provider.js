@@ -41,7 +41,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers, callback } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -136,6 +136,11 @@ class Provider extends EventTarget {
     // Return ref to framework methods
     this.framework = { map, view, esriConfig }
     this.modules = modules
+
+    // Implementation callback after initialisation
+    if (callback) {
+      callback(this)
+    }
   }
 
   getPoint (Point, coords) {

@@ -14,7 +14,7 @@ export class FloodMap extends EventTarget {
   _info
   _selected
 
-  constructor (id, props) {
+  constructor (id, props, callback) {
     super()
     this.el = document.getElementById(id)
 
@@ -42,6 +42,7 @@ export class FloodMap extends EventTarget {
     const parent = document.getElementById(dataset.container || props.container || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
+    this.callback = callback
     this.id = id
     this.root = null
 
@@ -217,7 +218,7 @@ export class FloodMap extends EventTarget {
       return
     }
     this.button?.setAttribute('style', 'display: none')
-    this.root = module.default(this.el, { ...this.props, interfaceType: this.interfaceType })
+    this.root = module.default(this.el, { ...this.props, callback: this.callback, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {

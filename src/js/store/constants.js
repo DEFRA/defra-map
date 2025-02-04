@@ -84,6 +84,7 @@ export const constructorOptions = [
   'behaviour',
   'bounds',
   'buttonType',
+  'callback',
   'center',
   'container',
   'featureLayers',

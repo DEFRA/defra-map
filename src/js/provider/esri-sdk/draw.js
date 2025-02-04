@@ -13,9 +13,13 @@ export class Draw {
     this.defaultStyles = [...provider.styles]
     this.drawStyles = options.styles
 
-    // Reference to original view constraints
-    this.maxZoomO = view.constraints.maxZoom
-    this.minZoomO = view.constraints.minZoom
+    // Reference to zoom constraints
+    const maxZoomO = view.constraints.maxZoom
+    const minZoomO = view.constraints.minZoom
+    this.maxZoomO = maxZoomO
+    this.minZoomO = minZoomO
+    this.maxZoom = options.maxZoom || maxZoomO
+    this.minZoom = options.minZoom || minZoomO
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this

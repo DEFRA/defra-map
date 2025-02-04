@@ -16,8 +16,7 @@ jest.mock('../../src/js/store/constants', () => ({
   defaults: { CONTAINER_TYPE: 'default' },
   events: {
     SET_INFO: 'SET_INFO',
-    SET_SELECTED: 'SET_SELECTED',
-    SET_DRAW: 'SET_DRAW'
+    SET_SELECTED: 'SET_SELECTED'
   },
   settings: {
     container: {
@@ -90,12 +89,12 @@ describe('Container', () => {
       activePanel: 'LEGEND',
       isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
-      queryPolygon: { helpLabel: 'Help', html: '<p>Help content</p>' },
+      queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
       isLegendFixed: false,
       isMobile: false,
       hasLengedHeading: true,
       provider: {},
-      options: { type: 'default', legend: { title: 'Legend Title', display: 'fixed' }, hasAutoMode: true },
+      options: { behaviour: 'default', legend: { title: 'Legend Title', display: 'fixed' }, hasAutoMode: true },
       dispatch: jest.fn(),
       activeRef: { current: null },
       viewportRef: { current: null },
@@ -134,7 +133,7 @@ describe('Container', () => {
     mockUseApp.activePanel = 'LEGEND'
     mockUseApp.isLegendInset = false
     mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
-    mockUseApp.queryPolygon = { helpLabel: 'Help', html: '<p>Help content</p>' }
+    mockUseApp.queryArea = { helpLabel: 'Help', html: '<p>Help content</p>' }
 
     // Mock the hook to return these values
     useApp.mockReturnValue(mockUseApp)
@@ -177,10 +176,10 @@ describe('Container', () => {
         custom: { CLASS: 'custom-class' }
       }
     }
-    const options = { type: 'custom' }
+    const options = { behaviour: 'custom' }
     const defaults = { CONTAINER_TYPE: 'default' }
-    const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
-    expect(type).toBe('custom-class')
+    const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
+    expect(behaviour).toBe('custom-class')
   })
 
   it('sets up event listeners and dispatches actions correctly', () => {
@@ -196,11 +195,6 @@ describe('Container', () => {
     expect(eventBus.on).toHaveBeenCalledWith(
       'test-parent',
       events.SET_SELECTED,
-      expect.any(Function)
-    )
-    expect(eventBus.on).toHaveBeenCalledWith(
-      'test-parent',
-      events.SET_DRAW,
       expect.any(Function)
     )
 

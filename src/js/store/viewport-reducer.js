@@ -8,13 +8,13 @@ const getSize = (framework) => {
   return (hasSize && window.localStorage.getItem('size')) || 'small'
 }
 
-const getBbox = (cz, centre, bbox, srid) => {
-  const hasValidCentre = parseCentre(cz, srid) || centre
-  return hasValidCentre ? null : bbox || defaults[srid].BBOX
+const getBounds = (cz, center, bounds, srid) => {
+  const hasValidCentre = !!(parseCentre(cz, srid) || center)
+  return hasValidCentre ? null : bounds
 }
 
-const getCentre = (cz, centre, srid) => {
-  return parseCentre(cz, srid) || centre || defaults[srid].CENTRE
+const getCentre = (cz, center, srid) => {
+  return parseCentre(cz, srid) || center
 }
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {
@@ -22,21 +22,22 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
   return Math.max(Math.min(initZoom, maxZoom), minZoom)
 }
 
-export const initialState = (options) => {
-  const { bbox, centre, zoom, place, framework, features, styles } = options
+export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, place, framework, features, styles }) => {
   const queryParams = new URLSearchParams(window.location.search)
   const cz = queryParams.get('cz')
-  const maxZoom = options.maxZoom || defaults.MAX_ZOOM
-  const minZoom = options.minZoom || defaults.MIN_ZOOM
   const srid = capabilities[framework || 'default'].srid
+  maxZoom = maxZoom || defaults.MAX_ZOOM
+  minZoom = minZoom || defaults.MIN_ZOOM
+  bounds = getBounds(cz, center, (bounds || extent), srid)
+  center = !bounds ? getCentre(cz, center, srid) : undefined
+  zoom = getZoom(cz, zoom, minZoom, maxZoom)
 
   return {
-    bbox: getBbox(cz, centre, bbox, srid),
-    centre: getCentre(cz, centre, srid),
-    zoom: getZoom(cz, zoom, minZoom, maxZoom),
+    bounds,
+    center,
+    zoom,
     minZoom,
     maxZoom,
-    maxExtent: options.maxExtent || defaults.MAX_BBOX,
     place: !cz ? place : null,
     oZoom: zoom,
     basemap: getBasemap(styles),

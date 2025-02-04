@@ -6,31 +6,43 @@ const symbols = () => {
 }
 
 const fm = new FloodMap('map', {
-  type: 'hybrid', // 'buttonFirst | inline',
+  behaviour: 'hybrid', // 'buttonFirst | inline',
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
-  maxZoom: 18,
+  maxZoom: 16,
   // centre: [-2.938769, 54.893806],
-  bbox: [-2.989707, 54.864555, -2.878635, 54.937635],
+  bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   // hasReset: true,
   hasGeoLocation: true,
   height: '600px',
   // buttonType: 'anchor',
   symbols,
-  requestCallback: getRequest,
+  transformRequest: getTileRequest,
+  transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
-  styles: {
+  styles: [{
+    name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
-    tileRequestCallback: getTileRequest,
-    defaultUrl: process.env.DEFAULT_URL,
-    darkUrl: process.env.DARK_URL,
-    aerialUrl: process.env.AERIAL_URL,
-    deuteranopiaUrl: process.env.DEUTERANOPIA_URL,
-    tritanopiaUrl: process.env.TRITANOPIA_URL
-  },
+    url: process.env.DEFAULT_URL
+  }, {
+    name: 'dark',
+    attribution: 'Test',
+    url: process.env.DARK_URL
+  },{
+    name: 'aerial',
+    attribution: 'Test',
+    url: process.env.AERIAL_URL
+  },{
+    name: 'deuteranopia',
+    attribution: 'Test',
+    url: process.env.DEUTERANOPIA_URL
+  },{
+    name: 'tritanopia',
+    attribution: 'Test',
+    url: process.env.TRITANOPIA_URL
+  }],
   search: {
     country: 'england',
     isAutocomplete: true,
@@ -311,19 +323,17 @@ const fm = new FloodMap('map', {
   //     label: '[dynamic title]',
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryPolygon: {
+  queryArea: {
     heading: 'Site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
-    html: '<p class="govuk-body-s">Instructions</p>',
-    // defaultUrl: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
-    // darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
-    minZoom: 12,
-    maxZoom: 21,
+    html: '<p class="govuk-body-s">Instructions</p>'
+    // minZoom: 12,
+    // maxZoom: 21
     // feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
   }
-  // queryPixel: []
+  // queryLocation: []
 })
 
 // Component is ready and we have access to map

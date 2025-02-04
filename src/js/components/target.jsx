@@ -52,7 +52,7 @@ export default function Target () {
   return (
     <>
       {!targetCoord && isTargetVisible && (
-        <div className={`fm-c-marker fm-c-marker--target fm-c-marker--visible fm-c-marker--centre${hasTargetData ? ' fm-c-marker--has-data' : ''}`} aria-label='Map marker'>
+        <div className={`fm-c-marker fm-c-marker--target fm-c-marker--visible fm-c-marker--center${hasTargetData ? ' fm-c-marker--has-data' : ''}`} aria-label='Map marker'>
           <div className='fm-c-marker__inner'>
             <svg width='69' height='69' viewBox='0 0 69 69' fillRule='evenodd' fill='none' stroke='currentColor'>
               <circle cx='34.5' cy='34.5' r='33' strokeWidth='2' />

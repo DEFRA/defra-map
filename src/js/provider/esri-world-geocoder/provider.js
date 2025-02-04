@@ -27,15 +27,15 @@ const markString = (string, find) => {
 const place = (result) => {
   const { xmin, ymin, xmax, ymax } = result.extent
   const { x, y } = result.location
-  const bbox = [xmin, ymin, xmax, ymax].map(n => Math.round(n * 1000000) / 1000000)
-  const centre = [x, y].map(n => Math.round(n * 1000000) / 1000000)
+  const bounds = [xmin, ymin, xmax, ymax].map(n => Math.round(n * 1000000) / 1000000)
+  const center = [x, y].map(n => Math.round(n * 1000000) / 1000000)
   const { PlaceName } = result.attributes
 
   return {
     id: null,
     text: PlaceName,
-    bbox,
-    centre
+    bounds,
+    center
   }
 }
 
@@ -48,18 +48,18 @@ const suggestion = (query, { text, magicKey }) => {
 }
 
 class Provider {
-  constructor (requestCallback) {
-    this.requestCallback = requestCallback
+  constructor (transformSearchRequest) {
+    this.transformSearchRequest = transformSearchRequest
   }
 
   async suggest (query) {
     if (!query) {
       return []
     }
-    // const token = (await this.requestCallback()).token
+    // const token = (await this.transformSearchRequest()).token
     let url = config.SUGGEST_URL
     url = url.replace('{query}', encodeURI(query)).replace('{maxSuggestions}', isPostcode(query) ? 1 : 8)
-    const response = await fetch(await this.requestCallback(url))
+    const response = await fetch(await this.transformSearchRequest(url))
     const json = await response.json()
     if (json.error || !json.suggestions?.length) {
       return []
@@ -76,10 +76,10 @@ class Provider {
     if (!query) {
       return null
     }
-    // const token = (await this.requestCallback()).token
+    // const token = (await this.transformSearchRequest()).token
     let url = config.FIND_ADDRESS_CANDIDATES_URL
     url = url.replace('{query}', encodeURI(query)).replace('{maxLocations}', 8).replace('{magicKey}', id || '')
-    const response = await fetch(await this.requestCallback(url))
+    const response = await fetch(await this.transformSearchRequest(url))
     const json = await response.json()
     if (json.error || !json.candidates?.length) {
       return null

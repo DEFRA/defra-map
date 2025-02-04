@@ -1,7 +1,6 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
 import Graphic from '@arcgis/core/Graphic'
-import { defaults as storeDefaults } from '../../store/constants'
 import { defaults } from './constants'
 
 export class Draw {
@@ -10,12 +9,17 @@ export class Draw {
     this.provider = provider
     Object.assign(this, options)
 
-    // Reference to original styles
-    storeDefaults.STYLES.forEach(s => { this[`${s}UrlOrg`] = provider[`${s}Url`] })
+    // Reference to styles
+    this.defaultStyles = [...provider.styles]
+    this.drawStyles = options.styles
 
-    // Reference to original view constraints
-    this.maxZoomO = view.constraints.maxZoom
-    this.minZoomO = view.constraints.minZoom
+    // Reference to zoom constraints
+    const maxZoomO = map.getMaxZoom()
+    const minZoomO = map.getMinZoom()
+    this.maxZoomO = maxZoomO
+    this.minZoomO = minZoomO
+    this.maxZoom = options.maxZoom || maxZoomO
+    this.minZoom = options.minZoom || minZoomO
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
@@ -46,7 +50,7 @@ export class Draw {
   }
 
   toggleConstraints (hasConstraints, isFrame) {
-    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
+    const { provider, drawStyles, defaultStyles, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
     const { view } = provider
 
     // Toggle min and max zoom
@@ -54,10 +58,9 @@ export class Draw {
     view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
 
     // Toggle basemaps
-    storeDefaults.STYLES.forEach(s => { provider[`${s}Url`] = hasConstraints ? (this[`${s}Url`] || provider[`${s}Url`]) : this[`${s}UrlOrg`] })
-    if (this[provider.basemap + 'Url']) {
-      provider.setBasemap(provider.basemap)
-    }
+    const newStyles = provider.styles.map(s => { return drawStyles.find(n => s.name === n.name) || s })
+    provider.styles = hasConstraints ? newStyles : defaultStyles
+    provider.setBasemap(provider.basemap)
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {

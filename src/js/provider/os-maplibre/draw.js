@@ -3,7 +3,6 @@ import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding } from '../../lib/viewport'
 import { defaults } from './constants'
-import { defaults as storeDefaults } from '../../store/constants'
 
 export class Draw {
   constructor (provider, options) {
@@ -11,12 +10,17 @@ export class Draw {
     this.provider = provider
     Object.assign(this, options)
 
-    // Reference to original styles
-    storeDefaults.STYLES.forEach(s => { this[`${s}UrlOrg`] = provider[`${s}Url`] })
+    // Reference to styles
+    this.defaultStyles = [...provider.styles]
+    this.drawStyles = options.styles || []
 
-    // Reference to original zoom constraints
-    this.maxZoomO = map.getMaxZoom()
-    this.minZoomO = map.getMinZoom()
+    // Reference to zoom constraints
+    const maxZoomO = map.getMaxZoom()
+    const minZoomO = map.getMinZoom()
+    this.maxZoomO = maxZoomO
+    this.minZoomO = minZoomO
+    this.maxZoom = options.maxZoom || maxZoomO
+    this.minZoom = options.minZoom || minZoomO
 
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
@@ -72,8 +76,7 @@ export class Draw {
 
     // Selected vertex
     map.on('draw.selectionchange', e => {
-      const point = e.points[0]
-      console.log(point)
+      // const point = e.points[0]
     })
 
     // Disable simple select
@@ -152,7 +155,7 @@ export class Draw {
   }
 
   toggleConstraints (hasConstraints) {
-    const { provider, maxZoom, maxZoomO, minZoomO, minZoom, oFeature } = this
+    const { provider, drawStyles, defaultStyles, maxZoom, maxZoomO, minZoomO, minZoom, oFeature } = this
     const { map } = provider
 
     // Toggle min and max zoom
@@ -160,10 +163,9 @@ export class Draw {
     map.setMinZoom(hasConstraints ? minZoom : minZoomO)
 
     // Toggle basemaps
-    storeDefaults.STYLES.forEach(s => { provider[`${s}Url`] = hasConstraints ? (this[`${s}Url`] || provider[`${s}Url`]) : this[`${s}UrlOrg`] })
-    if (this[provider.basemap + 'Url']) {
-      provider.setBasemap(provider.basemap)
-    }
+    const newStyles = provider.styles.map(s => { return drawStyles.find(n => s.name === n.name) || s })
+    provider.styles = hasConstraints ? newStyles : defaultStyles
+    provider.setBasemap(provider.basemap)
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oFeature) {

@@ -29,3 +29,7 @@ export const getColor = (value, basemap) => {
   const color = colors?.length ? (colors.find(f => f.includes(basemap)) || colors[0]).split(':')[1] : null
   return color
 }
+
+export const filterOptions = (options, exclude) => {
+  return Object.fromEntries(Object.entries(options).filter(([key]) => !exclude.includes(key)))
+}

@@ -4,7 +4,7 @@ import { useViewport } from '../store/use-viewport'
 
 export default function Reset () {
   const { options } = useApp()
-  const { bbox, oCentre, rZoom, centre, zoom } = useViewport()
+  const { bounds, oCentre, rZoom, center, zoom } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [isNewArea, setIsNewArea] = useState(false)
 
@@ -16,11 +16,11 @@ export default function Reset () {
   }
 
   useEffect(() => {
-    const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(centre)
+    const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
     const isSameZoom = rZoom === zoom
-    const isNew = oCentre && centre && rZoom && zoom && !(isSameCentre && isSameZoom)
+    const isNew = oCentre && center && rZoom && zoom && !(isSameCentre && isSameZoom)
     setIsNewArea(isNew)
-  }, [bbox])
+  }, [bounds])
 
   if (!options?.hasReset) {
     return null

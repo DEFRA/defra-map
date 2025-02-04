@@ -39,7 +39,7 @@ export default function PaddingBox ({ children }) {
   }, [mode])
 
   // Template properties
-  const isVisible = interfaceType === 'keyboard' && (options.queryPixel || options.queryFeature)
+  const isVisible = interfaceType === 'keyboard' && (options.queryLocation?.layers || options.queryFeature?.layers)
   const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length || features?.isPixelFeaturesInMap)
   const isFrame = mode === 'frame'
   const className = getClassName(isFrame, isVisible, isActive)

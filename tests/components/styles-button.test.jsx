@@ -8,26 +8,9 @@ jest.mock('../../src/js/store/use-app')
 describe('styles-button', () => {
   it('should show styles button', () => {
     jest.mocked(useApp).mockReturnValue({
-      provider: {
-        basemaps: [1, 2]
-      },
       options: {
-        id: 'test-id'
-      }
-    })
-
-    render(<StylesButton />)
-
-    expect(screen.getByText('Choose map style')).toBeTruthy()
-  })
-
-  it('should render keyboard shortcut text', () => {
-    jest.mocked(useApp).mockReturnValue({
-      provider: {
-        basemaps: [1, 2]
-      },
-      options: {
-        id: 'test-id'
+        id: 'test-id',
+        styles: [{}, {}]
       }
     })
 
@@ -39,11 +22,9 @@ describe('styles-button', () => {
   it('should dispatch OPEN action on click', () => {
     const dispatchMock = jest.fn()
     jest.mocked(useApp).mockReturnValue({
-      provider: {
-        basemaps: [1, 2]
-      },
       options: {
-        id: 'test-id'
+        id: 'test-id',
+        styles: [{}, {}]
       },
       dispatch: dispatchMock
     })
@@ -58,11 +39,9 @@ describe('styles-button', () => {
 
   it('should contain the id in the button', () => {
     jest.mocked(useApp).mockReturnValue({
-      provider: {
-        basemaps: [1, 2]
-      },
       options: {
-        id: 'test-id'
+        id: 'test-id',
+        styles: [{}, {}]
       }
     })
 

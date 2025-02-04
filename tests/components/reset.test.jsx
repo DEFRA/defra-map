@@ -20,10 +20,10 @@ describe('reset', () => {
     const dispatch = jest.fn()
 
     jest.mocked(useViewport).mockReturnValue({
-      bbox: '1',
+      bounds: '1',
       rZoom: '1',
       zoom: '1',
-      centre: { value: '101' },
+      center: { value: '101' },
       oCentre: { value: '100' },
       options: { hasRest: true },
       dispatch
@@ -40,10 +40,10 @@ describe('reset', () => {
     const dispatch = jest.fn()
 
     jest.mocked(useViewport).mockReturnValue({
-      bbox: '1',
+      bounds: '1',
       rZoom: '1',
       zoom: '1',
-      centre: { value: '100' },
+      center: { value: '100' },
       oCentre: { value: '100' },
       options: { hasRest: true },
       dispatch

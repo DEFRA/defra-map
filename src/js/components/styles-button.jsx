@@ -3,11 +3,10 @@ import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 
 export default function StylesButton ({ stylesBtnRef }) {
-  const { provider, dispatch, options } = useApp()
-  const { id } = options
-  const { basemaps } = provider
+  const { dispatch, options } = useApp()
+  const { id, styles } = options
 
-  if (!(provider.basemaps && !!Object.keys(provider?.basemaps).length)) {
+  if (!styles?.length) {
     return null
   }
 
@@ -18,7 +17,7 @@ export default function StylesButton ({ stylesBtnRef }) {
 
   return (
     <>
-      {basemaps?.length > 1
+      {styles?.length > 1
         ? (
           <Tooltip id={`${id}-style-label`} position='left' cssModifier='style' text='Choose map style'>
             <button onClick={handleClick} className='fm-c-btn fm-c-btn--style govuk-body-s' aria-labelledby={`${id}-style-label`} ref={stylesBtnRef}>

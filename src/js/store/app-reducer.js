@@ -19,7 +19,7 @@ const getActivePanel = (info, featureId, targetMarker, legend) => {
 }
 
 export const initialState = (options) => {
-  const { legend, search, info, styles, queryPolygon, hasAutoMode } = options
+  const { legend, search, info, styles, queryArea, hasAutoMode } = options
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const activePanel = getActivePanel(info, featureId, targetMarker, legend)
@@ -30,7 +30,7 @@ export const initialState = (options) => {
     search,
     legend,
     info,
-    queryPolygon,
+    queryArea,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
     isKeyExpanded: false,
@@ -46,7 +46,7 @@ export const initialState = (options) => {
     mode: 'default',
     isFrameVisible: false,
     isTargetVisible: false,
-    query: queryPolygon?.feature,
+    query: queryArea?.feature,
     hash: null
   }
 }

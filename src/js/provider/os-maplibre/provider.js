@@ -52,7 +52,7 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, callback } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, init } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
@@ -142,8 +142,8 @@ class Provider extends EventTarget {
     this.framework = { map }
 
     // Implementation callback after initialisation
-    if (callback) {
-      callback(this)
+    if (init) {
+      init(this)
     }
   }
 

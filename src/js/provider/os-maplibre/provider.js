@@ -7,7 +7,7 @@ import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { LatLon } from 'geodesy/osgridref.js'
-import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
+import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols }) {

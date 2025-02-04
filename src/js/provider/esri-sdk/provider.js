@@ -5,8 +5,7 @@ import { getFocusPadding, getStyle } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
-import { filterOptions } from '../../lib/utils.js'
-import { defaults as storeDefaults, constructorOptions } from '../../store/constants.js'
+import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider }) {

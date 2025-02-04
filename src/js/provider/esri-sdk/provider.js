@@ -113,14 +113,6 @@ class Provider extends EventTarget {
       }
     })
 
-    // Constrain extent
-    view.watch('extent', e => {
-      if (!geometry?.contains(e)) {
-        // To follow
-        // view.goTo(geometry, { animate: false })
-      }
-    })
-
     // All changes. Must debounce, min 300ms
     const debounceStationary = debounce(() => {
       isMoving = false

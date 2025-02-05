@@ -51,11 +51,11 @@
         border-style: solid;
     }
 
-    &.fm-o-viewport--dark-basemap .fm-c-padding-box__frame {
+    &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
         border-color: #b1b4b6;
     }
 
-    &.fm-o-viewport--dark-basemap .fm-c-padding-box--active .fm-c-padding-box__frame {
+    &.fm-o-viewport--dark-style .fm-c-padding-box--active .fm-c-padding-box__frame {
         border-color: #ffffff;
     }
 }

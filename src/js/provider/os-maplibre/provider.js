@@ -2,7 +2,7 @@ import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLo
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate, getScale, getStyle } from '../../lib/viewport'
+import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
@@ -51,16 +51,15 @@ class Provider extends EventTarget {
   }
 
   addMap (module, options) {
-    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, styles, basemap, size, featureLayers, locationLayers, callBack } = options
+    const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, style, size, featureLayers, locationLayers, callBack } = options
     const { Map: MaplibreMap, Marker } = module.default
 
     const scale = getScale(size)
-    const style = getStyle(styles, basemap)?.url
 
     const map = new MaplibreMap({
       ...options,
       container,
-      style,
+      style: style.url,
       maxBounds: maxBounds || storeDefaults.MAX_BOUNDS_4326,
       bounds,
       center,
@@ -103,8 +102,7 @@ class Provider extends EventTarget {
     this.locationLayers = locationLayers || []
     this.selectedLayers = []
     this.paddingBox = paddingBox
-    this.styles = styles
-    this.basemap = basemap
+    this.style = style
     this.scale = scale
 
     // Map ready event (first load)
@@ -120,7 +118,7 @@ class Provider extends EventTarget {
     const debounceHandleIdle = debounce(() => { handleIdle(this) }, defaults.DELAY)
     map.on('idle', debounceHandleIdle)
 
-    // Map basemap change
+    // Map style change
     map.on('style.load', handleStyleLoad.bind(map, this))
 
     // Capture errors
@@ -174,9 +172,8 @@ class Provider extends EventTarget {
     }
   }
 
-  setBasemap (basemap) {
-    const style = getStyle(this.styles, basemap)
-    this.basemap = basemap
+  setStyle (style) {
+    this.style = style
     this.map.setStyle(style.url, { diff: false })
   }
 
@@ -202,7 +199,7 @@ class Provider extends EventTarget {
       this.map.resize()
       this.dispatchEvent(new CustomEvent('style', {
         detail: {
-          type: 'size', size, basemap: this.basemap
+          type: 'size', size, style: this.style
         }
       }))
     }, defaults.DELAY)
@@ -316,13 +313,13 @@ class Provider extends EventTarget {
     const pixels = labels.map(c => c.pixel)
     const index = spatialNavigate(direction, pixel || [center.x, center.y], pixels)
     const feature = labels[index]?.feature
-    highlightLabel(this.map, this.scale, this.basemap, feature)
+    highlightLabel(this.map, this.scale, this.style.name, feature)
     return labels[index]?.pixel
   }
 
   showLabel (point) {
     const feature = getLabel(this, point)
-    highlightLabel(this.map, this.scale, this.basemap, feature)
+    highlightLabel(this.map, this.scale, this.style.name, feature)
     return point
   }
 

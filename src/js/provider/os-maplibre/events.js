@@ -12,7 +12,7 @@ export const handleLoad = async (provider) => {
 }
 
 export const handleStyleLoad = async (provider) => {
-  const { map } = provider
+  const { map, style } = provider
   // Store ref to baselayers when a new style is loaded
   provider.baseLayers = map.getStyle().layers
   // Amend symbol-placement prop to so labels have a coordinate
@@ -23,11 +23,10 @@ export const handleStyleLoad = async (provider) => {
   addMapHoverBehaviour(provider)
   if (provider.isLoaded) {
     await loadSymbols(provider)
-    const { basemap } = provider
     provider.dispatchEvent(new CustomEvent('style', {
       detail: {
-        type: 'basemap',
-        basemap
+        type: 'style',
+        style: style.name
       }
     }))
   }
@@ -58,11 +57,11 @@ export const handleMoveStart = (provider, e) => {
 
 export const handleStyleData = (provider, e) => {
   if (provider.baseLayers.length) {
-    const { map, basemap, selectedId } = provider
+    const { map, style, selectedId } = provider
     const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
     const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
     if (selectedLayers.length !== featureLayers.length) {
-      const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+      const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
       provider.selectedLayers = addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
     }
   }

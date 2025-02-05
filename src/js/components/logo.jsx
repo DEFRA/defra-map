@@ -1,9 +1,9 @@
 import React from 'react'
-import { useViewport } from '../store/use-viewport.js'
+import { useViewport } from '../store/use-viewport'
 
 export default function Logo () {
-  const { basemap } = useViewport()
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const { style } = useViewport()
+  const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
 
   return (
     <div className='fm-c-logo'>

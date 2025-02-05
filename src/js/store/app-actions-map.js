@@ -106,8 +106,8 @@ const setMode = (state, payload) => {
 }
 
 const setIsDarkMode = (state, payload) => {
-  const { basemap, colourScheme } = payload
-  const isDarkMode = basemap === 'dark' || colourScheme === 'dark'
+  const { style, colourScheme } = payload
+  const isDarkMode = style?.name === 'dark' || colourScheme === 'dark'
   return {
     ...state,
     isDarkMode

@@ -9,10 +9,6 @@ export class Draw {
     this.provider = provider
     Object.assign(this, options)
 
-    // Reference to styles
-    this.defaultStyles = [...provider.styles]
-    this.drawStyles = options.styles
-
     // Reference to zoom constraints
     const maxZoomO = view.constraints.maxZoom
     const minZoomO = view.constraints.minZoom
@@ -50,17 +46,12 @@ export class Draw {
   }
 
   toggleConstraints (hasConstraints, isFrame) {
-    const { provider, drawStyles, defaultStyles, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
+    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
     const { view } = provider
 
     // Toggle min and max zoom
     view.constraints.maxZoom = hasConstraints ? maxZoom : maxZoomO
     view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
-
-    // Toggle basemaps
-    const newStyles = provider.styles.map(s => { return drawStyles.find(n => s.name === n.name) || s })
-    provider.styles = hasConstraints ? newStyles : defaultStyles
-    provider.setBasemap(provider.basemap)
 
     // Zoom to extent if we have an existing graphic
     if (hasConstraints && oGraphic) {

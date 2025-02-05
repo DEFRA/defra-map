@@ -1,7 +1,7 @@
-import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handleStationary } from './events'
+import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
-import { getFocusPadding, getStyle } from '../../lib/viewport.js'
+import { getFocusPadding } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
 import { targetMarkerGraphic } from './marker'
@@ -40,7 +40,7 @@ class Provider extends EventTarget {
   }
 
   async addMap (modules, options) {
-    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, styles, basemap, locationLayers, callBack } = options
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
     const esriConfig = modules[0].default
     const EsriMap = modules[1].default
     const MapView = modules[2].default
@@ -57,8 +57,7 @@ class Provider extends EventTarget {
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
 
     // Define layers
-    const styleUrl = getStyle(styles, basemap)?.url
-    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: styleUrl, visible: true })
+    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: style.url, visible: true })
     const graphicsLayer = new GraphicsLayer({ id: 'graphicslayer' })
     const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
     const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
@@ -94,9 +93,8 @@ class Provider extends EventTarget {
     this.graphicsLayer = graphicsLayer
     this.locationLayers = locationLayers
     this.paddingBox = paddingBox
-    this.styles = styles
-    this.basemap = basemap
-    this.isDark = ['dark', 'aerial'].includes(basemap)
+    this.style = style
+    this.isDark = ['dark', 'aerial'].includes(style.name)
     this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
 
@@ -193,12 +191,10 @@ class Provider extends EventTarget {
     this.view.goTo({ zoom: this.view.zoom - 1 }).catch(err => console.log(err))
   }
 
-  setBasemap (basemap) {
-    const style = getStyle(this.styles, basemap)
-    this.basemap = basemap
-    this.isDark = ['dark', 'aerial'].includes(basemap)
+  setStyle (style) {
+    this.style = style
     this.baseTileLayer.loadStyle(style.url).then(() => {
-      handleBasemapChange(this)
+      handleStyleChange(this)
     })
   }
 

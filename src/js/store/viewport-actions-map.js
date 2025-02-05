@@ -102,19 +102,35 @@ const zoomOut = (state) => {
   }
 }
 
-const setBasemap = (state, payload) => {
-  let { basemap, colourScheme } = payload
-  if (colourScheme === 'light' && basemap === 'dark') {
-    basemap = 'default'
-  }
-  if (colourScheme === 'dark' && basemap === 'default') {
-    basemap = 'dark'
-  }
+const setStyle = (state, payload) => {
+  const { style, colourScheme } = payload
+  const defaultName = colourScheme === 'light' && style === 'dark' && 'default'
+  const darkName = colourScheme === 'dark' && style === 'default' && 'dark'
+  const styleName = defaultName || darkName || style
+  const newStyle = state.styles.find(s => s.name === styleName)
   return {
     ...state,
-    action: 'BASEMAP',
+    action: 'STYLE',
     isUpdate: false,
-    basemap
+    style: newStyle
+  }
+}
+
+const swapStyles = (state, payload) => {
+  const styleName = state.style.name
+  let style
+  if (payload?.length) {
+    style = payload?.find(s => s.name === styleName) || payload[0]
+  } else {
+    style = state.oStyles.find(s => s.name === styleName) || state.oStyles[0]
+  }
+  const styles = payload || state.oStyles
+  return {
+    ...state,
+    action: 'STYLE',
+    isUpdate: false,
+    styles,
+    style
   }
 }
 
@@ -185,7 +201,8 @@ export const actionsMap = {
   GEOLOC: geoloc,
   ZOOM_IN: zoomIn,
   ZOOM_OUT: zoomOut,
-  SET_BASEMAP: setBasemap,
+  SET_STYLE: setStyle,
+  SWAP_STYLES: swapStyles,
   SET_SIZE: setSize,
   CLEAR_STATUS: clearStatus,
   CLEAR_FEATURES: clearFeatures,

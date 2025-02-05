@@ -1,4 +1,4 @@
-import { parseCentre, parseZoom, getBasemap } from '../lib/viewport'
+import { parseCentre, parseZoom, getStyle } from '../lib/viewport'
 import { defaults } from './constants'
 import { capabilities } from '../lib/capabilities'
 import { actionsMap } from './viewport-actions-map'
@@ -24,6 +24,7 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
 
 export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, place, framework, features, styles }) => {
   const queryParams = new URLSearchParams(window.location.search)
+  const style = getStyle(styles)
   const cz = queryParams.get('cz')
   const srid = capabilities[framework || 'default'].srid
   maxZoom = maxZoom || defaults.MAX_ZOOM
@@ -38,9 +39,11 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
     zoom,
     minZoom,
     maxZoom,
+    oStyles: styles,
+    styles: [...styles],
+    style,
     place: !cz ? place : null,
     oZoom: zoom,
-    basemap: getBasemap(styles),
     size: getSize(framework),
     features,
     status: '',

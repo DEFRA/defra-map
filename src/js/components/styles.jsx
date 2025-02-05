@@ -9,15 +9,14 @@ import More from './more.jsx'
 
 export default function Styles () {
   const { options, activeRef } = useApp()
-  const { id, framework, styles } = options
-  const { basemap, size } = useViewport()
+  const { id, framework } = options
+  const { size, style, styles } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-
-  const currentBasemap = basemap
+  const currentStyleName = style.name
   const currentSize = size
   const buttonsRef = useRef([])
-  const [isExpanded, setIsExpanded] = useState(styles.map(s => s.name).indexOf(currentBasemap) > 2 || size !== 'small')
+  const [isExpanded, setIsExpanded] = useState(styles.map(s => s.name).indexOf(currentStyleName) > 2 || size !== 'small')
   buttonsRef.current = styles.map(s => s.name).map((_, i) => buttonsRef.current[i] ?? createRef())
 
   const hasSize = capabilities[framework || 'default'].hasSize
@@ -25,9 +24,9 @@ export default function Styles () {
 
   const MIN_COLS = 3
 
-  const handleBasemapClick = e => {
+  const handleStyleClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value } })
+    viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value }})
   }
 
   const handleSizeClick = e => {
@@ -49,8 +48,8 @@ export default function Styles () {
   // Toggle dark mode
   useEffect(() => {
     const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme } })
-  }, [basemap])
+    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { style, colourScheme } })
+  }, [style])
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
@@ -58,7 +57,7 @@ export default function Styles () {
         <div className='fm-c-layers__columns'>
           {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((style, i) => (
             <div key={style.name} className='fm-c-layers__item govuk-body-s'>
-              <button className='fm-c-layers__button' value={style.name} aria-pressed={currentBasemap === style.name} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
+              <button className='fm-c-layers__button' value={style.name} aria-pressed={currentStyleName === style.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
                 <div className='fm-c-layers__image'>
                   <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(style.name) }} />
                 </div>

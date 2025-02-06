@@ -34,7 +34,8 @@ const fm = new FloodMap('map', {
   },{
     name: 'aerial',
     attribution: 'Test',
-    url: process.env.AERIAL_URL
+    url: process.env.AERIAL_URL,
+    logo: null
   },{
     name: 'deuteranopia',
     attribution: 'Test',

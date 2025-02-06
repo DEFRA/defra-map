@@ -482,10 +482,12 @@ const fm = new FloodMap('map', {
     html: '<p class="govuk-body-s">Instructions</p>',
     styles: [{
       name: 'default',
-      url: process.env.OS_VTAPI_DEFAULT_DRAW_URL
+      url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
+      attribution
     }, {
       name: 'dark',
-      url: process.env.OS_VTAPI_DARK_DRAW_URL
+      url: process.env.OS_VTAPI_DARK_DRAW_URL,
+      attribution
     }],
     minZoom: 12,
     maxZoom: 21,
@@ -500,8 +502,8 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   map = fm.map
-  const { mode, basemap, segments, layers } = e.detail
-  isDark = basemap === 'dark'
+  const { mode, style, segments, layers } = e.detail
+  isDark = style === 'dark'
   isRamp = layers.includes('md')
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
@@ -515,11 +517,11 @@ fm.addEventListener('action', e => {
 
 // Listen for mode, segments, layers or style changes
 fm.addEventListener('change', e => {
-  const { type, mode, basemap, segments, layers } = e.detail
+  const { type, mode, style, segments, layers } = e.detail
   if (['layer', 'segment'].includes(type)) {
     fm.setInfo(null)
   }
-  isDark = basemap === 'dark'
+  isDark = style === 'dark'
   isRamp = layers.includes('md')
   toggleVisibility(type, mode, segments, layers)
 })

@@ -21,7 +21,7 @@ export default mergeWithCustomize({
     hot: false
   },
   entry: {
-    main: [
+    planning: [
       path.join(__dirname, 'client/planning.js'),
       path.join(__dirname, 'client/main.scss')
     ]

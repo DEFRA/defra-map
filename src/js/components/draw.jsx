@@ -18,7 +18,7 @@ export default function Draw () {
   const handleStartClick = () => {
     provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryArea)
     appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
-    viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom }})
+    viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, style, size, segments, layers })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()

@@ -18,7 +18,7 @@ const getCentre = (cz, center, srid) => {
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {
   const initZoom = parseZoom(cz) || zoom
-  return Math.max(Math.min(initZoom, maxZoom), minZoom)
+  return (minZoom || maxZoom) ? Math.max(Math.min(initZoom, maxZoom), minZoom) : initZoom
 }
 
 export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, place, framework, features, styles }) => {
@@ -29,7 +29,6 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
   bounds = getBounds(cz, center, (bounds || extent), srid)
   center = !bounds ? getCentre(cz, center, srid) : undefined
   zoom = getZoom(cz, zoom, minZoom, maxZoom)
-
   return {
     bounds,
     center,

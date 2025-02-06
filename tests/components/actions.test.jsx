@@ -13,9 +13,11 @@ jest.mock('../../src/js/store/use-viewport')
 describe('actions', () => {
   const drawFinish = jest.fn()
   const dispatch = jest.fn()
+  const viewportDispatch = jest.fn()
   const viewPortRefFocus = jest.fn()
 
   jest.mocked(useViewport).mockReturnValue({
+    dispatch: viewportDispatch,
     size: null,
     basemap: null
   })

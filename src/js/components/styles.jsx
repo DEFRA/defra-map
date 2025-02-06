@@ -26,7 +26,7 @@ export default function Styles () {
 
   const handleStyleClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value }})
+    viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {

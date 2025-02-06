@@ -3,10 +3,10 @@ import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
 const update = (state, payload) => {
-  const { oPlace, oZoom, isUserInitiated, action } = state
+  const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, center, zoom, features } = payload
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
-  const original = { oBbox: bounds, oCentre: center, rZoom: zoom, oZoom, oPlace: place }
+  const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const status = getStatus(action, isPanZoom, place, state, payload)
@@ -123,15 +123,15 @@ const swapStyles = (state, payload = {}) => {
   if (styles?.length) {
     style = styles?.find(s => s.name === styleName) || styles[0]
   } else {
-    style = state.oStyles.find(s => s.name === styleName) || state.oStyles[0]
+    style = state.originalStyles.find(s => s.name === styleName) || state.originalStyles[0]
   }
   return {
     ...state,
     action: 'STYLE',
     isUpdate: false,
-    minZoom: minZoom || state.oMinZoom,
-    maxZoom: maxZoom || state.oMaxZoom,
-    styles: styles || state.oStyles,
+    minZoom: minZoom || state.originalMinZoom,
+    maxZoom: maxZoom || state.originalMaxZoom,
+    styles: styles || state.originalStyles,
     style
   }
 }

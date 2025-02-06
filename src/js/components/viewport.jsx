@@ -20,7 +20,7 @@ export default function Viewport () {
   const { id, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
-  const { style, bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -251,7 +251,7 @@ export default function Viewport () {
         provider.setCentre(oCentre, rZoom)
         break
       case 'GEOLOC':
-        provider.setCentre(center, oZoom)
+        provider.setCentre(center, originalZoom)
         provider.showLocation(center)
         break
       case 'ZOOM_IN':

@@ -28,7 +28,7 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      provider.view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
+      provider.view.goTo({ target: oGraphic, ...(isFrame && this.originalZoom && { zoom: this.originalZoom }) })
     }
 
     // Remove graphic if frame mode
@@ -81,7 +81,7 @@ export class Draw {
     const graphic = this.finishEdit() || currentGraphic || elGraphic
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
-    this.oZoom = view.zoom
+    this.originalZoom = view.zoom
     this.addGraphic(graphic)
     return this.getFeature(graphic)
   }

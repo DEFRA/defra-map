@@ -116,20 +116,22 @@ const setStyle = (state, payload) => {
   }
 }
 
-const swapStyles = (state, payload) => {
+const swapStyles = (state, payload = {}) => {
+  const { styles, minZoom, maxZoom } = payload
   const styleName = state.style.name
   let style
-  if (payload?.length) {
-    style = payload?.find(s => s.name === styleName) || payload[0]
+  if (styles?.length) {
+    style = styles?.find(s => s.name === styleName) || styles[0]
   } else {
     style = state.oStyles.find(s => s.name === styleName) || state.oStyles[0]
   }
-  const styles = payload || state.oStyles
   return {
     ...state,
     action: 'STYLE',
     isUpdate: false,
-    styles,
+    minZoom: minZoom || state.oMinZoom,
+    maxZoom: maxZoom || state.oMaxZoom,
+    styles: styles || state.oStyles,
     style
   }
 }

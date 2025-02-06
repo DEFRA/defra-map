@@ -5,17 +5,8 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { view } = provider
     this.provider = provider
     Object.assign(this, options)
-
-    // Reference to zoom constraints
-    const maxZoomO = view.constraints.maxZoom
-    const minZoomO = view.constraints.minZoom
-    this.maxZoomO = maxZoomO
-    this.minZoomO = minZoomO
-    this.maxZoom = options.maxZoom || maxZoomO
-    this.minZoom = options.minZoom || minZoomO
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
@@ -31,8 +22,14 @@ export class Draw {
   }
 
   start (mode) {
+    const { provider, oGraphic } = this
     const isFrame = mode === 'frame'
-    this.toggleConstraints(true, isFrame)
+
+    // Zoom to extent if we have an existing graphic
+    if (oGraphic) {
+      // Additional zoom fix to address goTo graphic not respecting true size?
+      provider.view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
+    }
 
     // Remove graphic if frame mode
     if (isFrame) {
@@ -43,21 +40,6 @@ export class Draw {
 
     // Edit graphic
     this.editGraphic(this.oGraphic)
-  }
-
-  toggleConstraints (hasConstraints, isFrame) {
-    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
-    const { view } = provider
-
-    // Toggle min and max zoom
-    view.constraints.maxZoom = hasConstraints ? maxZoom : maxZoomO
-    view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
-
-    // Zoom to extent if we have an existing graphic
-    if (hasConstraints && oGraphic) {
-      // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
-    }
   }
 
   edit () {
@@ -84,7 +66,6 @@ export class Draw {
     this.sketchViewModel?.cancel()
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
-    this.toggleConstraints(false)
   }
 
   create (feature) {
@@ -102,7 +83,6 @@ export class Draw {
     this.oGraphic = graphic.clone()
     this.oZoom = view.zoom
     this.addGraphic(graphic)
-    this.toggleConstraints(false)
     return this.getFeature(graphic)
   }
 

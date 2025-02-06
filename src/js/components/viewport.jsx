@@ -266,7 +266,7 @@ export default function Viewport () {
         break
       case 'STYLE':
         window.localStorage.setItem('style', style.name)
-        provider.setStyle(style)
+        provider.setStyle(style, minZoom, maxZoom)
         break
       default:
         // No action

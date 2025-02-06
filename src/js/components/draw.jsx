@@ -7,6 +7,7 @@ import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function Draw () {
   const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, activeRef, viewportRef } = useApp()
+  const { styles, minZoom, maxZoom } = queryArea
   const { dispatch: viewportDispatch, size, style } = useViewport()
 
   const startBtnRef = useRef(null)
@@ -17,7 +18,7 @@ export default function Draw () {
   const handleStartClick = () => {
     provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryArea)
     appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
-    viewportDispatch({ type: 'SWAP_STYLES', payload: queryArea?.styles })
+    viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom }})
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, style, size, segments, layers })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()

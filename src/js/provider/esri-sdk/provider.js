@@ -191,7 +191,10 @@ class Provider extends EventTarget {
     this.view.goTo({ zoom: this.view.zoom - 1 }).catch(err => console.log(err))
   }
 
-  setStyle (style) {
+  setStyle (style, minZoom, maxZoom) {
+    const { view } = this
+    view.constraints.maxZoom = maxZoom
+    view.constraints.minZoom = minZoom
     this.style = style
     this.baseTileLayer.loadStyle(style.url).then(() => {
       handleStyleChange(this)

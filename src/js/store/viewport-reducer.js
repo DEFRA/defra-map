@@ -1,5 +1,4 @@
 import { parseCentre, parseZoom, getStyle } from '../lib/viewport'
-import { defaults } from './constants'
 import { capabilities } from '../lib/capabilities'
 import { actionsMap } from './viewport-actions-map'
 
@@ -18,7 +17,7 @@ const getCentre = (cz, center, srid) => {
 }
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {
-  const initZoom = parseZoom(cz) || zoom || defaults.ZOOM
+  const initZoom = parseZoom(cz) || zoom
   return Math.max(Math.min(initZoom, maxZoom), minZoom)
 }
 
@@ -27,8 +26,6 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
   const style = getStyle(styles)
   const cz = queryParams.get('cz')
   const srid = capabilities[framework || 'default'].srid
-  maxZoom = maxZoom || defaults.MAX_ZOOM
-  minZoom = minZoom || defaults.MIN_ZOOM
   bounds = getBounds(cz, center, (bounds || extent), srid)
   center = !bounds ? getCentre(cz, center, srid) : undefined
   zoom = getZoom(cz, zoom, minZoom, maxZoom)

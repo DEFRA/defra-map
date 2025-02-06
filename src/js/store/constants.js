@@ -24,10 +24,7 @@ export const defaults = {
   GEOCODE_PROVIDER: 'os-open-names',
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   MAX_BOUNDS_4326: [-5.719993, 49.955638, 1.794689, 55.825973],
-  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805],
-  ZOOM: 12,
-  MIN_ZOOM: 6,
-  MAX_ZOOM: 16
+  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805]
 }
 
 export const settings = {

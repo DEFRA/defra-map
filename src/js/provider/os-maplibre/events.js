@@ -12,7 +12,7 @@ export const handleLoad = async (provider) => {
 }
 
 export const handleStyleLoad = async (provider) => {
-  const { map, style } = provider
+  const { map } = provider
   // Store ref to baselayers when a new style is loaded
   provider.baseLayers = map.getStyle().layers
   // Amend symbol-placement prop to so labels have a coordinate
@@ -25,8 +25,7 @@ export const handleStyleLoad = async (provider) => {
     await loadSymbols(provider)
     provider.dispatchEvent(new CustomEvent('style', {
       detail: {
-        type: 'style',
-        style: style.name
+        type: 'style'
       }
     }))
   }

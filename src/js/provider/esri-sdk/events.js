@@ -13,13 +13,12 @@ export const handleBaseTileLayerLoaded = (provider) => {
 }
 
 export const handleStyleChange = async (provider) => {
-  const { style, draw } = provider
+  const { draw } = provider
   reColourMarkers(provider)
   draw?.reColour()
   provider.dispatchEvent(new CustomEvent('style', {
     detail: {
-      type: 'style',
-      style: style.name
+      type: 'style'
     }
   }))
 }

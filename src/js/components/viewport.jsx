@@ -191,7 +191,7 @@ export default function Viewport () {
 
   // Provider style change
   const handleMapStyle = e => {
-    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, size, mode, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
   }
 
   // Initial render

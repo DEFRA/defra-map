@@ -199,7 +199,7 @@ class Provider extends EventTarget {
       this.map.resize()
       this.dispatchEvent(new CustomEvent('style', {
         detail: {
-          type: 'size', size, style: this.style
+          type: 'size'
         }
       }))
     }, defaults.DELAY)

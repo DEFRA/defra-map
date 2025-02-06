@@ -41,7 +41,7 @@ class Provider extends EventTarget {
 
   async addMap (modules, options) {
     const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
-    const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0,9).map(m => m.default)
+    const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.tokenCallback()).token
 

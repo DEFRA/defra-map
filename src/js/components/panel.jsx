@@ -58,16 +58,22 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   // Template properties
   const { panelId, hasCloseBtn, hasWidth } = getProps(id, className, isFixed, isMobile, isInset, instigatorRef, width)
 
-  // Set initial focus
+  // Container is now ready
   useEffect(() => {
-    // We need to know when if a panel ahs been added before rendering map
+    // We need to know when/if a panel has been added before rendering map to calculate padding
     dispatch({ type: 'CONTAINER_READY' })
-
+    // Ref to the obscurring panel so that it can be used calculate offsets
     obscurePanelRef.current = isNotObscure ? elementRef.current : null
+  }, [])
+
+  // Conditionally set focus
+  useEffect(() => {
     if (instigatorRef?.current && activePanelHasFocus) {
       activeRef.current = elementRef.current
+      // Set focus here if no state change to force container effect
+      activeRef.current.focus()
     }
-  }, [])
+  }, [label, html, children])
 
   // Toggle inert elements
   useEffect(() => {

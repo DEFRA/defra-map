@@ -6,21 +6,8 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { map } = provider
     this.provider = provider
     Object.assign(this, options)
-
-    // Reference to styles
-    this.defaultStyles = [...provider.styles]
-    this.drawStyles = options.styles || []
-
-    // Reference to zoom constraints
-    const maxZoomO = map.getMaxZoom()
-    const minZoomO = map.getMinZoom()
-    this.maxZoomO = maxZoomO
-    this.minZoomO = minZoomO
-    this.maxZoom = options.maxZoom || maxZoomO
-    this.minZoom = options.minZoom || minZoomO
 
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
@@ -42,7 +29,12 @@ export class Draw {
     const { map } = this.provider
     const isFrame = mode === 'frame'
     const hasDraw = map.hasControl(draw)
-    this.toggleConstraints(true)
+
+    // Zoom to extent if we have an existing graphic
+    if (oFeature) {
+      const bounds = this.getBoundsFromFeature(oFeature)
+      map.fitBounds(bounds, { duration: defaults.ANIMATION.duration })
+    }
 
     // Remove existing feature
     if (isFrame && hasDraw) {
@@ -116,8 +108,6 @@ export class Draw {
     if (!hasDraw && oFeature) {
       this.drawFeature(oFeature)
     }
-
-    this.toggleConstraints(false)
   }
 
   // Confirm or update
@@ -139,7 +129,6 @@ export class Draw {
     // Sert ref to feature
     this.oFeature = this.draw.get('shape')
 
-    this.toggleConstraints(false)
     return this.oFeature
   }
 
@@ -152,26 +141,6 @@ export class Draw {
     // Remove draw
     map.removeControl(draw)
     this.draw = undefined
-  }
-
-  toggleConstraints (hasConstraints) {
-    const { provider, drawStyles, defaultStyles, maxZoom, maxZoomO, minZoomO, minZoom, oFeature } = this
-    const { map } = provider
-
-    // Toggle min and max zoom
-    map.setMaxZoom(hasConstraints ? maxZoom : maxZoomO)
-    map.setMinZoom(hasConstraints ? minZoom : minZoomO)
-
-    // Toggle basemaps
-    const newStyles = provider.styles.map(s => { return drawStyles.find(n => s.name === n.name) || s })
-    provider.styles = hasConstraints ? newStyles : defaultStyles
-    provider.setBasemap(provider.basemap)
-
-    // Zoom to extent if we have an existing graphic
-    if (hasConstraints && oFeature) {
-      const bounds = this.getBoundsFromFeature(oFeature)
-      map.fitBounds(bounds, { duration: defaults.ANIMATION.duration })
-    }
   }
 
   drawFeature (feature) {

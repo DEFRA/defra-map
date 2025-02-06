@@ -69,6 +69,7 @@ export default function Viewport () {
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
+      activeRef.current = viewportRef.current
     }
 
     // Disable body scroll

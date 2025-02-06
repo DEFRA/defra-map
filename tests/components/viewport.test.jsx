@@ -99,7 +99,7 @@ describe('viewport', () => {
       obscurePanelRef: { current: null },
       id: 'map',
       isContainerReady: true,
-      activeRef: null
+      activeRef: { current: null }
     }
 
     const mockViewportState = {

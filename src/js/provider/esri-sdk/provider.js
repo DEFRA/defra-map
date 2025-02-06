@@ -297,14 +297,8 @@ class Provider extends EventTarget {
   }
 
   async getNearest (coord) {
-    const isOs = this.reverseGeocode !== 'esri-world-geocoder'
-
-    const { getNearest } = isOs
-      ? await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
-      : await import(/* webpackChunkName: "esri-sdk" */ '../esri-world-geocoder/nearest.js')
-
+    const { getNearest } = await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
     const response = await getNearest(coord, this.transformSearchRequest)
-
     return response
   }
 

@@ -270,17 +270,11 @@ class Provider extends EventTarget {
 
     let response
 
-    const isEsri = this.geocodeProvider === 'esri-world-geocoder'
-
     if (this.capabilities.isLatest) {
-      const { getNearest } = isEsri
-        ? await import(/* webpackChunkName: "maplibre" */ '../esri-world-geocoder/nearest.js')
-        : await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
+      const { getNearest } = await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, this.transformSearchRequest)
     } else {
-      const { getNearest } = isEsri
-        ? await import(/* webpackChunkName: "maplibre-legacy" */ '../esri-world-geocoder/nearest.js')
-        : await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
+      const { getNearest } = await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
       response = await getNearest(coord, this.transformSearchRequest)
     }
 

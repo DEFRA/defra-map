@@ -63,10 +63,10 @@ const getArea = (bounds) => {
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-const getBoundsChange = (oCentre, oZoom, center, zoom, bounds) => {
+const getBoundsChange = (oCentre, originalZoom, center, zoom, bounds) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
-  const isSameZoom = oZoom === zoom
-  const isMove = oCentre && oZoom && !(isSameCentre && isSameZoom)
+  const isSameZoom = originalZoom === zoom
+  const isMove = oCentre && originalZoom && !(isSameCentre && isSameZoom)
   let change
   if (isMove) {
     if (!isSameCentre && !isSameZoom) {
@@ -74,7 +74,7 @@ const getBoundsChange = (oCentre, oZoom, center, zoom, bounds) => {
     } else if (!isSameCentre) {
       change = `${getDirection(oCentre, center)}`
     } else {
-      const direction = zoom > oZoom ? 'in' : 'out'
+      const direction = zoom > originalZoom ? 'in' : 'out'
       change = `zoomed ${direction}, focus area covering ${getArea(bounds)}`
     }
     change = `${change}`
@@ -282,13 +282,8 @@ export const getPoint = (el, e, scale) => {
   return [x / scale, y / scale]
 }
 
-export const getBasemap = (styles = []) => {
+export const getStyle = (styles = []) => {
   const validStyles = styles.filter(s => defaults.STYLES.includes(s.name))
-  const localBasemap = window.localStorage.getItem('basemap')
-  const style = validStyles.find(s => s.name === localBasemap)
-  return style?.name || 'default'
-}
-
-export const getStyle = (styles, basemap) => {
-  return styles?.find(s => s.name === basemap)
+  const style = window.localStorage.getItem('style')
+  return validStyles.find(s => s.name === (style || 'default'))
 }

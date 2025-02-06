@@ -44,7 +44,7 @@ export const addShortcutMarkers = (provider, features) => {
   })
 }
 
-export const highlightLabel = (map, scale, basemap, feature) => {
+export const highlightLabel = (map, scale, style, feature) => {
   if (map && feature) {
     map.moveLayer('label')
     map.getSource('label').setData({
@@ -67,8 +67,8 @@ export const highlightLabel = (map, scale, basemap, feature) => {
     map.setLayoutProperty('label', 'text-justify', feature.layer.layout['text-justify'])
     map.setLayoutProperty('label', 'text-offset', feature.layer.layout['text-offset']?.map(o => o / textScale))
     // Clone paint properties
-    map.setPaintProperty('label', 'text-color', (basemap === 'dark' ? '#ffffff' : '#000000'))
-    map.setPaintProperty('label', 'text-halo-color', (basemap === 'dark' ? '#000000' : '#ffffff'))
+    map.setPaintProperty('label', 'text-color', (style === 'dark' ? '#ffffff' : '#000000'))
+    map.setPaintProperty('label', 'text-halo-color', (style === 'dark' ? '#000000' : '#ffffff'))
   } else {
     map.getSource('label')?.setData({
       type: 'FeatureCollection',
@@ -101,8 +101,8 @@ export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
 export const loadSymbols = (provider) => {
   let fn
   if (provider.symbols?.length) {
-    const { map, symbols, basemap } = provider
-    const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+    const { map, symbols, style } = provider
+    const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
 
     fn = Promise.all(symbols.map(u => fetch(u))).then(responses =>
       Promise.all(responses.map(r => r.text()))

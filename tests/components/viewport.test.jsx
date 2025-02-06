@@ -60,7 +60,7 @@ describe('viewport', () => {
       }),
       init: jest.fn(),
       transformSearchRequest: jest.fn(),
-      tileRequestCallback: jest.fn(),
+      transformCallback: jest.fn(),
       setTargetMarker: jest.fn(),
       selectFeature: jest.fn(),
       queryFeature,
@@ -73,8 +73,20 @@ describe('viewport', () => {
     }
   })
 
-  const renderComponent = (mockOptions = {}, appMockState = { id: 'map', isContainerReady: true }) => {
-    const app = {
+  const renderComponent = (mockViewportOptions = {}, mockAppState = { id: 'map', isContainerReady: true }) => {
+    const mockOptions = {
+      id: 'map',
+      styles: [{ name: 'default' }],
+      bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+      place: 'Carlisle',
+      center: null,
+      zoom: null,
+      framework: null,
+      queryFeature: ['mock-layer-name'],
+      ...mockViewportOptions
+    }
+
+    const mockApp = {
       provider: providerMock,
       isPage: false,
       isMobile: false,
@@ -90,22 +102,16 @@ describe('viewport', () => {
       activeRef: null
     }
 
-    const options = {
-      id: 'map',
-      bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
-      place: 'Carlisle',
-      center: null,
-      zoom: null,
-      framework: null,
-      styles: [],
-      queryFeature: ['mock-layer-name'],
-      ...mockOptions
+    const mockViewportState = {
+      styles: [{ name: 'default' }],
+      style: { name: 'default' },
+      ...mockViewportOptions
     }
 
     return render(
-      <AppProvider app={app} options={options}>
-        <AppContextProvider mockState={appMockState}>
-          <ViewportProvider options={mockOptions}>
+      <AppProvider app={mockApp} options={mockOptions}>
+        <AppContextProvider mockState={mockAppState}>
+          <ViewportProvider options={mockViewportState}>
             <Viewport />
           </ViewportProvider>
         </AppContextProvider>
@@ -114,7 +120,7 @@ describe('viewport', () => {
   }
 
   it('should render viewport component', () => {
-    renderComponent()
+    renderComponent({ styles: [{ name: 'default' }], style: { name: 'default' } })
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
   })
@@ -134,8 +140,7 @@ describe('viewport', () => {
     const { container } = renderComponent({
       bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
       center: [-2.934171, 54.901112],
-      zoom: 11.111696,
-      place: null
+      zoom: 11.111696
     })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')

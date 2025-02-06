@@ -5,22 +5,22 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { settings, offsets, events } from '../store/constants.js'
 import { debounce } from '../lib/debounce.js'
-import { getShortcutKey, getMapPixel, getScale, getPoint, getStyle } from '../lib/viewport.js'
+import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport.js'
 import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 
 const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
-  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-basemap' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-style' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
-  const { id, backgroundColor, styles, queryFeature, queryLocation, queryArea } = options
+  const { id, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
-  const { bounds, center, zoom, oCentre, oZoom, rZoom, minZoom, maxZoom, features, basemap, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -34,11 +34,10 @@ export default function Viewport () {
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const isDarkBasemap = ['dark', 'aerial'].includes(style?.name)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
-  const bgColor = getColor(backgroundColor, basemap)
-  const style = getStyle(styles, basemap)
+  const bgColor = getColor(backgroundColor, style.name)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -145,7 +144,7 @@ export default function Viewport () {
       provider.initDraw(queryArea)
     }
     eventBus.dispatch(parent, events.APP_READY, {
-      ...e.detail, mode, segments, layers, basemap, size
+      ...e.detail, mode, segments, layers, style, size
     })
   }
 
@@ -187,12 +186,12 @@ export default function Viewport () {
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
     appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
-    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, basemap, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, style, size, segments, layers })
   }
 
   // Provider style change
   const handleMapStyle = e => {
-    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, size, mode, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
   }
 
   // Initial render
@@ -207,7 +206,7 @@ export default function Viewport () {
         zoom,
         minZoom,
         maxZoom,
-        basemap,
+        style,
         size,
         featureLayers: queryFeature?.layers,
         locationLayers: queryLocation?.layers
@@ -252,7 +251,7 @@ export default function Viewport () {
         provider.setCentre(oCentre, rZoom)
         break
       case 'GEOLOC':
-        provider.setCentre(center, oZoom)
+        provider.setCentre(center, originalZoom)
         provider.showLocation(center)
         break
       case 'ZOOM_IN':
@@ -265,9 +264,9 @@ export default function Viewport () {
         window.localStorage.setItem('size', size)
         provider.setSize(size)
         break
-      case 'BASEMAP':
-        window.localStorage.setItem('basemap', basemap)
-        provider.setBasemap(basemap)
+      case 'STYLE':
+        window.localStorage.setItem('style', style.name)
+        provider.setStyle(style, minZoom, maxZoom)
         break
       default:
         // No action
@@ -276,7 +275,7 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('style', handleMapStyle)
     }
-  }, [timestamp, action, mode, basemap, size])
+  }, [timestamp, action, mode, style, size])
 
   // All query params, debounced by provider. Must be min 300ms
   useEffect(() => {
@@ -285,13 +284,12 @@ export default function Viewport () {
     }
   }, [isUpdate])
 
-  // Swap basemap on light/dark mode change
+  // Swap style on light/dark mode change
   useEffect(() => {
-    if (!provider.map) {
-      return
+    if (provider.map) {
+      const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      viewportDispatch({ type: 'SET_STYLE', payload: { style: style.name, colourScheme } })
     }
-    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap, colourScheme } })
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
   // Set initial selected feature

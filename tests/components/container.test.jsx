@@ -66,6 +66,7 @@ jest.mock('../../src/js/components/viewport-label.jsx', () => () => <div>Viewpor
 jest.mock('../../src/js/components/draw-edit.jsx', () => () => <div>DrawEdit Mock</div>)
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
+jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
 
 jest.mock('../../src/js/components/panel.jsx', () => ({ label, children }) => (
   <div className='mock-panel'>
@@ -99,7 +100,6 @@ describe('Container', () => {
       activeRef: { current: null },
       viewportRef: { current: null },
       parent: 'test-parent'
-
     }
     useApp.mockReturnValue(mockUseApp)
 

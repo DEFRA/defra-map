@@ -105,6 +105,15 @@ class Provider extends EventTarget {
     this.style = style
     this.scale = scale
 
+    // Add markers
+    this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
+    this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
+    this.shortcutMarkers = []
+
+    // Return ref to dynamically loaded modules and framework functions
+    this.modules = { MaplibreMap, Marker }
+    this.framework = { map }
+
     // Map ready event (first load)
     map.on('load', handleLoad.bind(map, this))
 
@@ -123,17 +132,6 @@ class Provider extends EventTarget {
 
     // Capture errors
     map.on('error', handleError.bind(map, this))
-
-    // Add markers
-    this.targetMarker = new Marker({ element: targetMarkerHTML() }).setLngLat([0, 0]).addTo(map)
-    this.locationMarker = new Marker({ element: locationMarkerHTML() }).setLngLat([0, 0]).addTo(map)
-    this.shortcutMarkers = []
-
-    // Return ref to dynamically loaded modules
-    this.modules = { MaplibreMap, Marker }
-
-    // Return ref to framework methods
-    this.framework = { map }
 
     // Implementation callback after initialisation
     if (callBack) {

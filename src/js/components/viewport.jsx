@@ -16,7 +16,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 }
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, isMobile, interfaceType } = useApp()
+  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
   const { id, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
@@ -343,11 +343,6 @@ export default function Viewport () {
           </div>
         )
       }, [status])}
-      {!isMobile && style?.attribution && (
-        <div className='fm-o-attribution'>
-          <div className='fm-c-attribution'>{style?.attribution}</div>
-        </div>
-      )}
     </div>
   )
 }

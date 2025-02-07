@@ -1,4 +1,4 @@
-import { handleBaseTileLayerLoaded, handleBasemapChange, handleMoveStart, handleStationary } from './events'
+import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
@@ -8,18 +8,14 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ requestCallback, tokenCallback, interceptorsCallback, geocodeProvider, defaultUrl, darkUrl, aerialUrl }) {
+  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
-    this.requestCallback = requestCallback
+    this.transformSearchRequest = transformSearchRequest
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
     this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
-    this.defaultUrl = defaultUrl
-    this.darkUrl = darkUrl
-    this.aerialUrl = aerialUrl
-    this.basemaps = ['default', 'dark', 'aerial'].filter(b => this[b + 'Url'])
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -36,23 +32,16 @@ class Provider extends EventTarget {
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/GraphicsLayer.js'),
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/support/TileInfo.js'),
       import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch", "when"] */ '@arcgis/core/core/reactiveUtils.js')
-    ]).then(modules => this.addMap({ modules, ...options }))
+    ]).then(modules => this.addMap(modules, options))
   }
 
   remove () {
     // console.log('Remove and tidy up')
   }
 
-  async addMap ({ modules, target, paddingBox, bbox, centre, zoom, minZoom, maxZoom, maxExtent, basemap, pixelLayers }) {
-    const esriConfig = modules[0].default
-    const EsriMap = modules[1].default
-    const MapView = modules[2].default
-    const Extent = modules[3].default
-    const Point = modules[4].default
-    const VectorTileLayer = modules[5].default
-    const FeatureLayer = modules[6].default
-    const GraphicsLayer = modules[7].default
-    const TileInfo = modules[8].default
+  async addMap (modules, options) {
+    const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
+    const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
     const reactiveWatch = modules[9].watch
     esriConfig.apiKey = (await this.tokenCallback()).token
 
@@ -60,22 +49,24 @@ class Provider extends EventTarget {
     this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
 
     // Define layers
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'dark' : basemap
-    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: basemap === 'aerial' ? this.defaultUrl : this[basemap + 'Url'], visible: true })
+    const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: style.url, visible: true })
     const graphicsLayer = new GraphicsLayer({ id: 'graphicslayer' })
-    const map = new EsriMap({
-      layers: [baseTileLayer, graphicsLayer]
-    })
+    const map = new EsriMap({ layers: [baseTileLayer, graphicsLayer] })
     const geometry = maxExtent ? this.getExtent(Extent, maxExtent) : null
+
+    // Filter all keys so only valid arguments can be passed to MapView
+    const filteredOptions = Object.fromEntries(Object.entries(options).filter(([key]) => !['height', 'size'].includes(key)))
 
     // Create MapView
     const view = new MapView({
+      ...filteredOptions,
       spatialReference: 27700,
-      container: target,
+      container,
       map,
       zoom,
-      center: centre ? this.getPoint(Point, centre) : null,
-      extent: bbox ? this.getExtent(Extent, bbox) : null,
+      center: this.getPoint(Point, center),
+      extent: this.getExtent(Extent, bounds),
+      maxExtent: maxExtent || storeDefaults.MAX_BOUNDS_27700,
       constraints: { snapToZoom: false, minZoom, maxZoom, maxScale: 0, geometry, lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods, rotationEnabled: false },
       ui: { components: [] },
       padding: getFocusPadding(paddingBox, 1),
@@ -83,19 +74,19 @@ class Provider extends EventTarget {
     })
 
     // Tidy up canvas
-    const canvasContainer = target.querySelector('.esri-view-surface')
+    const canvasContainer = container.querySelector('.esri-view-surface')
     canvasContainer.removeAttribute('role')
     canvasContainer.tabIndex = -1
 
     this.map = map
-    this.target = target
+    this.container = container
     this.view = view
     this.baseTileLayer = baseTileLayer
     this.graphicsLayer = graphicsLayer
-    this.pixelLayers = pixelLayers
+    this.locationLayers = locationLayers
     this.paddingBox = paddingBox
-    this.basemap = basemap
-    this.isDark = ['dark', 'aerial'].includes(basemap)
+    this.style = style
+    this.isDark = ['dark', 'aerial'].includes(style.name)
     this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
 
@@ -108,14 +99,6 @@ class Provider extends EventTarget {
       if (!isMoving && !stationary) {
         handleMoveStart(this)
         isMoving = true
-      }
-    })
-
-    // Constrain extent
-    view.watch('extent', e => {
-      if (!geometry?.contains(e)) {
-        // To follow
-        // view.goTo(geometry, { animate: false })
       }
     })
 
@@ -138,24 +121,37 @@ class Provider extends EventTarget {
       }
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
+
+    // Return ref to framework methods
+    this.framework = { map, view, esriConfig }
+    this.modules = modules
+
+    // Implementation callback after initialisation
+    if (callBack) {
+      callBack(this)
+    }
   }
 
   getPoint (Point, coords) {
-    return new Point({
-      x: coords[0],
-      y: coords[1],
-      spatialReference: { wkid: 27700 }
-    })
+    return coords
+      ? new Point({
+        x: coords[0],
+        y: coords[1],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
   }
 
   getExtent (Extent, coords) {
-    return new Extent({
-      xmin: coords[0],
-      ymin: coords[1],
-      xmax: coords[2],
-      ymax: coords[3],
-      spatialReference: { wkid: 27700 }
-    })
+    return coords
+      ? new Extent({
+        xmin: coords[0],
+        ymin: coords[1],
+        xmax: coords[2],
+        ymax: coords[3],
+        spatialReference: { wkid: 27700 }
+      })
+      : null
   }
 
   getPixel (coord) {
@@ -187,12 +183,13 @@ class Provider extends EventTarget {
     this.view.goTo({ zoom: this.view.zoom - 1 }).catch(err => console.log(err))
   }
 
-  setBasemap (basemap) {
-    basemap = basemap === 'dark' && !this.basemaps.includes('dark') ? 'default' : basemap
-    this.basemap = basemap
-    this.isDark = ['dark', 'aerial'].includes(basemap)
-    this.baseTileLayer.loadStyle(this[basemap + 'Url']).then(() => {
-      handleBasemapChange(this)
+  setStyle (style, minZoom, maxZoom) {
+    const { view } = this
+    view.constraints.maxZoom = maxZoom
+    view.constraints.minZoom = minZoom
+    this.style = style
+    this.baseTileLayer.loadStyle(style.url).then(() => {
+      handleStyleChange(this)
     })
   }
 
@@ -223,14 +220,14 @@ class Provider extends EventTarget {
     console.log('setSize')
   }
 
-  fitBbox (bbox) {
+  fitBounds (bounds) {
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/geometry/Extent.js').then(module => {
       const Extent = module.default
       this.view.goTo(new Extent({
-        xmin: bbox[0],
-        ymin: bbox[1],
-        xmax: bbox[2],
-        ymax: bbox[3]
+        xmin: bounds[0],
+        ymin: bounds[1],
+        xmax: bounds[2],
+        ymax: bounds[3]
       })).catch(err => console.log(err))
     })
   }
@@ -292,14 +289,8 @@ class Provider extends EventTarget {
   }
 
   async getNearest (coord) {
-    const isOs = this.reverseGeocode !== 'esri-world-geocoder'
-
-    const { getNearest } = isOs
-      ? await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
-      : await import(/* webpackChunkName: "esri-sdk" */ '../esri-world-geocoder/nearest.js')
-
-    const response = await getNearest(coord, this.requestCallback)
-
+    const { getNearest } = await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
+    const response = await getNearest(coord, this.transformSearchRequest)
     return response
   }
 

@@ -1,7 +1,0 @@
-{
-    "FIND_ADDRESS_CANDIDATES_URL": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?singleLine={query}&magicKey={magicKey}&sourceCountry=UK&category=Populated Place,Postal&maxLocations={maxLocations}&outFields=*&f=json",
-    "SUGGEST_URL": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={query}&sourceCountry=UK&category=Populated Place,Postal&maxSuggestions={maxSuggestions}&outFields=*&f=json",
-    "ESRI_REVERSE_GEOCODE_URL": "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location={location}&f=json",
-    "BNG_SRS": 27700,
-    "WGS_84_SRS": 4326
-}

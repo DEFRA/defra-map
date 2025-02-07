@@ -1,9 +1,9 @@
 import { parseSegments, parseLayers } from '../lib/query'
-import { getBasemap } from '../lib/viewport'
 import { actionsMap } from './app-actions-map'
+import { getStyle } from '../lib/viewport'
 
-const getIsDarkMode = (basemap, hasAutoMode) => {
-  return basemap === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
+const getIsDarkMode = (style, hasAutoMode) => {
+  return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
 const getActivePanel = (info, featureId, targetMarker, legend) => {
@@ -19,22 +19,22 @@ const getActivePanel = (info, featureId, targetMarker, legend) => {
 }
 
 export const initialState = (options) => {
-  const { legend, search, info, styles, queryPolygon, hasAutoMode } = options
+  const { styles, legend, search, info, queryArea, hasAutoMode } = options
+  const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const activePanel = getActivePanel(info, featureId, targetMarker, legend)
-  const basemap = getBasemap(styles)
 
   return {
     isContainerReady: false,
     search,
     legend,
     info,
-    queryPolygon,
+    queryArea,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
     isKeyExpanded: false,
-    isDarkMode: getIsDarkMode(basemap, hasAutoMode),
+    isDarkMode: getIsDarkMode(style.name, hasAutoMode),
     hasAutoMode,
     featureId,
     targetMarker: !featureId && targetMarker,
@@ -46,7 +46,7 @@ export const initialState = (options) => {
     mode: 'default',
     isFrameVisible: false,
     isTargetVisible: false,
-    query: queryPolygon?.feature,
+    query: queryArea?.feature,
     hash: null
   }
 }

@@ -5,10 +5,9 @@ import { useViewport } from '../store/use-viewport'
 import { reducer, initialState } from '../store/search-reducer'
 import Autocomplete from './autocomplete.jsx'
 import OsProvider from '../provider/os-open-names/provider.js'
-import EsriProvider from '../provider/esri-world-geocoder/provider.js'
 
-const getDerivedProps = (search, geocodeProvider, requestCallback, isMobile, legend, state) => {
-  const geocode = geocodeProvider === 'esri-world-geocoder' ? new EsriProvider(requestCallback) : new OsProvider(requestCallback)
+const getDerivedProps = (search, transformSearchRequest, isMobile, legend, state) => {
+  const geocode = new OsProvider(transformSearchRequest)
   const searchWidth = !isMobile ? (legend.keyWidth || legend.width) : null
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
@@ -26,12 +25,12 @@ export default function Search ({ instigatorRef }) {
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { isAutocomplete } = search
-  const { id, requestCallback, geocodeProvider } = options
+  const { id, transformSearchRequest } = options
   const [state, dispatch] = useReducer(reducer, initialState)
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
-  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, geocodeProvider, requestCallback, isMobile, legend, state)
+  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, transformSearchRequest, isMobile, legend, state)
 
   // Hide search on click outside
   useOutsideInteract(formRef, false, 'pointerdown', e => {
@@ -58,8 +57,8 @@ export default function Search ({ instigatorRef }) {
     if (!location) {
       return
     }
-    const { bbox, centre, zoom, text } = location
-    viewportDispatch({ type: 'SEARCH', payload: { bbox, centre, zoom, place: text } })
+    const { bounds, center, zoom, text } = location
+    viewportDispatch({ type: 'SEARCH', payload: { bounds, center, zoom, place: text } })
   }
 
   const handleFocus = () => {

@@ -14,13 +14,15 @@ jest.mock('../../src/js/lib/viewport')
 
 describe('draw', () => {
   const draw = jest.fn()
-  const dispatch = jest.fn()
+  const appDispatch = jest.fn()
+  const viewportDispatch = jest.fn()
   const activeRef = {}
   const viewportRef = {}
 
   jest.mocked(isFeatureSquare).mockResolvedValue(true)
 
   jest.mocked(useViewport).mockReturnValue({
+    dispatch: viewportDispatch,
     size: null,
     basemap: null
   })
@@ -29,11 +31,11 @@ describe('draw', () => {
 
   it('should handle click for Start label', () => {
     jest.mocked(useApp).mockReturnValue({
-      dispatch,
+      dispatch: appDispatch,
       activeRef,
       viewportRef,
       mode: 'frame',
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {
@@ -49,18 +51,18 @@ describe('draw', () => {
 
     expect(screen.getByText('Add')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalled()
+    expect(viewportDispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 
   it('should handle click for Edit label', () => {
     jest.mocked(useApp).mockReturnValue({
-      dispatch,
+      dispatch: appDispatch,
       activeRef,
       viewportRef,
       mode: 'draw',
       query: true,
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {
@@ -76,16 +78,16 @@ describe('draw', () => {
 
     expect(screen.getByText('Edit')).toBeTruthy()
     expect(draw).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalled()
+    expect(viewportDispatch).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 
   it('should handle click for an initial draw', () => {
     jest.mocked(useApp).mockReturnValue({
-      dispatch,
+      dispatch: appDispatch,
       activeRef,
       viewportRef,
-      queryPolygon: {
+      queryArea: {
         heading: ''
       },
       provider: {

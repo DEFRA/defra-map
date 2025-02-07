@@ -1,21 +1,12 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
 import Graphic from '@arcgis/core/Graphic'
-import { defaults as storeDefaults } from '../../store/constants'
 import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { view } = provider
     this.provider = provider
     Object.assign(this, options)
-
-    // Reference to original styles
-    storeDefaults.STYLES.forEach(s => { this[`${s}UrlOrg`] = provider[`${s}Url`] })
-
-    // Reference to original view constraints
-    this.maxZoomO = view.constraints.maxZoom
-    this.minZoomO = view.constraints.minZoom
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
@@ -31,8 +22,14 @@ export class Draw {
   }
 
   start (mode) {
+    const { provider, oGraphic } = this
     const isFrame = mode === 'frame'
-    this.toggleConstraints(true, isFrame)
+
+    // Zoom to extent if we have an existing graphic
+    if (oGraphic) {
+      // Additional zoom fix to address goTo graphic not respecting true size?
+      provider.view.goTo({ target: oGraphic, ...(isFrame && this.originalZoom && { zoom: this.originalZoom }) })
+    }
 
     // Remove graphic if frame mode
     if (isFrame) {
@@ -43,27 +40,6 @@ export class Draw {
 
     // Edit graphic
     this.editGraphic(this.oGraphic)
-  }
-
-  toggleConstraints (hasConstraints, isFrame) {
-    const { provider, maxZoom, minZoom, maxZoomO, minZoomO, oGraphic } = this
-    const { view } = provider
-
-    // Toggle min and max zoom
-    view.constraints.maxZoom = hasConstraints ? maxZoom : maxZoomO
-    view.constraints.minZoom = hasConstraints ? minZoom : minZoomO
-
-    // Toggle basemaps
-    storeDefaults.STYLES.forEach(s => { provider[`${s}Url`] = hasConstraints ? (this[`${s}Url`] || provider[`${s}Url`]) : this[`${s}UrlOrg`] })
-    if (this[provider.basemap + 'Url']) {
-      provider.setBasemap(provider.basemap)
-    }
-
-    // Zoom to extent if we have an existing graphic
-    if (hasConstraints && oGraphic) {
-      // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(isFrame && this.oZoom && { zoom: this.oZoom }) })
-    }
   }
 
   edit () {
@@ -90,7 +66,6 @@ export class Draw {
     this.sketchViewModel?.cancel()
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
-    this.toggleConstraints(false)
   }
 
   create (feature) {
@@ -106,9 +81,8 @@ export class Draw {
     const graphic = this.finishEdit() || currentGraphic || elGraphic
     this.sketchViewModel?.cancel()
     this.oGraphic = graphic.clone()
-    this.oZoom = view.zoom
+    this.originalZoom = view.zoom
     this.addGraphic(graphic)
-    this.toggleConstraints(false)
     return this.getFeature(graphic)
   }
 

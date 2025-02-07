@@ -161,32 +161,39 @@ const getSymbols = () => {
 
 const symbols = getSymbols()
 
+const attribution = `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`
+
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
+  behaviour: 'inline',
   framework: 'esri',
-  type: 'inline',
   place: 'Ambleside',
   zoom: 16,
   minZoom: 7,
   maxZoom: 20,
-  centre: [324973, 536891],
+  center: [324973, 536891],
+  // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
   hasGeoLocation: true,
   symbols,
-  requestCallback: getRequest,
+  transformSearchRequest: getRequest,
+  tokenCallback: getEsriToken,
+  interceptorsCallback: getInterceptors,
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
-  styles: {
-    attribution: `${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789`,
-    backgroundColor: 'default: #f5f5f0, dark: #060606',
-    tokenCallback: getEsriToken,
-    interceptorsCallback: getInterceptors,
-    defaultUrl: process.env.OS_VTAPI_DEFAULT_URL,
-    darkUrl: process.env.OS_VTAPI_DARK_URL
-  },
+  backgroundColor: 'default: #f5f5f0, dark: #060606',
+  styles: [{
+    name: 'default',
+    url: process.env.OS_VTAPI_DEFAULT_URL,
+    attribution
+  }, {
+    name: 'dark',
+    url: process.env.OS_VTAPI_DARK_URL,
+    attribution
+  }],
   search: {
     country: 'england',
     isAutocomplete: true,
@@ -467,27 +474,36 @@ const fm = new FloodMap('map', {
   //     label: '[dynamic title]',
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryPolygon: {
+  queryArea: {
     heading: 'Site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
     html: '<p class="govuk-body-s">Instructions</p>',
-    defaultUrl: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
-    darkUrl: process.env.OS_VTAPI_DARK_DRAW_URL,
+    styles: [{
+      name: 'default',
+      url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
+      attribution
+    }, {
+      name: 'dark',
+      url: process.env.OS_VTAPI_DARK_DRAW_URL,
+      attribution
+    }],
     minZoom: 12,
     maxZoom: 21,
     // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
   },
-  queryPixel: vtLayers.map(l => l.n)
+  queryLocation: {
+    layers: vtLayers.map(l => l.n)
+  }
 })
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   map = fm.map
-  const { mode, basemap, segments, layers } = e.detail
-  isDark = basemap === 'dark'
+  const { mode, style, segments, layers } = e.detail
+  isDark = style === 'dark'
   isRamp = layers.includes('md')
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
@@ -501,11 +517,11 @@ fm.addEventListener('action', e => {
 
 // Listen for mode, segments, layers or style changes
 fm.addEventListener('change', e => {
-  const { type, mode, basemap, segments, layers } = e.detail
+  const { type, mode, style, segments, layers } = e.detail
   if (['layer', 'segment'].includes(type)) {
-    fm.info = null
+    fm.setInfo(null)
   }
-  isDark = basemap === 'dark'
+  isDark = style === 'dark'
   isRamp = layers.includes('md')
   toggleVisibility(type, mode, segments, layers)
 })
@@ -517,13 +533,13 @@ fm.addEventListener('query', e => {
     const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
 
     if (!feature) {
-      fm.info = {
+      fm.setInfo({
         width: '360px',
         label: 'Title',
         html: `
-                  <p class="govuk-body-s">No feature info</p>
-              `
-      }
+          <p class="govuk-body-s">No feature info</p>
+        `
+      })
       return
     }
 
@@ -568,14 +584,14 @@ fm.addEventListener('query', e => {
             <strong>Model year:</strong> ${attributes.model_year}
         `
         : ''
-      fm.info = {
+      fm.setInfo({
         width: '360px',
         label: 'Title',
         html: `
           <p class="govuk-body-s">${title}${model}</p>
           <p class="govuk-body-s govuk-!-margin-top-1">${layerName}</p>
         `
-      }
+      })
     })
   }
 })

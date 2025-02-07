@@ -8,27 +8,25 @@ import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options, provider, activeRef } = useApp()
+  const { options, activeRef } = useApp()
   const { id, framework } = options
-  const { basemaps } = provider
-  const { basemap, size } = useViewport()
+  const { size, style, styles } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-
-  const currentBasemap = basemap
+  const currentStyleName = style.name
   const currentSize = size
   const buttonsRef = useRef([])
-  const [isExpanded, setIsExpanded] = useState(basemaps.indexOf(currentBasemap) > 2 || size !== 'small')
-  buttonsRef.current = basemaps.map((_, i) => buttonsRef.current[i] ?? createRef())
+  const [isExpanded, setIsExpanded] = useState(styles.map(s => s.name).indexOf(currentStyleName) > 2 || size !== 'small')
+  buttonsRef.current = styles.map(s => s.name).map((_, i) => buttonsRef.current[i] ?? createRef())
 
   const hasSize = capabilities[framework || 'default'].hasSize
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3
 
-  const handleBasemapClick = e => {
+  const handleStyleClick = e => {
     activeRef.current = null
-    viewportDispatch({ type: 'SET_BASEMAP', payload: { basemap: e.currentTarget.value } })
+    viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
@@ -50,18 +48,18 @@ export default function Styles () {
   // Toggle dark mode
   useEffect(() => {
     const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { basemap, colourScheme } })
-  }, [basemap])
+    appDispatch({ type: 'SET_IS_DARK_MODE', payload: { style, colourScheme } })
+  }, [style])
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
-          {basemaps.filter((_b, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((name, i) => (
-            <div key={name} className='fm-c-layers__item govuk-body-s'>
-              <button className='fm-c-layers__button' value={name} aria-pressed={currentBasemap === name} ref={buttonsRef.current[i]} onClick={handleBasemapClick}>
+          {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
+            <div key={item.name} className='fm-c-layers__item govuk-body-s'>
+              <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
                 <div className='fm-c-layers__image'>
-                  <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(name) }} />
+                  <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(item.name) }} />
                 </div>
                 {{
                   default: 'Default',
@@ -69,7 +67,7 @@ export default function Styles () {
                   aerial: 'Aerial',
                   deuteranopia: 'Green-red enhanced',
                   tritanopia: 'Blue-yellow enhanced'
-                }[name]}
+                }[item.name]}
               </button>
             </div>
           ))}
@@ -99,8 +97,8 @@ export default function Styles () {
           </div>
         </div>
       )}
-      {(basemaps.length > 3 || hasSize) && (
-        <div className='fm-c-layers__more fm-c-layers__more--centre'>
+      {(styles.length > 3 || hasSize) && (
+        <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>
       )}

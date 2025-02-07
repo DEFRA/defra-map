@@ -13,21 +13,23 @@ const getIsPolygonVisible = (isDrawVisible, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, parent, mode, segments, layers, dispatch, viewportRef, queryPolygon, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
-  const { size, basemap } = useViewport()
+  const { provider, style, parent, mode, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
     const newQuery = provider.draw.finish()
-    dispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery } })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery } })
+    viewportDispatch({ type: 'SWAP_STYLES' })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
     viewportRef.current.focus()
   }
 
   const handleCancelClick = () => {
     provider.draw.cancel()
-    dispatch({ type: 'SET_MODE', payload: { value: 'default' } })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', basemap, size, segments, layers })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default' } })
+    viewportDispatch({ type: 'SWAP_STYLES' })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     viewportRef.current.focus()
   }
@@ -38,7 +40,7 @@ export default function Actions () {
   }
 
   const handlePolygonClick = () => {
-    eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, basemap, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
   const isDrawVisible = ['frame', 'draw'].includes(mode)
@@ -55,7 +57,7 @@ export default function Actions () {
         Cancel
       </button>
       <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
-        {queryPolygon?.submitLabel}
+        {queryArea?.submitLabel}
       </button>
       <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
         Get feature information

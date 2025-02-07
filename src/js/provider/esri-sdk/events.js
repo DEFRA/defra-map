@@ -2,27 +2,23 @@ import { getDetail } from './query'
 import { reColourMarkers } from './marker'
 
 export const handleBaseTileLayerLoaded = (provider) => {
-  const { map, view, modules, esriConfig } = provider
+  const { framework, modules } = provider
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
-      map,
-      view,
-      esriConfig,
-      modules
+      modules,
+      framework
     }
   }))
 }
 
-export const handleBasemapChange = async (provider) => {
-  const { size, basemap, draw } = provider
+export const handleStyleChange = async (provider) => {
+  const { draw } = provider
   reColourMarkers(provider)
   draw?.reColour()
   provider.dispatchEvent(new CustomEvent('style', {
     detail: {
-      type: 'basemap',
-      basemap,
-      size
+      type: 'style'
     }
   }))
 }

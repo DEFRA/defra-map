@@ -15,8 +15,8 @@ const getDerivedProps = (group, layers, hasInputs) => {
   const numCols = layout === 'column' && group.display === 'ramp' ? numItems : Math.min(numItems, 4)
   const heading = group.heading || group.label
   const checkedRadioId = group.items.find(item => layers?.includes(item.id))?.id
-  const style = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(ROW_WIDTH / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
-  return { layout, isDetails, heading, checkedRadioId, style }
+  const styleAttr = { ...layout === 'column' ? { style: { gridTemplateColumns: numItems >= 4 ? `repeat(auto-fit, minmax(${Math.round(ROW_WIDTH / numCols)}px, auto))` : 'repeat(3, 1fr)' } } : {} }
+  return { layout, isDetails, heading, checkedRadioId, styleAttr }
 }
 
 const getLabels = (group, item, checkedRadioId, layers) => {
@@ -30,7 +30,7 @@ const getDisplay = (group, item) => {
 
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const { parent, dispatch, mode, layers, segments } = useApp()
-  const { basemap, size } = useViewport()
+  const { size, style } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryLyr] = useQueryState('lyr')
   const [isExpanded, setIsExpanded] = useState(group?.collapse !== 'collapse')
@@ -39,7 +39,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const dispatchAppChange = lyr => {
     dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, basemap, size, segments, layers: lyr })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, style, size, segments, layers: lyr })
     // Update query param
     setQueryLyr(lyr.join(','))
   }
@@ -65,12 +65,12 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }
 
   // Display properties
-  const { layout, isDetails, heading, checkedRadioId, style } = getDerivedProps(group, layers, hasInputs)
+  const { layout, isDetails, heading, checkedRadioId, styleAttr } = getDerivedProps(group, layers, hasInputs)
   const groupSummary = group.items.reduce((result, current) => [...result, ...getLabels(group, current, checkedRadioId, layers)], []).join(', ').replace(/, ([^,]*)$/, ', $1')
-  const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+  const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
 
   const keySymbol = ({ item, display }) => {
-    const fill = getColor(item?.fill, basemap)
+    const fill = getColor(item?.fill, style.name)
 
     return (
       <>
@@ -140,7 +140,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
       const icons = {}
       texts.forEach((text, i) => {
         const item = items[i]
-        const fill = getColor(item?.fill, basemap)
+        const fill = getColor(item?.fill, style.name)
         icons[item.icon] = { __html: parseSVG(item.icon, fill, text, isDarkBasemap) }
       })
       setSvg(icons)
@@ -172,7 +172,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
       <div
         id={`content-${id}`}
         className={`fm-c-layers__${layout || 'row'}s`}
-        {...style}
+        {...styleAttr}
       >
         {group.items.map((item, i) => {
           let display = getDisplay(group, item)

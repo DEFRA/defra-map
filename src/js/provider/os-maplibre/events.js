@@ -6,7 +6,7 @@ export const handleLoad = async (provider) => {
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
-      map: provider.map
+      framework: { map: provider.map }
     }
   }))
 }
@@ -23,11 +23,9 @@ export const handleStyleLoad = async (provider) => {
   addMapHoverBehaviour(provider)
   if (provider.isLoaded) {
     await loadSymbols(provider)
-    const { basemap } = provider
     provider.dispatchEvent(new CustomEvent('style', {
       detail: {
-        type: 'basemap',
-        basemap
+        type: 'style'
       }
     }))
   }
@@ -58,11 +56,11 @@ export const handleMoveStart = (provider, e) => {
 
 export const handleStyleData = (provider, e) => {
   if (provider.baseLayers.length) {
-    const { map, basemap, selectedId } = provider
+    const { map, style, selectedId } = provider
     const featureLayers = e.target.getStyle().layers.filter(l => provider.featureLayers.includes(l.id))
     const selectedLayers = map.getStyle().layers.filter(l => l.id.includes('selected'))
     if (selectedLayers.length !== featureLayers.length) {
-      const isDarkBasemap = ['dark', 'aerial'].includes(basemap)
+      const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
       provider.selectedLayers = addSelectedLayers(map, featureLayers, selectedId, isDarkBasemap)
     }
   }

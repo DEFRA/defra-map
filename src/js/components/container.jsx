@@ -10,6 +10,7 @@ import Search from './search.jsx'
 import Panel from './panel.jsx'
 import Segments from './segments.jsx'
 import Layers from './layers.jsx'
+import Logo from './logo.jsx'
 import Draw from './draw.jsx'
 import Styles from './styles.jsx'
 import Keyboard from './keyboard.jsx'
@@ -20,20 +21,19 @@ import StylesButton from './styles-button.jsx'
 import Zoom from './zoom.jsx'
 import Reset from './reset.jsx'
 import Location from './location.jsx'
-import Logo from './logo.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
 import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 
-const getClassNames = (isDarkMode, device, type, isQueryMode) => {
-  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${type}${isQueryMode ? ' fm-draw' : ''}`
+const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
+  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
 }
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryPolygon, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -44,8 +44,8 @@ export default function Container () {
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
-  const type = settings.container[options.type || defaults.CONTAINER_TYPE].CLASS
-  const height = (isPage || options.target) ? '100%' : options.height || settings.container[options.type].HEIGHT
+  const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
+  const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour].HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
   const isLegendFixed = isDesktop && !isLegendInset
@@ -63,7 +63,6 @@ export default function Container () {
   useEffect(() => {
     eventBus.on(parent, events.SET_INFO, data => { dispatch({ type: 'SET_INFO', payload: data }) })
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
-    eventBus.on(parent, events.SET_DRAW, data => { dispatch({ type: 'SET_DRAW', payload: data }) })
 
     // Dark mode media query
     if (options.hasAutoMode) {
@@ -90,7 +89,7 @@ export default function Container () {
   return (
     <ViewportProvider options={options}>
       <div
-        className={getClassNames(isDarkMode, device, type, isQueryMode)}
+        className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
         onKeyDown={constrainFocus}
         style={{ height }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
@@ -101,7 +100,7 @@ export default function Container () {
             <Exit />
             {!isQueryMode && (
               <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
-                {queryPolygon && (
+                {queryArea && (
                   <div className='fm-c-menu'>
                     <Draw />
                   </div>
@@ -126,7 +125,7 @@ export default function Container () {
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
                 <KeyButton keyBtnRef={keyBtnRef} />
-                <HelpButton helpBtnRef={helpBtnRef} label={queryPolygon?.helpLabel} />
+                <HelpButton helpBtnRef={helpBtnRef} label={queryArea?.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
@@ -137,7 +136,7 @@ export default function Container () {
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
                   <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                    {queryPolygon && (
+                    {queryArea && (
                       <div className='fm-c-menu'>
                         <Draw />
                       </div>
@@ -171,7 +170,7 @@ export default function Container () {
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {queryPolygon && (
+                  {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />
                     </div>
@@ -181,7 +180,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'HELP' && (
-                <Panel className='help' label={queryPolygon.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryPolygon.html} isModal />
+                <Panel className='help' label={queryArea.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryArea.html} isModal />
               )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
@@ -217,7 +216,7 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {queryPolygon && (
+                  {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />
                     </div>

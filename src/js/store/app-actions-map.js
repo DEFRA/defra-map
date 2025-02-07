@@ -27,14 +27,6 @@ const setInfo = (state, payload) => {
   }
 }
 
-const setDraw = (state, payload) => {
-  return {
-    ...state,
-    queryPolygon: payload,
-    targetMarker: null
-  }
-}
-
 const setSelected = (state, payload) => {
   return {
     ...state,
@@ -114,8 +106,8 @@ const setMode = (state, payload) => {
 }
 
 const setIsDarkMode = (state, payload) => {
-  const { basemap, colourScheme } = payload
-  const isDarkMode = basemap === 'dark' || colourScheme === 'dark'
+  const { style, colourScheme } = payload
+  const isDarkMode = style?.name === 'dark' || colourScheme === 'dark'
   return {
     ...state,
     isDarkMode
@@ -166,7 +158,6 @@ export const actionsMap = {
   CONTAINER_READY: containerReady,
   SET_AVAILABILITY: setSearch,
   SET_INFO: setInfo,
-  SET_DRAW: setDraw,
   ERROR: error,
   OPEN: open,
   CLOSE: close,

@@ -8,14 +8,14 @@ import LayerGroup from './layer-group.jsx'
 
 export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
-  const { id, legend, queryPolygon } = options
+  const { id, legend, queryArea } = options
   const { display, keyDisplay } = legend
   const { zoom } = useViewport()
 
   // Derived properties
   const moreLabel = keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
   const maxRow = display === 'inset' && keyDisplay === 'min' ? 0 : legend.key.length
-  const queryLabel = query ? queryPolygon.keyLabel : null
+  const queryLabel = query ? queryArea.keyLabel : null
   const groups = parseGroups(legend.key, segments, layers, zoom, hasInputs, queryLabel)
   const isEmptyKey = !hasInputs && !groups.length
   const setIsExpanded = () => dispatch({ type: 'TOGGLE_KEY_EXPANDED', payload: !isKeyExpanded })
@@ -43,7 +43,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
         </Fragment>
       ))}
       {(maxRow < (groups.length - 1)) && (
-        <div className='fm-c-layers__more fm-c-layers__more--centre'>
+        <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-key`} label={moreLabel} isExpanded={isKeyExpanded} setIsExpanded={setIsExpanded} isRemove />
         </div>
       )}

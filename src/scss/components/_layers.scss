@@ -232,7 +232,6 @@
     padding: 5px 0;
     @supports (display: grid) {
         display: grid;
-        justify-content: stretch;
     }
 
     .fm-c-layers__button {

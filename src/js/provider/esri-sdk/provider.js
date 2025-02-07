@@ -89,6 +89,7 @@ class Provider extends EventTarget {
     this.isDark = ['dark', 'aerial'].includes(style.name)
     this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
+    this.framework = { map, view, esriConfig }
 
     // Map ready event (first load)
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
@@ -121,10 +122,6 @@ class Provider extends EventTarget {
       }
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
-
-    // Return ref to framework methods
-    this.framework = { map, view, esriConfig }
-    this.modules = modules
 
     // Implementation callback after initialisation
     if (callBack) {

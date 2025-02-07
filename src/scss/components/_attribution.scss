@@ -5,3 +5,23 @@
     background-color: var(--background-colour);
     opacity: 0.75;
 }
+
+.fm-c-attribution a {
+    outline: 3px transparent;
+    color: var(--foreground-colour);
+    opacity: 0.75;
+}
+
+.fm-c-attribution a:hover {
+    text-decoration-thickness: max(2px, .1rem, .1em);
+    opacity: 1;
+}
+
+.fm-c-attribution a:focus {
+    color: var(--foreground-colour);
+    background-color: var(--focus-colour);
+    box-shadow: 0 -2px var(--focus-colour), 0 4px var(--foreground-colour);
+    text-decoration: none;
+    -webkit-box-decoration-break: clone;
+    opacity: 1;
+}

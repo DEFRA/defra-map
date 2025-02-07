@@ -285,5 +285,5 @@ export const getPoint = (el, e, scale) => {
 export const getStyle = (styles = []) => {
   const validStyles = styles.filter(s => defaults.STYLES.includes(s.name))
   const style = window.localStorage.getItem('style')
-  return validStyles.find(s => s.name === (style || 'default'))
+  return validStyles.find(s => s.name === style || s.name === 'default')
 }

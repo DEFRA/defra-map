@@ -3,6 +3,8 @@ import path from 'path'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import dotenv from 'dotenv'
 import { setupMiddlewares } from './server/main.js'
+import CompressionPlugin from 'compression-webpack-plugin'
+import zlib from 'zlib'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -19,9 +21,14 @@ export default {
   mode: 'development',
   devServer: {
     allowedHosts: 'all',
-    static: {
-      directory: path.join(__dirname)
+    static: [{
+      directory: path.resolve(__dirname),
+      publicPath: '/',
     },
+    {
+      directory: path.resolve(__dirname, 'dist'),
+      publicPath: '/dist/'
+    }],
     devMiddleware: {
       writeToDisk: true
     },
@@ -64,7 +71,19 @@ export default {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css'
-    })
+    }),
+    new CompressionPlugin({
+      filename: '[path][base].br',
+      algorithm: 'brotliCompress',
+      test: /\.(js|css|html|svg)$/,
+      compressionOptions: {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+        },
+      },
+      threshold: 10240,
+      minRatio: 0.8,
+    }),
   ],
   module: {
     rules: [

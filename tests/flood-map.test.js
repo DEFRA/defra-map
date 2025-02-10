@@ -107,9 +107,13 @@ describe('FloodMap', () => {
   })
 
   it('should insert button and bind click event in _insertButtonHTML', () => {
-    floodMap = new FloodMap('test-id', { type: 'buttonFirst' })
+    const props = { behaviour: 'buttonFirst' }
+    floodMap = new FloodMap('test-id', props)
 
     const button = mockElement.previousElementSibling
+
+    console.log(button?.outerHTML)
+
     expect(button).not.toBeNull()
     expect(button.tagName).toBe('A')
     expect(button.getAttribute('href')).toContain('?view=test-id')

@@ -193,10 +193,8 @@ export class FloodMap extends EventTarget {
   }
 
   _handleKeydown (event) {
-    console.log('Keydown event triggered:', event.key) // Log to see if the event is being triggered
     if (event.key === 'Tab') {
       this.interfaceType = 'keyboard'
-      console.log('interfaceType updated to:', this.interfaceType) // Log to see if the state updates correctly
       eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
     }
   }

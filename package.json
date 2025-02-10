@@ -61,7 +61,7 @@
     "mini-css-extract-plugin": "^2.9.2",
     "node-cache": "^5.1.2",
     "polylabel": "^2.0.1",
-    "react": "^18.3.1",
+    "react": "^19.0.0",
     "react-dom": "^18.3.1",
     "resize-observer": "^1.0.4",
     "sass": "^1.83.0",

@@ -1,3 +1,4 @@
+const expressStaticGzip = require('express-static-gzip')
 const authESRI = require('./esri-auth')
 const authOS = require('./os-auth')
 const fs = require('fs')
@@ -10,6 +11,16 @@ module.exports = {
 function setupMiddlewares (middlewares, { app }) {
   const __dirname = __filename.replace(path.basename(__filename), '')
   const pluginAssets = path.resolve(__dirname, '../../plugin')
+
+  app.use(
+    expressStaticGzip(path.resolve(__dirname, '../dist'), {
+      enableBrotli: true,
+      orderPreference: ['br', 'gz'],
+      serveStatic: {
+        cacheControl: false, // Disable cache control for dev purposes
+      }
+    })
+  )
 
   app.get('/plugin-assets/:type/:name', async (req, res, next) => {
     fs.readFile(path.resolve(pluginAssets + `/${req.params.type}/${req.params.name}`), (err, result) => {

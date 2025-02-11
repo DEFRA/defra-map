@@ -8,14 +8,13 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback, geocodeProvider }) {
+  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
     this.transformSearchRequest = transformSearchRequest
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
-    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     this.isUserInitiated = false
     this.isLoaded = false
   }

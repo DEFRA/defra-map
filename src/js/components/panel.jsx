@@ -66,19 +66,17 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
     obscurePanelRef.current = isNotObscure ? elementRef.current : null
   }, [])
 
-  // Conditionally set focus
-  useEffect(() => {
-    if (instigatorRef?.current && activePanelHasFocus) {
-      activeRef.current = elementRef.current
-      // Set focus here if no state change to force container effect
-      activeRef.current.focus()
-    }
-  }, [label, html, children])
-
   // Toggle inert elements
   useEffect(() => {
     toggleInert()
   }, [isModal])
+
+  // Conditionally set activeRef to panel
+  useEffect(() => {
+    if (instigatorRef?.current && activePanelHasFocus) {
+      activeRef.current = elementRef.current
+    }
+  })
 
   // Set tabindex on scrollable body
   useEffect(() => {

@@ -17,7 +17,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
-  const { id, backgroundColor, queryFeature, queryLocation, queryArea } = options
+  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
   const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -287,7 +287,7 @@ export default function Viewport () {
 
   // Swap style on light/dark mode change
   useEffect(() => {
-    if (provider.map) {
+    if (hasAutoMode && provider.map) {
       const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
       viewportDispatch({ type: 'SET_STYLE', payload: { style: style.name, colourScheme } })
     }

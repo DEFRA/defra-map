@@ -34,7 +34,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -85,7 +85,7 @@ export default function Container () {
     updateTitle()
     toggleInert(activeRef.current)
     activeRef.current?.focus({ preventScroll: true })
-  }, [isPage, activePanel])
+  }, [isPage, activePanel, hash])
 
   return (
     <ViewportProvider options={options}>

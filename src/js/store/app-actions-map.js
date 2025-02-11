@@ -76,7 +76,8 @@ const open = (state, payload) => {
     activePanelHasFocus: true,
     hasViewportLabel: false,
     targetMarker: payload === 'SEARCH' && null,
-    featureId: payload === 'INFO' ? state.featureId : ''
+    featureId: payload === 'INFO' ? state.featureId : '',
+    hash: Date.now()
   }
 }
 
@@ -107,7 +108,8 @@ const setMode = (state, payload) => {
 
 const setIsDarkMode = (state, payload) => {
   const { style, colourScheme } = payload
-  const isDarkMode = style?.name === 'dark' || colourScheme === 'dark'
+  const { hasAutoMode } = state
+  const isDarkMode = style?.name === 'dark' || (hasAutoMode && colourScheme === 'dark')
   return {
     ...state,
     isDarkMode

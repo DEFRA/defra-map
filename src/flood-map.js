@@ -22,11 +22,7 @@ export class FloodMap extends EventTarget {
     const device = this._testDevice(props)
 
     if (!device.isSupported) {
-      this.el.insertAdjacentHTML('beforebegin', `
-        <div class="fm-error">
-          <p class="govuk-body">Your device is not supported. A map is available with a more up-to-date browser or device.</p>
-        </div>
-      `)
+      this._renderError('Your device is not supported. A map is available with a more up-to-date browser or device.')
       // Remove hidden class
       document.body.classList.remove('fm-js-hidden')
       // Add error flag to body
@@ -138,6 +134,14 @@ export class FloodMap extends EventTarget {
     }
   }
 
+  _renderError (text) {
+    this.el.insertAdjacentHTML('beforebegin', `
+      <div class="fm-error">
+        <p class="govuk-body">${text}</p>
+      </div>
+    `)
+  }
+
   _insertButtonHTML () {
     const { buttonText, buttonType } = this.props
     this.el.insertAdjacentHTML('beforebegin', `
@@ -208,17 +212,22 @@ export class FloodMap extends EventTarget {
   }
 
   _importComponent () {
+    this.button?.setAttribute('style', 'display: none')
+    // Add loading spinner
     import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
-      this._addComponent(module)
+      this._addComponent(module.default)
+    }).catch(err => {
+      // Display error content
+      this._renderError('There was a problem loading the map. Please try again later')
+      console.log(err)
     })
   }
 
-  _addComponent (module) {
+  _addComponent (root) {
     if (this.root) {
       return
     }
-    this.button?.setAttribute('style', 'display: none')
-    this.root = module.default(this.el, { ...this.props, callBack: this.callBack, interfaceType: this.interfaceType })
+    this.root = root(this.el, { ...this.props, callBack: this.callBack, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {

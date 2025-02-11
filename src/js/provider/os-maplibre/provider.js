@@ -10,7 +10,7 @@ import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, transformRequest, geocodeProvider, symbols }) {
+  constructor ({ transformSearchRequest, transformRequest, symbols }) {
     super()
     this.srs = 4326
     this.capabilities = capabilities.default
@@ -21,7 +21,6 @@ class Provider extends EventTarget {
     this.selectedId = ''
     this.selectedCoordinate = null
     this.isLoaded = false
-    this.geocodeProvider = geocodeProvider || storeDefaults.GEOCODE_PROVIDER
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
   }
@@ -263,14 +262,12 @@ class Provider extends EventTarget {
   }
 
   async getNearest (coord) {
-    if (this.geocodeProvider === 'os-open-names') {
-      try {
-        const bng = (new LatLon(coord[1], coord[0])).toOsGrid()
-        coord = [bng.easting, bng.northing]
-      } catch (err) {
-        console.log(err)
-        return null
-      }
+    try {
+      const bng = (new LatLon(coord[1], coord[0])).toOsGrid()
+      coord = [bng.easting, bng.northing]
+    } catch (err) {
+      console.log(err)
+      return null
     }
 
     let response

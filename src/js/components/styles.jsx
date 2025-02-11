@@ -8,8 +8,8 @@ import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options, activeRef } = useApp()
-  const { id, framework } = options
+  const { options } = useApp()
+  const { id, framework, hasAutoMode } = options
   const { size, style, styles } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -25,12 +25,12 @@ export default function Styles () {
   const MIN_COLS = 3
 
   const handleStyleClick = e => {
-    activeRef.current = null
+    // activeRef.current = null
     viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
-    activeRef.current = null
+    // activeRef.current = null
     viewportDispatch({ type: 'SET_SIZE', payload: e.currentTarget.value })
   }
 
@@ -47,7 +47,7 @@ export default function Styles () {
 
   // Toggle dark mode
   useEffect(() => {
-    const colourScheme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    const colourScheme = (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
     appDispatch({ type: 'SET_IS_DARK_MODE', payload: { style, colourScheme } })
   }, [style])
 

@@ -33,3 +33,5 @@ coverage
 
 # Webpack bundle analyser
 stats.json
+
+*storybook.log

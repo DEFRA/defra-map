@@ -192,12 +192,11 @@ export class FloodMap extends EventTarget {
     }
   }
 
-  _handleKeydown (e) {
-    if (e.key !== 'Tab') {
-      return
+  _handleKeydown (event) {
+    if (event.key === 'Tab') {
+      this.interfaceType = 'keyboard'
+      eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
     }
-    this.interfaceType = 'keyboard'
-    eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
   }
 
   _handleTouchstart () {

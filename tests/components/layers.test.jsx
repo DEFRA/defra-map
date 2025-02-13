@@ -23,25 +23,25 @@ describe('layers', () => {
     }
   })
 
-  // xit('should not render any features', () => {
-  //   jest.mocked(useApp).mockReturnValue({
-  //     dispatch: appDispatch,
-  //     isKeyExpanded: false,
-  //     activeRef,
-  //     segments: [],
-  //     options: {
-  //       id: 'test',
-  //       legend: {
-  //         key: []
-  //       },
-  //       queryArea: {}
-  //     }
-  //   })
+  it('should not render any features', () => {
+    jest.mocked(useApp).mockReturnValue({
+      dispatch: appDispatch,
+      isKeyExpanded: false,
+      activeRef,
+      segments: [],
+      options: {
+        id: 'test',
+        legend: {
+          key: []
+        },
+        queryArea: {}
+      }
+    })
 
-  //   render(<Layers />)
+    render(<Layers />)
 
-  //   expect(screen.getByText('No features displayed')).toBeTruthy()
-  // })
+    expect(screen.getByText('No features displayed')).toBeTruthy()
+  })
 
   it('should render layer groups', () => {
     global.fetch = jest.fn(() =>

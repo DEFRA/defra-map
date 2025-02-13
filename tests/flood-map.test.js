@@ -210,7 +210,4 @@ describe('FloodMap', () => {
 
     expect(floodMap._importComponent).toHaveBeenCalled()
   })
-
-  
-  
 })

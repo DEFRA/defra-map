@@ -105,4 +105,80 @@ describe('layers', () => {
     expect(screen.getByText('Alert')).toBeTruthy()
     expect(screen.getByText('Removed')).toBeTruthy()
   })
+
+  it('should render more button if there are multiple groups', () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        text: () => Promise.resolve(['<svg viewBox="0 0 40 40"><path d="M33.565" style="fill:#0b0c0c;"/></svg>'])
+      })
+    )
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch: appDispatch,
+      isKeyExpanded: false,
+      activeRef,
+      segments: ['li'],
+      layers: ['ts', 'tw', 'ta'],
+      options: {
+        id: 'test',
+        legend: {
+          display: 'inset',
+          keyDisplay: 'min',
+          key: [
+            {
+              heading: 'Flood warnings and alerts',
+              layout: 'column',
+              maxZoom: 12,
+              parentIds: ['li'],
+              items: [
+                {
+                  icon: '/assets/images/symbols/severe.svg',
+                  id: 'ts',
+                  isSelected: true,
+                  label: 'Severe'
+                },
+                {
+                  icon: '/assets/images/symbols/warning.svg',
+                  id: 'tw',
+                  label: 'Warning'
+                },
+                {
+                  icon: '/assets/images/symbols/alert.svg',
+                  id: 'ta',
+                  label: 'Alert'
+                },
+                {
+                  icon: '/assets/images/symbols/removed.svg',
+                  id: 'tr',
+                  label: 'Removed'
+                }
+              ]
+            },
+            {
+              heading: 'Alerts',
+              layout: 'column',
+              maxZoom: 12,
+              parentIds: ['li'],
+              items: [
+                {
+                  icon: '/assets/images/symbols/alert.svg',
+                  id: 'ta',
+                  label: 'Alert'
+                }
+              ]
+            }
+          ]
+        },
+        queryArea: {}
+      }
+    })
+
+    let container
+
+    act(() => {
+      container = render(<Layers hasSymbols hasInputs />).container
+    })
+
+    expect(container.querySelector('.fm-c-layers__more')).toBeTruthy()
+  })
 })

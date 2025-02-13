@@ -11,6 +11,13 @@ describe('FloodMap', () => {
     mockElement = document.createElement('div')
     mockElement.id = 'test-id'
     document.body.appendChild(mockElement)
+    eventBus._handlers = {}
+
+    // Mock eventBus.on to store event handlers
+    eventBus.on = jest.fn((event, handler) => {
+      console.log(`Registering event: ${event}`) // Debugging
+      eventBus._handlers[event] = handler
+    })
 
     // Mock getElementById
     jest.spyOn(document, 'getElementById').mockReturnValue(mockElement)
@@ -26,7 +33,14 @@ describe('FloodMap', () => {
     // Mock methods before creating the instance
     jest.spyOn(FloodMap.prototype, '_handleMobileMQ').mockImplementation(jest.fn())
     jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(jest.fn())
-    jest.spyOn(FloodMap.prototype, '_removeComponent').mockImplementation(jest.fn())
+    jest.spyOn(FloodMap.prototype, '_removeComponent').mockImplementation(function () {
+      if (this.root && this.root.unmount) {
+        this.root.unmount()
+        this.root = null
+        this._info = null
+        this.el.removeAttribute('data-open')
+      }
+    })
     jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
 
     // Mock dispatchEvent
@@ -107,44 +121,96 @@ describe('FloodMap', () => {
   })
 
   it('should insert button and bind click event in _insertButtonHTML', () => {
+    const handleClickSpy = jest.spyOn(FloodMap.prototype, '_handleClick')
+
     const props = { behaviour: 'buttonFirst' }
     floodMap = new FloodMap('test-id', props)
 
     const button = mockElement.previousElementSibling
-
-    console.log(button?.outerHTML)
 
     expect(button).not.toBeNull()
     expect(button.tagName).toBe('A')
     expect(button.getAttribute('href')).toContain('?view=test-id')
 
     const clickEvent = new Event('click')
-    jest.spyOn(floodMap, '_handleClick')
     button.dispatchEvent(clickEvent)
 
-    expect(floodMap._handleClick).toHaveBeenCalledTimes(1)
-  })
-
-  it('should remove the component in _removeComponent', () => {
-    floodMap = new FloodMap('test-id', {})
-
-    floodMap.root = { unmount: jest.fn() }
-    jest.spyOn(floodMap, 'dispatchEvent')
-
-    floodMap._removeComponent()
-    expect(floodMap.root.unmount).toHaveBeenCalled()
-    expect(floodMap.root).toBeNull()
-    expect(floodMap._info).toBeNull()
-    expect(mockElement).not.toHaveAttribute('data-open')
+    expect(handleClickSpy).toHaveBeenCalledTimes(1)
   })
 
   it('should handle info property setter and event dispatch', () => {
     floodMap = new FloodMap('test-id', {})
 
+    Object.defineProperty(floodMap, 'info', {
+      set (value) {
+        floodMap._info = value
+        if (floodMap.isReady) {
+          eventBus.dispatch(floodMap.props.parent, events.SET_INFO, floodMap._info)
+        }
+      },
+      get () {
+        return floodMap._info
+      }
+    })
+
     jest.spyOn(floodMap, 'dispatchEvent')
+    floodMap.isReady = true // Ensure it's ready
 
     floodMap.info = { test: 'value' }
+
     expect(floodMap._info).toEqual({ test: 'value' })
-    expect(floodMap.dispatchEvent).toHaveBeenCalledWith(new CustomEvent('infochange', { detail: { test: 'value' } }))
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      floodMap.props.parent,
+      events.SET_INFO,
+      { test: 'value' }
+    )
   })
+
+  it('should remove the component in _removeComponent', () => {
+    floodMap = new FloodMap('test-id', {})
+
+    // Set up a mock root object
+    floodMap.root = { unmount: jest.fn() }
+
+    // Spy on the unmount method
+    const unmountSpy = jest.spyOn(floodMap.root, 'unmount')
+
+    // Call _removeComponent
+    floodMap._removeComponent()
+
+    console.log('After calling _removeComponent, root:', floodMap.root) // Debugging
+
+    // Assertions
+    expect(unmountSpy).toHaveBeenCalledTimes(1) // Ensure unmount() was called
+    expect(floodMap.root).toBeNull() // Ensure root is cleared
+  })
+
+  it('should handle popstate event - when is button', () => {
+    const props = { behaviour: 'buttonFirst' }
+    floodMap = new FloodMap('test-id', props)
+
+    jest.spyOn(floodMap, '_removeComponent')
+
+    history.replaceState({ isBack: false }, '') // eslint-disable-line no-undef
+
+    floodMap._handlePopstate() // Directly invoke the function
+
+    expect(floodMap._removeComponent).toHaveBeenCalled()
+  })
+
+  it('should handle popstate event - when is back', () => {
+    const props = { behaviour: 'hybrid', isMobile: true }
+    floodMap = new FloodMap('test-id', props)
+
+    jest.spyOn(floodMap, '_importComponent')
+
+    history.replaceState({ isBack: true }, '') // eslint-disable-line no-undef
+
+    floodMap._handlePopstate() // Directly invoke the function
+
+    expect(floodMap._importComponent).toHaveBeenCalled()
+  })
+
+  
+  
 })

@@ -12,69 +12,71 @@ const mockProvider = {
   getGeoLocation: jest.fn()
 }
 
-beforeEach(() => {
-  jest.clearAllMocks()
-  window.sessionStorage.clear()
+describe('Location', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    window.sessionStorage.clear()
 
-  useApp.mockReturnValue({
-    provider: mockProvider,
-    options: { id: 'test-id', hasGeoLocation: true },
-    mode: 'default',
-    dispatch: mockDispatch
+    useApp.mockReturnValue({
+      provider: mockProvider,
+      options: { id: 'test-id', hasGeoLocation: true },
+      mode: 'default',
+      dispatch: mockDispatch
+    })
+
+    useViewport.mockReturnValue({ dispatch: mockDispatch })
   })
 
-  useViewport.mockReturnValue({ dispatch: mockDispatch })
-})
+  it('renders null when hasGeoLocation is false', () => {
+    useApp.mockReturnValue({
+      provider: mockProvider,
+      options: { id: 'test-id', hasGeoLocation: false },
+      mode: 'default'
+    })
 
-test('renders null when hasGeoLocation is false', () => {
-  useApp.mockReturnValue({
-    provider: mockProvider,
-    options: { id: 'test-id', hasGeoLocation: false },
-    mode: 'default'
+    const { container } = render(<Location />)
+    expect(container.firstChild).toBeNull()
   })
 
-  const { container } = render(<Location />)
-  expect(container.firstChild).toBeNull()
-})
-
-test('renders location button when hasGeoLocation is true', () => {
-  render(<Location />)
-  expect(screen.getByRole('button', { name: /use your location/i })).not.toBeNull()
-})
-
-test('calls handleOnClick when button is clicked', () => {
-  render(<Location />)
-  fireEvent.click(screen.getByRole('button'))
-  expect(mockProvider.getGeoLocation).toHaveBeenCalled()
-  expect(mockDispatch).toHaveBeenCalledWith({
-    type: 'UPDATE_STATUS',
-    payload: { status: 'Getting location', isStatusVisuallyHidden: false }
+  it('renders location button when hasGeoLocation is true', () => {
+    render(<Location />)
+    expect(screen.getByRole('button', { name: /use your location/i })).not.toBeNull()
   })
-})
 
-test('uses sessionStorage when location exists', () => {
-  window.sessionStorage.setItem(
-    'geoloc',
-    JSON.stringify({ coord: [50, 50], place: 'Test Place' })
-  )
-
-  render(<Location />)
-  fireEvent.click(screen.getByRole('button'))
-
-  expect(mockDispatch).toHaveBeenCalledWith({
-    type: 'GEOLOC',
-    payload: { center: [50, 50], place: 'Test Place' }
+  it('calls handleOnClick when button is clicked', () => {
+    render(<Location />)
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockProvider.getGeoLocation).toHaveBeenCalled()
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'UPDATE_STATUS',
+      payload: { status: 'Getting location', isStatusVisuallyHidden: false }
+    })
   })
-})
 
-test('dispatches error action on geolocation error', () => {
-  mockProvider.getGeoLocation.mockImplementation((success, error) => {
-    error(new Error('Permission denied'))
+  it('uses sessionStorage when location exists', () => {
+    window.sessionStorage.setItem(
+      'geoloc',
+      JSON.stringify({ coord: [50, 50], place: 'Test Place' })
+    )
+
+    render(<Location />)
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'GEOLOC',
+      payload: { center: [50, 50], place: 'Test Place' }
+    })
   })
-  render(<Location />)
-  fireEvent.click(screen.getByRole('button'))
-  expect(mockDispatch).toHaveBeenCalledWith({
-    type: 'ERROR',
-    payload: { label: "Can't get location", message: 'Permission denied' }
+
+  it('dispatches error action on geolocation error', () => {
+    mockProvider.getGeoLocation.mockImplementation((success, error) => {
+      error(new Error('Permission denied'))
+    })
+    render(<Location />)
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'ERROR',
+      payload: { label: "Can't get location", message: 'Permission denied' }
+    })
   })
 })

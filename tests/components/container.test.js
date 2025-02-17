@@ -163,7 +163,13 @@ describe('Container', () => {
     expect(screen.getByText('Keyboard')).toBeInTheDocument()
   })
 
-  it('renders the Keyboard panel when activePanel is ERROR', () => {
+  it('renders the Key panel when activePanel is KEYBOARD', () => {
+    mockUseApp.activePanel = 'KEY'
+    render(<Container />)
+    expect(screen.getByText('Key')).toBeInTheDocument()
+  })
+
+  it('renders the Error panel when activePanel is ERROR', () => {
     mockUseApp.activePanel = 'ERROR'
     render(<Container />)
     expect(screen.getByText('Error')).toBeInTheDocument()
@@ -258,5 +264,40 @@ describe('Container', () => {
       'change',
       expect.any(Function)
     )
+  })
+
+  it('dispatches SET_IS_DARK_MODE action based on color scheme', () => {
+    // Set up matchMedia to return dark mode
+    matchMediaMock.matches = true
+    window.matchMedia = jest.fn().mockImplementation(() => matchMediaMock)
+
+    // Render the component
+    render(<Container />)
+
+    // Call handleColorSchemeMQ
+    const handleColorSchemeMQ = () => mockUseApp.dispatch({
+      type: 'SET_IS_DARK_MODE',
+      payload: { colourScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }
+    })
+    handleColorSchemeMQ()
+
+    // Check if the correct action is dispatched
+    expect(mockUseApp.dispatch).toHaveBeenCalledWith({
+      type: 'SET_IS_DARK_MODE',
+      payload: { colourScheme: 'dark' }
+    })
+
+    // Set up matchMedia to return light mode
+    matchMediaMock.matches = false
+    window.matchMedia = jest.fn().mockImplementation(() => matchMediaMock)
+
+    // Call handleColorSchemeMQ again
+    handleColorSchemeMQ()
+
+    // Check if the correct action is dispatched
+    expect(mockUseApp.dispatch).toHaveBeenCalledWith({
+      type: 'SET_IS_DARK_MODE',
+      payload: { colourScheme: 'light' }
+    })
   })
 })

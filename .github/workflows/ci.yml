@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+      - development
+      - test
 jobs:
   build:
     runs-on: ubuntu-latest

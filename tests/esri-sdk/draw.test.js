@@ -135,4 +135,42 @@ describe('Draw Class', () => {
 
     expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
   })
+
+  it('should remove oGraphic reference in delete()', () => {
+    drawInstance = new Draw(mockProvider, {})
+    drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+  
+    drawInstance.delete()
+  
+    expect(drawInstance.oGraphic).toBeNull()
+  })
+  
+  it('should remove all graphics from the layer in delete()', () => {
+    drawInstance = new Draw(mockProvider, {})
+  
+    drawInstance.delete()
+  
+    expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
+  })
+  
+  it('should cancel sketchViewModel if active in cancel()', () => {
+    drawInstance = new Draw(mockProvider, {})
+    drawInstance.sketchViewModel = { cancel: jest.fn() }
+  
+    drawInstance.cancel()
+  
+    expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
+  })
+  
+  it('should reinstate the original graphic using addGraphic() in cancel()', () => {
+    const addGraphicSpy = jest.spyOn(Draw.prototype, 'addGraphic')
+    drawInstance = new Draw(mockProvider, {})
+    drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+  
+    drawInstance.cancel()
+  
+    expect(addGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
+    addGraphicSpy.mockRestore()
+  })
+  
 })

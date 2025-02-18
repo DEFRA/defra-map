@@ -228,5 +228,129 @@ describe('Draw Class', () => {
       expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       addGraphicSpy.mockRestore()
     })
-  })  
+  })
+
+  describe('finish()', () => {
+    let getGraphicSpy
+  
+    beforeEach(() => {
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.sketchViewModel = { cancel: jest.fn(), complete: jest.fn() }
+      getGraphicSpy = jest.spyOn(drawInstance, 'getGraphicFromElement')
+    })
+  
+    afterEach(() => {
+      getGraphicSpy.mockRestore()
+    })
+  
+    it('should retrieve the correct graphic in priority order', () => {
+      const mockFinishedGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockFinishedGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockFinishedGraphic)
+      mockProvider.graphicsLayer.graphics.items = []
+  
+      const result = drawInstance.finish()
+  
+      expect(result).toBeDefined()
+      expect(drawInstance.finishEdit).toHaveBeenCalled()
+      expect(result.geometry.coordinates).toEqual(mockFinishedGraphic.geometry.rings)
+    })
+  
+    it('should use graphicsLayer graphic if finishEdit() returns null', () => {
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(null)
+  
+      const mockLayerGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockLayerGraphic.geometry = { rings: [[[3, 3], [4, 4], [5, 5]]] }
+  
+      mockProvider.graphicsLayer.graphics.items = [mockLayerGraphic]
+  
+      const result = drawInstance.finish()
+  
+      expect(result).toBeDefined()
+      expect(drawInstance.finishEdit).toHaveBeenCalled()
+      expect(result.geometry.coordinates).toEqual(mockLayerGraphic.geometry.rings)
+    })
+  
+    it('should use paddingBox graphic if no other graphics are available', () => {
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(null)
+      mockProvider.graphicsLayer.graphics.items = []
+  
+      const mockElementGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockElementGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+  
+      getGraphicSpy.mockReturnValue(mockElementGraphic)
+  
+      const result = drawInstance.finish()
+  
+      expect(result).toBeDefined()
+      expect(drawInstance.finishEdit).toHaveBeenCalled()
+      expect(getGraphicSpy).toHaveBeenCalled()
+      expect(result.geometry.coordinates).toEqual(mockElementGraphic.geometry.rings)
+    })
+  
+    it('should cancel sketchViewModel after finishing', () => {
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
+  
+      drawInstance.finish()
+      expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
+    })
+  
+    it('should store the cloned finished graphic in oGraphic', () => {
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.clone = jest.fn().mockReturnValue(mockGraphic)
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.symbol = {}
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
+  
+      drawInstance.finish()
+  
+      expect(drawInstance.oGraphic).toBeDefined()
+      expect(drawInstance.oGraphic.clone).toBeDefined()
+    })
+  
+    it('should save the original zoom level from view.zoom', () => {
+      mockProvider.view.zoom = 15
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
+  
+      drawInstance.finish()
+      expect(drawInstance.originalZoom).toBe(15)
+    })
+  
+    it('should add the final graphic using addGraphic()', () => {
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.clone = jest.fn().mockReturnValue(mockGraphic)
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.symbol = {}
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
+      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+  
+      drawInstance.finish()
+  
+      expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
+      addGraphicSpy.mockRestore()
+    })
+  
+    it('should return the feature representation using getFeature()', () => {
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+  
+      jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
+      const getFeatureSpy = jest.spyOn(drawInstance, 'getFeature')
+  
+      const result = drawInstance.finish()
+  
+      expect(getFeatureSpy).toHaveBeenCalledWith(mockGraphic)
+      expect(result).toBeDefined()
+      getFeatureSpy.mockRestore()
+    })
+  })    
 })

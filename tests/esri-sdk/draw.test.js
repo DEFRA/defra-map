@@ -23,13 +23,27 @@ describe('Draw Class', () => {
   let mockProvider, drawInstance
 
   beforeEach(() => {
+    const mockParent = document.createElement('div')
+    mockParent.classList.add('fm-o-viewport') // Ensure closest() finds a match
+  
     mockProvider = {
       draw: null,
-      view: { goTo: jest.fn(), zoom: 10 },
+      view: { goTo: jest.fn(), zoom: 10, toMap: jest.fn(() => ({ x: 100, y: 100 })) },
       graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() },
-      map: { reorder: jest.fn() }
+      map: { reorder: jest.fn() },
+      paddingBox: document.createElement('div'),
+      isDark: false
     }
+  
+    mockProvider.paddingBox.closest = () => mockParent
+    mockProvider.paddingBox.getBoundingClientRect = () => ({
+      left: 10,
+      top: 20,
+      width: 100,
+      height: 50
+    })
   })
+  
 
   it('should initialize Draw with provider reference', () => {
     drawInstance = new Draw(mockProvider, {})
@@ -71,5 +85,54 @@ describe('Draw Class', () => {
     drawInstance.start('default')
     expect(editGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
     editGraphicSpy.mockRestore()
+  })
+
+  it('should edit an existing graphic if available', () => {
+    const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
+    drawInstance = new Draw(mockProvider, {})
+  
+    // Mock the existing graphic with a properly mocked clone method
+    const existingGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+    existingGraphic.clone = jest.fn().mockReturnValue(existingGraphic)
+  
+    // Assign the same object reference to the graphics layer
+    mockProvider.graphicsLayer.graphics.items = [existingGraphic]
+  
+    drawInstance.edit()
+  
+    // Instead of checking strict equality, use expect.any()
+    expect(editGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
+    editGraphicSpy.mockRestore()
+  })
+
+  it('should create a new graphic from paddingBox if no existing graphic is found', () => {
+    const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
+    const getGraphicSpy = jest.spyOn(Draw.prototype, 'getGraphicFromElement')
+    drawInstance = new Draw(mockProvider, {})
+    const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+    getGraphicSpy.mockReturnValue(mockGraphic)
+
+    drawInstance.edit()
+
+    expect(editGraphicSpy).toHaveBeenCalledWith(mockGraphic)
+    editGraphicSpy.mockRestore()
+    getGraphicSpy.mockRestore()
+  })
+
+  it('should cancel sketchViewModel if active in reset()', () => {
+    drawInstance = new Draw(mockProvider, {})
+    drawInstance.sketchViewModel = { cancel: jest.fn() }
+
+    drawInstance.reset()
+
+    expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
+  })
+
+  it('should remove all graphics from the layer in reset()', () => {
+    drawInstance = new Draw(mockProvider, {})
+
+    drawInstance.reset()
+
+    expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
   })
 })

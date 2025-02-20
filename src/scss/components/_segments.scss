@@ -1,3 +1,7 @@
+.fm-c-segments:not(:first-child) {
+    border-top: 1px solid var(--border-colour);
+}
+
 .fm-c-segments__inner {
     margin-top: -15px;
     padding-bottom: 5px;

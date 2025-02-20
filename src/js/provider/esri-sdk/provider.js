@@ -184,6 +184,7 @@ class Provider extends EventTarget {
     view.constraints.maxZoom = maxZoom
     view.constraints.minZoom = minZoom
     this.style = style
+    this.isDark = ['dark', 'aerial'].includes(style.name)
     this.baseTileLayer.loadStyle(style.url).then(() => {
       handleStyleChange(this)
     })

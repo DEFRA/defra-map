@@ -2,7 +2,6 @@
     padding-top: 20px;
     padding-bottom: 15px;
     line-height: 1rem;
-    border-bottom: 1px solid var(--border-colour);
 
     &__heading {
         @include body-font(1.125rem, 400);
@@ -11,6 +10,10 @@
         margin-bottom: 0;
         padding-bottom: 15px;
     }
+}
+
+.fm-c-menu:not(:first-child) {
+    border-top: 1px solid var(--border-colour);
 }
 
 .fm-c-menu__item {

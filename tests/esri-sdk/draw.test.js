@@ -434,34 +434,6 @@ describe('Draw Class', () => {
     })
   })
 
-  describe('getFeature()', () => {
-    it('should return an object with type "feature" and correct geometry', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
-
-      const result = drawInstance.getFeature(mockGraphic)
-
-      expect(result).toEqual({
-        type: 'feature',
-        geometry: {
-          type: 'polygon',
-          coordinates: mockGraphic.geometry.rings
-        }
-      })
-    })
-
-    it('should correctly extract geometry.rings from the given graphic', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.geometry = { rings: [[[5, 5], [6, 6], [7, 7]]] }
-
-      const result = drawInstance.getFeature(mockGraphic)
-
-      expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
-    })
-  })
-
   describe('getBounds()', () => {
     it('should call getBoundingClientRect() on the element', () => {
       const drawInstance = new Draw(mockProvider, {})
@@ -553,6 +525,34 @@ describe('Draw Class', () => {
       const result = drawInstance.getBounds(mockElement)
 
       expect(result).toEqual([0, 0, 1, 1])
+    })
+  })
+
+  describe('getFeature()', () => {
+    it('should return an object with type "feature" and correct geometry', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result).toEqual({
+        type: 'feature',
+        geometry: {
+          type: 'polygon',
+          coordinates: mockGraphic.geometry.rings
+        }
+      })
+    })
+
+    it('should correctly extract geometry.rings from the given graphic', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[5, 5], [6, 6], [7, 7]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
     })
   })
 

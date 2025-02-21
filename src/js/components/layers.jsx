@@ -9,14 +9,13 @@ import LayerGroup from './layer-group.jsx'
 export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
   const { id, legend, queryArea } = options
-  const { display, keyDisplay } = legend
   const { zoom } = useViewport()
 
   // Derived properties
-  const moreLabel = keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
-  const maxRow = display === 'inset' && keyDisplay === 'min' ? 0 : legend.key.length
-  const queryLabel = query ? queryArea.keyLabel : null
-  const groups = parseGroups(legend.key, segments, layers, zoom, hasInputs, queryLabel)
+  const moreLabel = legend?.keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
+  const maxRow = legend?.display === 'inset' && legend?.keyDisplay === 'min' ? 0 : legend?.key.length
+  const queryLabel = query ? queryArea?.keyLabel : null
+  const groups = parseGroups(legend?.key, segments, layers, zoom, hasInputs, queryLabel)
   const isEmptyKey = !hasInputs && !groups.length
   const setIsExpanded = () => dispatch({ type: 'TOGGLE_KEY_EXPANDED', payload: !isKeyExpanded })
 
@@ -29,7 +28,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
     nextTabStop?.focus()
   }, [isKeyExpanded])
 
-  if (!legend.key) {
+  if (!legend?.key) {
     return null
   }
 
@@ -38,7 +37,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
       {groups.map((g, i) => (
         <Fragment key={`fl${i}`}>
           {(isKeyExpanded || (!isKeyExpanded && i <= maxRow)) && (
-            <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
+            <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={legend?.display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
           )}
         </Fragment>
       ))}

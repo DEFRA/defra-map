@@ -3,8 +3,8 @@ import { useViewport } from '../store/use-viewport'
 
 export default function Logo () {
   const { style } = useViewport()
-  const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
-  const hasDefaultLogo = !('logo' in style)
+  const isDarkBasemap = ['dark', 'aerial'].includes(style?.name)
+  const hasDefaultLogo = style && !('logo' in style)
 
   return (
     <>

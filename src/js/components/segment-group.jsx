@@ -15,10 +15,10 @@ export default function SegmentGroup ({ id, group }) {
   const [isExpanded, setIsExpanded] = useState(group.isExpanded)
 
   const handleItemClickOrChange = e => {
-    let seg = segments.filter(s => !items.map(i => i.id).includes(s))
+    let seg = segments?.filter(s => !items.map(i => i.id).includes(s))
     seg.push(e.currentTarget.value)
-    seg = parseSegments(legend.segments, seg)
-    const lyr = parseLayers(legend.key)
+    seg = parseSegments(legend?.segments, seg)
+    const lyr = parseLayers(legend?.key)
     dispatch({ type: 'TOGGLE_SEGMENTS', payload: { segments: seg, layers: lyr } })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'segment', mode, style, size, segments: seg, layers: lyr })

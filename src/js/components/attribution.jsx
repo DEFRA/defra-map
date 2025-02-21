@@ -4,12 +4,12 @@ import { useViewport } from '../store/use-viewport.js'
 
 export default function Attribution () {
   const { isMobile } = useApp()
-  const { attribution } = useViewport().style
+  const { style } = useViewport()
 
   return (
     <div className='fm-o-attribution'>
-      {!isMobile && attribution && (
-        <div className='fm-c-attribution' {...({ dangerouslySetInnerHTML: { __html: attribution } })} />
+      {!isMobile && style?.attribution && (
+        <div className='fm-c-attribution' {...({ dangerouslySetInnerHTML: { __html: style?.attribution } })} />
       )}
     </div>
   )

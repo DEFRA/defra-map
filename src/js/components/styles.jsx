@@ -55,7 +55,7 @@ export default function Styles () {
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
-          {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
+          {styles?.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
             <div key={item.name} className='fm-c-layers__item govuk-body-s'>
               <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
                 <div className='fm-c-layers__image'>

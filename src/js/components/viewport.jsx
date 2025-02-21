@@ -37,7 +37,7 @@ export default function Viewport () {
   const isDarkBasemap = ['dark', 'aerial'].includes(style?.name)
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
-  const bgColor = getColor(backgroundColor, style.name)
+  const bgColor = getColor(backgroundColor, style?.name)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)

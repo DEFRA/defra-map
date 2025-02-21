@@ -33,9 +33,9 @@ export class FloodMap extends EventTarget {
     }
 
     // Merge props
-    const dataset = { ...this.el.dataset }
+    const dataset = { ...this.el?.dataset }
     Object.keys(dataset).forEach(key => { dataset[key] = parseAttribute(dataset[key]) })
-    const parent = document.getElementById(dataset.container || props.container || id)
+    const parent = document.getElementById(dataset?.container || props?.container || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
     this.callBack = callBack
@@ -56,7 +56,7 @@ export class FloodMap extends EventTarget {
     }
 
     // Add button
-    if (['buttonFirst', 'hybrid'].includes(props.behaviour)) {
+    if (['buttonFirst', 'hybrid'].includes(props?.behaviour)) {
       this._insertButtonHTML()
       // Remove hidden class
       if (!this.isVisible) {
@@ -126,8 +126,8 @@ export class FloodMap extends EventTarget {
 
   _testDevice (props) {
     const device = framework => capabilities[framework || 'default'].getDevice()
-    const { isSupported, error } = device(props.framework)
-    const isImplementationSupported = props.deviceTestCallback ? props.deviceTestCallback() : true
+    const { isSupported, error } = device(props?.framework)
+    const isImplementationSupported = props?.deviceTestCallback ? props.deviceTestCallback() : true
     return {
       isSupported: isSupported && isImplementationSupported,
       error

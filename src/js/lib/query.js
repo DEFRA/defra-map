@@ -37,7 +37,7 @@ export const parseLayers = (dataLayers) => {
 
 export const parseGroups = (data, segments, layers, zoom, hasInputs, queryLabel) => {
   // Filter groups
-  let groups = data.filter(g => {
+  let groups = data?.filter(g => {
     const hasValidParent = !g.parentIds || g.parentIds.some(i => segments?.includes(i))
     const isValidMinZoom = !g.minZoom || g.minZoom <= zoom
     const isValidMaxZoom = !g.maxZoom || g.maxZoom > zoom

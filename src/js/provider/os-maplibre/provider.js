@@ -58,7 +58,7 @@ class Provider extends EventTarget {
     const map = new MaplibreMap({
       ...options,
       container,
-      style: style.url,
+      style: style?.url,
       maxBounds: maxBounds || storeDefaults.MAX_BOUNDS_4326,
       bounds,
       center,

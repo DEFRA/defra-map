@@ -45,7 +45,11 @@ export const addShortcutMarkers = (provider, features) => {
 }
 
 export const highlightLabel = (map, scale, style, feature) => {
-  if (map && feature) {
+  if (!map.style) {
+    return
+  }
+
+  if (feature) {
     map.moveLayer('label')
     map.getSource('label').setData({
       type: 'Feature',
@@ -70,7 +74,7 @@ export const highlightLabel = (map, scale, style, feature) => {
     map.setPaintProperty('label', 'text-color', (style === 'dark' ? '#ffffff' : '#000000'))
     map.setPaintProperty('label', 'text-halo-color', (style === 'dark' ? '#000000' : '#ffffff'))
   } else {
-    map.getSource('label')?.setData({
+    map?.getSource('label')?.setData({
       type: 'FeatureCollection',
       features: []
     })

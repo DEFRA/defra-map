@@ -8,11 +8,11 @@ import OsProvider from '../provider/os-open-names/provider.js'
 
 const getDerivedProps = (search, transformSearchRequest, isMobile, legend, state) => {
   const geocode = new OsProvider(transformSearchRequest)
-  const searchWidth = !isMobile ? (legend.keyWidth || legend.width) : null
+  const searchWidth = !isMobile ? (legend?.keyWidth || legend?.width) : null
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
-  const label = `Search for a place${search.country ? ' in ' + search.country.charAt(0).toUpperCase() + search.country.slice(1) : ''}`
+  const label = `Search for a place${search?.country ? ' in ' + search?.country.charAt(0).toUpperCase() + search?.country.slice(1) : ''}`
   return { geocode, searchWidth, hasClear, className, formClassName, label }
 }
 
@@ -24,7 +24,6 @@ export default function Search ({ instigatorRef }) {
   const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const { isAutocomplete } = search
   const { id, transformSearchRequest } = options
   const [state, dispatch] = useReducer(reducer, initialState)
   const formRef = useRef()
@@ -187,7 +186,7 @@ export default function Search ({ instigatorRef }) {
       <div id={`${id}-search-hint`} style={{ display: 'none' }}>
         When search results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.
       </div>
-      {isAutocomplete && (
+      {search?.isAutocomplete && (
         <Autocomplete id={id} state={state} dispatch={dispatch} geocode={geocode} errorText={search.errorText} updateViewport={updateViewport} />
       )}
     </div>

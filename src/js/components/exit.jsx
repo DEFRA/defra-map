@@ -5,7 +5,7 @@ export default function Exit () {
   const { options, mode, isPage, isBack, handleExit, isDesktop } = useApp()
   const isQueryMode = ['frame', 'draw'].includes(mode)
 
-  const isFixed = options?.legend.display !== 'inset' && isDesktop
+  const isFixed = options?.legend?.display !== 'inset' && isDesktop
   const hasButton = !isQueryMode && isPage
 
   if (!hasButton) {

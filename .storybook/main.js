@@ -7,9 +7,17 @@ const config = {
     "@chromatic-com/storybook",
     "@storybook/addon-interactions",
   ],
+  webpackFinal: async (config) => {
+    config.module.rules.push({
+      test: /\.scss$/, // Ensure Webpack handles .scss files
+      use: ["style-loader", "css-loader", "sass-loader"],
+    });
+    return config
+  },
   framework: {
     name: "@storybook/preact-webpack5",
     options: {},
   },
+  staticDirs: [{ from: '../demo/assets/fonts', to: '/' }]
 };
 export default config;

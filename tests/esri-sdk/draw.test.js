@@ -1,5 +1,6 @@
 import { Draw } from '../../src/js/provider/esri-sdk/draw'
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
+import { defaults } from '../../src/js/provider/esri-sdk/constants'
 
 jest.mock('@arcgis/core/Graphic', () => {
   return jest.fn().mockImplementation(() => ({
@@ -458,6 +459,199 @@ describe('Draw Class', () => {
       const result = drawInstance.getFeature(mockGraphic)
 
       expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
+    })
+  })
+
+  describe('getBounds()', () => {
+    it('should call getBoundingClientRect() on the element', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockElement = document.createElement('div')
+      const mockParent = document.createElement('div')
+      mockParent.classList.add('fm-o-viewport')
+
+      // Ensure the element is inside a valid viewport
+      jest.spyOn(mockElement, 'closest').mockReturnValue(mockParent)
+      const getBoundingClientRectSpy = jest.spyOn(mockElement, 'getBoundingClientRect').mockReturnValue({
+        left: 10,
+        top: 20,
+        width: 100,
+        height: 50
+      })
+      jest.spyOn(mockParent, 'getBoundingClientRect').mockReturnValue({
+        left: 0,
+        top: 0,
+        width: 500,
+        height: 500
+      })
+
+      drawInstance.getBounds(mockElement)
+
+      expect(getBoundingClientRectSpy).toHaveBeenCalled()
+
+      getBoundingClientRectSpy.mockRestore()
+    })
+
+    it('should find the closest .fm-o-viewport parent', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockElement = document.createElement('div')
+      const mockParent = document.createElement('div')
+      mockParent.classList.add('fm-o-viewport')
+
+      const closestSpy = jest.spyOn(mockElement, 'closest').mockReturnValue(mockParent)
+
+      drawInstance.getBounds(mockElement)
+      expect(closestSpy).toHaveBeenCalledWith('.fm-o-viewport')
+
+      closestSpy.mockRestore()
+    })
+
+    it('should compute northwest and southeast coordinates using view.toMap()', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockElement = document.createElement('div')
+      const mockParent = document.createElement('div')
+      mockParent.classList.add('fm-o-viewport')
+
+      jest.spyOn(mockElement, 'closest').mockReturnValue(mockParent)
+      jest.spyOn(mockElement, 'getBoundingClientRect').mockReturnValue({
+        left: 10,
+        top: 20,
+        width: 100,
+        height: 50
+      })
+
+      const toMapSpy = jest.spyOn(mockProvider.view, 'toMap')
+        .mockReturnValueOnce({ x: 0, y: 0 }) // NW coordinate
+        .mockReturnValueOnce({ x: 1, y: 1 }) // SE coordinate
+
+      drawInstance.getBounds(mockElement)
+
+      expect(toMapSpy).toHaveBeenCalledTimes(2)
+      expect(toMapSpy).toHaveBeenCalledWith({ x: 10, y: 20 }) // NW point
+      expect(toMapSpy).toHaveBeenCalledWith({ x: 110, y: 70 }) // SE point
+
+      toMapSpy.mockRestore()
+    })
+
+    it('should return the correct bounding box format [nw.x, nw.y, se.x, se.y]', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockElement = document.createElement('div')
+      const mockParent = document.createElement('div')
+      mockParent.classList.add('fm-o-viewport')
+
+      jest.spyOn(mockElement, 'closest').mockReturnValue(mockParent)
+      jest.spyOn(mockElement, 'getBoundingClientRect').mockReturnValue({
+        left: 10,
+        top: 20,
+        width: 100,
+        height: 50
+      })
+
+      jest.spyOn(mockProvider.view, 'toMap')
+        .mockReturnValueOnce({ x: 0, y: 0 }) // NW coordinate
+        .mockReturnValueOnce({ x: 1, y: 1 }) // SE coordinate
+
+      const result = drawInstance.getBounds(mockElement)
+
+      expect(result).toEqual([0, 0, 1, 1])
+    })
+  })
+
+  describe('addGraphic()', () => {
+    it('should remove all existing graphics from graphicsLayer', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const removeAllSpy = jest.spyOn(mockProvider.graphicsLayer, 'removeAll')
+
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(removeAllSpy).toHaveBeenCalled()
+      removeAllSpy.mockRestore()
+    })
+
+    it('should clone the given graphic', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {}, geometry: { rings: [[[0, 0], [1, 1], [2, 2]]] } }
+
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(mockGraphic.clone).toHaveBeenCalled()
+    })
+
+    it('should set clone.symbol.color based on isDark setting', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {} }
+
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(clonedGraphic.symbol.color).toBe(defaults.POLYGON_QUERY_STROKE)
+
+      drawInstance.provider.isDark = true
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(clonedGraphic.symbol.color).toBe(defaults.POLYGON_QUERY_STROKE_DARK)
+    })
+
+    it('should add the cloned graphic to graphicsLayer', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const addSpy = jest.spyOn(mockProvider.graphicsLayer, 'add')
+
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {} }
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(addSpy).toHaveBeenCalledWith(clonedGraphic)
+      addSpy.mockRestore()
+    })
+
+    it('should call update() on sketchViewModel if an active tool exists', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      drawInstance.sketchViewModel = { update: jest.fn(), activeTool: 'move' }
+
+      const updateSpy = jest.spyOn(drawInstance.sketchViewModel, 'update')
+
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {} }
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(updateSpy).toHaveBeenCalledWith(clonedGraphic)
+      updateSpy.mockRestore()
+    })
+
+    it('should reorder graphicsLayer to zIndex = 99 on map', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const reorderSpy = jest.spyOn(mockProvider.map, 'reorder')
+
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {} }
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      drawInstance.addGraphic(mockGraphic)
+
+      expect(reorderSpy).toHaveBeenCalledWith(mockProvider.graphicsLayer, 99)
+      reorderSpy.mockRestore()
+    })
+
+    it('should return the cloned graphic', () => {
+      const drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      const clonedGraphic = { symbol: {}, geometry: { rings: [[[0, 0], [1, 1], [2, 2]]] } }
+
+      mockGraphic.clone = jest.fn().mockReturnValue(clonedGraphic)
+
+      const result = drawInstance.addGraphic(mockGraphic)
+
+      expect(result).toBe(clonedGraphic)
     })
   })
 })

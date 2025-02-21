@@ -402,4 +402,62 @@ describe('Draw Class', () => {
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
     })
   })
+
+  describe('finishEdit()', () => {
+    beforeEach(() => {
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.sketchViewModel = { complete: jest.fn() }
+    })
+
+    it('should call complete() on sketchViewModel', () => {
+      drawInstance.finishEdit()
+      expect(drawInstance.sketchViewModel.complete).toHaveBeenCalled()
+    })
+
+    it('should remove the layer reference from sketchViewModel', () => {
+      drawInstance.finishEdit()
+      expect(drawInstance.sketchViewModel.layer).toBeNull()
+    })
+
+    it('should return the first graphic from graphicsLayer if available', () => {
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockProvider.graphicsLayer.graphics.items = [mockGraphic]
+      const result = drawInstance.finishEdit()
+      expect(result).toBe(mockGraphic)
+    })
+
+    it('should return undefined if no graphic exists', () => {
+      mockProvider.graphicsLayer.graphics.items = []
+      const result = drawInstance.finishEdit()
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('getFeature()', () => {
+    it('should return an object with type "feature" and correct geometry', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result).toEqual({
+        type: 'feature',
+        geometry: {
+          type: 'polygon',
+          coordinates: mockGraphic.geometry.rings
+        }
+      })
+    })
+
+    it('should correctly extract geometry.rings from the given graphic', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[5, 5], [6, 6], [7, 7]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
+    })
+  })
 })

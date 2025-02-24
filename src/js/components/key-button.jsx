@@ -14,7 +14,7 @@ export default function KeyButton ({ keyBtnRef }) {
   }
 
   return (
-    <button onClick={handleClick} className='fm-c-btn fm-c-btn--key govuk-body-s' ref={keyBtnRef} aria-expanded={false} {...activePanel === 'KEY' ? { style: { display: 'none' } } : {}}>
+    <button onClick={handleClick} className='fm-c-btn fm-c-btn--key' ref={keyBtnRef} aria-expanded={false} {...activePanel === 'KEY' ? { style: { display: 'none' } } : {}}>
       <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
         <circle cx='3.5' cy='4' r='1.5' />
         <circle cx='3.5' cy='10' r='1.5' />

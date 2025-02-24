@@ -47,7 +47,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
         </div>
       )}
       {isEmptyKey && (
-        <p className='govuk-body-s govuk-!-margin-bottom-0'>No features displayed</p>
+        <p className='fm-c-layers__error'>No features displayed</p>
       )}
     </div>
   )

@@ -137,7 +137,7 @@ export class FloodMap extends EventTarget {
   _renderError (text) {
     this.el.insertAdjacentHTML('beforebegin', `
       <div class="fm-error">
-        <p class="govuk-body">${text}</p>
+        <p class="fm-error__body">${text}</p>
       </div>
     `)
   }

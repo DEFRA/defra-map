@@ -59,7 +59,7 @@ export default function Tooltip ({ id, position, text, cssModifier, children }) 
     >
       {children}
       <div id={id} className='fm-c-tooltip__label' role='tooltip'>
-        <div className='fm-c-tooltip__label-inner govuk-body-s'>
+        <div className='fm-c-tooltip__label-inner'>
           {text}
         </div>
       </div>

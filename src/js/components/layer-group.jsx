@@ -151,7 +151,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
       {isDetails
         ? (
-          <button className='fm-c-details govuk-body-s' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+          <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
             <span className='fm-c-details__label'>
               <span className='fm-c-details__label-focus'>{heading}</span>
             </span>
@@ -167,7 +167,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
           </button>
           )
         : heading && (
-          <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
+          <h3 className='fm-c-layers__heading' aria-hidden='true'>{heading}</h3>
         )}
       <div
         id={`content-${id}`}
@@ -180,14 +180,14 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
           return (
             <Fragment key={(item.id || item.label).toLowerCase()}>
               {(hasSymbols || item.id) && (
-                <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
+                <div className={`fm-c-layers__item fm-c-layers__item--${display}`}>
                   {itemInner({ item, index: i, display, isChecked })}
                 </div>
               )}
               {hasSymbols && item.items?.map((child, j) => {
                 display = item.display || (child.icon ? 'icon' : 'fill')
                 return (
-                  <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
+                  <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display}`}>
                     {itemInner({ item: child, index: j, display })}
                   </div>
                 )

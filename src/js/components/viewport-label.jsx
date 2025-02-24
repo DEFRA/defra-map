@@ -6,7 +6,7 @@ export default function ViewportLabel () {
   const { id } = options
 
   return (
-    <div id={`${id}-viewport-label`} className='fm-c-panel fm-c-panel--viewport-label govuk-body-s'>
+    <div id={`${id}-viewport-label`} className='fm-c-panel fm-c-panel--viewport-label'>
       <span className='fm-u-visually-hidden'>Interactive map. </span><kbd>Alt</kbd> + <kbd>K</kbd> <span className='fm-u-visually-hidden'>Show</span> keyboard controls<span className='fm-u-visually-hidden'>.</span>
     </div>
   )

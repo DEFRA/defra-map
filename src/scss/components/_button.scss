@@ -1,4 +1,5 @@
 %fm-c-btn {
+    @include body-font(16px, 400);
     margin: 0;
     position: relative;
     line-height: 20px;
@@ -68,14 +69,14 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $govuk-link-colour;
+    color: var(--govuk-blue);
 
     &:visited {
-        color: $govuk-link-colour;
+        color: var(--govuk-blue);
     }
 
     &:hover:not(.fm-u-focus-visible) {
-        color: $govuk-link-hover-colour;
+        color: var(--govuk-dark-blue);
     }
 
     &:focus:not(.fm-u-focus-visible) {
@@ -86,9 +87,9 @@
     &.fm-u-focus-visible,
     &:hover.fm-u-focus-visible {
         @media (hover: hover) and (pointer: fine) {
-            background-color: $govuk-focus-colour;
-            border-color: $govuk-focus-colour;
-            color: $govuk-text-colour;
+            background-color: var(--govuk-yellow);
+            border-color: var(--govuk-yellow);
+            color: var(--govuk-black);
             box-shadow: 0 2px var(--foreground-colour);
         }
     }
@@ -113,18 +114,18 @@
     &:focus:not(.fm-u-focus-visible) {
         background-color: transparent;
         box-shadow: none;
-        color: $govuk-link-colour;
+        color: var(--govuk-blue);
         text-decoration: underline;
     }
 
     &:hover:not(.fm-u-focus-visible) {
         text-decoration-thickness: 3px;
         text-decoration-skip: none;
-        color: $govuk-link-hover-colour;
+        color: var(--govuk-dark-blue);
     }
 
     &:focus {
-        color: $govuk-text-colour;
+        color: var(--govuk-black);
         outline: 3px solid transparent;
     }
 

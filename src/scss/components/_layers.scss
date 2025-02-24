@@ -5,6 +5,7 @@
     }
 
     &__item {
+        @include body-font(16px, 400);
         color: var(--foreground-colour);
     }
 
@@ -16,12 +17,14 @@
     }
 
     &__heading {
+        @include body-font(16px, 400);
         padding: 15px 0;
         color: var(--foreground-colour);
         margin-bottom: 0;
     }
 
     &__button {
+        @include body-font(16px, 400);
         display: flex;
         position: relative;
         flex-direction: row;
@@ -69,6 +72,10 @@
 
     &__more--offset {
         margin-top: 5px;
+    }
+
+    &__error {
+        @include body-font(16px, 400);
     }
 }
 

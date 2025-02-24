@@ -337,7 +337,7 @@ export default function Viewport () {
       {useMemo(() => {
         return (
           <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
-            <div className='fm-c-status__inner govuk-body-s' aria-atomic>
+            <div className='fm-c-status__inner' aria-atomic>
               {status}
             </div>
           </div>

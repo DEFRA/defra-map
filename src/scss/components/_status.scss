@@ -12,6 +12,7 @@
     padding: 0 $margin;
 
     &__inner {
+        @include body-font(16px, 400);
         padding: 15px;
         border-radius: $button-radius;
         background-color: #ffffff;

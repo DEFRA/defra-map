@@ -9,6 +9,8 @@
 }
 
 .fm-c-tooltip__label-inner {
+    @include body-font(16px, 400);
+    color: var(--tooltip-foreground-colour);
     position: relative;
     display: inline-block;
     vertical-align: middle;
@@ -33,11 +35,6 @@
         -o-transform: rotate(135deg);
         transform: rotate(135deg);
     }
-}
-
-.fm-c-tooltip__label-inner.govuk-body-s {
-    color: #ffffff;
-    margin-bottom: 0;
 }
 
 // Above and below

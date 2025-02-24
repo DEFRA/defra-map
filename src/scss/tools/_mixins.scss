@@ -49,6 +49,7 @@
   font-size: $size;
   line-height: inherit;
   -webkit-font-smoothing: antialiased;
+  color: var(--foreground-colour);
 }
 
 @mixin visually-hidden() {

@@ -56,7 +56,7 @@ export default function Styles () {
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
           {styles?.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
-            <div key={item.name} className='fm-c-layers__item govuk-body-s'>
+            <div key={item.name} className='fm-c-layers__item'>
               <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
                 <div className='fm-c-layers__image'>
                   <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(item.name) }} />
@@ -76,11 +76,11 @@ export default function Styles () {
       {hasSize && isExpanded && (
         <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
           <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
-            <h3 className='fm-c-layers__heading govuk-body-s'>Text size</h3>
+            <h3 className='fm-c-layers__heading'>Text size</h3>
           </div>
           <div className='fm-c-layers__columns'>
             {['small', 'medium', 'large'].map((name, i) => (
-              <div key={name} className='fm-c-layers__item govuk-body-s'>
+              <div key={name} className='fm-c-layers__item'>
                 <button className='fm-c-layers__button' value={name} aria-pressed={currentSize === name} onClick={handleSizeClick}>
                   <div className='fm-c-layers__image'>
                     <svg width='60' height='60' viewBox='0 0 60 60' fillRule='evenodd'>

@@ -143,7 +143,7 @@ export default function Search ({ instigatorRef }) {
       <div className='fm-c-search__control'>
         <form role='search' className={formClassName} aria-controls={`${id}-viewport`} onSubmit={handleSubmit}>
           {isMobile && (
-            <button onClick={handleCollapse} type='button' className='fm-c-btn fm-c-btn--search-back govuk-body-s' aria-label='Close search'>
+            <button onClick={handleCollapse} type='button' className='fm-c-btn fm-c-btn--search-back' aria-label='Close search'>
               <svg aria-hidden='true' focusable='false' width='14' height='20' viewBox='0 0 14 20' fillRule='evenodd' fill='currentColor'>
                 <path d='M3.828 10l8.486 8.485-1.415 1.414L1 10 10.899.101l1.415 1.414L3.828 10z' strokeWidth='0' />
               </svg>
@@ -152,7 +152,7 @@ export default function Search ({ instigatorRef }) {
           <label htmlFor={`${id}-search`} className='fm-u-visually-hidden'>{label}</label>
           <input
             id={`${id}-search`}
-            className='fm-c-search__input govuk-body-s'
+            className='fm-c-search__input'
             role='combobox'
             aria-expanded={state.isVisible}
             aria-controls={`${id}-suggestions`}
@@ -177,7 +177,7 @@ export default function Search ({ instigatorRef }) {
             </button>
           )}
           {!isMobile && (
-            <button onClick={handleCollapse} type='button' className='fm-c-btn fm-c-btn--search-close govuk-body-s' aria-label='Close search'>
+            <button onClick={handleCollapse} type='button' className='fm-c-btn fm-c-btn--search-close' aria-label='Close search'>
               <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fill='currentColor'><path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' style={{ fill: 'currentColor', strokeWidth: '0' }} /></svg>
             </button>
           )}

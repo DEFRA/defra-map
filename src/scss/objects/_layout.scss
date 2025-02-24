@@ -369,9 +369,9 @@
 .fm-o-side .fm-c-btn--exit.fm-u-focus-visible,
 .fm-o-side .fm-c-btn--exit:hover.fm-u-focus-visible {
     @media (hover: hover) and (pointer: fine) {
-        background-color: $govuk-focus-colour;
-        border-color: $govuk-focus-colour;
-        color: $govuk-text-colour;
+        background-color: var(--govuk-yellow);
+        border-color: var(--govuk-yellow);
+        color: var(--govuk-black);
         box-shadow: 0 2px var(--foreground-colour);
     }
 

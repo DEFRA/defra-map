@@ -63,7 +63,7 @@ export default function Autocomplete ({ id, state, dispatch, geocode, errorText,
       )}
       <ul id={`${id}-suggestions`} role='listbox' aria-labelledby={`${id}-search`} className='fm-c-search__list' {...(!state.isVisible ? { style: { display: 'none' } } : {})} onMouseEnter={() => dispatch({ type: 'MOUSEENTER' })}>
         {state.suggestions?.map((item, i) =>
-          <li key={item.id} ref={state.selected === i ? selectedRef : null} className={`fm-c-search-item${state.selected === i ? ' fm-c-search-item--selected' : ''} govuk-body-s`} onMouseDown={e => handleOnMouseDown(e, i)} role='option' aria-selected={state.selected === i} aria-posinset={i + 1} aria-setsize={state.suggestions.length} tabIndex='-1'>
+          <li key={item.id} ref={state.selected === i ? selectedRef : null} className={`fm-c-search-item${state.selected === i ? ' fm-c-search-item--selected' : ''}`} onMouseDown={e => handleOnMouseDown(e, i)} role='option' aria-selected={state.selected === i} aria-posinset={i + 1} aria-setsize={state.suggestions.length} tabIndex='-1'>
             <span className='fm-c-search-item__primary' dangerouslySetInnerHTML={item.marked} />
           </li>)}
       </ul>

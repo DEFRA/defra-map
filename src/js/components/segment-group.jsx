@@ -38,7 +38,7 @@ export default function SegmentGroup ({ id, group }) {
     <div className={`fm-c-segments${display ? ' fm-c-segments--' + display : ''}`} {...isHidden ? { style: { display: 'none' } } : {}}>
       {isDetails
         ? (
-          <button className='fm-c-details govuk-body-s' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+          <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
             <span className='fm-c-details__label'>
               <span className='fm-c-details__label-focus'>{heading}</span>
             </span>
@@ -54,14 +54,14 @@ export default function SegmentGroup ({ id, group }) {
           </button>
           )
         : heading && (
-          <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
+          <h3 className='fm-c-layers__heading' aria-hidden='true'>{heading}</h3>
         )}
       <div id={`content-${id}`} className='fm-c-segments__inner' role='group' {...heading ? { 'aria-labelledby': `segment-${id}` } : { 'aria-label': 'Segments' }}>
         {items.map(item => (
           <Fragment key={item.label.toLowerCase()}>
             {['timeline', 'segmented'].includes(display)
               ? (
-                <button aria-pressed={item.isChecked} className='fm-c-segments__button govuk-body-s' value={item.id} onClick={handleItemClickOrChange}>
+                <button aria-pressed={item.isChecked} className='fm-c-segments__button' value={item.id} onClick={handleItemClickOrChange}>
                   {!['timeline', 'segmented'].includes(display)
                     ? <span className='fm-c-segments__button-icon' />
                     : null}
@@ -69,7 +69,7 @@ export default function SegmentGroup ({ id, group }) {
                 </button>
                 )
               : (
-                <div className='fm-c-segments__item govuk-body-s'>
+                <div className='fm-c-segments__item'>
                   <input className='fm-c-segments__radio' defaultChecked={item.isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemClickOrChange} />
                   <label className='fm-c-segments__label' htmlFor={item.id} dangerouslySetInnerHTML={{ __html: item.label }} />
                 </div>

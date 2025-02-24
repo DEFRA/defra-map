@@ -16,6 +16,7 @@
     }
 
     &__input {
+        @include body-font(16px, 400);
         flex: 1 1 auto;
         position: relative;
         width: calc(100% - 40px);
@@ -169,6 +170,7 @@
 }
 
 .fm-c-search-item {
+    @include body-font(16px, 400);
     margin: 0;
     padding: 10px 12px;
     position: relative;

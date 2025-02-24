@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Keyboard () {
   return (
-    <dl className='fm-c-keyboard-list govuk-body-s'>
+    <dl className='fm-c-keyboard-list'>
       <div className='fm-u-visually-hidden'>
         <dt>Get location information</dt>
         <dd><kbd>Alt</kbd> + <kbd>I</kbd></dd>

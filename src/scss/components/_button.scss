@@ -63,20 +63,20 @@
 .fm-c-btn-open-map {
     @extend %fm-c-btn;
     @include body-font(16px, 400);
-    border: 1px solid govuk-colour('black');
-    background-color: govuk-colour('white');
+    border: 1px solid $foreground-colour;
+    background-color: $background-colour;
     padding: 7px 12px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: var(--govuk-blue);
+    color: $link-colour;
 
     &:visited {
-        color: var(--govuk-blue);
+        color: $link-colour;
     }
 
     &:hover:not(.fm-u-focus-visible) {
-        color: var(--govuk-dark-blue);
+        color: $link-hover-colour;
     }
 
     &:focus:not(.fm-u-focus-visible) {
@@ -87,9 +87,9 @@
     &.fm-u-focus-visible,
     &:hover.fm-u-focus-visible {
         @media (hover: hover) and (pointer: fine) {
-            background-color: var(--govuk-yellow);
-            border-color: var(--govuk-yellow);
-            color: var(--govuk-black);
+            background-color: var(--focus-colour);
+            border-color: var(--focus-colour);
+            color: var(--foreground-colour);
             box-shadow: 0 2px var(--foreground-colour);
         }
     }
@@ -114,18 +114,18 @@
     &:focus:not(.fm-u-focus-visible) {
         background-color: transparent;
         box-shadow: none;
-        color: var(--govuk-blue);
+        color: $link-colour;
         text-decoration: underline;
     }
 
     &:hover:not(.fm-u-focus-visible) {
         text-decoration-thickness: 3px;
         text-decoration-skip: none;
-        color: var(--govuk-dark-blue);
+        color: $link-hover-colour;
     }
 
     &:focus {
-        color: var(--govuk-black);
+        color: $foreground-colour;
         outline: 3px solid transparent;
     }
 
@@ -200,8 +200,8 @@
 }
 
 .fm-c-btn--primary {
-    background-color: var(--green);
-    color: #ffffff;
+    background-color: var(--primary-button-background-colour);
+    color: var(--primary-button-text-colour);
     box-shadow: 0 2px 0 var(--primary-button-shadow-colour);
 
     &:hover:not([aria-disabled="true"]) {

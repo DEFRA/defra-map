@@ -32,6 +32,9 @@
     background-color:var(--background-colour);
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x pan-y;
+    p, dd, dt {
+        color: var(--foreground-colour);
+    }
 }
 
 // MediaQuery (from tablet)
@@ -369,9 +372,9 @@
 .fm-o-side .fm-c-btn--exit.fm-u-focus-visible,
 .fm-o-side .fm-c-btn--exit:hover.fm-u-focus-visible {
     @media (hover: hover) and (pointer: fine) {
-        background-color: var(--govuk-yellow);
-        border-color: var(--govuk-yellow);
-        color: var(--govuk-black);
+        background-color: var(--focus-colour);
+        border-color: var(--focus-colour);
+        color: var(--foreground-colour);
         box-shadow: 0 2px var(--foreground-colour);
     }
 

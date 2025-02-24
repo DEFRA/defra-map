@@ -31,27 +31,19 @@
 // Marker
 .fm-c-marker--target {
     z-index: 2;
-    color: #505a5f;
+    color: var(--secondary-text-colour);
 
     circle {
         stroke-dasharray: 4 2;
     }
 
     &.fm-c-marker--has-data {
-        color: #0b0c0c;
+        color: var(--foreground-colour);
 
         circle {
             stroke-dasharray: none;
         }
     }
-}
-
-.fm-o-viewport--dark-style .fm-c-marker--target {
-    color: #b1b4b6;
-}
-
-.fm-o-viewport--dark-style .fm-c-marker--target.fm-c-marker--has-data {
-    color: #ffffff;
 }
 
 // Overlay target marker

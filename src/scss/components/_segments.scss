@@ -297,6 +297,10 @@
     .fm-c-segments__button:hover:not([aria-pressed="true"]) {
         z-index: 9;
     }
+
+    + .fm-c-segments {
+        border-top: 0;
+    }
 }
 
 // Segments without panel heading overide

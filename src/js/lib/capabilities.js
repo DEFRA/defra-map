@@ -20,7 +20,7 @@ const getWebGL = names => {
   return { isEnabled: false, error: 'WebGL is supported, but disabled' }
 }
 
-const getArrayFindLast = () => {
+export const getArrayFindLast = () => {
   if (Array.prototype.findLast) {
     return { isSupported: true }
   }

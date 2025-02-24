@@ -230,15 +230,17 @@ export class FloodMap extends EventTarget {
   }
 
   _removeComponent () {
-    this.button.removeAttribute('style')
-    this.button.removeAttribute('data-open')
-    this.button.focus()
-    this.root?.unmount()
-    this.root = null
-    this._selected = null
-    this._info = null
-    updateTitle()
-    toggleInert()
+    if (this.button) {
+      this.button.removeAttribute('style')
+      this.button.removeAttribute('data-open')
+      this.button.focus()
+      this.root?.unmount()
+      this.root = null
+      this._selected = null
+      this._info = null
+      updateTitle()
+      toggleInert()
+    }
   }
 
   // Public methods

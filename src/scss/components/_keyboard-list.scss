@@ -1,4 +1,6 @@
 .fm-c-keyboard-list {
+    @include body-font(16px, 400);
+    
     margin: 0;
 
     &__item {

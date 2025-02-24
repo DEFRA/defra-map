@@ -448,8 +448,10 @@
     box-shadow: $button-shadow;
 }
 
-.fm-c-tooltip--location {
-    margin-top: 10px;
+.fm-c-tooltip--style,
+.fm-c-tooltip--location,
+.fm-c-tooltip--reset {
+    margin-bottom: 10px;
 }
 
 .fm-mobile .fm-c-tooltip--search {

@@ -1,4 +1,5 @@
 /** @type { import('@storybook/preact-webpack5').StorybookConfig } */
+
 const config = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
@@ -18,6 +19,6 @@ const config = {
     name: "@storybook/preact-webpack5",
     options: {},
   },
-  staticDirs: [{ from: '../demo/assets/fonts', to: '/' }]
+  staticDirs: [{ from: '../node_modules/govuk-frontend/dist/govuk/assets', to: '/assets' }]
 };
 export default config;

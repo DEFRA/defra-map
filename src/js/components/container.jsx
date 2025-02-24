@@ -49,7 +49,7 @@ export default function Container () {
   const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour]?.HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
-  const isLegendFixed = isDesktop && !isLegendInset
+  const isLegendFixed = legend && isDesktop && !isLegendInset
   const isLegendModal = !isLegendFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const hasLengedHeading = !(legend?.display === 'inset' || (isLegendFixed && isPage))
   const isQueryMode = ['frame', 'draw'].includes(mode)

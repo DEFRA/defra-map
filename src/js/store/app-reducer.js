@@ -47,7 +47,7 @@ export const initialState = (options) => {
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,
-    hash: null
+    hash: 1
   }
 }
 

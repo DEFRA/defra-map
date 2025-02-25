@@ -23,7 +23,8 @@ const setInfo = (state, payload) => {
     info: payload,
     previousPanel,
     activePanel,
-    hasViewportLabel: false
+    hasViewportLabel: false,
+    hash: state.hash + 1
   }
 }
 
@@ -33,7 +34,7 @@ const setSelected = (state, payload) => {
     featureId: payload.featureId,
     targetMarker: payload.targetMarker,
     activePanelHasFocus: payload.activePanelHasFocus || state.activePanelHasFocus,
-    hash: Date.now()
+    hash: state.hash + (payload.featureId ? 1 : 0)
   }
 }
 
@@ -77,7 +78,7 @@ const open = (state, payload) => {
     hasViewportLabel: false,
     targetMarker: payload === 'SEARCH' && null,
     featureId: payload === 'INFO' ? state.featureId : '',
-    hash: Date.now()
+    hash: state.hash + 1
   }
 }
 

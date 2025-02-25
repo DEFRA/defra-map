@@ -1,3 +1,5 @@
+@use '../tools/mixins' as *;
+
 .fm-c-tooltip {
     position: relative;
     z-index: 98;

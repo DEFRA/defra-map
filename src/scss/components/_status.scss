@@ -1,3 +1,7 @@
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 .fm-c-status {
     position: absolute;
     z-index: 3;

@@ -1,3 +1,6 @@
+@use '../settings/dimensions' as *;
+@use '../settings/colours' as *;
+
 .fm-c-padding-box {
     position: absolute;
     pointer-events: none;

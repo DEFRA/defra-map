@@ -1,3 +1,7 @@
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 // Panel default (fixed)
 .fm-c-panel {
     display: flex;

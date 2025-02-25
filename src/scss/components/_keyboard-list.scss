@@ -1,3 +1,5 @@
+@use '../tools/mixins' as *;
+
 .fm-c-keyboard-list {
     @include body-font(16px, 400);
     

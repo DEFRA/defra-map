@@ -1,3 +1,5 @@
+@use '../tools/mixins' as *;
+
 .fm-c-details {
     @include body-font(16px, 400);
     position: relative;

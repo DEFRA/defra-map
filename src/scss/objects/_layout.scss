@@ -1,3 +1,7 @@
+@use '../settings/dimensions' as *;
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+
 // Avoid screen flicker on refresh
 .fm-html {
     height: 100vh;

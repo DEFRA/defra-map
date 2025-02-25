@@ -1,3 +1,5 @@
+@use '../settings/shadows' as *;
+
 .fm-c-marker {
     position: absolute;
     display: none;

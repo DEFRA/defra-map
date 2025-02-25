@@ -1,3 +1,5 @@
+@use '../tools/mixins' as *;
+
 .fm-c-attribution {
     @include body-font(10px, 400);
     color: var(--foreground-colour);

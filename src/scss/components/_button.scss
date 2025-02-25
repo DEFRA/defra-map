@@ -1,3 +1,7 @@
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+@use '../settings/colours' as *;
+
 %fm-c-btn {
     @include body-font(16px, 400);
     margin: 0;

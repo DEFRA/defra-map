@@ -1,3 +1,6 @@
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 .fm-c-segments:not(:first-child) {
     border-top: 1px solid var(--border-colour);
 }

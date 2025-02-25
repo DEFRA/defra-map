@@ -1,3 +1,6 @@
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 // All layers styles
 .fm-c-layers {
     &__group {

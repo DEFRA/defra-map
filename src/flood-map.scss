@@ -1,47 +1,47 @@
 // https://itcss.io/
 
 // Settings: font, colors definitions, etc
-@import 'scss/settings/fonts';
-@import 'scss/settings/colours';
-@import 'scss/settings/dimensions';
-@import 'scss/settings/shadows';
+// @use 'scss/settings/fonts';
+// @use 'scss/settings/colours';
+// @use 'scss/settings/dimensions';
+// @use 'scss/settings/shadows';
 
 // Tools: globally used mixins and functions
-@import 'scss/tools/mixins';
+// @use 'scss/tools/mixins';
 
 // Generic: reset and/or normalize styles, box-sizing definition, etc
-@import 'scss/generic/reset';
-@import 'scss/generic/print';
+@use 'scss/generic/reset';
+@use 'scss/generic/print';
 
 // Elements: styling for bare HTML elements eg h1, a, etc
-@import 'scss/elements/elements';
+@use 'scss/elements/elements';
 
 // Objects: class-based selectors which define undecorated design patterns
-@import 'scss/objects/layout';
+@use 'scss/objects/layout';
 
 // Components: specific UI components
-@import 'scss/components/button';
-@import 'scss/components/switch';
-@import 'scss/components/tooltip';
-@import 'scss/components/details';
-@import 'scss/components/link';
-@import 'scss/components/marker';
-@import 'scss/components/search';
-@import 'scss/components/status';
-@import 'scss/components/panel';
-@import 'scss/components/layers';
-@import 'scss/components/keyboard-list';
-@import 'scss/components/logo';
-@import 'scss/components/attribution';
-@import 'scss/components/segments';
-@import 'scss/components/symbol';
-@import 'scss/components/menu';
-@import 'scss/components/frame';
+@use 'scss/components/button';
+@use 'scss/components/switch';
+@use 'scss/components/tooltip';
+@use 'scss/components/details';
+@use 'scss/components/link';
+@use 'scss/components/marker';
+@use 'scss/components/search';
+@use 'scss/components/status';
+@use 'scss/components/panel';
+@use 'scss/components/layers';
+@use 'scss/components/keyboard-list';
+@use 'scss/components/logo';
+@use 'scss/components/attribution';
+@use 'scss/components/segments';
+@use 'scss/components/symbol';
+@use 'scss/components/menu';
+@use 'scss/components/frame';
 
 // mapbox-gl-draw
-@import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+@use '../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 // Utilities: utilities and helper classes with ability to override anything which goes before
-@import 'scss/utilities/utilities';
-@import 'scss/utilities/provider';
+@use 'scss/utilities/utilities';
+@use 'scss/utilities/provider';
 

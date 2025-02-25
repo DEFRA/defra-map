@@ -1,3 +1,8 @@
+@use '../settings/dimensions' as *;
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../components/button' as *;
+
 .fm-c-search {
     position: absolute;
     pointer-events: auto;

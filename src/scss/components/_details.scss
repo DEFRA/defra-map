@@ -42,6 +42,7 @@
     &-focus {
         display: inline-flex;
         flex-direction: row;
+        align-items: center;
         color: var(--link-colour);
         font-weight: 400;
     }

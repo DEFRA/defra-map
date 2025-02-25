@@ -63,7 +63,9 @@ export class Draw {
   }
 
   cancel () {
+    // Destroy sketchViewModel
     this.sketchViewModel?.cancel()
+    this.sketchViewModel.layer = null
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
   }
@@ -79,7 +81,10 @@ export class Draw {
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
     const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
+    // Destroy sketchViewModel
     this.sketchViewModel?.cancel()
+    this.sketchViewModel.layer = null
+    // Add graphic
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom
     this.addGraphic(graphic)
@@ -115,7 +120,11 @@ export class Draw {
     this.sketchViewModel = sketchViewModel
 
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
-    sketchViewModel.update(this.addGraphic(graphic))
+
+    // Fix SketchViewModel render bug
+    setTimeout(() => {
+      sketchViewModel.update(this.addGraphic(graphic))
+    }, 100)
   }
 
   finishEdit () {
@@ -123,7 +132,6 @@ export class Draw {
     let graphic
     if (sketchViewModel) {
       sketchViewModel.complete()
-      sketchViewModel.layer = null
       graphic = provider.graphicsLayer.graphics.items[0]
     }
     return graphic

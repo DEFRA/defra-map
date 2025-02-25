@@ -1,6 +1,6 @@
 import { Draw } from '../../src/js/provider/esri-sdk/draw'
-import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 
 jest.mock('@arcgis/core/Graphic', () => {
   return jest.fn().mockImplementation(() => ({
@@ -528,34 +528,6 @@ describe('Draw Class', () => {
     })
   })
 
-  describe('getFeature()', () => {
-    it('should return an object with type "feature" and correct geometry', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
-
-      const result = drawInstance.getFeature(mockGraphic)
-
-      expect(result).toEqual({
-        type: 'feature',
-        geometry: {
-          type: 'polygon',
-          coordinates: mockGraphic.geometry.rings
-        }
-      })
-    })
-
-    it('should correctly extract geometry.rings from the given graphic', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.geometry = { rings: [[[5, 5], [6, 6], [7, 7]]] }
-
-      const result = drawInstance.getFeature(mockGraphic)
-
-      expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
-    })
-  })
-
   describe('addGraphic()', () => {
     it('should remove all existing graphics from graphicsLayer', () => {
       const drawInstance = new Draw(mockProvider, {})
@@ -652,6 +624,185 @@ describe('Draw Class', () => {
       const result = drawInstance.addGraphic(mockGraphic)
 
       expect(result).toBe(clonedGraphic)
+    })
+  })
+
+  describe('getFeature()', () => {
+    it('should return an object with type "feature" and correct geometry', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result).toEqual({
+        type: 'feature',
+        geometry: {
+          type: 'polygon',
+          coordinates: mockGraphic.geometry.rings
+        }
+      })
+    })
+
+    it('should correctly extract geometry.rings from the given graphic', () => {
+      drawInstance = new Draw(mockProvider, {})
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.geometry = { rings: [[[5, 5], [6, 6], [7, 7]]] }
+
+      const result = drawInstance.getFeature(mockGraphic)
+
+      expect(result.geometry.coordinates).toEqual(mockGraphic.geometry.rings)
+    })
+  })
+
+  describe('getGraphicFromElement()', () => {
+    let Draw, Graphic, drawInstance, mockProvider
+
+    beforeAll(() => {
+      // Reset modules so we can set up an isolated mock
+      jest.resetModules()
+      jest.doMock('@arcgis/core/Graphic', () => {
+        class FakeGraphic {
+          constructor (params) {
+            this.geometry = params.geometry
+            this.symbol = params.symbol
+          }
+
+          clone () {
+            return new FakeGraphic({
+              geometry: this.geometry,
+              symbol: this.symbol
+            })
+          }
+        }
+        return FakeGraphic
+      })
+      // Re-import with the new mock
+      Draw = require('../../src/js/provider/esri-sdk/draw').Draw
+      Graphic = require('@arcgis/core/Graphic')
+    })
+
+    beforeEach(() => {
+      mockProvider = {
+        view: { toMap: jest.fn(({ x, y }) => ({ x, y })) },
+        graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() },
+        paddingBox: document.createElement('div')
+      }
+      // Prevent start() from running in the constructor.
+      jest.spyOn(Draw.prototype, 'start').mockImplementation(() => {})
+      drawInstance = new Draw(mockProvider, {})
+      Draw.prototype.start.mockRestore()
+    })
+
+    it('should call getBounds(el) to retrieve bounding box', () => {
+      const el = document.createElement('div')
+      const getBoundsSpy = jest.spyOn(drawInstance, 'getBounds').mockReturnValue([0, 0, 1, 1])
+      drawInstance.getGraphicFromElement(el)
+      expect(getBoundsSpy).toHaveBeenCalledWith(el)
+      getBoundsSpy.mockRestore()
+    })
+
+    it('should create a polygon Graphic using the calculated bounds', () => {
+      const el = document.createElement('div')
+      jest.spyOn(drawInstance, 'getBounds').mockReturnValue([0, 0, 1, 1])
+      const result = drawInstance.getGraphicFromElement(el)
+      expect(result).toBeDefined()
+      expect(result.geometry).toBeDefined()
+      expect(result.geometry.type).toBe('polygon')
+      expect(result.geometry.rings).toEqual([
+        [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]
+      ])
+      expect(result.geometry.spatialReference).toBe(27700)
+    })
+
+    it('should use default polygon stroke settings from defaults.POLYGON_QUERY_STROKE', () => {
+      const el = document.createElement('div')
+      jest.spyOn(drawInstance, 'getBounds').mockReturnValue([0, 0, 1, 1])
+      const result = drawInstance.getGraphicFromElement(el)
+      expect(result.symbol).toEqual({
+        type: 'simple-line',
+        color: defaults.POLYGON_QUERY_STROKE,
+        width: '2px',
+        cap: 'square'
+      })
+    })
+
+    it('should return the created Graphic instance', () => {
+      const el = document.createElement('div')
+      jest.spyOn(drawInstance, 'getBounds').mockReturnValue([0, 0, 1, 1])
+      const result = drawInstance.getGraphicFromElement(el)
+      expect(result).toBeInstanceOf(Graphic)
+    })
+  })
+
+  describe('getGraphicFromFeature()', () => {
+    let Draw, Graphic, drawInstance, mockProvider
+
+    beforeAll(() => {
+      jest.resetModules()
+      jest.doMock('@arcgis/core/Graphic', () => {
+        class FakeGraphic {
+          constructor (params) {
+            this.geometry = params.geometry
+            this.symbol = params.symbol
+          }
+
+          clone () {
+            return new FakeGraphic({
+              geometry: this.geometry,
+              symbol: this.symbol
+            })
+          }
+        }
+        return FakeGraphic
+      })
+      Draw = require('../../src/js/provider/esri-sdk/draw').Draw
+      Graphic = require('@arcgis/core/Graphic')
+    })
+
+    beforeEach(() => {
+      mockProvider = {
+        view: { toMap: jest.fn(({ x, y }) => ({ x, y })) },
+        graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() },
+        paddingBox: document.createElement('div')
+      }
+      // Prevent start() from running during instantiation.
+      jest.spyOn(Draw.prototype, 'start').mockImplementation(() => {})
+      drawInstance = new Draw(mockProvider, {})
+      Draw.prototype.start.mockRestore()
+    })
+
+    it('should extract rings from feature.geometry.coordinates', () => {
+      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
+      const graphic = drawInstance.getGraphicFromFeature(feature)
+      expect(graphic.geometry.rings).toEqual(feature.geometry.coordinates)
+    })
+
+    it('should create a polygon Graphic with extracted coordinates', () => {
+      const feature = { geometry: { coordinates: [[[3, 3], [4, 4], [5, 5]]] } }
+      const graphic = drawInstance.getGraphicFromFeature(feature)
+      expect(graphic).toBeDefined()
+      expect(graphic.geometry).toBeDefined()
+      expect(graphic.geometry.type).toBe('polygon')
+      expect(graphic.geometry.rings).toEqual(feature.geometry.coordinates)
+      expect(graphic.geometry.spatialReference).toBe(27700)
+    })
+
+    it('should use default polygon stroke settings from defaults.POLYGON_QUERY_STROKE', () => {
+      const feature = { geometry: { coordinates: [[[6, 6], [7, 7], [8, 8]]] } }
+      const graphic = drawInstance.getGraphicFromFeature(feature)
+      expect(graphic.symbol).toEqual({
+        type: 'simple-line',
+        color: defaults.POLYGON_QUERY_STROKE,
+        width: '2px',
+        cap: 'square'
+      })
+    })
+
+    it('should return the created Graphic instance', () => {
+      const feature = { geometry: { coordinates: [[[9, 9], [10, 10], [11, 11]]] } }
+      const graphic = drawInstance.getGraphicFromFeature(feature)
+      expect(graphic).toBeInstanceOf(Graphic)
     })
   })
 })

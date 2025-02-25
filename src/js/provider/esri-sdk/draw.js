@@ -50,6 +50,13 @@ export class Draw {
     this.editGraphic(graphic)
   }
 
+  destroy () {
+    if (this.sketchViewModel) {
+      this.sketchViewModel.cancel()
+      this.sketchViewModel.layer = null
+    }
+  }
+
   reset () {
     const { graphicsLayer } = this.provider
     this.sketchViewModel?.cancel()
@@ -64,8 +71,7 @@ export class Draw {
 
   cancel () {
     // Destroy sketchViewModel
-    this.sketchViewModel?.cancel()
-    this.sketchViewModel.layer = null
+    this.destroy()
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
   }
@@ -82,8 +88,7 @@ export class Draw {
     const elGraphic = this.getGraphicFromElement(paddingBox)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
     // Destroy sketchViewModel
-    this.sketchViewModel?.cancel()
-    this.sketchViewModel.layer = null
+    this.destroy()
     // Add graphic
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom

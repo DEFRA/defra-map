@@ -1,6 +1,6 @@
 import { Draw } from '../../src/js/provider/esri-sdk/draw'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
-import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
 
 jest.mock('@arcgis/core/Graphic', () => {
   return jest.fn().mockImplementation(() => ({
@@ -25,6 +25,10 @@ describe('Draw Class', () => {
   let mockProvider, drawInstance
 
   beforeEach(() => {
+    setupMockProvider()
+  })
+
+  function setupMockProvider () {
     const mockParent = document.createElement('div')
     mockParent.classList.add('fm-o-viewport')
 
@@ -44,7 +48,7 @@ describe('Draw Class', () => {
       width: 100,
       height: 50
     })
-  })
+  }
 
   describe('Constructor', () => {
     it('should initialize Draw with provider reference', () => {
@@ -52,7 +56,7 @@ describe('Draw Class', () => {
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should call create() if a feature is provided', () => {
+    it('should invoke create() with provided feature', () => {
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
       const createSpy = jest.spyOn(Draw.prototype, 'create')
       drawInstance = new Draw(mockProvider, { feature })
@@ -60,7 +64,7 @@ describe('Draw Class', () => {
       createSpy.mockRestore()
     })
 
-    it('should call start("frame") if no feature is provided', () => {
+    it('should start with "frame" mode when no feature is provided', () => {
       const startSpy = jest.spyOn(Draw.prototype, 'start')
       drawInstance = new Draw(mockProvider, {})
       expect(startSpy).toHaveBeenCalledWith('frame')
@@ -69,20 +73,20 @@ describe('Draw Class', () => {
   })
 
   describe('start()', () => {
-    it('should zoom to existing graphic if oGraphic exists', () => {
+    it('should zoom to the existing graphic when available', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.start('default')
       expect(mockProvider.view.goTo).toHaveBeenCalledWith({ target: drawInstance.oGraphic })
     })
 
-    it('should remove all graphics if mode is "frame"', () => {
+    it('should remove all graphics when started in "frame" mode"', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.start('frame')
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
     })
 
-    it('should call editGraphic() when mode is not "frame"', () => {
+    it('should initiate editGraphic() when mode is not "frame"', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
@@ -104,7 +108,7 @@ describe('Draw Class', () => {
       editGraphicSpy.mockRestore()
     })
 
-    it('should create a new graphic from paddingBox if no existing graphic is found', () => {
+    it('should generate a new graphic from paddingBox if no existing graphic is found', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       const getGraphicSpy = jest.spyOn(Draw.prototype, 'getGraphicFromElement')
       drawInstance = new Draw(mockProvider, {})
@@ -118,14 +122,14 @@ describe('Draw Class', () => {
   })
 
   describe('reset()', () => {
-    it('should cancel sketchViewModel if active', () => {
+    it('should cancel the active sketchViewModel if available', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.sketchViewModel = { cancel: jest.fn() }
       drawInstance.reset()
       expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
     })
 
-    it('should remove all graphics from the layer', () => {
+    it('should clear all graphics from graphicsLayer', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.reset()
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
@@ -133,14 +137,14 @@ describe('Draw Class', () => {
   })
 
   describe('delete()', () => {
-    it('should remove oGraphic reference', () => {
+    it('should remove the stored oGraphic reference', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.delete()
       expect(drawInstance.oGraphic).toBeNull()
     })
 
-    it('should remove all graphics from the layer', () => {
+    it('should remove all graphics from the graphicsLayer', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.delete()
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
@@ -166,7 +170,7 @@ describe('Draw Class', () => {
   })
 
   describe('create()', () => {
-    it('should create a new Graphic from the given feature', () => {
+    it('should generate a new Graphic from the provided feature', () => {
       drawInstance = new Draw(mockProvider, {})
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
@@ -190,7 +194,7 @@ describe('Draw Class', () => {
       expect(drawInstance.oGraphic.symbol).toBeDefined()
     })
 
-    it('should add the new graphic using addGraphic()', () => {
+    it('should add the generated graphic using addGraphic()', () => {
       drawInstance = new Draw(mockProvider, {})
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
@@ -241,7 +245,7 @@ describe('Draw Class', () => {
       expect(result.geometry.coordinates).toEqual(mockLayerGraphic.geometry.rings)
     })
 
-    it('should use paddingBox graphic if no other graphics are available', () => {
+    it('should default to paddingBox graphic if no other graphics exist', () => {
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(null)
       mockProvider.graphicsLayer.graphics.items = []
       const mockElementGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
@@ -273,7 +277,7 @@ describe('Draw Class', () => {
       expect(drawInstance.oGraphic.clone).toBeDefined()
     })
 
-    it('should save the original zoom level from view.zoom', () => {
+    it('should save the current zoom level from view.zoom', () => {
       mockProvider.view.zoom = 15
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
@@ -318,14 +322,14 @@ describe('Draw Class', () => {
       addGraphicSpy.mockRestore()
     })
 
-    it('should retrieve the first graphic from graphicsLayer', () => {
+    it('should retrieve and update the first graphic from graphicsLayer', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockProvider.graphicsLayer.graphics.items = [mockGraphic]
       drawInstance.reColour()
       expect(addGraphicSpy).toHaveBeenCalledWith(mockGraphic)
     })
 
-    it('should do nothing if no graphic exists', () => {
+    it('should not perform any action if no graphic exists', () => {
       mockProvider.graphicsLayer.graphics.items = []
       drawInstance.reColour()
       expect(addGraphicSpy).not.toHaveBeenCalled()
@@ -385,7 +389,7 @@ describe('Draw Class', () => {
       expect(drawInstance.sketchViewModel).toBe(sketchViewModelMock)
     })
 
-    it('should store SketchViewModel in this.sketchViewModel', () => {
+    it('should store the created SketchViewModel instance', () => {
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
       expect(drawInstance.sketchViewModel).toBe(sketchViewModelMock)
@@ -397,7 +401,7 @@ describe('Draw Class', () => {
       expect(onSpy).toHaveBeenCalledWith(['update', 'delete'], expect.any(Function))
     })
 
-    it('should call update() on sketchViewModel with the given graphic', () => {
+    it('should call update() on sketchViewModel with the provided graphic', () => {
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
@@ -410,24 +414,24 @@ describe('Draw Class', () => {
       drawInstance.sketchViewModel = { complete: jest.fn() }
     })
 
-    it('should call complete() on sketchViewModel', () => {
+    it('should call complete() on sketchViewModel to finalize the edit', () => {
       drawInstance.finishEdit()
       expect(drawInstance.sketchViewModel.complete).toHaveBeenCalled()
     })
 
-    it('should remove the layer reference from sketchViewModel', () => {
+    it('should remove the layer reference from sketchViewModel after completion', () => {
       drawInstance.finishEdit()
       expect(drawInstance.sketchViewModel.layer).toBeNull()
     })
 
-    it('should return the first graphic from graphicsLayer if available', () => {
+    it('should return the first available graphic from graphicsLayer', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockProvider.graphicsLayer.graphics.items = [mockGraphic]
       const result = drawInstance.finishEdit()
       expect(result).toBe(mockGraphic)
     })
 
-    it('should return undefined if no graphic exists', () => {
+    it('should return undefined if no graphic exists in graphicsLayer', () => {
       mockProvider.graphicsLayer.graphics.items = []
       const result = drawInstance.finishEdit()
       expect(result).toBeUndefined()
@@ -435,7 +439,7 @@ describe('Draw Class', () => {
   })
 
   describe('getBounds()', () => {
-    it('should call getBoundingClientRect() on the element', () => {
+    it('should call getBoundingClientRect() to retrieve element dimensions', () => {
       const drawInstance = new Draw(mockProvider, {})
       const mockElement = document.createElement('div')
       const mockParent = document.createElement('div')
@@ -463,7 +467,7 @@ describe('Draw Class', () => {
       getBoundingClientRectSpy.mockRestore()
     })
 
-    it('should find the closest .fm-o-viewport parent', () => {
+    it('should find the closest .fm-o-viewport parent element', () => {
       const drawInstance = new Draw(mockProvider, {})
       const mockElement = document.createElement('div')
       const mockParent = document.createElement('div')
@@ -504,7 +508,7 @@ describe('Draw Class', () => {
       toMapSpy.mockRestore()
     })
 
-    it('should return the correct bounding box format [nw.x, nw.y, se.x, se.y]', () => {
+    it('should return bounding box in the correct format [nw.x, nw.y, se.x, se.y]', () => {
       const drawInstance = new Draw(mockProvider, {})
       const mockElement = document.createElement('div')
       const mockParent = document.createElement('div')

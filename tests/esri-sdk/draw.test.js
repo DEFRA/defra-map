@@ -810,7 +810,7 @@ describe('Draw Class', () => {
       expect(graphic).toBeInstanceOf(Graphic)
     })
   })
-  
+
   describe('handleUpdateDelete(e)', () => {
     let drawInstance, mockProvider
 

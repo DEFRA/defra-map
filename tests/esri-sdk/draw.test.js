@@ -1,6 +1,7 @@
 import { Draw } from '../../src/js/provider/esri-sdk/draw'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
 
 jest.mock('@arcgis/core/Graphic', () => {
   return jest.fn().mockImplementation(() => ({
@@ -807,6 +808,87 @@ describe('Draw Class', () => {
       const feature = { geometry: { coordinates: [[[9, 9], [10, 10], [11, 11]]] } }
       const graphic = drawInstance.getGraphicFromFeature(feature)
       expect(graphic).toBeInstanceOf(Graphic)
+    })
+  })
+  
+  describe('handleUpdateDelete(e)', () => {
+    let drawInstance, mockProvider
+
+    beforeEach(() => {
+      mockProvider = {
+        view: { toMap: jest.fn() },
+        graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() }
+      }
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.undo = jest.fn()
+      drawInstance.cancel = jest.fn()
+    })
+
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('should call undo() if toolEventInfo.type is "reshape-stop" and area <= 0', () => {
+      const fakeGeometry = {}
+      const event = {
+        toolEventInfo: { type: 'reshape-stop' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(0)
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.undo).toHaveBeenCalled()
+    })
+
+    it('should call undo() if toolEventInfo.type is "vertex-remove" and area <= 0', () => {
+      const fakeGeometry = {}
+      const event = {
+        toolEventInfo: { type: 'vertex-remove' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(-1)
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.undo).toHaveBeenCalled()
+    })
+
+    it('should not call undo() if toolEventInfo.type is "reshape-stop" and area > 0', () => {
+      const fakeGeometry = {}
+      const event = {
+        toolEventInfo: { type: 'reshape-stop' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(5)
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.undo).not.toHaveBeenCalled()
+    })
+
+    it('should call undo() if toolEventInfo.type is "reshape" and geometry.isSelfIntersecting is true', () => {
+      const fakeGeometry = { isSelfIntersecting: true }
+      const event = {
+        toolEventInfo: { type: 'reshape' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.undo).toHaveBeenCalled()
+    })
+
+    it('should not call undo() if toolEventInfo.type is "reshape" and geometry.isSelfIntersecting is false', () => {
+      const fakeGeometry = { isSelfIntersecting: false }
+      const event = {
+        toolEventInfo: { type: 'reshape' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.undo).not.toHaveBeenCalled()
+    })
+
+    it('should call cancel() if toolEventInfo.type is "move-start"', () => {
+      const fakeGeometry = {}
+      const event = {
+        toolEventInfo: { type: 'move-start' },
+        graphics: [{ geometry: fakeGeometry }]
+      }
+      drawInstance.handleUpdateDelete(event)
+      expect(drawInstance.cancel).toHaveBeenCalled()
     })
   })
 })

@@ -12,7 +12,7 @@ const fm = new FloodMap('map', {
   minZoom: 8,
   maxZoom: 18,
   center: [-2.938769, 54.893806],
-  bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+  // bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   // hasReset: true,
   hasGeoLocation: true,
   height: '600px',
@@ -20,7 +20,6 @@ const fm = new FloodMap('map', {
   symbols,
   transformRequest: getTileRequest,
   transformSearchRequest: getRequest,
-  geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: [{

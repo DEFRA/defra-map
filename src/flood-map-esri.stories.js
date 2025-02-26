@@ -6,12 +6,17 @@ import './flood-map.scss'
 const FloodMapStoryWrapper = (options) => {
   const targetRef = useRef(null)
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!targetRef.current) {
       return
     }
 
-    const fm = new FloodMap('map', options)
+    const Provider = (await import('./js/provider/esri-sdk/provider.js')).default
+
+    const fm = new FloodMap('map', {
+      ...options,
+      provider: Provider
+    })
 
     fm.addEventListener('ready', () => {
       console.log('ready')
@@ -30,7 +35,7 @@ const FloodMapStoryWrapper = (options) => {
 }
 
 export default {
-  title: 'FloodMap/MapLibre',
+  title: 'FloodMap/ESRI',
   component: FloodMapStoryWrapper,
   argTypes: {
     behaviour: { control: 'text' },

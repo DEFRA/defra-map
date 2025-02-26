@@ -14,9 +14,11 @@ export default function App (options) {
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
   const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
+  const MapProvider = options.provider || Provider
+  delete options.provider
 
   // Create a provider instance
-  const provider = useRef(new Provider(options))
+  const provider = useRef(new MapProvider(options))
   const viewportRef = useRef(null)
   const frameRef = useRef(null)
   const obscurePanelRef = useRef(null)

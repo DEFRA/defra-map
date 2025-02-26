@@ -8,11 +8,12 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback }) {
+  constructor ({ transformSearchRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
     super()
     this.srs = 27700
     this.capabilities = capabilities.esri
     this.transformSearchRequest = transformSearchRequest
+    this.esriConfigCallback = esriConfigCallback
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
     this.isUserInitiated = false
@@ -42,10 +43,21 @@ class Provider extends EventTarget {
     const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
     const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
     const reactiveWatch = modules[9].watch
-    esriConfig.apiKey = (await this.tokenCallback()).token
 
-    // Add intercepors
-    this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
+    // Implementation has full control over esriConfig
+    if (this.esriConfigCallback) {
+      await this.esriConfigCallback(esriConfig)
+    }
+
+    // *Can be removed, but will be a breaking change
+    if (this.tokenCallback) {
+      esriConfig.apiKey = (await this.tokenCallback()).token
+    }
+
+    // *Can be removed, but will be a breaking change
+    if (this.interceptorsCallback) {
+      this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
+    }
 
     // Define layers
     const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: style.url, visible: true })
@@ -214,7 +226,7 @@ class Provider extends EventTarget {
   }
 
   setSize () {
-    console.log('setSize')
+    // console.log('setSize')
   }
 
   fitBounds (bounds) {

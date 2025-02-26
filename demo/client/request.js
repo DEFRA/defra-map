@@ -1,19 +1,6 @@
 const osAuth = {}
 const esriAuth = {}
 
-// ESRI return an array of interceptor objects
-export const getInterceptors = () => {
-  return [{
-    urls: 'https://api.os.uk/maps/vector/v1/vts',
-    before: async params => {
-      const token = (await getOsToken()).token
-      params.requestOptions.headers = {
-        Authorization: 'Bearer ' + token
-      }
-    }
-  }]
-}
-
 // Must be syncronous for MapLibre and return request object values
 export const getTileRequest = (url, resourceType) => {
   let headers = {}
@@ -76,7 +63,27 @@ const getOsToken = async () => {
   return osAuth
 }
 
-export const getEsriToken = async () => {
+export const setEsriConfig = async (esriConfig) => {
+  const auth = await getEsriToken()
+  esriConfig.apiKey = auth.token
+  const interceptors = getInterceptors()
+  interceptors.forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
+}
+
+// ESRI return an array of interceptor objects
+const getInterceptors = () => {
+  return [{
+    urls: 'https://api.os.uk/maps/vector/v1/vts',
+    before: async params => {
+      const token = (await getOsToken()).token
+      params.requestOptions.headers = {
+        Authorization: 'Bearer ' + token
+      }
+    }
+  }]
+}
+
+const getEsriToken = async () => {
   // *ESRI manages this somehow?
   const hasToken = esriAuth.token
 

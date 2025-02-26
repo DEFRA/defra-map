@@ -1,5 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getInterceptors, getRequest, getEsriToken } from './request.js'
+import { setEsriConfig, getRequest } from './request.js'
 
 let map, isDark, isRamp
 
@@ -179,8 +179,9 @@ const fm = new FloodMap('map', {
   hasGeoLocation: true,
   symbols,
   transformSearchRequest: getRequest,
-  tokenCallback: getEsriToken,
-  interceptorsCallback: getInterceptors,
+  esriConfigCallback: setEsriConfig,
+  // tokenCallback: getEsriToken,
+  // interceptorsCallback: getInterceptors,
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',

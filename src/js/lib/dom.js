@@ -16,9 +16,9 @@ const getContainer = (el) => {
 export const updateTitle = () => {
   const page = document.querySelector(`[${ATTR_PAGE}]`)?.getAttribute(ATTR_PAGE)
   document.documentElement.classList.toggle('fm-page', !!page)
-  const parts = document.title.split(' - ')
+  const parts = document.title.split(') ')
   const title = parts[parts.length - 1]
-  document.title = page ? `${page} - ${title}` : title
+  document.title = page ? `(${page}) ${title}` : title
 }
 
 export const toggleInert = (activeEl) => {

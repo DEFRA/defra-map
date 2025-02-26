@@ -21,7 +21,7 @@ const FloodMapStoryWrapper = (options) => {
     fm.addEventListener('ready', () => {
       console.log('ready')
     })
-  })
+  }, [])
 
   return (
     <div>

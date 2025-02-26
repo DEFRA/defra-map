@@ -1,8 +1,5 @@
 /** @type { import('@storybook/preact-webpack5').StorybookConfig } */
 
-const webpack = require('webpack')
-const path = require('path')
-
 const config = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [

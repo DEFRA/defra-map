@@ -8,7 +8,7 @@ import zlib from 'zlib'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-dotenv.config({ path: path.join(__dirname, './.env') })
+dotenv.config({ path: path.join(__dirname, '../.env') })
 
 export default {
   entry: {

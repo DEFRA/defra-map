@@ -145,7 +145,7 @@ export default function Viewport () {
       provider.initDraw(queryArea)
     }
     eventBus.dispatch(parent, events.APP_READY, {
-      ...e.detail, mode, segments, layers, style, size
+      ...e.detail, mode, segments, layers, style: style.name, size
     })
   }
 
@@ -187,7 +187,7 @@ export default function Viewport () {
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
     appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
-    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, style, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, style: style.name, size, segments, layers })
   }
 
   // Provider style change

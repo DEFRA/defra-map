@@ -403,9 +403,12 @@ describe('Draw Class', () => {
     })
 
     it('should call update() on sketchViewModel with the provided graphic', () => {
+      jest.useFakeTimers()
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
+      jest.runAllTimers()
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
+      jest.useRealTimers()
     })
   })
 

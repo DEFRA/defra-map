@@ -420,11 +420,6 @@ describe('Draw Class', () => {
       expect(drawInstance.sketchViewModel.complete).toHaveBeenCalled()
     })
 
-    it('should remove the layer reference from sketchViewModel after completion', () => {
-      drawInstance.finishEdit()
-      expect(drawInstance.sketchViewModel.layer).toBeNull()
-    })
-
     it('should return the first available graphic from graphicsLayer', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockProvider.graphicsLayer.graphics.items = [mockGraphic]
@@ -436,6 +431,18 @@ describe('Draw Class', () => {
       mockProvider.graphicsLayer.graphics.items = []
       const result = drawInstance.finishEdit()
       expect(result).toBeUndefined()
+    })
+  })
+
+  describe('destroy()', () => {
+    beforeEach(() => {
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.sketchViewModel = { complete: jest.fn(), cancel: jest.fn() }
+    })
+
+    it('should remove the layer reference from sketchViewModel after completion', () => {
+      drawInstance.destroy()
+      expect(drawInstance.sketchViewModel.layer).toBeNull()
     })
   })
 

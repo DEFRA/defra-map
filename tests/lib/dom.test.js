@@ -2,7 +2,7 @@ import { toggleInert, updateTitle, findTabStop } from '../../src/js/lib/dom'
 
 describe('lib/dom - updateTitle', () => {
   it('should return the document title without page', () => {
-    document.title = '(Test title) from test'
+    document.title = 'Test title: from test'
 
     updateTitle()
 
@@ -10,7 +10,7 @@ describe('lib/dom - updateTitle', () => {
   })
 
   it('should return the document title with the page', () => {
-    document.title = '(Test title) from test'
+    document.title = 'Test title: from test'
 
     const div = document.createElement('div')
     div.setAttribute('data-fm-page', 'Unit')
@@ -18,7 +18,7 @@ describe('lib/dom - updateTitle', () => {
 
     updateTitle()
 
-    expect(window.document.title).toEqual('(Unit) from test')
+    expect(window.document.title).toEqual('Unit: from test')
   })
 })
 

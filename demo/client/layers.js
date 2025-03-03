@@ -1,3 +1,11 @@
+const fills = {
+  dark: ['#4779C4', '#3C649F', '#2C456B'], 
+  aerial: ['#4779C4', '#3C649F', '#2C456B'],
+  deuteranopia: ['#79604A', '#297BE1', '#FFB72C'],
+  tritanopia: ['#CF2A2B', '#008791', '#FFADB9'],
+  default: ['#75D0E9', '#B1E2EE', '#D5EBF2'],
+}
+
 export const queryMap = {
   warningsGroup: 'fwg',
   waterGroup: 'wlg',
@@ -51,7 +59,7 @@ export const addSources = (map) => {
   })
 }
 
-export const addLayers = (map, isDarkBasemap) => {
+export const addLayers = (map, basemap) => {
   const position = map.getLayer('small settlement names')
     ? 'small settlement names'
     : map.getLayer('Road labels')
@@ -187,11 +195,11 @@ export const addLayers = (map, isDarkBasemap) => {
       'fill-color': ['match',
         ['get', 'prob_4band'],
         'High',
-        isDarkBasemap ? '#4779C4' : '#75D0E9',
+        fills[basemap][0],
         'Medium',
-        isDarkBasemap ? '#3C649F' : '#B1E2EE',
+        fills[basemap][1],
         'Low',
-        isDarkBasemap ? '#2C456B' : '#D5EBF2',
+        fills[basemap][2],
         'transparent'
       ],
       'fill-opacity': 0.75
@@ -206,7 +214,7 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#2C456B' : '#D5EBF2',
+      'fill-color': fills[basemap][2],
       'fill-opacity': 1
     }
   }, position),
@@ -219,7 +227,7 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#3C649F' : '#B1E2EE',
+      'fill-color': fills[basemap][1],
       'fill-opacity': 1
     }
   }, position),
@@ -232,7 +240,7 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#4779C4' : '#75D0E9',
+      'fill-color': fills[basemap][0],
       'fill-opacity': 1
     }
   }, position)

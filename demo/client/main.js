@@ -258,19 +258,17 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   const map = fm.map
-  const isDarkBasemap = ['dark', 'aerial'].includes(e.detail.style)
   addSources(map)
-  addLayers(map, isDarkBasemap)
+  addLayers(map, e.detail.style)
   toggleVisibility(map, e.detail)
 })
 
 // Listen for segments, layers or style changes
 fm.addEventListener('change', e => {
   const map = fm.map
-  const isDarkBasemap = ['dark', 'aerial'].includes(e.detail.style)
   if (e.detail.type === 'style') {
     addSources(map)
-    addLayers(fm.map, isDarkBasemap)
+    addLayers(fm.map, e.detail.style)
   }
   toggleVisibility(fm.map, e.detail)
 })

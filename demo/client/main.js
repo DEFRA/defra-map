@@ -137,15 +137,15 @@ const fm = new FloodMap('map', {
         items: [
           {
             label: '> 3.3%',
-            fill: 'default: #75D0E9, dark: #4779C4, aerial: #4779C4'
+            fill: 'default: #75D0E9, dark: #4779C4, deuteranopia: #79604A, tritanopia: #CF2A2B, aerial: #4779C4'
           },
           {
             label: '> 1%',
-            fill: 'default: #B1E2EE, dark: #3C649F, aerial: #3C649F'
+            fill: 'default: #B1E2EE, dark: #3C649F, deuteranopia: #297BE1, tritanopia: #008791, aerial: #3C649F'
           },
           {
             label: '> 0.1%',
-            fill: 'default: #D5EBF2, dark: #2C456B, aerial: #2C456B'
+            fill: 'default: #D5EBF2, dark: #2C456B, deuteranopia: #FFB72C, tritanopia: #FFADB9, aerial: #2C456B'
           }
         ]
       },

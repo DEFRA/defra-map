@@ -139,16 +139,6 @@ export default function Viewport () {
     pointerPixel.current = [layerX / scale, layerY / scale]
   }
 
-  const handleMapLoad = e => {
-    // Add polygonFeature
-    if (queryArea?.feature) {
-      provider.initDraw(queryArea)
-    }
-    eventBus.dispatch(parent, events.APP_READY, {
-      ...e.detail, mode, segments, layers, style, size
-    })
-  }
-
   const handlePointerDown = e => {
     startPixel.current = [e.pageX, e.pageY]
     isDraggingRef.current = false
@@ -158,6 +148,17 @@ export default function Viewport () {
     const diffX = Math.abs(e.pageX - startPixel.current[0])
     const diffY = Math.abs(e.pageY - startPixel.current[1])
     isDraggingRef.current = diffX >= offsets.drag || diffY >= offsets.drag
+  }
+
+  // Map load
+  const handleMapLoad = e => {
+    // Add polygonFeature
+    if (queryArea?.feature) {
+      provider.initDraw(queryArea)
+    }
+    eventBus.dispatch(parent, events.APP_READY, {
+      ...e.detail, mode, segments, layers, style, size
+    })
   }
 
   // Update place after Alt + i

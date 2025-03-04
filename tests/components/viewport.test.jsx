@@ -20,6 +20,19 @@ Object.defineProperty(window, 'matchMedia', {
   })
 })
 
+global.PointerEvent = jest.fn((type, options) => {
+  return {
+    type,
+    clientX: options.clientX || 0,
+    clientY: options.clientY || 0,
+    layerX: options.layerX || 0,
+    layerY: options.layerY || 0,
+    bubbles: options.bubbles || false,
+    cancelable: options.cancelable || false
+    // You can mock other properties as needed
+  }
+})
+
 const AppContextProvider = ({ children, mockState }) => {
   const context = useContext(AppContext)
   return (
@@ -40,7 +53,7 @@ describe('viewport', () => {
   const queryPoint = jest.fn()
   const zoomIn = jest.fn()
   const panBy = jest.fn()
-  const getNearest = jest.fn()
+  const showLabel = jest.fn()
 
   beforeEach(() => {
     appDispatchMock = jest.fn()
@@ -65,7 +78,8 @@ describe('viewport', () => {
       selectFeature: jest.fn(),
       queryFeature,
       queryPoint,
-      getNearest,
+      showLabel,
+      getNearest: jest.fn(),
       zoomIn,
       panBy,
       hideLabel: jest.fn(),
@@ -291,5 +305,48 @@ describe('viewport', () => {
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyUp(viewportElement, { key: '1', code: 'Key1', altKey: true }) })
     expect(queryFeature).toHaveBeenCalledWith('1000')
+  })
+
+  // Test that viewport responds correctly to click events
+
+  it('should call \'provider.queryFeature\' on \'Click\'', async () => {
+    renderComponent({
+      featureId: '1000',
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.click(viewportElement, { clientX: 0, clientY: 0 }) })
+    expect(queryFeature).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.showLabel\' on \'Click\' when \'Alt\'is pressed', async () => {
+    renderComponent({
+      featureId: '1000',
+      bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696,
+      place: null,
+      features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] }
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.click(viewportElement, { clientX: 0, clientY: 0, altKey: true }) })
+    expect(showLabel).toHaveBeenCalled()
+  })
+
+  // Test that viewport responds correctly to pointer events
+
+  test('should set startPixel on \'pointerdown\'', () => {
+    const startPixel = { current: [0, 0] }
+    jest.spyOn(React, 'useRef').mockReturnValue(startPixel)
+    renderComponent({ size: 'small' })
+    const viewportElement = screen.getByRole('application')
+    act(() => { fireEvent.pointerDown(viewportElement, { pageX: 1, pageY: 1 }) })
+    expect(startPixel.current).toEqual([1, 1])
   })
 })

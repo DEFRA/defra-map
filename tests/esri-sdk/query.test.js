@@ -50,7 +50,7 @@ describe('Query Module', () => {
       mockProvider.getNearest.mockResolvedValue({ name: 'Mock Place' })
     })
 
-    it('returns viewport, features, and place info', async () => {
+    it('should return viewport, features, and place information', async () => {
       const point = [10, 10]
       const detail = await getDetail(mockProvider, point, true)
 
@@ -62,21 +62,21 @@ describe('Query Module', () => {
       expect(detail.resultType).toBe('pixel')
     })
 
-    it('does not call getNearest if not user-initiated', async () => {
+    it('should not call getNearest if not user-initiated', async () => {
       const point = [10, 10]
       await getDetail(mockProvider, point, false)
 
       expect(mockProvider.getNearest).not.toHaveBeenCalled()
     })
 
-    it('calls getNearest with correct parameters when user-initiated', async () => {
+    it('should call getNearest with correct parameters when user-initiated', async () => {
       const point = [10, 10]
       await getDetail(mockProvider, point, true)
 
       expect(mockProvider.getNearest).toHaveBeenCalledWith([500, 500], 'mock-token')
     })
 
-    it('combines results from getViewport and getFeatures', async () => {
+    it('should combine results from getViewport and getFeatures', async () => {
       const point = [10, 10]
       const detail = await getDetail(mockProvider, point, false)
 
@@ -86,7 +86,7 @@ describe('Query Module', () => {
   })
 
   describe('getViewport()', () => {
-    it('retrieves bounds, center, and zoom from the view', async () => {
+    it('should retrieve bounds, center, and zoom from the view', async () => {
       const viewport = await getViewport(mockProvider)
 
       expect(viewport).toHaveProperty('bounds')
@@ -94,21 +94,21 @@ describe('Query Module', () => {
       expect(viewport).toHaveProperty('zoom')
     })
 
-    it('formats center coordinates correctly', async () => {
+    it('should format center coordinates correctly', async () => {
       mockProvider.view.center = { x: 123.456789, y: 987.654321 }
       const viewport = await getViewport(mockProvider)
 
       expect(viewport.center).toEqual([123.5, 987.7])
     })
 
-    it('formats zoom level using defaults precision', async () => {
+    it('should format zoom level using defaults precision', async () => {
       mockProvider.view.zoom = 12.3456789
       const viewport = await getViewport(mockProvider)
 
       expect(viewport.zoom).toEqual(parseFloat(12.3456789.toFixed(defaults.PRECISION)))
     })
 
-    it('extracts extent bounds correctly', async () => {
+    it('should extract extent bounds correctly', async () => {
       mockProvider.view.extent = { xmin: 10, ymin: 20, xmax: 30, ymax: 40 }
       const viewport = await getViewport(mockProvider)
 
@@ -137,7 +137,7 @@ describe('Query Module', () => {
       })
     })
 
-    it('filters results by locationLayers', async () => {
+    it('should filter results by locationLayers', async () => {
       const point = [10, 10]
       const features = await getFeatures(mockProvider, point)
 
@@ -146,7 +146,7 @@ describe('Query Module', () => {
       expect(features.items[1].layer).toBe('layer3')
     })
 
-    it('formats feature items correctly', async () => {
+    it('should format feature items correctly', async () => {
       const point = [10, 10]
       const features = await getFeatures(mockProvider, point)
 
@@ -155,14 +155,14 @@ describe('Query Module', () => {
       expect(features.items[0]).toHaveProperty('name', 'Feature 1')
     })
 
-    it('detects visible pixel layers', async () => {
+    it('should detect visible pixel layers', async () => {
       const point = [10, 10]
       const features = await getFeatures(mockProvider, point)
 
       expect(features.isPixelFeaturesInMap).toBe(true)
     })
 
-    it('reports no visible pixel layers when none are visible', async () => {
+    it('should report no visible pixel layers when none are visible', async () => {
       mockProvider.map.layers = [
         { id: 'layer1', visible: false },
         { id: 'layer3', visible: false }
@@ -174,7 +174,7 @@ describe('Query Module', () => {
       expect(features.isPixelFeaturesInMap).toBe(false)
     })
 
-    it('confirms if features exist at the pixel', async () => {
+    it('should confirm if features exist at the pixel', async () => {
       mockProvider.view.hitTest.mockResolvedValueOnce({
         results: [
           {
@@ -195,7 +195,7 @@ describe('Query Module', () => {
       expect(features2.isPixelFeaturesAtPixel).toBe(false)
     })
 
-    it('transforms screen coordinates to map coordinates', async () => {
+    it('should transform screen coordinates to map coordinates', async () => {
       mockProvider.view.toMap.mockReturnValue({ x: 123.4567, y: 456.7890 })
 
       const point = [10, 10]
@@ -205,7 +205,7 @@ describe('Query Module', () => {
       expect(mockProvider.view.toMap).toHaveBeenCalledWith({ x: 10, y: 10 })
     })
 
-    it('returns a structured features object with required properties', async () => {
+    it('should return a structured features object with required properties', async () => {
       const point = [10, 10]
       const features = await getFeatures(mockProvider, point)
 

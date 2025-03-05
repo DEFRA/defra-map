@@ -69,8 +69,31 @@ describe('Provider', () => {
   let mockTokenCallback
   let mockInterceptorsCallback
   let modules
+  // Mock the MapView class
+  const MockMapView = jest.fn().mockImplementation(() => {
+    const handlers = {}
+    return {
+      on: jest.fn((eventName, handler) => {
+        handlers[eventName] = handler
+        // Immediately execute the handler for 'drag' event
+        if (eventName === 'drag') {
+          handler({ action: 'start' })
+        }
+      }),
+      goTo: jest.fn().mockResolvedValue(),
+      toScreen: jest.fn(),
+      toMap: jest.fn(),
+      constraints: {},
+      container: { appendChild: jest.fn(), removeChild: jest.fn() },
+      padding: {},
+      ui: { components: [] },
+      emit: jest.fn()
+    }
+  })
 
   beforeEach(() => {
+    jest.clearAllMocks()
+
     mockTokenCallback = jest.fn().mockResolvedValue({ token: 'test-token' })
     global.document = {
       createElement: jest.fn(() => ({ classList: { add: jest.fn() } }))
@@ -80,8 +103,9 @@ describe('Provider', () => {
       transformSearchRequest: jest.fn(),
       tokenCallback: mockTokenCallback,
       interceptorsCallback: mockInterceptorsCallback
-
     })
+
+    console.log('provider tokenCallback:', provider.tokenCallback)
 
     // Ensure provider.view is properly mocked
     provider.view = new (require('@arcgis/core/views/MapView'))()
@@ -93,7 +117,7 @@ describe('Provider', () => {
     modules = [
       { default: jest.fn() }, // esriConfig
       { default: jest.fn() }, // EsriMap
-      { default: jest.fn() }, // MapView
+      { default: MockMapView }, // MapView
       { default: jest.fn() }, // Extent
       { default: jest.fn() }, // Point
       {
@@ -106,7 +130,13 @@ describe('Provider', () => {
       { default: jest.fn() }, // GraphicsLayer
       {
         default: {
-          create: jest.fn(() => ({ mock: 'TileInfo' }))
+          create: jest.fn().mockImplementation(({ spatialReference }) => ({
+            lods: [
+              { level: 0, scale: 1000000, resolution: 100 },
+              { level: 1, scale: 500000, resolution: 50 },
+              { level: 2, scale: 250000, resolution: 25 }
+            ]
+          }))
         }
       }, // TileInfo
       { watch: jest.fn() } // reactiveUtils
@@ -144,6 +174,7 @@ describe('Provider', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    document.body.innerHTML = ''
   })
 
   it('should initialize with default properties', () => {
@@ -152,29 +183,6 @@ describe('Provider', () => {
     expect(provider.isUserInitiated).toBe(false)
     expect(provider.isLoaded).toBe(false)
   })
-
-  // it('should call tokenCallback and interceptorsCallback during init', async () => {
-  //   const container = document.getElementById('test-container')
-
-  //   const options = {
-  //     container,
-  //     paddingBox: {},
-  //     bounds: [0, 0, 100, 100],
-  //     maxExtent: [0, 0, 100, 100],
-  //     center: [50, 50],
-  //     zoom: 10,
-  //     minZoom: 5,
-  //     maxZoom: 15,
-  //     style: { url: 'test-url', name: 'default' },
-  //     locationLayers: [],
-  //     callBack: jest.fn()
-  //   }
-  //   await provider.init(options)
-  //   expect(mockTokenCallback).toHaveBeenCalled()
-  //   expect(mockInterceptorsCallback).toHaveBeenCalled()
-
-  //   expect(container.querySelector('.esri-view-surface')).not.toBeNull()
-  // })
 
   it('should set map, view, and layers during addMap', async () => {
     const container = document.getElementById('test-container')
@@ -201,44 +209,63 @@ describe('Provider', () => {
     expect(provider.graphicsLayer).toBeDefined()
   })
 
-  // it('should handle user-initiated map movement', async () => {
-  //   const modules = [
-  //     { default: jest.fn() }, // esriConfig
-  //     { default: jest.fn() }, // EsriMap
-  //     { default: jest.fn() }, // MapView
-  //     { default: jest.fn() }, // Extent
-  //     { default: jest.fn() }, // Point
-  //     { default: jest.fn() }, // VectorTileLayer
-  //     { default: jest.fn() }, // FeatureLayer
-  //     { default: jest.fn() }, // GraphicsLayer
-  //     { default: jest.fn() }, // TileInfo
-  //     { watch: jest.fn() } // reactiveUtils
-  //   ]
-  //   const options = {
-  //     container: document.createElement('div'),
-  //     paddingBox: {},
-  //     bounds: [0, 0, 100, 100],
-  //     maxExtent: [0, 0, 100, 100],
-  //     center: [50, 50],
-  //     zoom: 10,
-  //     minZoom: 5,
-  //     maxZoom: 15,
-  //     style: { url: 'test-url', name: 'default' },
-  //     locationLayers: [],
-  //     callBack: jest.fn()
-  //   }
-  //   await provider.addMap(modules, options)
-  //   provider.view.emit('drag', { action: 'start' })
-  //   expect(provider.isUserInitiated).toBe(true)
-  // })
+  it('should properly set up tokenCallback and interceptorsCallback during initialization', async () => {
+    const container = document.getElementById('test-container')
 
-  // it('should set target marker', async () => {
-  //   const coord = [50, 50]
-  //   const hasData = true
-  //   const isVisible = true
-  //   await provider.setTargetMarker(coord, hasData, isVisible)
-  //   expect(provider.targetMarker).toBeDefined()
-  // })
+    const options = {
+      container,
+      paddingBox: {},
+      bounds: [0, 0, 100, 100],
+      maxExtent: [0, 0, 100, 100],
+      center: [50, 50],
+      zoom: 10,
+      minZoom: 5,
+      maxZoom: 15,
+      style: { url: 'test-url', name: 'default' },
+      locationLayers: [],
+      callBack: jest.fn()
+    }
+    // Add console.log before init
+    console.log('About to call init')
+    await provider.init(options)
+    // Add console.log after init
+    console.log('After init')
+    console.log('mockTokenCallback calls:', mockTokenCallback.mock.calls)
+
+    expect(provider.tokenCallback).toBeDefined()
+    expect(provider.tokenCallback).toBe(mockTokenCallback)
+    expect(provider.interceptorsCallback).toBeDefined()
+    expect(provider.interceptorsCallback).toBe(mockInterceptorsCallback)
+    expect(container.querySelector('.esri-view-surface')).not.toBeNull()
+  })
+  it('should handle user-initiated map movement', async () => {
+    const container = document.getElementById('test-container')
+
+    const options = {
+      container,
+      paddingBox: {},
+      bounds: [0, 0, 100, 100],
+      maxExtent: [0, 0, 100, 100],
+      center: [50, 50],
+      zoom: 10,
+      minZoom: 5,
+      maxZoom: 15,
+      style: { url: 'test-url', name: 'default' },
+      locationLayers: [],
+      callBack: jest.fn()
+    }
+    await provider.addMap(modules, options)
+    provider.view.emit('drag', { action: 'start' })
+    expect(provider.isUserInitiated).toBe(true)
+  })
+
+  it('should set target marker', async () => {
+    const coord = [50, 50]
+    const hasData = true
+    const isVisible = true
+    await provider.setTargetMarker(coord, hasData, isVisible)
+    expect(provider.targetMarker).toBeDefined()
+  })
 
   // it('should remove target marker', () => {
   //   provider.targetMarker = { remove: jest.fn() }

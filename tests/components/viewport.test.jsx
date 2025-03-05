@@ -407,7 +407,7 @@ describe('viewport', () => {
   // })
 
   // Viewport actions
-  it('should call \'provider.fitBounds\' on search when bounds is present', async () => {
+  it('should call \'provider.fitBounds\' on search action when bounds is present', async () => {
     renderComponent(null, null, {
       action: 'SEARCH',
       bounds: [-2.965945, 54.864555, -2.838848, 54.937635]
@@ -415,5 +415,93 @@ describe('viewport', () => {
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     expect(providerMock.fitBounds).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.setCentre\' on search action when center and zoom are present', async () => {
+    renderComponent(null, null, {
+      action: 'SEARCH',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setCentre).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.setCentre\' on reset action', async () => {
+    renderComponent(null, null, {
+      action: 'RESET',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setCentre).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.setCentre\' on geolocation action', async () => {
+    renderComponent(null, null, {
+      action: 'GEOLOC',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setCentre).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.showLocation\' on geolocation action', async () => {
+    renderComponent(null, null, {
+      action: 'GEOLOC',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setCentre).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.zoomIn\' on zoom in action', async () => {
+    renderComponent(null, null, {
+      action: 'ZOOM_IN',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.zoomIn).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.zoomOut\' on zoom out action', async () => {
+    renderComponent(null, null, {
+      action: 'ZOOM_OUT',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.zoomOut).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.setSize\' on size action', async () => {
+    renderComponent(null, null, {
+      action: 'SIZE',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setSize).toHaveBeenCalled()
+  })
+
+  it('should call \'provider.setStyle\' on style action', async () => {
+    renderComponent(null, null, {
+      action: 'STYLE',
+      center: [-2.934171, 54.901112],
+      zoom: 11.111696
+    })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(providerMock.setStyle).toHaveBeenCalled()
   })
 })

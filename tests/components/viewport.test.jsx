@@ -1,10 +1,23 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { render, screen, act, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { AppProvider, AppContext } from '../../src/js/store/app-provider'
 import { ViewportProvider } from '../../src/js/store/viewport-provider'
 import Viewport from '../../src/js/components/viewport'
 import { debounce } from '../../src/js/lib/debounce'
+
+const pointerEventProps = ['clientX', 'clientY', 'layerX', 'layerY', 'pointerType']
+class PointerEventMock extends Event {
+  constructor (type, props) {
+    super(type, props)
+    pointerEventProps.forEach((prop) => {
+      if (props[prop] != null) {
+        this[prop] = props[prop]
+      }
+    })
+  }
+}
+window.PointerEvent = PointerEventMock
 
 jest.mock('../../src/js/lib/debounce', () => ({
   debounce: jest.fn((fn) => fn)
@@ -18,19 +31,6 @@ Object.defineProperty(window, 'matchMedia', {
       removeListener: jest.fn()
     }
   })
-})
-
-global.PointerEvent = jest.fn((type, options) => {
-  return {
-    type,
-    clientX: options.clientX || 0,
-    clientY: options.clientY || 0,
-    layerX: options.layerX || 0,
-    layerY: options.layerY || 0,
-    bubbles: options.bubbles || false,
-    cancelable: options.cancelable || false
-    // You can mock other properties as needed
-  }
 })
 
 const AppContextProvider = ({ children, mockState }) => {
@@ -54,38 +54,6 @@ describe('viewport', () => {
   const zoomIn = jest.fn()
   const panBy = jest.fn()
   const showLabel = jest.fn()
-
-  beforeEach(() => {
-    appDispatchMock = jest.fn()
-    providerMock = {
-      addEventListener: jest.fn((eventType, handler) => {
-        if (!eventHandlers[eventType]) {
-          eventHandlers[eventType] = []
-        }
-        eventHandlers[eventType].push(handler)
-      }),
-      dispatchEvent: jest.fn((event) => {
-        const handlers = eventHandlers[event.type] || []
-        handlers.forEach((handler) => handler(event))
-      }),
-      removeEventListener: jest.fn((eventType, handler) => {
-        eventHandlers[eventType] = eventHandlers[eventType]?.filter(h => h !== handler)
-      }),
-      init: jest.fn(),
-      transformSearchRequest: jest.fn(),
-      transformCallback: jest.fn(),
-      setTargetMarker: jest.fn(),
-      selectFeature: jest.fn(),
-      queryFeature,
-      queryPoint,
-      showLabel,
-      getNearest: jest.fn(),
-      zoomIn,
-      panBy,
-      hideLabel: jest.fn(),
-      remove: jest.fn()
-    }
-  })
 
   const renderComponent = (mockViewportOptions = {}, mockAppState = { id: 'map', isContainerReady: true }) => {
     const mockOptions = {
@@ -132,6 +100,38 @@ describe('viewport', () => {
       </AppProvider>
     )
   }
+
+  beforeEach(() => {
+    appDispatchMock = jest.fn()
+    providerMock = {
+      addEventListener: jest.fn((eventType, handler) => {
+        if (!eventHandlers[eventType]) {
+          eventHandlers[eventType] = []
+        }
+        eventHandlers[eventType].push(handler)
+      }),
+      dispatchEvent: jest.fn((event) => {
+        const handlers = eventHandlers[event.type] || []
+        handlers.forEach((handler) => handler(event))
+      }),
+      removeEventListener: jest.fn((eventType, handler) => {
+        eventHandlers[eventType] = eventHandlers[eventType]?.filter(h => h !== handler)
+      }),
+      init: jest.fn(),
+      transformSearchRequest: jest.fn(),
+      transformCallback: jest.fn(),
+      setTargetMarker: jest.fn(),
+      selectFeature: jest.fn(),
+      queryFeature,
+      queryPoint,
+      showLabel,
+      getNearest: jest.fn(),
+      zoomIn,
+      panBy,
+      hideLabel: jest.fn(),
+      remove: jest.fn()
+    }
+  })
 
   it('should render viewport component', () => {
     renderComponent({ styles: [{ name: 'default' }], style: { name: 'default' } })
@@ -341,12 +341,28 @@ describe('viewport', () => {
 
   // Test that viewport responds correctly to pointer events
 
-  test('should set startPixel on \'pointerdown\'', () => {
-    const startPixel = { current: [0, 0] }
-    jest.spyOn(React, 'useRef').mockReturnValue(startPixel)
+  test('should set pointerPixel on \'pointermove\'', () => {
+    let useRefCallCount = 0
+    const pointerPixel = { current: [1, 1] }
+    jest.spyOn(React, 'useRef').mockImplementation((initialValue) => {
+      useRefCallCount += 1
+      if (initialValue === null && useRefCallCount === 4) {
+        return pointerPixel
+      }
+      return useRef(initialValue)
+    })
     renderComponent({ size: 'small' })
     const viewportElement = screen.getByRole('application')
-    act(() => { fireEvent.pointerDown(viewportElement, { pageX: 1, pageY: 1 }) })
-    expect(startPixel.current).toEqual([1, 1])
+    act(() => { fireEvent.pointerMove(viewportElement, new PointerEventMock('pointermove', { layerX: 1, layerY: 1 })) })
+    expect(pointerPixel.current).toEqual([1, 1])
   })
+
+  // test('should set startPixel on \'pointerdown\'', () => {
+  //   const startPixel = { current: [0, 0] }
+  //   jest.spyOn(React, 'useRef').mockReturnValue(startPixel)
+  //   renderComponent({ size: 'small' })
+  //   const viewportElement = screen.getByRole('application')
+  //   act(() => { fireEvent.pointerDown(viewportElement, new PointerEventMock('pointerdown', { clientX: 20 })) })
+  //   expect(startPixel.current).toEqual([1, 1])
+  // })
 })

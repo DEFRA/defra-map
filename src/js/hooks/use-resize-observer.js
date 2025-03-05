@@ -10,13 +10,13 @@ export const useResizeObserver = (el, callback) => {
   const prevHeight = useRef(null)
 
   const observe = () => {
-    if (el && observer.current?.unobserve) {
+    if (el && observer.current) {
       observer.current.observe(el)
     }
   }
 
   useEffect(() => {
-    if (observer.current?.unobserve && el) {
+    if (observer.current && el) {
       observer.current.unobserve(el)
     }
     if (window.ResizeObserver) {
@@ -34,7 +34,7 @@ export const useResizeObserver = (el, callback) => {
     }
 
     return () => {
-      if (observer.current?.unobserve && el) {
+      if (observer.current && el) {
         observer.current.unobserve(el)
       }
     }

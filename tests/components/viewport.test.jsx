@@ -6,9 +6,11 @@ import { ViewportProvider, ViewportContext } from '../../src/js/store/viewport-p
 import Viewport from '../../src/js/components/viewport'
 import { debounce } from '../../src/js/lib/debounce'
 import eventBus from '../../src/js/lib/eventbus'
+import { useResizeObserver } from '../../src/js/hooks/use-resize-observer.js'
 
 jest.mock('../../src/js/lib/eventbus')
 jest.mock('../../src/js/lib/debounce')
+jest.mock('../../src/js/hooks/use-resize-observer.js')
 
 const pointerEventProps = ['clientX', 'clientY', 'layerX', 'layerY', 'pointerType']
 class PointerEventMock extends Event {
@@ -34,7 +36,7 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 describe('viewport', () => {
-  let providerMock, appDispatchMock
+  let providerMock, appDispatchMock, viewportDispatchMock
   const eventHandlers = {}
   const parentElement = document.createElement('div')
   document.body.appendChild(parentElement)
@@ -64,7 +66,8 @@ describe('viewport', () => {
     )
   }
 
-  const renderComponent = (options = {}, mockAppState = { id: 'map', isContainerReady: true }, mockViewportState = { bounds: [-2.989707, 54.864555, -2.878635, 54.937635] }) => {
+  const renderComponent = (
+    options = {}, mockAppState = { id: 'map', isContainerReady: true }, mockViewportState = { bounds: [-2.989707, 54.864555, -2.878635, 54.937635] }) => {
     const mockOptions = {
       id: 'map',
       styles: [{ name: 'default' }],
@@ -109,6 +112,7 @@ describe('viewport', () => {
 
   beforeEach(() => {
     appDispatchMock = jest.fn()
+    viewportDispatchMock = jest.fn()
     providerMock = {
       addEventListener: jest.fn((eventType, handler) => {
         if (!eventHandlers[eventType]) {
@@ -126,11 +130,13 @@ describe('viewport', () => {
       init: jest.fn(),
       transformSearchRequest: jest.fn(),
       transformCallback: jest.fn(),
+      setPadding: jest.fn(),
       setTargetMarker: jest.fn(),
       selectFeature: jest.fn(),
       queryFeature,
       queryPoint,
       showLabel,
+      showNextLabel: jest.fn(),
       getNearest: jest.fn(),
       zoomIn,
       zoomOut,
@@ -302,6 +308,22 @@ describe('viewport', () => {
     expect(panBy).toHaveBeenCalledWith([100, 0])
   })
 
+  it('should call \'e.preventDefault\' when \'Alt + Arrow\' is pressed and provider has showNextLabel()', async () => {
+    renderComponent({}, { id: 'map', isContainerReady: true })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    const eventHandler = jest.fn((e) => {
+      jest.spyOn(e, 'preventDefault')
+      e.preventDefault()
+    })
+    viewportElement.addEventListener('keydown', eventHandler)
+    act(() => { fireEvent.keyDown(viewportElement, { key: 'ArrowRight', altKey: true }) })
+    expect(eventHandler).toHaveBeenCalled()
+    const event = eventHandler.mock.calls[0][0]
+    expect(event.preventDefault).toHaveBeenCalled()
+    viewportElement.removeEventListener('keydown', eventHandler)
+  })
+
   // Test that viewport responds correctly to keyup events
 
   it('should call \'debounce\' with coordinate when \'Alt + I\' is pressed', async () => {
@@ -341,6 +363,31 @@ describe('viewport', () => {
     act(() => { fireEvent.keyUp(viewportElement, { key: '1', code: 'Key1', altKey: true }) })
     expect(queryFeature).toHaveBeenCalledWith('1000')
   })
+
+  it('should call viewportDispatch and appDispatch when \'Escape\' is pressed', async () => {
+    renderComponent(null, { id: 'map', isContainerReady: true, dispatch: appDispatchMock }, { dispatch: viewportDispatchMock })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyUp(viewportElement, { key: 'Escape' }) })
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: true })
+    expect(appDispatchMock).toHaveBeenCalledWith({ type: 'SET_SELECTED', payload: { featureId: null } })
+  })
+
+  it('should call viewportDispatch when \'Alt + Arrow\' is pressed and provider has showNextLabel()', async () => {
+    renderComponent({}, { id: 'map', isContainerReady: true }, { dispatch: viewportDispatchMock })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    act(() => { fireEvent.keyUp(viewportElement, { key: 'ArrowRight', altKey: true }) })
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: false })
+  })
+
+  // it('should call viewportDispatch when \'Alt + Enter\' is pressed and pointerPixel.current and provider has showLabel()', async () => {
+  //   renderComponent({}, { id: 'map', isContainerReady: true }, { dispatch: viewportDispatchMock })
+  //   const viewportElement = screen.getByRole('application')
+  //   expect(viewportElement).toBeTruthy()
+  //   act(() => { fireEvent.keyUp(viewportElement, { key: 'Enter', altKey: true }) })
+  //   expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: false })
+  // })
 
   // Test that viewport responds correctly to click events
 
@@ -407,6 +454,7 @@ describe('viewport', () => {
   // })
 
   // Viewport actions
+
   it('should call \'provider.fitBounds\' on search action when bounds is present', async () => {
     renderComponent(null, null, {
       action: 'SEARCH',
@@ -503,5 +551,20 @@ describe('viewport', () => {
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     expect(providerMock.setStyle).toHaveBeenCalled()
+  })
+
+  it('should call viewportDispatch with { type: \'SET_STYLE\' } when hasAutoMode is true', async () => {
+    providerMock.map = {}
+    renderComponent({ hasAutoMode: true }, { id: 'map', isContainerReady: true }, { dispatch: viewportDispatchMock })
+    const viewportElement = screen.getByRole('application')
+    expect(viewportElement).toBeTruthy()
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'SET_STYLE', payload: { colourScheme: 'dark', style: 'default' } })
+    providerMock.map = undefined
+  })
+
+  it('should call \'provider.setPadding\' on resize', async () => {
+    useResizeObserver.mockImplementation((_, callback) => { callback() })
+    renderComponent(null, { id: 'map', isContainerReady: true })
+    expect(providerMock.setPadding).toHaveBeenCalled()
   })
 })

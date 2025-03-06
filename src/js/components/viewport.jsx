@@ -79,14 +79,14 @@ export default function Viewport () {
   }
 
   const handleKeyUp = e => {
-    // Get map details (Alt + i)
+    // Get map details (Alt + I)
     if (provider.getNearest && e.altKey && e.code.slice(-1) === 'I') {
       viewportDispatch({ type: 'CLEAR_STATUS' })
       // Debounce place update
       debounceUpdatePlace(center)
     }
 
-    // Open keyboard controls (Alt + k)
+    // Open keyboard controls (Alt + K)
     if (e.altKey && e.code.slice(-1) === 'K') {
       appDispatch({ type: 'OPEN', payload: 'KEYBOARD' })
     }
@@ -161,7 +161,7 @@ export default function Viewport () {
     })
   }
 
-  // Update place after Alt + i
+  // Update place after Alt + I
   const debounceUpdatePlace = debounce(async (coord) => {
     const place = await provider.getNearest(coord)
     viewportDispatch({ type: 'UPDATE_PLACE', payload: place })

@@ -403,12 +403,9 @@ describe('Draw Class', () => {
     })
 
     it('should call update() on sketchViewModel with the provided graphic', () => {
-      jest.useFakeTimers()
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
-      jest.runAllTimers()
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
-      jest.useRealTimers()
     })
   })
 
@@ -423,6 +420,11 @@ describe('Draw Class', () => {
       expect(drawInstance.sketchViewModel.complete).toHaveBeenCalled()
     })
 
+    it('should remove the layer reference from sketchViewModel after completion', () => {
+      drawInstance.finishEdit()
+      expect(drawInstance.sketchViewModel.layer).toBeNull()
+    })
+
     it('should return the first available graphic from graphicsLayer', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockProvider.graphicsLayer.graphics.items = [mockGraphic]
@@ -434,18 +436,6 @@ describe('Draw Class', () => {
       mockProvider.graphicsLayer.graphics.items = []
       const result = drawInstance.finishEdit()
       expect(result).toBeUndefined()
-    })
-  })
-
-  describe('destroy()', () => {
-    beforeEach(() => {
-      drawInstance = new Draw(mockProvider, {})
-      drawInstance.sketchViewModel = { complete: jest.fn(), cancel: jest.fn() }
-    })
-
-    it('should remove the layer reference from sketchViewModel after completion', () => {
-      drawInstance.destroy()
-      expect(drawInstance.sketchViewModel.layer).toBeNull()
     })
   })
 

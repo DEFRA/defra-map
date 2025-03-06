@@ -2,11 +2,18 @@
 // Provider specific styles
 //
 
+// *Not sure what this fix is?
+.fm-map canvas {
+    display: block;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+// MapLibre
+
 .maplibregl-canvas-container canvas {
     image-rendering: pixelated;
 }
 
-// Controls
 .maplibregl-control-container {
     position: absolute;
     top: 0;
@@ -20,13 +27,12 @@
     }
 }
 
-// *Not sure what this fix is?
-.fm-map canvas {
-    display: block;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-// Symbol container
 .maplibregl-symbols {
     display: none;
 }
+
+// ESRI
+
+.esri-view-surface--touch-none {
+    touch-action: none;
+ }

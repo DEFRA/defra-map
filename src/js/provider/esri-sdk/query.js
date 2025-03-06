@@ -51,6 +51,8 @@ export const getFeatures = async (provider, point) => {
   // Get map coord of query
   let coord = view.toMap(pixel)
   coord = [coord.x, coord.y].map(n => Math.round(n))
+  // Add lngLat for reverse geocoding
+  const lngLat = [coord[0], coord[1]]
 
   return {
     resultType: 'pixel',
@@ -60,6 +62,7 @@ export const getFeatures = async (provider, point) => {
     isFeaturesInMap: false,
     isPixelFeaturesAtPixel: !!items.length,
     isPixelFeaturesInMap: hasVisiblePixelLayers,
-    coord
+    coord,
+    lngLat
   }
 }

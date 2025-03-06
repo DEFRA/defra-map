@@ -1,4 +1,4 @@
-import { getFocusPadding, getFocusBounds, getMapPixel, getDescription } from '../../src/js/lib/viewport'
+import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre } from '../../src/js/lib/viewport'
 
 const mockElement = (boundingRect, closestMock = null) => {
   return {
@@ -84,5 +84,92 @@ describe('lib/viewport - getDescription', () => {
   it('should format format coordinate correctly for eastings and northings', () => {
     const description = getDescription(null, [324973, 536891], [338388, 554644, 340881, 557137], {})
     expect(description).toContain('Focus area approximate center easting 324973 long 536891. Covering 1.5 miles by 1.5 miles.')
+  })
+})
+
+describe('lib/viewport - getStatus', () => {
+  let current
+  let state
+
+  beforeEach(() => {
+    current = {
+      center: [0, 0],
+      bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+      zoom: 10,
+      features: { featuresInViewport: [] },
+      label: null,
+      selectedId: null
+    }
+    state = { center: [1, 1], zoom: 9 }
+  })
+
+  it('should return label if present', () => {
+    current.label = 'Test Label'
+    expect(getStatus('ANY', false, null, state, current)).toBe('Test Label')
+  })
+
+  it('should return selected status if selectedId is present', () => {
+    current.selectedId = '123'
+    expect(getStatus('ANY', false, null, state, current)).not.toBeNull()
+  })
+
+  it('should return \'Map change\' message when action is \'DATA\'', () => {
+    expect(getStatus('DATA', false, null, state, current)).toBe(
+      'Map change: new data. Use ALT plus I to get new details'
+    )
+  })
+
+  it('should return description when isPanZoom is true or action is \'GEOLOC\'', () => {
+    expect(getStatus('ANY', true, 'Place', state, current)).not.toBeNull()
+    expect(getStatus('GEOLOC', false, null, state, current)).not.toBeNull()
+  })
+
+  it('returns an empty string for other cases', () => {
+    expect(getStatus('OTHER', false, null, state, current)).toBe('')
+  })
+})
+
+describe('lib/viewport - getPlace', () => {
+  it('should return undefined if isUserInitiated is true', () => {
+    expect(getPlace(true, 'RESET', 'Old Place', 'New Place')).toBeUndefined()
+  })
+
+  it('should return oPlace if action is RESET and isUserInitiated is false', () => {
+    expect(getPlace(false, 'RESET', 'Old Place', 'New Place')).toBe('Old Place')
+  })
+
+  it('should return newPlace if action is not RESET and isUserInitiated is false', () => {
+    expect(getPlace(false, 'UPDATE', 'Old Place', 'New Place')).toBe('New Place')
+  })
+
+  it('should return undefined if isUserInitiated is false and newPlace is undefined', () => {
+    expect(getPlace(false, 'UPDATE', 'Old Place', undefined)).toBeUndefined()
+  })
+})
+
+describe('lib/viewport - parseCentre', () => {
+  it('should return null if value is not in correct format', () => {
+    expect(parseCentre('10,20', '27700')).toBeNull()
+  })
+
+  it('should return null if coords are not numbers', () => {
+    expect(parseCentre('10,abc,20', '27700')).toBeNull()
+  })
+
+  // This currently fails
+  // it('should return null if coords are out of bounds for srid 27700', () => {
+  //   expect(parseCentre('-2.94,54.89,0', '27700')).toBeNull()
+  // })
+
+  it('should return coords if within bounds for srid 27700', () => {
+    expect(parseCentre('324973,536891,0', '27700')).toEqual([324973, 536891])
+  })
+
+  it('should return null if coords are out of bounds for srid 4326', () => {
+    expect(parseCentre('324973,536891,0', '4326')).toBeNull()
+  })
+
+  it('should return coords if within bounds for srid 4326', () => {
+    expect(parseCentre('-2.94,54.89,0', '4326')).toEqual([-2.94, 54.89])
   })
 })

@@ -72,7 +72,7 @@ describe('viewport', () => {
       id: 'map',
       styles: [{ name: 'default' }],
       style: { name: 'default' },
-      bounds: null, // [-2.989707, 54.864555, -2.878635, 54.937635],
+      bounds: null,
       place: 'Carlisle',
       center: null,
       zoom: null,

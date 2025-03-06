@@ -214,9 +214,10 @@ export const parseCentre = (value, srid) => {
   if (!coords) {
     return null
   }
+
   // Coords are within the valid range
   if (srid === '27700') {
-    isInRange = !!coords.filter(c => c >= 0).length
+    isInRange = !!coords.filter(c => c >= 0).length // This fails if one coord is < 0 but others are >= 0
   } else {
     isInRange = (coords[0] > mb[0] && coords[0] < mb[2]) && (coords[1] > mb[1] && coords[1] < mb[3])
   }

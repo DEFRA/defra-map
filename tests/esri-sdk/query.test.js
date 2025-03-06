@@ -72,7 +72,6 @@ describe('Query Module', () => {
     it('should call getNearest with correct parameters when user-initiated', async () => {
       const point = [10, 10]
       await getDetail(mockProvider, point, true)
-
       expect(mockProvider.getNearest).toHaveBeenCalledWith([500, 500], 'mock-token')
     })
 

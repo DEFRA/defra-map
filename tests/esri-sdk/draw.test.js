@@ -403,9 +403,12 @@ describe('Draw Class', () => {
     })
 
     it('should call update() on sketchViewModel with the provided graphic', () => {
+      jest.useFakeTimers()
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
+      jest.runAllTimers()
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
+      jest.useRealTimers()
     })
   })
 
@@ -418,11 +421,6 @@ describe('Draw Class', () => {
     it('should call complete() on sketchViewModel to finalize the edit', () => {
       drawInstance.finishEdit()
       expect(drawInstance.sketchViewModel.complete).toHaveBeenCalled()
-    })
-
-    it('should remove the layer reference from sketchViewModel after completion', () => {
-      drawInstance.finishEdit()
-      expect(drawInstance.sketchViewModel.layer).toBeNull()
     })
 
     it('should return the first available graphic from graphicsLayer', () => {

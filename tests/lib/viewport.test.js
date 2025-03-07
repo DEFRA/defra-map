@@ -1,4 +1,5 @@
-import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey } from '../../src/js/lib/viewport'
+import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey, spatialNavigate, isFeatureSquare, getScale, getPoint, getStyle } from '../../src/js/lib/viewport'
+import { defaults } from '../../src/js/store/constants'
 
 const mockElement = (boundingRect, closestMock = null) => {
   return {
@@ -175,24 +176,24 @@ describe('lib/viewport - parseCentre', () => {
 })
 
 describe('lib/viewport - parseZoom', () => {
-  test('should return zoom level when input is valid', () => {
+  it('should return zoom level when input is valid', () => {
     expect(parseZoom('12.34,56.78,8')).toBe(8)
     expect(parseZoom('0,0,5.5')).toBe(5.5)
   })
 
-  test('should return null for invalid inputs', () => {
+  it('should return null for invalid inputs', () => {
     expect(parseZoom(null)).toBeNull()
     expect(parseZoom(undefined)).toBeNull()
     expect(parseZoom('')).toBeNull()
     expect(parseZoom('12.34,56.78')).toBeNull()
     // These currently fail: Needs a code fix
-    // expect(parseZoom('12.34,56.78,abc')).toBeNull() 
+    // expect(parseZoom('12.34,56.78,abc')).toBeNull()
     // expect(parseZoom('12.34,56.78,')).toBeNull()
   })
 })
 
 describe('lib/viewport - getShortcutKey', () => {
-  test('should return the correct feature ID based on the event code', () => {
+  it('should return the correct feature ID based on the event code', () => {
     const featuresViewport = [
       { id: 'feature1' },
       { id: 'feature2' },
@@ -203,13 +204,226 @@ describe('lib/viewport - getShortcutKey', () => {
     expect(getShortcutKey({ code: 'Digit3' }, featuresViewport)).toBe('feature3')
   })
 
-  test('should return an empty string when the index is out of bounds', () => {
+  it('should return an empty string when the index is out of bounds', () => {
     const featuresViewport = [{ id: 'feature1' }]
     expect(getShortcutKey({ code: 'Digit2' }, featuresViewport)).toBe('')
     expect(getShortcutKey({ code: 'Digit5' }, featuresViewport)).toBe('')
   })
 
-  test('should return an empty string when featuresViewport is empty', () => {
+  it('should return an empty string when featuresViewport is empty', () => {
     expect(getShortcutKey({ code: 'Digit1' }, [])).toBe('')
+  })
+})
+
+describe('lib/viewport - spatialNavigate', () => {
+  const pixels = [
+    [0, 0], [1, 0], [2, 0],
+    [0, 1], [1, 1], [2, 1],
+    [0, 2], [1, 2], [2, 2]
+  ]
+
+  it('should navigate up correctly', () => {
+    expect(spatialNavigate('up', [1, 1], pixels)).toBe(1) // Moves to [1, 0]
+  })
+
+  it('should navigate down correctly', () => {
+    expect(spatialNavigate('down', [1, 1], pixels)).toBe(7) // Moves to [1, 2]
+  })
+
+  it('should navigate left correctly', () => {
+    expect(spatialNavigate('left', [1, 1], pixels)).toBe(3) // Moves to [0, 1]
+  })
+
+  it('should navigate right correctly', () => {
+    expect(spatialNavigate('right', [1, 1], pixels)).toBe(5) // Moves to [2, 1]
+  })
+
+  it('should return the same index when no valid move is possible', () => {
+    expect(spatialNavigate('up', [0, 0], pixels)).toBe(0)
+    expect(spatialNavigate('left', [0, 0], pixels)).toBe(0)
+    expect(spatialNavigate('down', [2, 2], pixels)).toBe(8)
+    expect(spatialNavigate('right', [2, 2], pixels)).toBe(8)
+  })
+})
+
+describe('lib/viewport - isFeatureSquare', () => {
+  // Passes but needs more robust logic if lest than 4 unique values: Needs a code fix
+  it('should return true for a square feature', () => {
+    const squareFeature = { geometry: { coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } }
+    expect(isFeatureSquare(squareFeature)).toBe(true)
+  })
+
+  it('should return false for a non-square feature', () => {
+    const nonSquareFeature = { geometry: { coordinates: [[[0, 0], [0, 2], [1, 1], [1, 0], [0, 0]]] } }
+    expect(isFeatureSquare(nonSquareFeature)).toBe(false)
+  })
+
+  it('should return false for an empty feature', () => {
+    const emptyFeature = { geometry: { coordinates: [] } }
+    expect(isFeatureSquare(emptyFeature)).toBe(false)
+  })
+})
+
+describe('lib/viewport - getScale', () => {
+  it('should return correct scale for small', () => {
+    expect(getScale('small')).toBe(1)
+  })
+
+  it('should return correct scale for medium', () => {
+    expect(getScale('medium')).toBe(1.5)
+  })
+
+  it('should return correct scale for large', () => {
+    expect(getScale('large')).toBe(2)
+  })
+
+  it('should return default scale for unknown size', () => {
+    expect(getScale('extra-large')).toBe(1)
+  })
+})
+
+describe('lib/viewport - getPoint', () => {
+  test('correctly calculates point coordinates', () => {
+    const mockElement = {
+      getBoundingClientRect: jest.fn().mockReturnValue({
+        left: 50,
+        top: 100
+      })
+    }
+
+    const mockEvent = {
+      nativeEvent: {
+        clientX: 150,
+        clientY: 250
+      }
+    }
+
+    const scale = 2
+
+    // Expected result
+    // x = (150 - 50) / 2 = 50
+    // y = (250 - 100) / 2 = 75
+    const expectedPoint = [50, 75]
+    const result = getPoint(mockElement, mockEvent, scale)
+    expect(result).toEqual(expectedPoint)
+  })
+
+  it('should handle different scale values', () => {
+    const mockElement = {
+      getBoundingClientRect: jest.fn().mockReturnValue({
+        left: 10,
+        top: 20
+      })
+    }
+
+    const mockEvent = {
+      nativeEvent: {
+        clientX: 110,
+        clientY: 120
+      }
+    }
+    expect(getPoint(mockElement, mockEvent, 1)).toEqual([100, 100])
+    // Needs rounding: code fixe reuquired
+    expect(getPoint(mockElement, mockEvent, 1.5)).toEqual([66.66666666666667, 66.66666666666667])
+    expect(getPoint(mockElement, mockEvent, 2)).toEqual([50, 50])
+  })
+})
+
+describe('lib/viewport - getStyle', () => {
+  // Mock localStorage
+  let localStorageMock
+
+  beforeEach(() => {
+    // Setup localStorage mock before each test
+    localStorageMock = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      clear: jest.fn()
+    }
+
+    // Replace the global localStorage with our mock
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true
+    })
+  })
+
+  it('should return style from localStorage when it exists and is valid', () => {
+    // Use styles that match entries in defaults.STYLES
+    const styles = [
+      { name: defaults.STYLES[0], color: '#FFFFFF' },
+      { name: defaults.STYLES[1], color: '#000000' },
+      { name: defaults.STYLES[2], color: '#EEEEEE' }
+    ]
+
+    // Set localStorage to return the second style
+    localStorageMock.getItem.mockReturnValue(defaults.STYLES[1])
+
+    // Call the function
+    const result = getStyle(styles)
+
+    // Assert result is the requested style
+    expect(result).toEqual({ name: defaults.STYLES[1], color: '#000000' })
+    expect(localStorageMock.getItem).toHaveBeenCalledWith('style')
+  })
+
+  it('should return default style when localStorage value is not in provided styles', () => {
+    // Use styles that match entries in defaults.STYLES
+    const styles = [
+      { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
+      { name: defaults.STYLES[1], color: '#000000' }
+    ]
+
+    // Set localStorage to return a value not in styles
+    localStorageMock.getItem.mockReturnValue('not-in-styles')
+
+    // Call the function
+    const result = getStyle(styles)
+
+    // Assert result is the default style
+    expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
+  })
+
+  it('should return default style when localStorage is empty', () => {
+    // Use styles that match entries in defaults.STYLES
+    const styles = [
+      { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
+      { name: defaults.STYLES[1], color: '#000000' }
+    ]
+
+    // Set localStorage to return null (empty)
+    localStorageMock.getItem.mockReturnValue(null)
+
+    // Call the function
+    const result = getStyle(styles)
+
+    // Assert result is the default style
+    expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
+  })
+
+  it('should filter out invalid styles not included in defaults.STYLES', () => {
+    // Use some valid styles and one invalid style
+    const styles = [
+      { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
+      { name: defaults.STYLES[1], color: '#000000' },
+      { name: 'invalid-style', color: '#FF0000' } // This style is not in defaults.STYLES
+    ]
+
+    // Set localStorage to return the invalid style
+    localStorageMock.getItem.mockReturnValue('invalid-style')
+
+    // Call the function
+    const result = getStyle(styles)
+
+    // Assert result is the default style since 'invalid-style' should be filtered out
+    expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
+  })
+
+  it('should handle empty styles array', () => {
+    // Call with empty styles array
+    const result = getStyle([])
+
+    // Should return undefined since there are no valid styles
+    expect(result).toBeUndefined()
   })
 })

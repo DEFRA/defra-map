@@ -381,14 +381,6 @@ describe('viewport', () => {
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: false })
   })
 
-  // it('should call viewportDispatch when \'Alt + Enter\' is pressed and pointerPixel.current and provider has showLabel()', async () => {
-  //   renderComponent({}, { id: 'map', isContainerReady: true }, { dispatch: viewportDispatchMock })
-  //   const viewportElement = screen.getByRole('application')
-  //   expect(viewportElement).toBeTruthy()
-  //   act(() => { fireEvent.keyUp(viewportElement, { key: 'Enter', altKey: true }) })
-  //   expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: false })
-  // })
-
   // Test that viewport responds correctly to click events
 
   it('should call \'provider.queryPoint\' on \'Click\'', async () => {
@@ -421,37 +413,6 @@ describe('viewport', () => {
     act(() => { fireEvent.click(viewportElement, { clientX: 0, clientY: 0, altKey: true }) })
     expect(showLabel).toHaveBeenCalled()
   })
-
-  // Test that viewport responds correctly to pointer events
-
-  // test('should set pointerPixel on \'pointermove\'', () => {
-  //   let useRefCallCount = 0
-  //   const pointerPixel = { current: [1, 1] }
-  //   const spy = jest.spyOn(React, 'useRef').mockImplementation((initialValue) => {
-  //     useRefCallCount += 1
-  //     if (initialValue === null && useRefCallCount === 4) {
-  //       console.log('Here', useRefCallCount, pointerPixel)
-  //       return pointerPixel
-  //     }
-  //     if (initialValue === null) {
-  //       return { current: initialValue }
-  //     }
-  //   })
-  //   renderComponent({ size: 'small' })
-  //   const viewportElement = screen.getByRole('application')
-  //   act(() => { fireEvent.pointerMove(viewportElement, new PointerEventMock('pointermove', { layerX: 1, layerY: 1 })) })
-  //   expect(pointerPixel.current).toEqual([1, 1])
-  //   spy.mockClear()
-  // })
-
-  // test('should set startPixel on \'pointerdown\'', () => {
-  //   const startPixel = { current: [0, 0] }
-  //   jest.spyOn(React, 'useRef').mockReturnValue(startPixel)
-  //   renderComponent({ size: 'small' })
-  //   const viewportElement = screen.getByRole('application')
-  //   act(() => { fireEvent.pointerDown(viewportElement, new PointerEventMock('pointerdown', { clientX: 20 })) })
-  //   expect(startPixel.current).toEqual([1, 1])
-  // })
 
   // Viewport actions
 

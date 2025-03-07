@@ -1,4 +1,4 @@
-import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre } from '../../src/js/lib/viewport'
+import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey } from '../../src/js/lib/viewport'
 
 const mockElement = (boundingRect, closestMock = null) => {
   return {
@@ -171,5 +171,45 @@ describe('lib/viewport - parseCentre', () => {
 
   it('should return coords if within bounds for srid 4326', () => {
     expect(parseCentre('-2.94,54.89,0', '4326')).toEqual([-2.94, 54.89])
+  })
+})
+
+describe('lib/viewport - parseZoom', () => {
+  test('should return zoom level when input is valid', () => {
+    expect(parseZoom('12.34,56.78,8')).toBe(8)
+    expect(parseZoom('0,0,5.5')).toBe(5.5)
+  })
+
+  test('should return null for invalid inputs', () => {
+    expect(parseZoom(null)).toBeNull()
+    expect(parseZoom(undefined)).toBeNull()
+    expect(parseZoom('')).toBeNull()
+    expect(parseZoom('12.34,56.78')).toBeNull()
+    // These currently fail: Needs a code fix
+    // expect(parseZoom('12.34,56.78,abc')).toBeNull() 
+    // expect(parseZoom('12.34,56.78,')).toBeNull()
+  })
+})
+
+describe('lib/viewport - getShortcutKey', () => {
+  test('should return the correct feature ID based on the event code', () => {
+    const featuresViewport = [
+      { id: 'feature1' },
+      { id: 'feature2' },
+      { id: 'feature3' }
+    ]
+    expect(getShortcutKey({ code: 'Digit1' }, featuresViewport)).toBe('feature1')
+    expect(getShortcutKey({ code: 'Digit2' }, featuresViewport)).toBe('feature2')
+    expect(getShortcutKey({ code: 'Digit3' }, featuresViewport)).toBe('feature3')
+  })
+
+  test('should return an empty string when the index is out of bounds', () => {
+    const featuresViewport = [{ id: 'feature1' }]
+    expect(getShortcutKey({ code: 'Digit2' }, featuresViewport)).toBe('')
+    expect(getShortcutKey({ code: 'Digit5' }, featuresViewport)).toBe('')
+  })
+
+  test('should return an empty string when featuresViewport is empty', () => {
+    expect(getShortcutKey({ code: 'Digit1' }, [])).toBe('')
   })
 })

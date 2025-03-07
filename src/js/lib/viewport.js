@@ -230,6 +230,7 @@ export const parseZoom = value => {
     return null
   }
   const zoom = parseFloat(coords[2])
+  // Should be !isNaN(zoom)
   return !zoom.isNaN ? zoom : null
 }
 

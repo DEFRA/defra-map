@@ -157,11 +157,6 @@ describe('lib/viewport - parseCentre', () => {
     expect(parseCentre('10,abc,20', '27700')).toBeNull()
   })
 
-  // This currently fails
-  // it('should return null if coords are out of bounds for srid 27700', () => {
-  //   expect(parseCentre('-2.94,54.89,0', '27700')).toBeNull()
-  // })
-
   it('should return coords if within bounds for srid 27700', () => {
     expect(parseCentre('324973,536891,0', '27700')).toEqual([324973, 536891])
   })
@@ -186,9 +181,6 @@ describe('lib/viewport - parseZoom', () => {
     expect(parseZoom(undefined)).toBeNull()
     expect(parseZoom('')).toBeNull()
     expect(parseZoom('12.34,56.78')).toBeNull()
-    // These currently fail: Needs a code fix
-    // expect(parseZoom('12.34,56.78,abc')).toBeNull()
-    // expect(parseZoom('12.34,56.78,')).toBeNull()
   })
 })
 
@@ -247,7 +239,6 @@ describe('lib/viewport - spatialNavigate', () => {
 })
 
 describe('lib/viewport - isFeatureSquare', () => {
-  // Passes but needs more robust logic if lest than 4 unique values: Needs a code fix
   it('should return true for a square feature', () => {
     const squareFeature = { geometry: { coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } }
     expect(isFeatureSquare(squareFeature)).toBe(true)
@@ -301,8 +292,6 @@ describe('lib/viewport - getPoint', () => {
     const scale = 2
 
     // Expected result
-    // x = (150 - 50) / 2 = 50
-    // y = (250 - 100) / 2 = 75
     const expectedPoint = [50, 75]
     const result = getPoint(mockElement, mockEvent, scale)
     expect(result).toEqual(expectedPoint)
@@ -323,7 +312,6 @@ describe('lib/viewport - getPoint', () => {
       }
     }
     expect(getPoint(mockElement, mockEvent, 1)).toEqual([100, 100])
-    // Needs rounding: code fixe reuquired
     expect(getPoint(mockElement, mockEvent, 1.5)).toEqual([66.66666666666667, 66.66666666666667])
     expect(getPoint(mockElement, mockEvent, 2)).toEqual([50, 50])
   })

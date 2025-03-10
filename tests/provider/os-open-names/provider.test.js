@@ -1,5 +1,4 @@
 import Provider from '../../../src/js/provider/os-open-names/provider'
-import OsGridRef from 'geodesy/osgridref.js'
 
 describe('OS Open Names Provider', () => {
   let provider
@@ -38,7 +37,7 @@ describe('OS Open Names Provider', () => {
     })
 
     it('returns suggestions for valid query', async () => {
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(mockResponse) })
       )
 
@@ -50,7 +49,7 @@ describe('OS Open Names Provider', () => {
     })
 
     it('handles API errors gracefully', async () => {
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve({ error: 'API Error' }) })
       )
 
@@ -59,7 +58,7 @@ describe('OS Open Names Provider', () => {
     })
 
     it('handles unexpected response format', async () => {
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve({}) })
       )
 
@@ -75,7 +74,7 @@ describe('OS Open Names Provider', () => {
     })
 
     it('returns place details for valid query', async () => {
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(mockResponse) })
       )
 
@@ -100,7 +99,7 @@ describe('OS Open Names Provider', () => {
         }]
       }
 
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(pointResponse) })
       )
 
@@ -119,7 +118,7 @@ describe('OS Open Names Provider', () => {
         'CR2 6XH',
         'DN55 1PT'
       ]
-      
+
       testPostcodes.forEach(postcode => {
         expect(mockResponse.results[0].GAZETTEER_ENTRY.NAME1.includes(postcode)).toBeFalsy()
       })
@@ -129,32 +128,32 @@ describe('OS Open Names Provider', () => {
       const mixedResponse = {
         header: { totalresults: 2 },
         results: [
-          { 
-            GAZETTEER_ENTRY: { 
+          {
+            GAZETTEER_ENTRY: {
               ID: '1',
-              NAME1: 'London', 
+              NAME1: 'London',
               COUNTRY: 'England',
               LOCAL_TYPE: 'City',
               COUNTY_UNITARY: 'Greater London',
               DISTRICT_BOROUGH: 'City of London',
               POSTCODE_DISTRICT: 'EC1'
-            } 
+            }
           },
-          { 
-            GAZETTEER_ENTRY: { 
+          {
+            GAZETTEER_ENTRY: {
               ID: '2',
-              NAME1: 'Edinburgh', 
+              NAME1: 'Edinburgh',
               COUNTRY: 'Scotland',
               LOCAL_TYPE: 'City',
               COUNTY_UNITARY: 'Edinburgh',
               DISTRICT_BOROUGH: '',
               POSTCODE_DISTRICT: 'EH1'
-            } 
+            }
           }
         ]
       }
 
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(mixedResponse) })
       )
 
@@ -172,7 +171,7 @@ describe('OS Open Names Provider', () => {
         ]
       }
 
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(duplicateResponse) })
       )
 
@@ -205,7 +204,7 @@ describe('OS Open Names Provider', () => {
         }]
       }
 
-      global.fetch.mockImplementationOnce(() => 
+      global.fetch.mockImplementationOnce(() =>
         Promise.resolve({ json: () => Promise.resolve(nullGeometryResponse) })
       )
 

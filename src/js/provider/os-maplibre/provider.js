@@ -12,7 +12,7 @@ import { defaults as storeDefaults } from '../../store/constants.js'
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, transformRequest, symbols }) {
     super()
-    this.srs = 4326
+    this.srid = 4326
     this.capabilities = capabilities.default
     this.transformSearchRequest = transformSearchRequest
     this.transformRequest = transformRequest
@@ -23,6 +23,8 @@ class Provider extends EventTarget {
     this.isLoaded = false
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
+    // Capabilities
+    this.hasTextSize = !!window.globalThis
   }
 
   init (options) {

@@ -3,13 +3,12 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
 import { getImagePos } from '../lib/utils.js'
-import { capabilities } from '../lib/capabilities.js'
 import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options } = useApp()
-  const { id, framework, hasAutoMode } = options
+  const { options, provider } = useApp()
+  const { id, hasAutoMode } = options
   const { size, style, styles } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -19,7 +18,6 @@ export default function Styles () {
   const [isExpanded, setIsExpanded] = useState(styles.map(s => s.name).indexOf(currentStyleName) > 2 || size !== 'small')
   buttonsRef.current = styles.map(s => s.name).map((_, i) => buttonsRef.current[i] ?? createRef())
 
-  const hasSize = capabilities[framework || 'default'].hasSize
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3
@@ -73,7 +71,7 @@ export default function Styles () {
           ))}
         </div>
       </div>
-      {hasSize && isExpanded && (
+      {provider.hasTextSize && isExpanded && (
         <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
           <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
             <h3 className='fm-c-layers__heading'>Text size</h3>
@@ -97,7 +95,7 @@ export default function Styles () {
           </div>
         </div>
       )}
-      {(styles.length > 3 || hasSize) && (
+      {(styles.length > 3 || provider.hasTextSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>

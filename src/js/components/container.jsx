@@ -88,7 +88,7 @@ export default function Container () {
   }, [isPage, activePanel, hash])
 
   return (
-    <ViewportProvider options={options}>
+    <ViewportProvider options={{ ...options, srid: provider.srid }}>
       <div
         className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
         onKeyDown={constrainFocus}

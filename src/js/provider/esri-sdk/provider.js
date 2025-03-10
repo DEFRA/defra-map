@@ -10,7 +10,7 @@ import { defaults as storeDefaults } from '../../store/constants.js'
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
     super()
-    this.srs = 27700
+    this.srid = 27700
     this.capabilities = capabilities.esri
     this.transformSearchRequest = transformSearchRequest
     this.esriConfigCallback = esriConfigCallback
@@ -226,7 +226,7 @@ class Provider extends EventTarget {
   }
 
   setSize () {
-    // console.log('setSize')
+    console.log('setSize')
   }
 
   fitBounds (bounds) {

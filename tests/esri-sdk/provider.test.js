@@ -266,7 +266,7 @@ describe('Provider', () => {
 
   describe('Initialization', () => {
     it('should initialize with default properties', () => {
-      expect(provider.srs).toBe(27700)
+      expect(provider.srid).toBe(27700)
       expect(provider.capabilities).toBe(capabilities.esri)
       expect(provider.isUserInitiated).toBe(false)
       expect(provider.isLoaded).toBe(false)

@@ -78,6 +78,7 @@ describe('viewport', () => {
       zoom: null,
       framework: null,
       queryFeature: ['mock-layer-name'],
+      srid: '4326',
       ...options
     }
 

@@ -32,8 +32,6 @@ export const getArrayFindLast = () => {
 
 export const capabilities = {
   default: {
-    srid: '4326',
-    hasSize: !!window.globalThis,
     isLatest: !!window.globalThis,
     getDevice: () => {
       const webGL = getWebGL(['webgl2', 'webgl1'])
@@ -45,8 +43,6 @@ export const capabilities = {
     }
   },
   esri: {
-    srid: '27700',
-    hasSize: false,
     getDevice: () => {
       const webGL = getWebGL(['webgl2'])
       const arrayFindLast = getArrayFindLast()

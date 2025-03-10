@@ -10,7 +10,7 @@ import { defaults as storeDefaults } from '../../store/constants.js'
 class Provider extends EventTarget {
   constructor ({ transformSearchRequest, tokenCallback, interceptorsCallback }) {
     super()
-    this.srs = 27700
+    this.srid = 27700
     this.capabilities = capabilities.esri
     this.transformSearchRequest = transformSearchRequest
     this.tokenCallback = tokenCallback

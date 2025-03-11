@@ -24,6 +24,7 @@ class Provider extends EventTarget {
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
     // Capabilities
+    this.hasDrawKeyboardSupport = true
     this.hasTextSize = !!window.globalThis
   }
 
@@ -213,6 +214,13 @@ class Provider extends EventTarget {
     if (this.map) {
       this.map.flyTo({ center: coord, ...defaults.ANIMATION })
     }
+  }
+
+  initDraw (draw, basemap, el) {
+    import(/* webpackChunkName: "maplibre-draw" */ './draw.js').then(module => {
+      const Draw = module.default
+      this.draw = new Draw(this, draw, basemap, el)
+    })
   }
 
   setTargetMarker (coord, hasData, isVisible) {

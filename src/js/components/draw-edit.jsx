@@ -5,6 +5,8 @@ export default function DrawEdit () {
   const { provider, mode, dispatch } = useApp()
   const isQueryMode = ['frame', 'draw'].includes(mode)
 
+  console.log(provider)
+  
   if (!isQueryMode) {
     return null
   }

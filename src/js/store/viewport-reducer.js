@@ -1,8 +1,8 @@
 import { parseCentre, parseZoom, getStyle } from '../lib/viewport'
 import { actionsMap } from './viewport-actions-map'
 
-const getSize = (hasTextSize) => {
-  return (hasTextSize && window.localStorage.getItem('size')) || 'small'
+const getSize = (hasSizeCapability) => {
+  return (hasSizeCapability && window.localStorage.getItem('size')) || 'small'
 }
 
 const getBounds = (cz, center, bounds, srid) => {
@@ -19,7 +19,7 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
   return (minZoom || maxZoom) ? Math.max(Math.min(initZoom, maxZoom), minZoom) : initZoom
 }
 
-export const initialState = ({ hasTextSize, srid, bounds, extent, center, zoom, maxZoom, minZoom, place, features, styles }) => {
+export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, zoom, maxZoom, minZoom, place, features, styles }) => {
   const queryParams = new URLSearchParams(window.location.search)
   const style = getStyle(styles)
   const cz = queryParams.get('cz')
@@ -39,7 +39,7 @@ export const initialState = ({ hasTextSize, srid, bounds, extent, center, zoom, 
     style,
     place: !cz ? place : null,
     originalZoom: zoom,
-    size: getSize(hasTextSize),
+    size: getSize(hasSizeCapability),
     features,
     status: '',
     isStatusVisuallyHidden: true,

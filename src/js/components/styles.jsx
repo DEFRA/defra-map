@@ -71,7 +71,7 @@ export default function Styles () {
           ))}
         </div>
       </div>
-      {provider.hasTextSize && isExpanded && (
+      {provider.capabilities.hasSize && isExpanded && (
         <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
           <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
             <h3 className='fm-c-layers__heading'>Text size</h3>
@@ -95,7 +95,7 @@ export default function Styles () {
           </div>
         </div>
       )}
-      {(styles.length > 3 || provider.hasTextSize) && (
+      {(styles.length > 3 || provider.capabilities.hasSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>

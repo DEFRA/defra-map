@@ -13,7 +13,11 @@ class Provider extends EventTarget {
   constructor ({ transformSearchRequest, transformRequest, symbols }) {
     super()
     this.srid = 4326
-    this.capabilities = capabilities.default
+    this.capabilities = {
+      ...capabilities.default,
+      hasDraw: true,
+      hasSize: !!window.globalThis
+    }
     this.transformSearchRequest = transformSearchRequest
     this.transformRequest = transformRequest
     this.symbols = symbols
@@ -23,9 +27,6 @@ class Provider extends EventTarget {
     this.isLoaded = false
     // Not sure why this is needed?
     this.getNearest = this.getNearest.bind(this)
-    // Capabilities
-    this.hasDrawKeyboardSupport = true
-    this.hasTextSize = !!window.globalThis
   }
 
   init (options) {

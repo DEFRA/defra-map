@@ -15,7 +15,7 @@ const fm = new FloodMap('map', {
   bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   // hasReset: true,
   hasGeoLocation: true,
-  height: '600px',
+  height: '700px',
   // buttonType: 'anchor',
   symbols,
   transformRequest: getTileRequest,

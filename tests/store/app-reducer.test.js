@@ -32,14 +32,10 @@ function getMockPayload (actionType) {
       return { info: {} }
     case 'ERROR':
       return { label: 'label', message: 'message' }
-    // case 'OPEN':
-    //   return 'INFO'
     case 'CLOSE':
       return {}
     case 'SET_MODE':
       return { value: 'default ' }
-    // case 'SET_SELECTED':
-    //   return { style: 'default', colourScheme: 'dark' }
     case 'SET_NEXT_SELECTED':
       return { key: 'PageDown', features: [] }
     case 'SET_IS_DARK_MODE':

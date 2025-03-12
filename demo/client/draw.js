@@ -22,6 +22,7 @@ const fm = new FloodMap('map', {
   transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
+  mode: 'frame',
   styles: [{
     name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,

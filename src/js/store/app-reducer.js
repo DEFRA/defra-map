@@ -6,11 +6,11 @@ const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
-const getActivePanel = (info, featureId, targetMarker, legend) => {
+const getActivePanel = (mode, info, featureId, targetMarker, legend) => {
   let panel
-  if (info && (featureId || targetMarker)) {
+  if (mode === 'default' && info && (featureId || targetMarker)) {
     panel = 'INFO'
-  } else if (legend?.isVisible) {
+  } else if (mode === 'default' && legend?.isVisible) {
     panel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
   } else {
     panel = null
@@ -23,7 +23,8 @@ export const initialState = (options) => {
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-  const activePanel = getActivePanel(info, featureId, targetMarker, legend)
+  const mode = options.mode || 'default'
+  const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 
   return {
     isContainerReady: false,
@@ -43,7 +44,7 @@ export const initialState = (options) => {
     activePanel,
     activePanelHasFocus: false,
     hasViewportLabel: false,
-    mode: 'default',
+    mode,
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,

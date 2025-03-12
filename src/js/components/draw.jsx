@@ -16,7 +16,7 @@ export default function Draw () {
   const drawMode = isFrameMode ? 'frame' : 'draw'
 
   const handleStartClick = () => {
-    provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryArea)
+    provider.draw?.start(drawMode)
     appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, style, size, segments, layers })

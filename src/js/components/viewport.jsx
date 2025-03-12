@@ -298,6 +298,13 @@ export default function Viewport () {
     provider.selectFeature(featureId)
   }, [featureId, targetMarker])
 
+  // Initialise draw
+  useEffect(() => {
+    if (provider.map && !provider.draw && mode !== 'default') {
+      provider.initDraw(queryArea)
+    }
+  }, [provider.map, mode])
+
   // Update view padding on resize
   useResizeObserver(viewportRef.current, () => {
     provider.setPadding(null, false)

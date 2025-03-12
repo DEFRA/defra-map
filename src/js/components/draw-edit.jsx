@@ -43,10 +43,11 @@ export default function DrawEdit () {
                 </svg>
               </button>
             </Tooltip>
-            <Tooltip id={`${id}-format-label`} position='below' cssModifier='format' text='Change format'>
-              <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-format-label`} aria-disabled='true'>
-                <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
-                  <path d='M6.146 10.269l-.995-.995c-.193-.192-.193-.505 0-.698l1.224-1.224 6.343 6.343-1.224 1.224c-.193.193-.506.193-.698 0l-1.115-1.114c-.39-.39-1.102-.353-1.414 0L4.76 18.019c-.702.628-2.048.781-2.828 0s-.629-2.126 0-2.828c.756-.846 3.695-3.048 4.214-3.507.353-.313.39-1.024 0-1.415zm-3.507 7.043a1 1 0 0 0 1.414-1.414 1 1 0 0 0-1.414 1.414zM7.415 6.271l4.819-4.82 1.071 1.071-.333 1.081 1.04-.374 1.839 1.839-1.186 2.741 2.529-1.398 1.404 1.404-4.82 4.82-6.363-6.364z' fill='currentColor' stroke='currentColor' strokeWidth='.1' />
+            <Tooltip id={`${id}-dimensions-label`} position='below' cssModifier='format' text='Edit dimensions'>
+              <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-dimensions-label`} aria-disabled='true'>
+                <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
+                  <path d='M5.974 4.976v1h-4v-4h4v1h8.052v-1h4v4h-4v-1H5.974zm12 13.048h-16v-10h16v10zm-12.5-8h-1.5v6h12v-6h-1.5v3h-2v-3h-1.466v4h-2v-4H7.474v3h-2v-3z'/>
+                  {/* <path d='M6.146 10.269l-.995-.995c-.193-.192-.193-.505 0-.698l1.224-1.224 6.343 6.343-1.224 1.224c-.193.193-.506.193-.698 0l-1.115-1.114c-.39-.39-1.102-.353-1.414 0L4.76 18.019c-.702.628-2.048.781-2.828 0s-.629-2.126 0-2.828c.756-.846 3.695-3.048 4.214-3.507.353-.313.39-1.024 0-1.415zm-3.507 7.043a1 1 0 0 0 1.414-1.414 1 1 0 0 0-1.414 1.414zM7.415 6.271l4.819-4.82 1.071 1.071-.333 1.081 1.04-.374 1.839 1.839-1.186 2.741 2.529-1.398 1.404 1.404-4.82 4.82-6.363-6.364z' fill='currentColor' stroke='currentColor' strokeWidth='.1' /> */}
                 </svg>
               </button>
             </Tooltip>

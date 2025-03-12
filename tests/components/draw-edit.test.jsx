@@ -20,6 +20,9 @@ describe('draw-edit', () => {
           edit: drawEdit,
           reset: drawReset
         }
+      },
+      options: {
+        id: 'test'
       }
     })
 
@@ -44,6 +47,9 @@ describe('draw-edit', () => {
           edit: drawEdit,
           reset: drawReset
         }
+      },
+      options: {
+        id: 'test'
       }
     })
 

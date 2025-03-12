@@ -40,7 +40,7 @@ export default function Draw () {
           {isFrameMode
             ? (
               <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
-                <path d='M3.001 3h14v14h-14z' fill='none' stroke='currentColor' strokeWidth='2'/>
+                <path d='M3.001 3h14v14h-14z' fill='none' stroke='currentColor' strokeWidth='2' />
               </svg>
               )
             : (

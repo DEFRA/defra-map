@@ -22,7 +22,7 @@ const fm = new FloodMap('map', {
   transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
-  mode: 'draw',
+  // mode: 'frame',
   styles: [{
     name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
@@ -329,10 +329,10 @@ const fm = new FloodMap('map', {
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
-    html: '<p class="govuk-body-s">Instructions</p>'
+    html: '<p class="govuk-body-s">Instructions</p>',
     // minZoom: 12,
     // maxZoom: 21
-    // feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
+    feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
   }
   // queryLocation: []
 })

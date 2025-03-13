@@ -1,0 +1,68 @@
+@use '../settings/colours' as *;
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
+.fm-c-dropdown {
+    position: relative;
+
+    &__list {
+        position: absolute;
+        list-style: none;
+        padding: 0;
+        margin: $margin 0 0 -100px;
+        width: 200px;
+        left: 50%;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow;
+        border-radius: $panel-radius;
+        pointer-events: auto;
+        outline: 0;
+
+        &.fm-u-focus-visible::after {
+            @include focus($offset: -3px);
+        }
+
+        &.fm-u-focus-visible .fm-c-dropdown__item--selected {
+            background-color: var(--button-hover-colour);
+        }
+    }
+
+    &__item {
+        @include body-font(16px, 400);
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--button-hover-colour);
+        cursor: pointer;
+
+        svg {
+            margin-right: 7px;
+        }
+
+        &:last-child {
+            border: 0;
+        }
+
+        &:hover {
+            background-color: var(--button-hover-colour);
+        }
+    }
+
+    .fm-c-btn {
+        padding: 10px 12px 10px 10px;
+    }
+
+    .fm-c-btn__chevron {
+        content: '';
+        box-sizing: border-box;
+        align-self: center;
+        bottom: 50%;
+        right: 0.375rem;
+        width: 0.375rem;
+        height: 0.375rem;
+        transform: rotate(135deg);
+        border-top: 0.125rem solid;
+        border-right: 0.125rem solid;
+    }
+}

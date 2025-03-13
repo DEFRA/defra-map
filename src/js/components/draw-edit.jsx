@@ -1,79 +1,62 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
+import Dropdown from './dropdown.jsx'
 
 export default function DrawEdit () {
-  const { provider, options, mode, dispatch, activeRef, viewportRef } = useApp()
+  const { provider, options, mode, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'draw'].includes(mode)
-  const hasDrawCapability = provider.capabilities?.hasDraw
+  // const hasDrawCapability = provider.capabilities?.hasDraw
+  const changeShapeDisplay = 'block'
+
+  const items = [{
+    name: 'Circle',
+    path: 'M9.999 2c4.415 0 8.001 3.585 8.001 8.001s-3.585 7.999-8.001 7.999S2 14.416 2 10 5.583 2 9.999 2zm0 2C6.688 3.999 4 6.689 4 10s2.688 5.999 5.999 5.999S16 13.311 16 10s-2.69-6.001-6.001-6.001z'
+  }, {
+    name: 'Square',
+    path: 'M18.002 18H2.001V2h16.001v16zM16.001 4H4.002v12h11.999V4z'
+  }, {
+    name: 'Custom',
+    path: 'M2.98 6h-.919V2H5.98v1h8.041V2h3.919v4h-.96v7.996h.96v4h-3.919V17H5.98v1H2.061v-4h.919V6zm3-1v1h-1v8h1v1h8.041v-1.004h.959V6h-.959V5H5.98z'
+  }]
+
+  const shape = items[mode === 'draw' ? 2 : 1]
 
   if (!isQueryMode) {
     return null
   }
 
-  const handleShapeClick = () => {
-    provider.draw.edit()
-    activeRef.current = viewportRef.current
-    activeRef.current?.focus()
-    dispatch({ type: 'SET_MODE', payload: { value: 'draw' } })
+  const handleShapeSelect = (index) => {
+    const shapeName = items[index].name.toLowerCase()
+    const value = shapeName === 'custom' ? 'draw' : 'frame'
+    if (value === 'draw') {
+      provider.draw.edit()
+    } else {
+      provider.draw.reset()
+    }
+    dispatch({ type: 'SET_MODE', payload: { value, shape: shapeName } })
   }
 
-  const handleSquareClick = () => {
-    provider.draw.reset()
-    dispatch({ type: 'SET_MODE', payload: { value: 'frame' } })
+  const handleDeleteVertexClick = () => {
+    console.log('handleDeleteVertexClick')
   }
 
   return (
     <div className='fm-o-viewport-controls'>
-      <button onClick={handleShapeClick} className='fm-c-btn fm-c-btn--edit' {...mode === 'draw' ? { style: { display: 'none' } } : {}}>
-        <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='none' stroke='currentColor' strokeWidth='2'>
-          <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
-          <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none' />
-        </svg>
-        <span>Edit shape</span>
-      </button>
-      {hasDrawCapability
-        ? (
-          <div className='fm-o-viewport-controls__group' {...mode === 'frame' ? { style: { display: 'none' } } : {}}>
-            <Tooltip id={`${id}-frame-label`} position='below' cssModifier='frame' text='Use frame'>
-              <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-frame-label`}>
-                <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
-                  <path d='M3.001 3h14v14h-14z' fill='none' stroke='currentColor' strokeWidth='2' />
-                </svg>
-              </button>
-            </Tooltip>
-            <Tooltip id={`${id}-dimensions-label`} position='below' cssModifier='format' text='Edit dimensions'>
-              <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-dimensions-label`} aria-disabled='true'>
-                <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-                  <path d='M5.974 4.976v1h-4v-4h4v1h8.052v-1h4v4h-4v-1H5.974zm12 13.048h-16v-10h16v10zm-12.5-8h-1.5v6h12v-6h-1.5v3h-2v-3h-1.466v4h-2v-4H7.474v3h-2v-3z'/>
-                  {/* <path d='M6.146 10.269l-.995-.995c-.193-.192-.193-.505 0-.698l1.224-1.224 6.343 6.343-1.224 1.224c-.193.193-.506.193-.698 0l-1.115-1.114c-.39-.39-1.102-.353-1.414 0L4.76 18.019c-.702.628-2.048.781-2.828 0s-.629-2.126 0-2.828c.756-.846 3.695-3.048 4.214-3.507.353-.313.39-1.024 0-1.415zm-3.507 7.043a1 1 0 0 0 1.414-1.414 1 1 0 0 0-1.414 1.414zM7.415 6.271l4.819-4.82 1.071 1.071-.333 1.081 1.04-.374 1.839 1.839-1.186 2.741 2.529-1.398 1.404 1.404-4.82 4.82-6.363-6.364z' fill='currentColor' stroke='currentColor' strokeWidth='.1' /> */}
-                </svg>
-              </button>
-            </Tooltip>
-            <Tooltip id={`${id}-delete-label`} position='below' cssModifier='delete' text='Delete point'>
-              <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-label`} aria-disabled='true'>
-                <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
-                  <path d='M15.985 6v7.048M12.993 16h-6.98M4.02 13.996V6m1.994-2h7.977' stroke='currentColor' strokeWidth='2' />
-                  <path d='M2 2h3.988v4H2zm0 12h3.988v4H2zM14.016 2h3.988v4h-3.988z' fill='currentColor' />
-                  <g fill='none' stroke='currentColor' strokeWidth='2'>
-                    <path d='M12.521 12.548l6.98 7' />
-                    <path d='M12.521 19.548l6.98-7' />
-                  </g>
-                </svg>
-              </button>
-            </Tooltip>
-          </div>
-          )
-        : (
-          <button onClick={handleSquareClick} className='fm-c-btn fm-c-btn--edit' {...mode === 'frame' ? { style: { display: 'none' } } : {}}>
-            <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
-              <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
-              <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none' />
-            </svg>
-            <span>Use square</span>
-          </button>
-          )}
+      <Dropdown id={id} name='Change shape' display={changeShapeDisplay} items={items} selected={shape} handleSelect={handleShapeSelect} />
+      <Tooltip id={`${id}-delete-vertex-label`} position='below' cssModifier='delete-vertex' text='Delete point' display='none'>
+        <button onClick={handleDeleteVertexClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-vertex-label`} aria-disabled='true'>
+          <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
+            <path d='M15.985 6v7.048M12.993 16h-6.98M4.02 13.996V6m1.994-2h7.977' stroke='currentColor' strokeWidth='2' />
+            <path d='M2 2h3.988v4H2zm0 12h3.988v4H2zM14.016 2h3.988v4h-3.988z' fill='currentColor' />
+            <g fill='none' stroke='currentColor' strokeWidth='2'>
+              <path d='M12.521 12.548l6.98 7' />
+              <path d='M12.521 19.548l6.98-7' />
+            </g>
+          </svg>
+        </button>
+      </Tooltip>
     </div>
   )
 }

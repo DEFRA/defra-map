@@ -45,6 +45,7 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode,
+    shape: null,
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,

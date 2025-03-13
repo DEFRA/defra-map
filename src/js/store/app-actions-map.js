@@ -101,6 +101,7 @@ const setMode = (state, payload) => {
     ...state,
     mode: payload.value || state.mode,
     query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
+    shape: payload.shape,
     activePanel: null,
     featureId: null,
     targetMarker: null

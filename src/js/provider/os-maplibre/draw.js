@@ -20,14 +20,13 @@ export class Draw {
     }
 
     // Start new
-    this.start('frame')
+    this.start(options.mode || 'frame')
   }
 
   // Add or edit query
   start (mode) {
     const { draw, oFeature } = this
     const { map } = this.provider
-    const isFrame = mode === 'frame'
     const hasDraw = map.hasControl(draw)
 
     // Zoom to extent if we have an existing graphic
@@ -37,17 +36,22 @@ export class Draw {
     }
 
     // Remove existing feature
-    if (isFrame && hasDraw) {
+    if (mode === 'frame' && hasDraw) {
       map.removeControl(this.draw)
     }
 
     // Draw existing feature
-    if (!isFrame && !hasDraw) {
+    if (mode === 'draw' && !hasDraw && oFeature) {
       this.drawFeature(oFeature)
     }
 
+    // Draw from paddingBox
+    if (mode === 'draw' && !hasDraw && !oFeature) {
+      this.edit()
+    }
+
     // Enable direct select mode
-    if (!isFrame && hasDraw) {
+    if (mode === 'draw' && hasDraw) {
       draw.changeMode('direct_select', { featureId: 'shape' })
     }
   }
@@ -82,7 +86,9 @@ export class Draw {
   // Reset to square
   reset () {
     const { map } = this.provider
-    map.removeControl(this.draw)
+    if (map.hasControl(this.draw)) {
+      map.removeControl(this.draw)
+    }
   }
 
   // Cancel update

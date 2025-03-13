@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 
-export default function Tooltip ({ id, position, text, cssModifier, children }) {
+export default function Tooltip ({ id, position, text, cssModifier, display, children }) {
   const { interfaceType } = useApp()
   const [isVisible, setIsVisible] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
@@ -48,6 +48,7 @@ export default function Tooltip ({ id, position, text, cssModifier, children }) 
   return (
     <div
       className={`fm-c-tooltip fm-c-tooltip--${position}${cssModifier ? ' fm-c-tooltip--' + cssModifier : ''}${isVisible ? ' fm-c-tooltip--visible' : ''}${hasFocusWithin ? ' fm-u-focus-within' : ''}`}
+      style={{ display }}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
       onMouseDown={hideTooltip}

@@ -301,7 +301,7 @@ export default function Viewport () {
   // Initialise draw
   useEffect(() => {
     if (provider.map && !provider.draw && mode !== 'default') {
-      provider.initDraw(queryArea)
+      provider.initDraw({ ...queryArea, mode })
     }
   }, [provider.map, mode])
 

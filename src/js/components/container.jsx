@@ -3,7 +3,6 @@ import { ViewportProvider } from '../store/viewport-provider.jsx'
 import { useApp } from '../store/use-app'
 import { defaults, events, settings } from '../store/constants'
 import { updateTitle, toggleInert, constrainFocus } from '../lib/dom'
-import { isFeatureSquare } from '../lib/viewport.js'
 import eventBus from '../lib/eventbus'
 import Viewport from './viewport.jsx'
 import Exit from './exit.jsx'
@@ -35,7 +34,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, query, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)

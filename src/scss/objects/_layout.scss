@@ -185,6 +185,11 @@
     padding: $margin;
     pointer-events: none;
 
+    &__column {
+        // position: relative;
+        z-index: 1;
+    }
+
     &__column:first-child {
         display: flex;
         flex-direction: row;
@@ -195,6 +200,7 @@
 
     &__column:last-child {
         display: flex;
+        z-index: 2;
         flex-direction: column;
         flex-grow: 1;
         flex-basis: 0;
@@ -230,6 +236,10 @@
 
 .fm-o-viewport-controls {
     display: flex;
+}
+
+.fm-o-viewport-controls__group {
+    background-color: var(--background-colour);
 }
 
 .fm-o-buttons {
@@ -452,7 +462,8 @@
 .fm-o-top__column > .fm-c-btn,
 .fm-o-top__column > .fm-c-tooltip .fm-c-btn,
 .fm-o-top__column > .fm-c-zoom,
-.fm-o-top__column > .fm-o-viewport-controls {
+.fm-o-viewport-controls .fm-c-btn,
+.fm-o-viewport-controls__group {
     box-shadow: $button-shadow;
 }
 

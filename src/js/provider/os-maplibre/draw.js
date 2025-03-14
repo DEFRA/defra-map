@@ -2,26 +2,27 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding } from '../../lib/viewport'
-import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    console.log(options)
+    const { mode, feature } = options
     this.provider = provider
-    Object.assign(this, options)
 
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
 
+    this.oFeature = feature
+
     // Add existing feature
-    if (options.feature) {
-      this.drawFeature(options.feature)
-      this.oFeature = options.feature
+    if (feature && mode === 'default') {
+      this.drawFeature(feature)
       return
     }
 
     // Start new
-    this.start(options.mode)
+    this.start(mode)
+
+    Object.assign(this, options)
   }
 
   // Add or edit query
@@ -33,7 +34,7 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
       const bounds = this.getBoundsFromFeature(oFeature)
-      map.fitBounds(bounds, { duration: defaults.ANIMATION.duration })
+      map.fitBounds(bounds, { animate: false })
     }
 
     // Remove existing feature

@@ -1,29 +1,29 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
-import Dropdown from './dropdown.jsx'
+import ActionMenu from './action-menu.jsx'
 import { drawModes } from '../store/constants.js'
 
 export default function DrawEdit () {
-  const { provider, options, mode, drawMode, dispatch } = useApp()
+  const { provider, options, mode, shape, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   const hasDrawCapability = provider.capabilities?.hasDraw
   const changeShapeDisplay = 'block'
-  const selectedDrawMode = drawMode ? drawModes.find(m => m.shape === drawMode) : drawModes[0]
+  const selectedDrawMode = drawModes.find(m => m.id === shape) || drawModes[0]
 
   if (!isQueryMode) {
     return null
   }
 
-  const handleShapeSelect = (shape) => {
-    const value = drawModes[shape]
+  const handleShapeSelect = (id) => {
+    const value = drawModes.find(m => m.id === id).mode
     if (value === 'vertex') {
       provider.draw.edit()
     } else {
       provider.draw.reset()
     }
-    dispatch({ type: 'SET_MODE', payload: { value, drawMode: shape } })
+    dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }
 
   const handleDeleteVertexClick = () => {
@@ -32,7 +32,7 @@ export default function DrawEdit () {
 
   return (
     <div className='fm-o-viewport-controls'>
-      <Dropdown id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} />
+      <ActionMenu id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} />
       <Tooltip id={`${id}-delete-vertex-label`} position='below' cssModifier='delete-vertex' text='Delete point' display='none'>
         <button onClick={handleDeleteVertexClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-vertex-label`} aria-disabled='true'>
           <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>

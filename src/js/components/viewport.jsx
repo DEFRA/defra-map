@@ -140,10 +140,6 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
-    // Add polygonFeature
-    if (queryArea?.feature) {
-      provider.initDraw(queryArea)
-    }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, style: style.name, size
     })
@@ -300,7 +296,7 @@ export default function Viewport () {
 
   // Initialise draw
   useEffect(() => {
-    if (provider.map && !provider.draw && mode !== 'default') {
+    if (provider.map && !provider.draw && (mode !== 'default' || queryArea?.feature)) {
       provider.initDraw({ ...queryArea, mode, drawMode })
     }
   }, [provider.map, mode])

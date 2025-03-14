@@ -3,13 +3,14 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
+import { getFeatureShape } from '../lib/viewport'
 
 const getIsPixelVisible = (interfaceType, isTargetVisible, activePanel) => {
   return interfaceType === 'touch' && isTargetVisible && !activePanel
 }
 
-const getIsPolygonVisible = (isDrawVisible, query, activePanel, isMobile) => {
-  return !isDrawVisible && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
+const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
+  return isDefaultMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
 }
 
 export default function Actions () {
@@ -18,7 +19,8 @@ export default function Actions () {
 
   const handleUpdateClick = () => {
     const newQuery = provider.draw.finish()
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery } })
+    const shape = getFeatureShape(newQuery)
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery, shape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
@@ -27,7 +29,8 @@ export default function Actions () {
 
   const handleCancelClick = () => {
     provider.draw.cancel()
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default' } })
+    const shape = getFeatureShape(query)
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
@@ -43,17 +46,17 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
-  const isDrawVisible = ['frame', 'vertex'].includes(mode)
+  const isDefaultMode = mode === 'default'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
-  const isPolygonVisible = getIsPolygonVisible(isDrawVisible, query, activePanel, isMobile)
-  const hasActions = isDrawVisible || isPixelVisible || isPolygonVisible
+  const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
+  const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(!isDrawVisible && { style: { display: 'none' } })}>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(isDefaultMode && { style: { display: 'none' } })}>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
-      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary' {...(!isDrawVisible && { style: { display: 'none' } })}>
+      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
         Cancel
       </button>
       <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>

@@ -5,6 +5,7 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
+    const { mode, feature } = options
     this.provider = provider
     Object.assign(this, options)
 
@@ -12,34 +13,45 @@ export class Draw {
     provider.draw = this
 
     // Add existing feature
-    if (options.feature) {
-      this.create(options.feature)
+    if (feature) {
+      const graphic = this.getGraphicFromFeature(feature)
+      this.oGraphic = graphic.clone()
+    }
+
+    // Add graphic
+    if (feature && mode === 'default') {
+      this.addGraphic(this.oGraphic)
       return
     }
 
     // Start new
-    this.start('frame')
+    this.start(mode)
   }
 
   start (mode) {
     const { provider, oGraphic } = this
-    const isFrame = mode === 'frame'
 
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      provider.view.goTo({ target: oGraphic, ...(isFrame && this.originalZoom && { zoom: this.originalZoom }) })
+      provider.view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
     }
 
     // Remove graphic if frame mode
-    if (isFrame) {
+    if (mode === 'frame') {
       const { graphicsLayer } = this.provider
       graphicsLayer.removeAll()
-      return
     }
 
-    // Edit graphic
-    this.editGraphic(this.oGraphic)
+    // Draw existing feature
+    if (mode === 'vertex' && oGraphic) {
+      this.editGraphic(oGraphic)
+    }
+
+    // Draw from paddingBox
+    if (mode === 'vertex' && !oGraphic) {
+      this.edit()
+    }
   }
 
   edit () {
@@ -74,12 +86,6 @@ export class Draw {
     this.destroy()
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
-  }
-
-  create (feature) {
-    const graphic = this.getGraphicFromFeature(feature)
-    this.oGraphic = graphic.clone()
-    this.addGraphic(graphic)
   }
 
   finish () {

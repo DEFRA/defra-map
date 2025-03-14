@@ -239,10 +239,14 @@ export const getShortcutKey = (e, featuresViewport) => {
   return id
 }
 
-export const isFeatureSquare = (feature) => {
-  const coords = feature.geometry.coordinates
-  const flatCoords = Array.from(new Set(coords.flat(2)))
-  return flatCoords.length === 4
+export const getFeatureShape = (feature) => {
+  let shape
+  if (feature) {
+    const coords = feature.geometry.coordinates
+    const flatCoords = Array.from(new Set(coords.flat(2)))
+    shape = flatCoords.length === 4 ? 'square' : 'polygon'
+  }
+  return shape
 }
 
 export const spatialNavigate = (direction, start, pixels) => {

@@ -1,6 +1,6 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
-import { getStyle, isFeatureSquare } from '../lib/viewport'
+import { getStyle, getFeatureShape } from '../lib/viewport'
 import { drawModes } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
@@ -25,14 +25,10 @@ export const initialState = (options) => {
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
 
-  let drawMode = options.drawMode
-  let mode = drawMode ? drawModes.find(m => m.shape === drawMode).mode : 'default'
   const query = queryArea?.feature
-
-  if (drawMode && query) {
-    drawMode = isFeatureSquare(query) ? 'square' : 'polygon'
-    mode = isFeatureSquare(query) ? 'frame' : 'vertex'
-  }
+  const shape = getFeatureShape(query) || options.drawMode
+  const drawMode = options.drawMode && shape ? shape : options.drawMode
+  const mode = drawMode ? drawModes.find(m => m.id === drawMode).mode : 'default'
 
   const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 
@@ -56,6 +52,7 @@ export const initialState = (options) => {
     hasViewportLabel: false,
     mode,
     drawMode,
+    shape,
     isFrameVisible: false,
     isTargetVisible: false,
     query,

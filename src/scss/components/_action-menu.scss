@@ -3,7 +3,7 @@
 @use '../tools/mixins' as *;
 @use '../settings/dimensions' as *;
 
-.fm-c-dropdown {
+.fm-c-action-menu {
     position: relative;
 
     &__list {
@@ -23,7 +23,7 @@
             @include focus($offset: -3px);
         }
 
-        &.fm-u-focus-visible .fm-c-dropdown__item--selected {
+        &.fm-u-focus-visible .fm-c-action-menu__item--selected {
             background-color: var(--button-hover-colour);
         }
     }
@@ -64,5 +64,6 @@
         transform: rotate(135deg);
         border-top: 0.125rem solid;
         border-right: 0.125rem solid;
+        margin-left: 7px;
     }
 }

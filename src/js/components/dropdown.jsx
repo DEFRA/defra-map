@@ -54,7 +54,7 @@ export default function Dropdown ({ id, name, display, items, selected, handleSe
       e.preventDefault()
       instigatorRef.current = buttonRef.current
       setIsExpanded(false)
-      handleSelect(index)
+      handleSelect(items[index].name)
     }
   }
 
@@ -65,7 +65,7 @@ export default function Dropdown ({ id, name, display, items, selected, handleSe
   const handleItemClick = (_, i) => {
     instigatorRef.current = buttonRef.current
     setIsExpanded(false)
-    handleSelect(i)
+    handleSelect(items[i].name)
   }
 
   useEffect(() => {

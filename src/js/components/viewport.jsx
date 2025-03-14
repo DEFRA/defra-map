@@ -16,7 +16,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 }
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
+  const { isContainerReady, provider, options, parent, mode, drawMode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
@@ -301,7 +301,7 @@ export default function Viewport () {
   // Initialise draw
   useEffect(() => {
     if (provider.map && !provider.draw && mode !== 'default') {
-      provider.initDraw({ ...queryArea, mode })
+      provider.initDraw({ ...queryArea, mode, drawMode })
     }
   }, [provider.map, mode])
 

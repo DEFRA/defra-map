@@ -3,21 +3,16 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
-import { isFeatureSquare } from '../lib/viewport.js'
 
 export default function Draw () {
-  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, activeRef, viewportRef } = useApp()
+  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, mode, drawMode, query, activeRef, viewportRef } = useApp()
   const { styles, minZoom, maxZoom } = queryArea
   const { dispatch: viewportDispatch, size, style } = useViewport()
-
   const startBtnRef = useRef(null)
 
-  const isFrameMode = !query || (query && isFeatureSquare(query))
-  const drawMode = isFrameMode ? 'frame' : 'draw'
-
   const handleStartClick = () => {
-    provider.draw?.start(drawMode)
-    appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
+    provider.draw?.start(mode)
+    appDispatch({ type: 'SET_MODE', payload: { value: mode, query, drawMode } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, style, size, segments, layers })
     activeRef.current = viewportRef.current
@@ -37,7 +32,7 @@ export default function Draw () {
       <h2 className='fm-c-menu__heading'>{queryArea.heading}</h2>
       <div className='fm-c-menu__item'>
         <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
-          {isFrameMode
+          {mode === 'frame'
             ? (
               <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
                 <path d='M3.001 3h14v14h-14z' fill='none' stroke='currentColor' strokeWidth='2' />

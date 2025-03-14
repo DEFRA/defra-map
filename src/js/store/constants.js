@@ -73,3 +73,21 @@ export const margin = {
   BOTTOM: 15,
   LEFT: 70
 }
+
+export const drawModes = [{
+    name: 'Square',
+    shape: 'square',
+    mode: 'frame',
+    path: 'M18.002 18H2.001V2h16.001v16zM16.001 4H4.002v12h11.999V4z'
+  }, {
+    name: 'Circle',
+    shape: 'circle',
+    mode: 'frame',
+    path: 'M9.999 2c4.415 0 8.001 3.585 8.001 8.001s-3.585 7.999-8.001 7.999S2 14.416 2 10 5.583 2 9.999 2zm0 2C6.688 3.999 4 6.689 4 10s2.688 5.999 5.999 5.999S16 13.311 16 10s-2.69-6.001-6.001-6.001z'
+  }, {
+    name: 'Polygon',
+    shape: 'polygon',
+    mode: 'vertex',
+    path: 'M2.98 6h-.919V2H5.98v1h8.041V2h3.919v4h-.96v7.996h.96v4h-3.919V17H5.98v1H2.061v-4h.919V6zm3-1v1h-1v8h1v1h8.041v-1.004h.959V6h-.959V5H5.98z'
+  }
+]

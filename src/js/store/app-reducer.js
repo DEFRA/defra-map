@@ -1,6 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
-import { getStyle } from '../lib/viewport'
+import { getStyle, isFeatureSquare } from '../lib/viewport'
+import { drawModes } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -23,7 +24,16 @@ export const initialState = (options) => {
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-  const mode = options.mode || 'default'
+
+  let drawMode = options.drawMode
+  let mode = drawMode ? drawModes.find(m => m.shape === drawMode).mode : 'default'
+  const query = queryArea?.feature
+
+  if (drawMode && query) {
+    drawMode = isFeatureSquare(query) ? 'square' : 'polygon'
+    mode = isFeatureSquare(query) ? 'frame' : 'vertex'
+  }
+
   const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 
   return {
@@ -45,10 +55,10 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode,
-    shape: null,
+    drawMode,
     isFrameVisible: false,
     isTargetVisible: false,
-    query: queryArea?.feature,
+    query,
     hash: 1
   }
 }

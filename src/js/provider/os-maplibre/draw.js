@@ -6,6 +6,7 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
+    console.log(options)
     this.provider = provider
     Object.assign(this, options)
 
@@ -20,14 +21,14 @@ export class Draw {
     }
 
     // Start new
-    this.start(options.mode || 'frame')
+    this.start(options.mode)
   }
 
   // Add or edit query
   start (mode) {
     const { draw, oFeature } = this
     const { map } = this.provider
-    const hasDraw = map.hasControl(draw)
+    const hasDrawControl = map.hasControl(draw)
 
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
@@ -36,22 +37,22 @@ export class Draw {
     }
 
     // Remove existing feature
-    if (mode === 'frame' && hasDraw) {
+    if (mode === 'frame' && hasDrawControl) {
       map.removeControl(this.draw)
     }
 
     // Draw existing feature
-    if (mode === 'draw' && !hasDraw && oFeature) {
+    if (mode === 'vertex' && !hasDrawControl && oFeature) {
       this.drawFeature(oFeature)
     }
 
     // Draw from paddingBox
-    if (mode === 'draw' && !hasDraw && !oFeature) {
+    if (mode === 'vertex' && !hasDrawControl && !oFeature) {
       this.edit()
     }
 
     // Enable direct select mode
-    if (mode === 'draw' && hasDraw) {
+    if (mode === 'vertex' && hasDrawControl) {
       draw.changeMode('direct_select', { featureId: 'shape' })
     }
   }
@@ -59,10 +60,10 @@ export class Draw {
   // Edit nodes
   edit () {
     const { map, paddingBox } = this.provider
-    const hasDraw = map.hasControl(this.draw)
+    const hasDrawControl = map.hasControl(this.draw)
 
     // Draw feature
-    if (!hasDraw) {
+    if (!hasDrawControl) {
       const feature = this.getFeatureFromElement(paddingBox)
       this.drawFeature(feature)
     }
@@ -95,23 +96,23 @@ export class Draw {
   cancel () {
     const { draw, oFeature } = this
     const { map } = this.provider
-    const hasDraw = map.hasControl(draw)
+    const hasDrawControl = map.hasControl(draw)
 
     // Re-draw original feature and disable interactions
     // Requires three conditions for performance
-    if (hasDraw && oFeature) {
+    if (hasDrawControl && oFeature) {
       draw.delete(['shape'])
       draw.add(oFeature)
       draw.changeMode('disabled')
     }
 
     // Remove draw
-    if (hasDraw && !oFeature) {
+    if (hasDrawControl && !oFeature) {
       map.removeControl(draw)
     }
 
     // Draw original feature
-    if (!hasDraw && oFeature) {
+    if (!hasDrawControl && oFeature) {
       this.drawFeature(oFeature)
     }
   }
@@ -119,15 +120,15 @@ export class Draw {
   // Confirm or update
   finish () {
     const { map, paddingBox } = this.provider
-    const hasDraw = map.hasControl(this.draw)
+    const hasDrawControl = map.hasControl(this.draw)
 
     // Disable interactions
-    if (hasDraw) {
+    if (hasDrawControl) {
       this.draw.changeMode('disabled')
     }
 
     // Draw feature
-    if (!hasDraw) {
+    if (!hasDrawControl) {
       const elFeature = this.getFeatureFromElement(paddingBox)
       this.drawFeature(elFeature)
     }

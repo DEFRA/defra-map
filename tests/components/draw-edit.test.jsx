@@ -40,7 +40,7 @@ describe('draw-edit', () => {
 
   it('should handle use square click and not show edit button', () => {
     jest.mocked(useApp).mockReturnValue({
-      mode: 'draw',
+      mode: 'vertex',
       dispatch,
       provider: {
         draw: {

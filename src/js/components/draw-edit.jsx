@@ -2,40 +2,28 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 import Dropdown from './dropdown.jsx'
+import { drawModes } from '../store/constants.js'
 
 export default function DrawEdit () {
-  const { provider, options, mode, dispatch } = useApp()
+  const { provider, options, mode, drawMode, dispatch } = useApp()
   const { id } = options
-  const isQueryMode = ['frame', 'draw'].includes(mode)
-  // const hasDrawCapability = provider.capabilities?.hasDraw
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const hasDrawCapability = provider.capabilities?.hasDraw
   const changeShapeDisplay = 'block'
-
-  const items = [{
-    name: 'Circle',
-    path: 'M9.999 2c4.415 0 8.001 3.585 8.001 8.001s-3.585 7.999-8.001 7.999S2 14.416 2 10 5.583 2 9.999 2zm0 2C6.688 3.999 4 6.689 4 10s2.688 5.999 5.999 5.999S16 13.311 16 10s-2.69-6.001-6.001-6.001z'
-  }, {
-    name: 'Square',
-    path: 'M18.002 18H2.001V2h16.001v16zM16.001 4H4.002v12h11.999V4z'
-  }, {
-    name: 'Custom',
-    path: 'M2.98 6h-.919V2H5.98v1h8.041V2h3.919v4h-.96v7.996h.96v4h-3.919V17H5.98v1H2.061v-4h.919V6zm3-1v1h-1v8h1v1h8.041v-1.004h.959V6h-.959V5H5.98z'
-  }]
-
-  const shape = items[mode === 'draw' ? 2 : 1]
+  const selectedDrawMode = drawMode ? drawModes.find(m => m.shape === drawMode) : drawModes[0]
 
   if (!isQueryMode) {
     return null
   }
 
-  const handleShapeSelect = (index) => {
-    const shapeName = items[index].name.toLowerCase()
-    const value = shapeName === 'custom' ? 'draw' : 'frame'
-    if (value === 'draw') {
+  const handleShapeSelect = (shape) => {
+    const value = drawModes[shape]
+    if (value === 'vertex') {
       provider.draw.edit()
     } else {
       provider.draw.reset()
     }
-    dispatch({ type: 'SET_MODE', payload: { value, shape: shapeName } })
+    dispatch({ type: 'SET_MODE', payload: { value, drawMode: shape } })
   }
 
   const handleDeleteVertexClick = () => {
@@ -44,7 +32,7 @@ export default function DrawEdit () {
 
   return (
     <div className='fm-o-viewport-controls'>
-      <Dropdown id={id} name='Change shape' display={changeShapeDisplay} items={items} selected={shape} handleSelect={handleShapeSelect} />
+      <Dropdown id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} />
       <Tooltip id={`${id}-delete-vertex-label`} position='below' cssModifier='delete-vertex' text='Delete point' display='none'>
         <button onClick={handleDeleteVertexClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-vertex-label`} aria-disabled='true'>
           <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>

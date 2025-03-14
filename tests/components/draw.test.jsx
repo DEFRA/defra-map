@@ -60,7 +60,7 @@ describe('draw', () => {
       dispatch: appDispatch,
       activeRef,
       viewportRef,
-      mode: 'draw',
+      mode: 'vertex',
       query: true,
       queryArea: {
         heading: ''

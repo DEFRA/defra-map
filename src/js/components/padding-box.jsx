@@ -31,9 +31,9 @@ export default function PaddingBox ({ children }) {
     }, 0)
   }, [isMobile])
 
-  // Reset padding on entering draw mode
+  // Reset padding on entering vertex mode
   useEffect(() => {
-    if (['frame', 'draw'].includes(mode)) {
+    if (['frame', 'vertex'].includes(mode)) {
       dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
     }
   }, [mode])

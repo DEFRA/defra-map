@@ -43,7 +43,7 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
-  const isDrawVisible = ['frame', 'draw'].includes(mode)
+  const isDrawVisible = ['frame', 'vertex'].includes(mode)
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDrawVisible, query, activePanel, isMobile)
   const hasActions = isDrawVisible || isPixelVisible || isPolygonVisible

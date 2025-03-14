@@ -61,10 +61,12 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleFocus = () => {
+    console.log('search: handleFocus')
     dispatch({ type: 'FOCUS', payload: interfaceType === 'keyboard' })
   }
 
   const handleSubmit = e => {
+    console.log('search: handleCollapse')
     e.preventDefault()
     const suggestion = state.selected >= 0 ? state.suggestions[state.selected] : null
     const value = suggestion?.text || state.value
@@ -73,16 +75,19 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleCollapse = () => {
+    console.log('handleCollapse')
     appDispatch({ type: 'CLOSE' })
     activeRef.current = instigatorRef.current
   }
 
   const handleClear = () => {
+    console.log('handleClear')
     dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: interfaceType === 'keyboard' } })
     inputRef.current.focus()
   }
 
   const handleKeyDown = e => {
+    console.log('search: handleKeyDown')
     // Escape key
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
@@ -100,6 +105,7 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleKeyUp = e => {
+    console.log('search: handleKeyUp')
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
       handleCollapse()
@@ -107,10 +113,12 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleChange = e => {
+    console.log('handleChange')
     dispatch({ type: 'CHANGE', payload: e.target.value })
   }
 
   const handleClick = () => {
+    console.log('search: handleClick')
     const isKeyboard = interfaceType === 'keyboard'
     dispatch({ type: 'CLICK', payload: { isKeyboard, activeRef: inputRef } })
   }
@@ -169,10 +177,11 @@ export default function Search ({ instigatorRef }) {
             onClick={handleClick}
             onChange={handleChange}
             onFocus={handleFocus}
-            onBlur={() => dispatch({ type: 'BLUR' })} ref={inputRef}
+            onBlur={() => dispatch({ type: 'BLUR' })}
+            ref={inputRef}
           />
           {hasClear && (
-            <button className='fm-c-search__clear' aria-label='Clear search' type='button' onClick={handleClear} ref={clearBtnRef}>
+            <button className='fm-c-btn fm-c-search__clear' aria-label='Clear search' type='button' onClick={handleClear} ref={clearBtnRef}>
               <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fill='currentColor'><path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' style={{ fill: 'currentColor', strokeWidth: '0' }} /></svg>
             </button>
           )}

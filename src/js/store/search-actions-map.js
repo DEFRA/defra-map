@@ -30,7 +30,6 @@ const focus = (state, payload) => {
 const blur = (state) => {
   return {
     ...state,
-    isVisible: false,
     isFocusWithin: false,
     isFocusVisibleWithin: false
   }

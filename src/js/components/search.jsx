@@ -61,12 +61,10 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleFocus = () => {
-    console.log('search: handleFocus')
     dispatch({ type: 'FOCUS', payload: interfaceType === 'keyboard' })
   }
 
   const handleSubmit = e => {
-    console.log('search: handleCollapse')
     e.preventDefault()
     const suggestion = state.selected >= 0 ? state.suggestions[state.selected] : null
     const value = suggestion?.text || state.value
@@ -75,19 +73,16 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleCollapse = () => {
-    console.log('handleCollapse')
     appDispatch({ type: 'CLOSE' })
     activeRef.current = instigatorRef.current
   }
 
   const handleClear = () => {
-    console.log('handleClear')
     dispatch({ type: 'CLEAR', payload: { activeRef: inputRef, isFocusVisibleWithin: interfaceType === 'keyboard' } })
     inputRef.current.focus()
   }
 
   const handleKeyDown = e => {
-    console.log('search: handleKeyDown')
     // Escape key
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
@@ -105,7 +100,6 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleKeyUp = e => {
-    console.log('search: handleKeyUp')
     if (['Escape', 'Esc'].includes(e.key)) {
       e.preventDefault()
       handleCollapse()
@@ -113,12 +107,10 @@ export default function Search ({ instigatorRef }) {
   }
 
   const handleChange = e => {
-    console.log('handleChange')
     dispatch({ type: 'CHANGE', payload: e.target.value })
   }
 
   const handleClick = () => {
-    console.log('search: handleClick')
     const isKeyboard = interfaceType === 'keyboard'
     dispatch({ type: 'CLICK', payload: { isKeyboard, activeRef: inputRef } })
   }

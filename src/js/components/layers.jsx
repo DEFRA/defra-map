@@ -18,7 +18,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
   const groups = parseGroups(legend?.key, segments, layers, zoom, hasInputs, queryLabel)
   const isEmptyKey = !hasInputs && !groups.length
   const setIsExpanded = () => dispatch({ type: 'TOGGLE_KEY_EXPANDED', payload: !isKeyExpanded })
-
+  
   useEffect(() => {
     if (!isKeyExpanded) {
       return

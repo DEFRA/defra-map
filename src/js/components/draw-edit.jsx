@@ -8,7 +8,7 @@ export default function DrawEdit () {
   const { provider, options, mode, shape, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'vertex'].includes(mode)
-  const hasDrawCapability = provider.capabilities?.hasDraw
+  // const hasDrawCapability = provider.capabilities?.hasDraw
   const changeShapeDisplay = 'block'
   const selectedDrawMode = drawModes.find(m => m.id === shape) || drawModes[0]
 

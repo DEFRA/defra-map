@@ -34,7 +34,7 @@ describe('Panel', () => {
   })
 
   it('should render the panel with the correct class names', () => {
-    render(<Panel className="test-class" />)
+    render(<Panel className='test-class' />)
     expect(screen.getByRole('region')).toHaveClass('fm-c-panel--test-class')
   })
 
@@ -45,17 +45,17 @@ describe('Panel', () => {
   })
 
   it('should render the panel with the correct aria attributes', () => {
-    render(<Panel label="Test Label" />)
+    render(<Panel label='Test Label' />)
     expect(screen.getByRole('region')).toHaveAttribute('aria-labelledby', 'test-panel-label')
   })
 
   it('should render the panel with the correct width and maxWidth styles when not on mobile and hasWidth is true', () => {
-    render(<Panel width="200px" maxWidth="300px" />)
+    render(<Panel width='200px' maxWidth='300px' />)
     expect(screen.getByRole('region')).toHaveStyle({ width: '200px', maxWidth: '300px' })
   })
 
   it('should render the panel header with the correct label', () => {
-    render(<Panel label="Test Label" />)
+    render(<Panel label='Test Label' />)
     expect(screen.getByText('Test Label')).toBeInTheDocument()
   })
 
@@ -66,7 +66,7 @@ describe('Panel', () => {
   })
 
   it('should render the panel body with the correct HTML content', () => {
-    render(<Panel html="<p>Test HTML</p>" />)
+    render(<Panel html='<p>Test HTML</p>' />)
     expect(screen.getByText('Test HTML')).toBeInTheDocument()
   })
 
@@ -159,7 +159,7 @@ describe('Panel', () => {
 
   it('should not render width styles if isMobile and isInset are true', () => {
     useApp.mockReturnValueOnce({ ...useApp(), isMobile: true })
-    render(<Panel isInset width="200px" maxWidth="300px" />)
+    render(<Panel isInset width='200px' maxWidth='300px' />)
     expect(screen.getByRole('region')).not.toHaveStyle({ width: '200px', maxWidth: '300px' })
   })
 

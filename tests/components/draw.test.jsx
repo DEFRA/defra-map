@@ -5,7 +5,7 @@ import Draw from '../../src/js/components/draw'
 import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
-import { isFeatureSquare } from '../../src/js/lib/viewport'
+import { getFeatureShape } from '../../src/js/lib/viewport'
 
 jest.mock('../../src/js/lib/eventbus')
 jest.mock('../../src/js/store/use-app')
@@ -19,7 +19,7 @@ describe('draw', () => {
   const activeRef = {}
   const viewportRef = {}
 
-  jest.mocked(isFeatureSquare).mockResolvedValue(true)
+  jest.mocked(getFeatureShape).mockResolvedValue(true)
 
   jest.mocked(useViewport).mockReturnValue({
     dispatch: viewportDispatch,

@@ -56,7 +56,7 @@ export default function Actions () {
       <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(isDefaultMode && { style: { display: 'none' } })}>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
-      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
+      <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
         Cancel
       </button>
       <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>

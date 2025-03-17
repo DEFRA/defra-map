@@ -1,4 +1,4 @@
-import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey, spatialNavigate, isFeatureSquare, getScale, getPoint, getStyle } from '../../src/js/lib/viewport'
+import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey, spatialNavigate, getFeatureShape, getScale, getPoint, getStyle } from '../../src/js/lib/viewport'
 import { defaults } from '../../src/js/store/constants'
 
 const mockElement = (boundingRect, closestMock = null) => {
@@ -238,20 +238,20 @@ describe('lib/viewport - spatialNavigate', () => {
   })
 })
 
-describe('lib/viewport - isFeatureSquare', () => {
-  it('should return true for a square feature', () => {
+describe('lib/viewport - getFeatureShape', () => {
+  it('should return \'square\' for a square feature', () => {
     const squareFeature = { geometry: { coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } }
-    expect(isFeatureSquare(squareFeature)).toBe(true)
+    expect(getFeatureShape(squareFeature)).toBe('square')
   })
 
-  it('should return false for a non-square feature', () => {
+  it('should return \'polygon\' for a non-square feature', () => {
     const nonSquareFeature = { geometry: { coordinates: [[[0, 0], [0, 2], [1, 1], [1, 0], [0, 0]]] } }
-    expect(isFeatureSquare(nonSquareFeature)).toBe(false)
+    expect(getFeatureShape(nonSquareFeature)).toBe('polygon')
   })
 
-  it('should return false for an empty feature', () => {
-    const emptyFeature = { geometry: { coordinates: [] } }
-    expect(isFeatureSquare(emptyFeature)).toBe(false)
+  it('should return \'null\' for an empty feature', () => {
+    const emptyFeature = null
+    expect(getFeatureShape(emptyFeature)).toBe(null)
   })
 })
 

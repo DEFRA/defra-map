@@ -186,7 +186,7 @@ export class Draw {
     return graphic
   }
 
-  getGraphicFromFeature = (feature) => {
+  getGraphicFromFeature (feature) {
     return new Graphic({
       geometry: {
         type: 'polygon',

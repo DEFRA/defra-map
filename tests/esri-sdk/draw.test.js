@@ -57,19 +57,46 @@ describe('Draw Class', () => {
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should invoke create() with provided feature', () => {
-      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      const createSpy = jest.spyOn(Draw.prototype, 'create')
-      drawInstance = new Draw(mockProvider, { feature })
-      expect(createSpy).toHaveBeenCalledWith(feature)
-      createSpy.mockRestore()
-    })
-
-    it('should start with "frame" mode when no feature is provided', () => {
+    it('should start with \'undefined\' mode when no feature is provided', () => {
       const startSpy = jest.spyOn(Draw.prototype, 'start')
       drawInstance = new Draw(mockProvider, {})
-      expect(startSpy).toHaveBeenCalledWith('frame')
+      expect(startSpy).toHaveBeenCalledWith(undefined)
       startSpy.mockRestore()
+    })
+
+    it('should generate a new Graphic from the provided feature', () => {
+      const getGraphicFromFeatureSpy = jest.spyOn(Draw.prototype, 'getGraphicFromFeature')
+      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
+      drawInstance = new Draw(mockProvider, { feature })
+      expect(getGraphicFromFeatureSpy).toHaveBeenCalledWith(feature)
+      getGraphicFromFeatureSpy.mockRestore()
+    })
+
+    it('should store the cloned graphic in oGraphic', () => {
+      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
+      drawInstance = new Draw(mockProvider, { feature })
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.clone = jest.fn().mockReturnValue({
+        ...mockGraphic,
+        symbol: {}
+      })
+      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
+      expect(drawInstance.oGraphic).toBeDefined()
+      expect(drawInstance.oGraphic.symbol).toBeDefined()
+    })
+
+    it('should add the generated graphic using addGraphic()', () => {
+      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
+      drawInstance = new Draw(mockProvider, { feature })
+      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
+      mockGraphic.clone = jest.fn().mockReturnValue({
+        ...mockGraphic,
+        symbol: {}
+      })
+      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
+      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+      expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
+      addGraphicSpy.mockRestore()
     })
   })
 
@@ -87,11 +114,11 @@ describe('Draw Class', () => {
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
     })
 
-    it('should initiate editGraphic() when mode is not "frame"', () => {
+    it('should initiate editGraphic() when mode is "vertex"', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      drawInstance.start('default')
+      drawInstance.start('vertex')
       expect(editGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
       editGraphicSpy.mockRestore()
     })
@@ -166,47 +193,6 @@ describe('Draw Class', () => {
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.cancel()
       expect(addGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
-      addGraphicSpy.mockRestore()
-    })
-  })
-
-  describe('create()', () => {
-    it('should generate a new Graphic from the provided feature', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
-      drawInstance.create(feature)
-      expect(drawInstance.getGraphicFromFeature).toHaveBeenCalledWith(feature)
-    })
-
-    it('should store the cloned graphic in oGraphic', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.clone = jest.fn().mockReturnValue({
-        ...mockGraphic,
-        symbol: {}
-      })
-      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
-      drawInstance.create(feature)
-      expect(drawInstance.oGraphic).toBeDefined()
-      expect(drawInstance.oGraphic.clone).toBeDefined()
-      expect(drawInstance.oGraphic.symbol).toBeDefined()
-    })
-
-    it('should add the generated graphic using addGraphic()', () => {
-      drawInstance = new Draw(mockProvider, {})
-      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.clone = jest.fn().mockReturnValue({
-        ...mockGraphic,
-        symbol: {}
-      })
-      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
-      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
-      drawInstance.create(feature)
-      expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       addGraphicSpy.mockRestore()
     })
   })

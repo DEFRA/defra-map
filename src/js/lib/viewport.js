@@ -240,7 +240,7 @@ export const getShortcutKey = (e, featuresViewport) => {
 }
 
 export const getFeatureShape = (feature) => {
-  let shape
+  let shape = null
   if (feature) {
     const coords = feature.geometry.coordinates
     const flatCoords = Array.from(new Set(coords.flat(2)))

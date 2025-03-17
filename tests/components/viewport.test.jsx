@@ -129,6 +129,7 @@ describe('viewport', () => {
         eventHandlers[eventType] = eventHandlers[eventType]?.filter(h => h !== handler)
       }),
       init: jest.fn(),
+      map: jest.fn(),
       transformSearchRequest: jest.fn(),
       transformCallback: jest.fn(),
       setPadding: jest.fn(),
@@ -162,7 +163,7 @@ describe('viewport', () => {
   // Test that viewport responds correctly to provider events
 
   it('should handle provider \'initDraw\' event on mapload', async () => {
-    renderComponent({ queryArea: { feature: {} } })
+    renderComponent({ queryArea: { feature: { geometry: { coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } } } })
     const loadEvent = new CustomEvent('load', { detail: {} })
     act(() => { providerMock.dispatchEvent(loadEvent) })
     expect(providerMock.initDraw).toHaveBeenCalled()

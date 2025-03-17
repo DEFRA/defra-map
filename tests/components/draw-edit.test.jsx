@@ -11,9 +11,10 @@ describe('draw-edit', () => {
   const drawReset = jest.fn()
   const dispatch = jest.fn()
 
-  it('should handle edit click and not show use square button', () => {
+  it('should handle polygon click and show current selection: square', () => {
     jest.mocked(useApp).mockReturnValue({
       mode: 'frame',
+      shape: 'square',
       dispatch,
       provider: {
         draw: {
@@ -28,19 +29,19 @@ describe('draw-edit', () => {
 
     render(<DrawEdit />)
 
-    const editButton = screen.getByText('Edit shape')
-    const useButton = screen.getByText('Use square')
+    expect(screen.getByText('Current selection: Square')).toBeTruthy()
+    const polygonOption = screen.getByText('Polygon')
 
-    fireEvent.click(editButton)
+    fireEvent.click(polygonOption)
 
     expect(drawEdit).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
-    expect(useButton.style.display).toEqual('none')
   })
 
-  it('should handle use square click and not show edit button', () => {
+  it('should handle square click and show current selection: polygon', () => {
     jest.mocked(useApp).mockReturnValue({
       mode: 'vertex',
+      shape: 'polygon',
       dispatch,
       provider: {
         draw: {
@@ -55,13 +56,12 @@ describe('draw-edit', () => {
 
     render(<DrawEdit />)
 
-    const editButton = screen.getByText('Edit shape')
-    const useButton = screen.getByText('Use square')
+    expect(screen.getByText('Current selection: Polygon')).toBeTruthy()
+    const squareOption = screen.getByText('Square')
 
-    fireEvent.click(useButton)
+    fireEvent.click(squareOption)
 
     expect(drawReset).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
-    expect(editButton.style.display).toEqual('none')
   })
 })

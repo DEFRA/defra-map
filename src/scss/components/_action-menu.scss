@@ -10,11 +10,11 @@
         position: absolute;
         list-style: none;
         padding: 0;
-        margin: $margin 0 0 -100px;
+        margin: 5px 0 0 -100px;
         width: 200px;
         left: 50%;
         background-color: var(--background-colour);
-        box-shadow: $panel-shadow;
+        box-shadow: $panel-shadow-offset;
         border-radius: $panel-radius;
         pointer-events: auto;
         outline: 0;
@@ -24,7 +24,8 @@
         }
 
         &.fm-u-focus-visible .fm-c-action-menu__item--selected {
-            background-color: var(--button-hover-colour);
+            background-color: var(--link-colour);
+            color: var(--background-colour);
         }
     }
 
@@ -45,7 +46,8 @@
         }
 
         &:hover {
-            background-color: var(--button-hover-colour);
+            background-color: var(--link-colour);
+            color: var(--background-colour);
         }
     }
 

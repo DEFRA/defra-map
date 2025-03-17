@@ -201,12 +201,19 @@
 
     &:hover {
         @media (hover: hover) and (pointer: fine) {
-            background-color: var(--button-hover-colour);
+            background-color: var(--link-colour);
+            .fm-c-search-item__primary, .fm-c-search-item__qualifier, mark {
+                color: var(--background-colour);
+            }
         }
     }
 
     &--selected {
-        background-color: var(--button-hover-colour);
+        background-color: var(--link-colour);
+        
+        .fm-c-search-item__primary, .fm-c-search-item__qualifier, mark {
+            color: var(--background-colour);
+        }
 
         &::after {
             content: '';
@@ -215,7 +222,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            border: 2px solid var(--button-hover-colour);
+            border: 2px solid var(--link-colour);
         }
     }
 }

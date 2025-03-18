@@ -1,0 +1,32 @@
+name: Sync development with main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch latest changes
+        run: git fetch origin
+
+      - name: Check if development branch exists
+        run: |
+          if git rev-parse --verify origin/development > /dev/null 2>&1; then
+            echo "development branch exists."
+          else
+            echo "Branch 'development' does not exist on remote. Skipping sync."
+            exit 0
+          fi
+
+      - name: Reset development to match main
+        run: |
+          git checkout development
+          git reset --hard origin/main
+          git push --force origin development

@@ -26,7 +26,7 @@ export const initialState = (options) => {
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
 
   const query = queryArea?.feature
-  const shape = getFeatureShape(query) || options.drawMode
+  const shape = getFeatureShape(query) || options.drawMode || 'square'
   const drawMode = options.drawMode && shape ? shape : options.drawMode
   const mode = drawMode ? drawModes.find(m => m.id === drawMode).mode : 'default'
 

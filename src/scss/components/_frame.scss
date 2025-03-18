@@ -60,9 +60,16 @@
 }
 
 // Frame mode
-.fm-c-padding-box--frame-mode .fm-c-padding-box__frame {
-    opacity: 1;
-    border-style: solid;
-    border-color: var(--query-polygon-stroke-colour);
-    border-width: 3px;
+.fm-c-padding-box--square, .fm-c-padding-box--circle {
+    .fm-c-padding-box__frame {
+        opacity: 1;
+        border-style: solid;
+        border-color: var(--query-polygon-stroke-colour);
+        border-width: 3px;
+    }
+}
+
+// Circle frame
+.fm-c-padding-box--circle .fm-c-padding-box__frame {
+    border-radius: 100%;
 }

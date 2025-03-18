@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
-const getClassName = (isFrame, isVisible, isActive, shape) => {
-  console.log('padding-box.jsx', shape)
-  return `fm-c-padding-box${isFrame ? ' fm-c-padding-box--frame-mode' : ''}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`
+const getClassName = (isVisible, isActive, mode, shape) => {
+  const frame = mode === 'frame' ? ` fm-c-padding-box--${shape}` : ''
+  return `fm-c-padding-box${frame}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`
 }
 
 export default function PaddingBox ({ children }) {
@@ -42,8 +42,7 @@ export default function PaddingBox ({ children }) {
   // Template properties
   const isVisible = interfaceType === 'keyboard' && (options.queryLocation?.layers || options.queryFeature?.layers)
   const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length || features?.isPixelFeaturesInMap)
-  const isFrame = mode === 'frame'
-  const className = getClassName(isFrame, isVisible, isActive, shape)
+  const className = getClassName(isVisible, isActive, mode, shape)
 
   return (
     <div className={className} {...padding ? { style: padding } : {}}>

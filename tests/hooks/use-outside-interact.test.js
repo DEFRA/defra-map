@@ -64,7 +64,7 @@ describe('useOutsideInteract', () => {
 
     expect(mockCallback).not.toHaveBeenCalled()
   })
-
+// test
   it('should use different event type when specified', () => {
     const ref = { current: document.createElement('div') }
     renderHook(() => useOutsideInteract(ref, false, 'mousedown', mockCallback))

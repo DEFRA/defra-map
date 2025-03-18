@@ -77,9 +77,9 @@ describe('useOutsideInteract', () => {
     const { unmount } = renderHook(() => useOutsideInteract(ref, false, 'click', mockCallback))
 
     expect(addEventListenerSpy).toHaveBeenCalledTimes(1)
-    
+
     unmount()
-    
+
     expect(removeEventListenerSpy).toHaveBeenCalled()
     expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function))
   })

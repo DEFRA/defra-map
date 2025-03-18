@@ -1,17 +1,25 @@
 name: Sync development with main
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'development'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set Git Identity
+        run: |
+          git config --global user.email "keyurx11@gmail.com"
+          git config --global user.name "Keyur Pandya"
 
       - name: Fetch latest changes
         run: git fetch origin
@@ -25,7 +33,7 @@ jobs:
             exit 0
           fi
 
-      - name: Reset development to match main
+      - name: Merge main into development
         run: |
           git checkout development
           git merge --no-edit origin/main

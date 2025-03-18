@@ -28,5 +28,5 @@ jobs:
       - name: Reset development to match main
         run: |
           git checkout development
-          git reset --hard origin/main
-          git push --force origin development
+          git merge --no-edit origin/main
+          git push origin development

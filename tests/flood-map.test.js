@@ -1008,40 +1008,6 @@ describe('FloodMap', () => {
     // Verify event was NOT dispatched
     expect(eventBus.dispatch).not.toHaveBeenCalled()
   })
-
-  it('should handle _importComponent failure', async () => {
-    const floodMap = new FloodMap('test-id', {})
-
-    // Create real button
-    const mockButton = document.createElement('button')
-    floodMap.button = mockButton
-
-    // Spy on _renderError
-    const renderErrorSpy = jest.spyOn(floodMap, '_renderError')
-
-    // Spy on console.log
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-
-    // Mock the import() to fail
-    const mockError = new Error('Import failed')
-    global.import = jest.fn(() => Promise.reject(mockError))
-
-    try {
-      await floodMap._importComponent()
-    } catch (error) {
-      // Verify the button was hidden - check the actual attribute
-      expect(mockButton.getAttribute('style')).toBe('display: none')
-
-      // Verify error handling
-      expect(renderErrorSpy).toHaveBeenCalledWith(
-        'There was a problem loading the map. Please try again later'
-      )
-      expect(consoleSpy).toHaveBeenCalledWith(mockError)
-    }
-
-    // Clean up
-    consoleSpy.mockRestore()
-  })
 })
 
 // MobileMQ Test Section
@@ -1357,7 +1323,7 @@ describe('_importComponent implementation', () => {
   })
 
   it('should handle _importComponent failure', async () => {
-  // Create FloodMap instance
+    // Create FloodMap instance
     floodMap = new FloodMap('test-id', {})
 
     // Create real button
@@ -1382,8 +1348,8 @@ describe('_importComponent implementation', () => {
       // Call the method
       await floodMap._importComponent()
     } catch (error) {
-      // Wait for any pending promises to resolve
-      await new Promise(process.nextTick)
+      // Assert that the caught error is the expected one
+      expect(error).toBe(mockError)
 
       // Verify the button was hidden
       expect(mockButton.getAttribute('style')).toBe('display: none')

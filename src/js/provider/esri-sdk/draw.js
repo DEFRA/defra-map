@@ -31,6 +31,7 @@ export class Draw {
   start (mode) {
     const { provider, oGraphic } = this
 
+    console.log(oGraphic)
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?

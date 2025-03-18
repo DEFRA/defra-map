@@ -87,14 +87,14 @@ describe('Draw Class', () => {
 
     it('should add the generated graphic using addGraphic()', () => {
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      drawInstance = new Draw(mockProvider, { feature })
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.clone = jest.fn().mockReturnValue({
         ...mockGraphic,
         symbol: {}
       })
-      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
-      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+      jest.spyOn(Draw.prototype, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
+      const addGraphicSpy = jest.spyOn(Draw.prototype, 'addGraphic')
+      drawInstance = new Draw(mockProvider, { mode: 'default', feature })
       expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       addGraphicSpy.mockRestore()
     })
@@ -114,13 +114,21 @@ describe('Draw Class', () => {
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
     })
 
-    it('should initiate editGraphic() when mode is "vertex"', () => {
+    it('should initiate editGraphic() when mode is "vertex" and no original graphic', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.start('vertex')
       expect(editGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
       editGraphicSpy.mockRestore()
+    })
+
+    it('should initiate edit() when mode is "vertex" and there is an original graphic', () => {
+      const editSpy = jest.spyOn(Draw.prototype, 'edit')
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.start('vertex')
+      expect(editSpy).toHaveBeenCalled()
+      editSpy.mockRestore()
     })
   })
 

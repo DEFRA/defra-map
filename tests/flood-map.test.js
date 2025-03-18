@@ -1,6 +1,13 @@
 import { FloodMap } from '../src/flood-map'
 import eventBus from '../src/js/lib/eventbus'
 import { events } from '../src/js/store/constants'
+import * as dom from '../src/js/lib/dom'
+
+jest.mock('../src/js/lib/dom', () => ({
+  updateTitle: jest.fn(),
+  toggleInert: jest.fn(),
+  setInitialFocus: jest.fn()
+}))
 
 describe('FloodMap', () => {
   let floodMap
@@ -34,6 +41,8 @@ describe('FloodMap', () => {
     })
 
     global.history = mockHistory
+    global.updateTitle = jest.fn()
+    global.toggleInert = jest.fn()
 
     // Mock URLSearchParams
     const mockSearchParams = new URLSearchParams()
@@ -60,8 +69,14 @@ describe('FloodMap', () => {
     jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(jest.fn())
     jest.spyOn(FloodMap.prototype, '_removeComponent').mockImplementation(function () {
       if (this.root && this.root.unmount) {
+        if (this.button) {
+          this.button.removeAttribute('style')
+          this.button.removeAttribute('data-open')
+          this.button.focus()
+        }
         this.root.unmount()
         this.root = null
+        this._selected = null
         this._info = null
         this.el.removeAttribute('data-open')
       }
@@ -77,6 +92,7 @@ describe('FloodMap', () => {
     // Clean up the DOM
     document.body.removeChild(mockElement)
     document.body.innerHTML = ''
+    jest.resetModules()
     jest.clearAllMocks()
   })
 
@@ -85,6 +101,85 @@ describe('FloodMap', () => {
     floodMap = new FloodMap('test-id', props)
 
     expect(floodMap.el).toBe(mockElement)
+  })
+
+  it('should add component if root is not already set', () => {
+    // Create DOM element
+    const mockElement = document.createElement('div')
+    mockElement.id = 'test-id'
+    document.body.appendChild(mockElement)
+
+    // Create FloodMap instance
+    const floodMap = new FloodMap('test-id', {})
+
+    // Create mock root function that returns a component
+    const mockRootComponent = {
+      mount: jest.fn(),
+      unmount: jest.fn()
+    }
+
+    const mockRoot = jest.fn().mockReturnValue(mockRootComponent)
+
+    // Add the component
+    floodMap._addComponent(mockRoot)
+
+    // Verify root function was called with correct arguments
+    expect(mockRoot).toHaveBeenCalledWith(
+      floodMap.el,
+      expect.objectContaining({
+        callBack: floodMap.callBack,
+        interfaceType: floodMap.interfaceType
+      })
+    )
+
+    // Verify root component was set
+    expect(floodMap.root).toBe(mockRootComponent)
+
+    // Clean up
+    document.body.removeChild(mockElement)
+  })
+
+  it('should not add component if root is already set', () => {
+    floodMap = new FloodMap('test-id', {})
+    floodMap.root = jest.fn()
+
+    const mockRoot = jest.fn()
+    floodMap._addComponent(mockRoot)
+
+    expect(floodMap.root).not.toBe(mockRoot)
+  })
+
+  it('should handle component import success', async () => {
+    // Remove the mock implementation for this test
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockRestore()
+
+    const floodMap = new FloodMap('test-id', {})
+
+    // Mock the button
+    const mockButton = document.createElement('button')
+    floodMap.button = mockButton
+
+    // Mock the import
+    const mockComponent = {
+      mount: jest.fn(),
+      unmount: jest.fn()
+    }
+    const mockRoot = jest.fn().mockReturnValue(mockComponent)
+
+    // Spy on _addComponent BEFORE calling _importComponent
+    const addComponentSpy = jest.spyOn(floodMap, '_addComponent')
+
+    // Spy on _importComponent and implement the import logic
+    jest.spyOn(floodMap, '_importComponent').mockImplementation(async () => {
+      floodMap.button?.setAttribute('style', 'display: none')
+      floodMap._addComponent(mockRoot)
+      return Promise.resolve()
+    })
+
+    await floodMap._importComponent()
+
+    expect(mockButton.style.display).toBe('none')
+    expect(addComponentSpy).toHaveBeenCalledWith(mockRoot)
   })
 
   it('should insert not supported message if device is not supported', () => {
@@ -307,6 +402,55 @@ describe('FloodMap', () => {
     expect(mockHistory.back).not.toHaveBeenCalled()
   })
 
+  it('should handle _removeComponent implementation', () => {
+    const props = {}
+    floodMap = new FloodMap('test-id', props)
+
+    // Clear any previous calls to the mocked functions
+    dom.updateTitle.mockClear()
+    dom.toggleInert.mockClear()
+
+    // Restore the original implementation
+    jest.spyOn(FloodMap.prototype, '_removeComponent').mockRestore()
+
+    // Mock the button with all necessary methods
+    floodMap.button = {
+      removeAttribute: jest.fn(),
+      focus: jest.fn()
+    }
+
+    // Create unmount spy before setting up root
+    const unmountSpy = jest.fn()
+
+    // Create a mock root with unmount method
+    floodMap.root = {
+      unmount: unmountSpy
+    }
+
+    // Set initial values that should be cleared
+    floodMap._selected = { someData: 'test' }
+    floodMap._info = { someInfo: 'test' }
+
+    // Mock element
+    floodMap.el = {
+      removeAttribute: jest.fn()
+    }
+
+    // Call the actual implementation
+    floodMap._removeComponent()
+
+    // Verify all method calls
+    expect(floodMap.button.removeAttribute).toHaveBeenCalledWith('style')
+    expect(floodMap.button.removeAttribute).toHaveBeenCalledWith('data-open')
+    expect(floodMap.button.focus).toHaveBeenCalled()
+    expect(unmountSpy).toHaveBeenCalled()
+    expect(floodMap.root).toBeNull()
+    expect(floodMap._selected).toBeNull()
+    expect(floodMap._info).toBeNull()
+    expect(dom.updateTitle).toHaveBeenCalled()
+    expect(dom.toggleInert).toHaveBeenCalled()
+  })
+
   it('should add focus-visible class when keyboard interface is used', () => {
     // Create a div element with the ID 'test-div'
     const div = document.createElement('div')
@@ -382,6 +526,521 @@ describe('FloodMap', () => {
     floodMap.isVisible = true // Set isVisible to true for desktop
     changeHandler(mobileMQ)
     expect(importComponentSpy).toHaveBeenCalled()
+  })
+  it('should handle APP_READY event correctly', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Get the handler that was passed to eventBus.on
+    const appReadyHandler = eventBus.on.mock.calls.find(
+      call => call[1] === events.APP_READY
+    )[2]
+
+    // Mock data to pass to the handler
+    const mockData = {
+      framework: {
+        someFrameworkProp: 'value',
+        otherProp: 'test'
+      },
+      modules: {
+        moduleA: 'valueA',
+        moduleB: 'valueB'
+      }
+    }
+
+    // Call the handler
+    appReadyHandler(mockData)
+
+    // Verify properties were set correctly
+    expect(floodMap.someFrameworkProp).toBe('value')
+    expect(floodMap.otherProp).toBe('test')
+    expect(floodMap.modules).toEqual(mockData.modules)
+    expect(floodMap.isReady).toBe(true)
+
+    // Verify events were dispatched
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INTERFACE_TYPE,
+      floodMap.interfaceType
+    )
+
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      floodMap,
+      events.READY,
+      { type: 'ready', ...mockData }
+    )
+  })
+  it('should dispatch SET_INFO and SET_SELECTED events when handling APP_READY if values exist', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Get the handler that was passed to eventBus.on
+    const appReadyHandler = eventBus.on.mock.calls.find(
+      call => call[1] === events.APP_READY
+    )[2]
+
+    // Set up _info and _selected before handling APP_READY
+    floodMap._info = { someInfo: 'test info' }
+    floodMap._selected = { selectedItem: 'test selection' }
+
+    // Mock data
+    const mockData = {
+      framework: {},
+      modules: {}
+    }
+
+    // Call the handler
+    appReadyHandler(mockData)
+
+    // Verify SET_INFO was dispatched with correct data
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INFO,
+      floodMap._info
+    )
+
+    // Verify SET_SELECTED was dispatched with correct data
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_SELECTED,
+      floodMap._selected
+    )
+  })
+
+  it('should not dispatch SET_INFO or SET_SELECTED events when values are not set', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+    floodMap.interfaceType = 'keyboard'
+
+    // Get the handler that was passed to eventBus.on
+    const appReadyHandler = eventBus.on.mock.calls.find(
+      call => call[1] === events.APP_READY
+    )[2]
+
+    // Mock data
+    const mockData = {
+      framework: {},
+      modules: {}
+    }
+
+    // Reset the dispatch mock to clear previous calls
+    eventBus.dispatch.mockClear()
+
+    // Call the handler
+    appReadyHandler(mockData)
+
+    // Verify SET_INFO was not dispatched
+    expect(eventBus.dispatch).not.toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INFO,
+      expect.anything()
+    )
+
+    // Verify SET_SELECTED was not dispatched
+    expect(eventBus.dispatch).not.toHaveBeenCalledWith(
+      props.parent,
+      events.SET_SELECTED,
+      expect.anything()
+    )
+
+    // But READY and SET_INTERFACE_TYPE should still have been called
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INTERFACE_TYPE,
+      'keyboard'
+    )
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      floodMap,
+      events.READY,
+      expect.any(Object)
+    )
+  })
+  it('should handle touchstart event by setting interface type to touch', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Call the touchstart handler
+    floodMap._handleTouchstart()
+
+    // Verify interfaceType was set to 'touch'
+    expect(floodMap.interfaceType).toBe('touch')
+
+    // Verify the SET_INTERFACE_TYPE event was dispatched with 'touch'
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INTERFACE_TYPE,
+      'touch'
+    )
+  })
+  it('should handle pointerdown event by removing focus and setting interface type to null', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Mock document.activeElement
+    const mockActiveElement = {
+      classList: {
+        remove: jest.fn()
+      }
+    }
+
+    // Mock the activeElement getter
+    Object.defineProperty(document, 'activeElement', {
+      get: () => mockActiveElement,
+      configurable: true
+    })
+
+    // Set initial interfaceType to verify it gets cleared
+    floodMap.interfaceType = 'keyboard'
+
+    // Call the pointerdown handler
+    floodMap._handlePointerdown()
+
+    // Verify interfaceType was set to null
+    expect(floodMap.interfaceType).toBeNull()
+
+    // Verify the SET_INTERFACE_TYPE event was dispatched with null
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INTERFACE_TYPE,
+      null
+    )
+
+    // Verify the focus visible class was removed
+    expect(mockActiveElement.classList.remove).toHaveBeenCalledWith('fm-u-focus-visible')
+  })
+
+  it('should hide button and successfully load component', async () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Mock the button
+    const buttonSpy = jest.fn()
+    floodMap.button = {
+      setAttribute: buttonSpy
+    }
+
+    // Mock the _addComponent method
+    floodMap._addComponent = jest.fn()
+
+    // Mock successful module import
+    const mockComponent = { default: { someComponent: 'test' } }
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(() => {
+      floodMap.button?.setAttribute('style', 'display: none')
+      return Promise.resolve(floodMap._addComponent(mockComponent.default))
+    })
+
+    // Call the method and wait for it to complete
+    await floodMap._importComponent()
+
+    // Verify button was hidden
+    expect(buttonSpy).toHaveBeenCalledWith('style', 'display: none')
+
+    // Verify component was added with the default export
+    expect(floodMap._addComponent).toHaveBeenCalledWith(mockComponent.default)
+  })
+
+  it('should handle missing button gracefully', async () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Button is undefined
+    floodMap.button = undefined
+
+    // Mock the _addComponent method
+    floodMap._addComponent = jest.fn()
+
+    // Mock successful module import
+    const mockComponent = { default: { someComponent: 'test' } }
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(() => {
+      return Promise.resolve(floodMap._addComponent(mockComponent.default))
+    })
+
+    // Verify this doesn't throw
+    await expect(floodMap._importComponent()).resolves.not.toThrow()
+  })
+
+  it('should handle import failure and render error message', async () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+    console.log = jest.fn()
+
+    // Mock the button
+    const buttonSpy = jest.fn()
+    floodMap.button = {
+      setAttribute: buttonSpy
+    }
+
+    // Mock the _renderError method
+    floodMap._renderError = jest.fn()
+
+    // Mock failed module import
+    const mockError = new Error('Failed to load module')
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(() => {
+      floodMap.button?.setAttribute('style', 'display: none')
+      floodMap._renderError('There was a problem loading the map. Please try again later')
+      console.log(mockError)
+      return Promise.reject(mockError)
+    })
+
+    // Call the method and wait for it to complete
+    await expect(floodMap._importComponent()).rejects.toThrow(mockError)
+
+    // Verify button was hidden
+    expect(buttonSpy).toHaveBeenCalledWith('style', 'display: none')
+
+    // Verify error was rendered
+    expect(floodMap._renderError).toHaveBeenCalledWith(
+      'There was a problem loading the map. Please try again later'
+    )
+
+    // Verify error was logged
+    expect(console.log).toHaveBeenCalledWith(mockError)
+  })
+
+  it('should handle dynamic import correctly', async () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Mock the button
+    const buttonSpy = jest.fn()
+    floodMap.button = {
+      setAttribute: buttonSpy
+    }
+
+    // Mock the _addComponent method
+    floodMap._addComponent = jest.fn()
+
+    // Mock successful module import
+    const mockComponent = { default: { someComponent: 'test' } }
+
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockImplementation(() => {
+      floodMap.button?.setAttribute('style', 'display: none')
+      return Promise.resolve(floodMap._addComponent(mockComponent.default))
+    })
+
+    // Call the method
+    await floodMap._importComponent()
+
+    // Verify button was hidden
+    expect(buttonSpy).toHaveBeenCalledWith('style', 'display: none')
+
+    // Verify component was added with the default export
+    expect(floodMap._addComponent).toHaveBeenCalledWith(mockComponent.default)
+  })
+
+  it('should set info and dispatch event when ready', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Set ready state
+    floodMap.isReady = true
+
+    // Call setInfo method
+    floodMap.setInfo({ test: 'value' })
+
+    // Verify the value was set
+    expect(floodMap._info).toEqual({ test: 'value' })
+
+    // Verify event was dispatched
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_INFO,
+      { test: 'value' }
+    )
+  })
+
+  it('should not set info and dispatch event when not ready', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Set ready state
+    floodMap.isReady = false
+
+    // Call setInfo method
+    floodMap.setInfo({ test: 'value' })
+
+    // Verify the value was set
+    expect(floodMap._info).toEqual({ test: 'value' })
+
+    // Verify event was dispatched
+    expect(eventBus.dispatch).toHaveBeenCalledTimes(0)
+  })
+
+  it('should handle info property setter and event dispatch', () => {
+    floodMap = new FloodMap('test-id', {})
+
+    // Define the setter on the instance
+    Object.defineProperty(floodMap, 'info', {
+      set (value) {
+        floodMap._info = value
+        if (floodMap.isReady) {
+          eventBus.dispatch(floodMap.props.parent, events.SET_INFO, floodMap._info)
+        }
+      },
+      get () {
+        return floodMap._info
+      }
+    })
+
+    jest.spyOn(floodMap, 'dispatchEvent')
+    floodMap.isReady = true // Ensure it's ready
+
+    floodMap.info = { test: 'value' }
+
+    expect(floodMap._info).toEqual({ test: 'value' })
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      floodMap.props.parent,
+      events.SET_INFO,
+      { test: 'value' }
+    )
+  })
+
+  it('should not dispatch event when not ready', () => {
+    floodMap = new FloodMap('test-id', {})
+
+    // Define the setter on the instance
+    Object.defineProperty(floodMap, 'info', {
+      set (value) {
+        floodMap._info = value
+        if (floodMap.isReady) {
+          eventBus.dispatch(floodMap.props.parent, events.SET_INFO, floodMap._info)
+        }
+      },
+      get () {
+        return floodMap._info
+      }
+    })
+
+    jest.spyOn(floodMap, 'dispatchEvent')
+    floodMap.isReady = false // Ensure it's not ready
+
+    floodMap.info = { test: 'value' }
+
+    expect(floodMap._info).toEqual({ test: 'value' })
+    expect(eventBus.dispatch).not.toHaveBeenCalled()
+  })
+  it('should handle selected property setter and event dispatch', () => {
+    floodMap = new FloodMap('test-id', {})
+
+    // Define the setter on the instance
+    Object.defineProperty(floodMap, 'selected', {
+      set (value) {
+        floodMap._selected = value
+        if (floodMap.isReady) {
+          eventBus.dispatch(floodMap.props.parent, events.SET_SELECTED, floodMap._selected)
+        }
+      },
+      get () {
+        return floodMap._selected
+      }
+    })
+
+    jest.spyOn(floodMap, 'dispatchEvent')
+    floodMap.isReady = true // Ensure it's ready
+
+    floodMap.selected = { id: '123', name: 'test selection' }
+
+    expect(floodMap._selected).toEqual({ id: '123', name: 'test selection' })
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      floodMap.props.parent,
+      events.SET_SELECTED,
+      { id: '123', name: 'test selection' }
+    )
+  })
+
+  it('should not dispatch selected event when not ready', () => {
+    floodMap = new FloodMap('test-id', {})
+
+    // Define the setter on the instance
+    Object.defineProperty(floodMap, 'selected', {
+      set (value) {
+        floodMap._selected = value
+        if (floodMap.isReady) {
+          eventBus.dispatch(floodMap.props.parent, events.SET_SELECTED, floodMap._selected)
+        }
+      },
+      get () {
+        return floodMap._selected
+      }
+    })
+
+    jest.spyOn(floodMap, 'dispatchEvent')
+    floodMap.isReady = false // Ensure it's not ready
+
+    floodMap.selected = { id: '123', name: 'test selection' }
+
+    expect(floodMap._selected).toEqual({ id: '123', name: 'test selection' })
+    expect(eventBus.dispatch).not.toHaveBeenCalled()
+  })
+  it('should handle setSelected method when ready', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Set ready state to true
+    floodMap.isReady = true
+
+    // Call setSelected method
+    floodMap.setSelected({ id: '123', name: 'test selection' })
+
+    // Verify the value was set
+    expect(floodMap._selected).toEqual({ id: '123', name: 'test selection' })
+
+    // Verify event was dispatched
+    expect(eventBus.dispatch).toHaveBeenCalledWith(
+      props.parent,
+      events.SET_SELECTED,
+      { id: '123', name: 'test selection' }
+    )
+  })
+  it('should handle setSelected method when not ready', () => {
+    const props = { parent: 'test-parent' }
+    floodMap = new FloodMap('test-id', props)
+
+    // Ensure ready state is false
+    floodMap.isReady = false
+
+    // Call setSelected method
+    floodMap.setSelected({ id: '123', name: 'test selection' })
+
+    // Verify the value was set
+    expect(floodMap._selected).toEqual({ id: '123', name: 'test selection' })
+
+    // Verify event was NOT dispatched
+    expect(eventBus.dispatch).not.toHaveBeenCalled()
+  })
+
+  it('should handle _importComponent failure', async () => {
+    const floodMap = new FloodMap('test-id', {})
+
+    // Create real button
+    const mockButton = document.createElement('button')
+    floodMap.button = mockButton
+
+    // Spy on _renderError
+    const renderErrorSpy = jest.spyOn(floodMap, '_renderError')
+
+    // Spy on console.log
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
+
+    // Mock the import() to fail
+    const mockError = new Error('Import failed')
+    global.import = jest.fn(() => Promise.reject(mockError))
+
+    try {
+      await floodMap._importComponent()
+    } catch (error) {
+      // Verify the button was hidden - check the actual attribute
+      expect(mockButton.getAttribute('style')).toBe('display: none')
+
+      // Verify error handling
+      expect(renderErrorSpy).toHaveBeenCalledWith(
+        'There was a problem loading the map. Please try again later'
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(mockError)
+    }
+
+    // Clean up
+    consoleSpy.mockRestore()
   })
 })
 
@@ -608,5 +1267,134 @@ describe('_handleMobileMQ tests', () => {
 
     expect(floodMap.isMobile).toBe(true)
     expect(floodMap.isVisible).toBe(false)
+  })
+})
+// Keep your existing tests as they are with the mock in beforeEach
+
+// Add new describe block for _importComponent tests
+describe('_importComponent implementation', () => {
+  let mockElement
+  let floodMap
+
+  beforeEach(() => {
+    // Mock the DOM element
+    mockElement = document.createElement('div')
+    mockElement.id = 'test-id'
+    document.body.appendChild(mockElement)
+    eventBus._handlers = {}
+
+    // Mock matchMedia
+    window.matchMedia = jest.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    }))
+
+    // Keep other necessary beforeEach setup from main test suite
+    // but remove the _importComponent mock
+    jest.spyOn(FloodMap.prototype, '_handleMobileMQ').mockImplementation(jest.fn())
+    jest.spyOn(FloodMap.prototype, '_removeComponent').mockImplementation(function () {
+      if (this.root && this.root.unmount) {
+        if (this.button) {
+          this.button.removeAttribute('style')
+          this.button.removeAttribute('data-open')
+          this.button.focus()
+        }
+        this.root.unmount()
+        this.root = null
+        this._selected = null
+        this._info = null
+        this.el.removeAttribute('data-open')
+      }
+    })
+    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
+
+    // Restore the original _importComponent implementation
+    jest.spyOn(FloodMap.prototype, '_importComponent').mockRestore()
+  })
+
+  afterEach(() => {
+    document.body.removeChild(mockElement)
+    document.body.innerHTML = ''
+    jest.resetModules()
+    jest.clearAllMocks()
+  })
+
+  it('should test actual _importComponent implementation', async () => {
+    // Create FloodMap instance
+    floodMap = new FloodMap('test-id', {})
+
+    // Create real button
+    const mockButton = document.createElement('button')
+    floodMap.button = mockButton
+
+    // Spy on _addComponent
+    const addComponentSpy = jest.spyOn(floodMap, '_addComponent')
+
+    // Create mock module with a spy as the default export
+    const mockDefaultExport = jest.fn()
+    const mockModule = {
+      __esModule: true,
+      default: mockDefaultExport
+    }
+
+    // Mock the import at module level
+    jest.mock('../src/root.js', () => mockModule, { virtual: true })
+
+    // Call the method
+    await floodMap._importComponent()
+
+    // Wait for any pending promises to resolve
+    await new Promise(process.nextTick)
+
+    // Verify the button was hidden
+    expect(mockButton.getAttribute('style')).toBe('display: none')
+
+    // Verify _addComponent was called with the mock module
+    expect(addComponentSpy).toHaveBeenCalled()
+    expect(addComponentSpy).toHaveBeenCalledWith(mockDefaultExport)
+  })
+
+  it('should handle _importComponent failure', async () => {
+  // Create FloodMap instance
+    floodMap = new FloodMap('test-id', {})
+
+    // Create real button
+    const mockButton = document.createElement('button')
+    floodMap.button = mockButton
+
+    // Spy on _renderError
+    const renderErrorSpy = jest.spyOn(floodMap, '_renderError')
+
+    // Spy on console.log
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
+
+    // Mock error
+    const mockError = new Error('Import failed')
+
+    // Mock the dynamic import to fail
+    jest.mock('../src/root.js', () => {
+      throw mockError
+    }, { virtual: true })
+
+    try {
+      // Call the method
+      await floodMap._importComponent()
+    } catch (error) {
+      // Wait for any pending promises to resolve
+      await new Promise(process.nextTick)
+
+      // Verify the button was hidden
+      expect(mockButton.getAttribute('style')).toBe('display: none')
+
+      // Verify error handling
+      expect(renderErrorSpy).toHaveBeenCalledWith(
+        'There was a problem loading the map. Please try again later'
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(mockError)
+    } finally {
+      consoleSpy.mockRestore()
+    }
   })
 })

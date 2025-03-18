@@ -32,7 +32,7 @@ export default function DrawEdit () {
 
   return (
     <div className='fm-o-viewport-controls'>
-      <ActionMenu id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} />
+      <ActionMenu id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} width='164px' />
       <Tooltip id={`${id}-delete-vertex-label`} position='below' cssModifier='delete-vertex' text='Delete point' display='none'>
         <button onClick={handleDeleteVertexClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-vertex-label`} aria-disabled='true'>
           <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>

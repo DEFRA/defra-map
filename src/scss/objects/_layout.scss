@@ -196,6 +196,7 @@
         flex-wrap: nowrap;
         flex-grow: 1;
         flex-basis: 0;
+        z-index: 2;
     }
 
     &__column:last-child {

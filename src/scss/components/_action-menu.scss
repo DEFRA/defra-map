@@ -10,9 +10,9 @@
         position: absolute;
         list-style: none;
         padding: 0;
-        margin: 5px 0 0 -100px;
-        width: 200px;
-        left: 50%;
+        margin: 5px 0 0 0;
+        width: 100%;
+        left: 0;
         background-color: var(--background-colour);
         box-shadow: $panel-shadow-offset;
         border-radius: $panel-radius;
@@ -34,7 +34,7 @@
         display: flex;
         align-items: center;
         padding: 10px;
-        border-bottom: 1px solid var(--button-hover-colour);
+        border-bottom: 1px solid var(--border-colour);
         cursor: pointer;
 
         svg {
@@ -52,7 +52,9 @@
     }
 
     .fm-c-btn {
-        padding: 10px 12px 10px 10px;
+        padding: 10px;
+        box-sizing: border-box;
+        width: 100%;
     }
 
     .fm-c-btn__chevron {
@@ -66,6 +68,6 @@
         transform: rotate(135deg);
         border-top: 0.125rem solid;
         border-right: 0.125rem solid;
-        margin-left: 7px;
+        margin-left: auto;
     }
 }

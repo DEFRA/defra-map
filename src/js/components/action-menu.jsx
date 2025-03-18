@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useOutsideInteract } from '../hooks/use-outside-interact.js'
 
-export default function ActionMenu ({ id, name, display, items, selected, handleSelect }) {
+export default function ActionMenu ({ id, name, display, items, selected, handleSelect, width }) {
   const label = name.toLowerCase().replace(' ', '-')
   const [isExpanded, setIsExpanded] = useState(false)
   const [index, setIndex] = useState(0)
@@ -80,7 +80,7 @@ export default function ActionMenu ({ id, name, display, items, selected, handle
   })
 
   return (
-    <div className='fm-c-action-menu' style={{ display }} ref={elementRef}>
+    <div className='fm-c-action-menu' style={{ display, width }} ref={elementRef}>
       <button
         ref={buttonRef}
         id={`${id}-${label}-button-label`}

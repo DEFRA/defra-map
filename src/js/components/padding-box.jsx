@@ -7,7 +7,7 @@ const getClassName = (isFrame, isVisible, isActive) => {
 }
 
 export default function PaddingBox ({ children }) {
-  const { provider, options, isContainerReady, mode, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+  const { provider, options, isContainerReady, mode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate } = useViewport()
 
   // Update provider padding, need to run this before viewport action effect

@@ -25,23 +25,23 @@ describe('search-reducer', () => {
 function getMockPayload (actionType) {
   switch (actionType) {
     case 'SET_SUGGESTIONS':
-      return { suggestions: ['suggestion1', 'suggestion2'] }
+      return ['suggestion1', 'suggestion2']
     case 'SET_SELECTED':
-      return { selected: 1 }
+      return 1
     case 'SET_VALUE':
-      return { value: 'test' }
+      return 'test'
     case 'SET_VISIBILITY':
-      return { isVisible: true }
+      return true
     case 'SET_EXPANDED':
-      return { isExpanded: true }
+      return true
     case 'SET_FOCUS_WITHIN':
-      return { isFocusWithin: true }
+      return true
     case 'SET_FOCUS_VISIBLE_WITHIN':
-      return { isFocusVisibleWithin: true }
+      return true
     case 'SET_MESSAGE':
-      return { message: 'test message' }
+      return 'test message'
     case 'SET_STATUS':
-      return { status: 'test status' }
+      return 'test status'
     default:
       return {}
   }

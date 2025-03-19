@@ -17,11 +17,6 @@ jobs:
         with:
           fetch-depth: 10  # Fetch enough history for PR creation
 
-      - name: Authenticate with GitHub (Using GITHUB_TOKEN)
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create Pull Request
         run: |
           gh pr create \

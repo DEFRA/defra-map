@@ -34,7 +34,7 @@ export class Draw {
     Object.assign(this, options)
   }
 
-  // Add or edit query
+  // Add or edit
   edit (mode, shape) {
     const { draw, oFeature } = this
     const { map, paddingBox } = this.provider
@@ -55,15 +55,6 @@ export class Draw {
       const feature = oFeature || this.getFeatureFromElement(paddingBox, shape)
       this.drawFeature(feature)
       this.draw.changeMode('direct_select', { featureId: 'shape' })
-    }
-  }
-
-
-  // Reset to square
-  reset () {
-    const { map } = this.provider
-    if (map.hasControl(this.draw)) {
-      map.removeControl(this.draw)
     }
   }
 

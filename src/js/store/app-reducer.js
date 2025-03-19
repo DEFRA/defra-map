@@ -1,7 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 import { getStyle, getFeatureShape } from '../lib/viewport'
-import { drawModes } from '../store/constants'
+import { drawModes as defaultDrawModes } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -19,17 +19,28 @@ const getActivePanel = (mode, info, featureId, targetMarker, legend) => {
   return panel
 }
 
+const parseDrawModes = (mode, modes, defaultModes) => {
+  const drawModes = modes ? defaultModes.filter(d => modes.includes(d.id)) : defaultModes
+  const drawMode = drawModes.find(m => m.id === mode) ? mode : null
+  return [drawMode, drawModes]
+}
+
+const getShape = (featureShape, drawMode, drawModes) => {
+  const polygon = (drawMode === 'polygon' && featureShape === 'square') || (featureShape === 'square' && !drawModes.find(m => m.id === 'square')) ? 'polygon' : null
+  return polygon || featureShape || drawMode || 'square'
+}
+
 export const initialState = (options) => {
   const { styles, legend, search, info, queryArea, hasAutoMode } = options
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-
   const query = queryArea?.feature
-  const shape = getFeatureShape(query) || options.drawMode || 'square'
-  const drawMode = options.drawMode && shape ? shape : options.drawMode
-  const mode = drawMode ? drawModes.find(m => m.id === drawMode).mode : 'default'
-
+  
+  const [ drawMode, drawModes ] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
+  const featureShape = getFeatureShape(query)
+  const shape = getShape(featureShape, drawMode, drawModes)
+  const mode = drawMode ? defaultDrawModes.find(m => m.id === drawMode).mode : 'default'
   const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 
   return {
@@ -52,6 +63,7 @@ export const initialState = (options) => {
     hasViewportLabel: false,
     mode,
     drawMode,
+    drawModes,
     shape,
     isFrameVisible: false,
     isTargetVisible: false,

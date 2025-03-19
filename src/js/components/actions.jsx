@@ -14,26 +14,32 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, mode, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, drawMode, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
-    const newQuery = provider.draw.finish()
-    const shape = getFeatureShape(newQuery)
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery, shape } })
+    const newQuery = provider.draw.finish(shape)
+    const featureShape = getFeatureShape(newQuery)
+    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
+    if (drawMode) {
+      return
+    }
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery, featureShape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
     viewportRef.current.focus()
   }
 
   const handleCancelClick = () => {
     provider.draw.cancel()
-    const shape = getFeatureShape(query)
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape } })
+    const featureShape = getFeatureShape(query)
+    eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
+    if (drawMode) {
+      return
+    }
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', featureShape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     viewportRef.current.focus()
   }
 

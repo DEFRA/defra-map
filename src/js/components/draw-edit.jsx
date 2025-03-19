@@ -2,10 +2,9 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 import ActionMenu from './action-menu.jsx'
-import { drawModes } from '../store/constants.js'
 
 export default function DrawEdit () {
-  const { provider, options, mode, shape, dispatch } = useApp()
+  const { provider, options, mode, shape, drawModes, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   // const hasDrawCapability = provider.capabilities?.hasDraw
@@ -18,11 +17,7 @@ export default function DrawEdit () {
 
   const handleShapeSelect = (id) => {
     const value = drawModes.find(m => m.id === id).mode
-    if (value === 'vertex') {
-      provider.draw.edit()
-    } else {
-      provider.draw.reset()
-    }
+    provider.draw.edit(value, id)
     dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }
 

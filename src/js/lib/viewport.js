@@ -10,21 +10,6 @@ const getBearing = (coord1, coord2) => {
   return [east, west, north, south].filter(b => b && typeof b === 'string')
 }
 
-const getDistance = (coord1, coord2) => {
-  let distance
-  if (coord1[0] > 1000) {
-    const x = Math.abs(coord1[0] - coord2[0])
-    const y = Math.abs(coord1[1] - coord2[1])
-    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
-    distance = dist
-  } else {
-    const p1 = new TurfPoint(coord1)
-    const p2 = new TurfPoint(coord2)
-    distance = turfDistance(p1, p2, { units: 'metres' })
-  }
-  return Math.round(distance)
-}
-
 const getUnits = (metres) => {
   const MAX_METRES = 800
   const MAX_MILES = 5000
@@ -91,6 +76,21 @@ const getSelectedStatus = (featuresInViewport, id) => {
 const getOffsetBoundingClientRect = (el) => {
   const offsetParent = el.closest('[data-fm-main]') || document.body
   return offsetParent.getBoundingClientRect()
+}
+
+export const getDistance = (coord1, coord2) => {
+  let distance
+  if (coord1[0] > 1000) {
+    const x = Math.abs(coord1[0] - coord2[0])
+    const y = Math.abs(coord1[1] - coord2[1])
+    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
+    distance = dist
+  } else {
+    const p1 = new TurfPoint(coord1)
+    const p2 = new TurfPoint(coord2)
+    distance = turfDistance(p1, p2, { units: 'metres' })
+  }
+  return Math.round(distance)
 }
 
 export const getFocusPadding = (el, scale) => {
@@ -240,13 +240,14 @@ export const getShortcutKey = (e, featuresViewport) => {
 }
 
 export const getFeatureShape = (feature) => {
-  let shape = null
-  if (feature) {
-    const coords = feature.geometry.coordinates
-    const flatCoords = Array.from(new Set(coords.flat(2)))
-    shape = flatCoords.length === 4 ? 'square' : 'polygon'
+  if (feature?.geometry?.type === 'Point' && feature?.poperties?.radius) {
+    return 'circle'
   }
-  return shape
+  if (feature?.geometry?.type === 'Polygon') {
+    const coords = feature.geometry?.coordinates
+    const flatCoords = coords && Array.from(new Set(coords.flat(2))) || null
+    return flatCoords?.length === 4 ? 'square' : 'polygon'
+  }
 }
 
 export const spatialNavigate = (direction, start, pixels) => {

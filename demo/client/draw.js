@@ -22,7 +22,8 @@ const fm = new FloodMap('map', {
   transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
-  // drawMode: 'polygon',
+  drawMode: 'square',
+  drawModes: ['circle', 'square', 'polygon'],
   styles: [{
     name: 'default',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
@@ -332,7 +333,8 @@ const fm = new FloodMap('map', {
     html: '<p class="govuk-body-s">Instructions</p>',
     // minZoom: 12,
     // maxZoom: 21
-    // feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
+    // feature: {type: 'Feature', properties: { radius: 3347.5 }, geometry: { type: 'Point', coordinates: [-2.940542222656177,54.88975546965318] }}
+    feature: {type: 'Feature', geometry: {type: 'Polygon', coordinates: [[[-2.9429075279402355,54.90446285679516],[-2.9320064720603227,54.90446285679516],[-2.9320064720603227,54.8981948992828],[-2.9429075279402355,54.8981948992828],[-2.9429075279402355,54.90446285679516]]]}}
   }
   // queryLocation: []
 })
@@ -351,4 +353,9 @@ fm.addEventListener('change', e => {
 // Listen to map queries
 fm.addEventListener('query', e => {
   // Query
+})
+
+// Listen for actions
+fm.addEventListener('action', e => {
+  // console.log(e.detail)
 })

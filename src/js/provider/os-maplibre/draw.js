@@ -1,35 +1,43 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
-import { getFocusPadding } from '../../lib/viewport'
+import { getFocusPadding, getDistance } from '../../lib/viewport'
 
 export class Draw {
   constructor (provider, options) {
-    const { mode, feature } = options
+    const { mode, shape, feature } = options
+    const { map } = provider
     this.provider = provider
 
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
 
-    this.oFeature = feature
+    const initialFeature = feature ? { ...feature, id: 'shape' } : null
+    this.oFeature = initialFeature
 
     // Add existing feature
-    if (feature && mode === 'default') {
-      this.drawFeature(feature)
+    if (initialFeature && mode === 'default') {
+      this.drawFeature(initialFeature)
       return
     }
 
     // Start new
-    this.start(mode)
+    this.edit(mode, shape)
+
+    // Disable simple select
+    map.on('draw.modechange', e => {
+      if (e.mode === 'simple_select') {
+        this.draw.changeMode('direct_select', { featureId: 'shape' })
+      }
+    })
 
     Object.assign(this, options)
   }
 
   // Add or edit query
-  start (mode) {
+  edit (mode, shape) {
     const { draw, oFeature } = this
-    const { map } = this.provider
-    const hasDrawControl = map.hasControl(draw)
+    const { map, paddingBox } = this.provider
 
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
@@ -38,52 +46,18 @@ export class Draw {
     }
 
     // Remove existing feature
-    if (mode === 'frame' && hasDrawControl) {
+    if (map.hasControl(draw)) {
       map.removeControl(this.draw)
     }
 
-    // Draw existing feature
-    if (mode === 'vertex' && !hasDrawControl && oFeature) {
-      this.drawFeature(oFeature)
-    }
-
-    // Draw from paddingBox
-    if (mode === 'vertex' && !hasDrawControl && !oFeature) {
-      this.edit()
-    }
-
-    // Enable direct select mode
-    if (mode === 'vertex' && hasDrawControl) {
-      draw.changeMode('direct_select', { featureId: 'shape' })
-    }
-  }
-
-  // Edit nodes
-  edit () {
-    const { map, paddingBox } = this.provider
-    const hasDrawControl = map.hasControl(this.draw)
-
-    // Draw feature
-    if (!hasDrawControl) {
-      const feature = this.getFeatureFromElement(paddingBox)
+    // Draw a new feature and set direct_select
+    if (mode === 'vertex') {
+      const feature = oFeature || this.getFeatureFromElement(paddingBox, shape)
       this.drawFeature(feature)
+      this.draw.changeMode('direct_select', { featureId: 'shape' })
     }
-
-    // Set edit mode
-    this.draw.changeMode('direct_select', { featureId: 'shape' })
-
-    // Selected vertex
-    map.on('draw.selectionchange', e => {
-      // const point = e.points[0]
-    })
-
-    // Disable simple select
-    map.on('draw.modechange', e => {
-      if (e.mode === 'simple_select') {
-        this.draw.changeMode('direct_select', { featureId: 'shape' })
-      }
-    })
   }
+
 
   // Reset to square
   reset () {
@@ -119,7 +93,8 @@ export class Draw {
   }
 
   // Confirm or update
-  finish () {
+  finish (shape) {
+    console.log('finish', shape)
     const { map, paddingBox } = this.provider
     const hasDrawControl = map.hasControl(this.draw)
 
@@ -130,7 +105,7 @@ export class Draw {
 
     // Draw feature
     if (!hasDrawControl) {
-      const elFeature = this.getFeatureFromElement(paddingBox)
+      const elFeature = this.getFeatureFromElement(paddingBox, shape)
       this.drawFeature(elFeature)
     }
 
@@ -187,23 +162,38 @@ export class Draw {
     return [minX, minY, maxX, maxY]
   }
 
-  getFeatureFromElement (el) {
+  getFeatureFromElement (el, shape) {
     const { map, scale } = this.provider
     const box = el.getBoundingClientRect()
     const padding = getFocusPadding(el, scale)
     const nw = map.unproject([padding.left, padding.top])
     const se = map.unproject([padding.left + (box.width / scale), padding.top + (box.height / scale)])
-    const b = [nw.lng, nw.lat, se.lng, se.lat]
-    const coords = [[[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]]]]
-    return {
+    const feature = {
       id: 'shape',
       type: 'Feature',
       properties: {},
-      geometry: {
+      geometry: {}
+    }
+
+    if (shape === 'circle') {
+      const c = map.getCenter()
+      const coords = [c.lng, c.lat]
+      const radius = getDistance([nw.lng, nw.lat], [se.lng, nw.lat]) / 2
+      feature.properties.radius = radius
+      feature.geometry = {
+        type: 'Point',
+        coordinates: coords
+      }
+    } else {
+      const b = [nw.lng, nw.lat, se.lng, se.lat]
+      const coords = [[[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]]]]
+      feature.geometry = {
         type: 'Polygon',
         coordinates: coords
       }
     }
+
+    return feature
   }
 }
 

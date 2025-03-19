@@ -1,18 +1,18 @@
 import React, { useRef } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
-import { events, drawModes } from '../store/constants.js'
+import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
 export default function Draw () {
-  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, shape, activeRef, viewportRef } = useApp()
+  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, shape, drawMode, drawModes, activeRef, viewportRef } = useApp()
   const { styles, minZoom, maxZoom } = queryArea
   const { dispatch: viewportDispatch, size, style } = useViewport()
   const startBtnRef = useRef(null)
 
   const handleStartClick = () => {
     const mode = drawModes.find(m => m.id === shape)?.mode || 'frame'
-    provider.draw?.start(mode)
+    provider.draw?.edit(mode, shape)
     appDispatch({ type: 'SET_MODE', payload: { value: mode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode, style, size, segments, layers })
@@ -22,7 +22,8 @@ export default function Draw () {
 
   const handleDeleteClick = () => {
     provider.draw.delete()
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: null, shape: null } })
+    const defaultShape = drawMode || drawModes[0].id
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: null, shape: defaultShape } })
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'deletePolygon', query })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()

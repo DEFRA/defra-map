@@ -63,8 +63,8 @@ export default function Styles () {
                   default: 'Default',
                   dark: 'Dark',
                   aerial: 'Aerial',
-                  deuteranopia: 'Green-red enhanced',
-                  tritanopia: 'Blue-yellow enhanced'
+                  deuteranopia: 'Deuteranopia',
+                  tritanopia: 'Tritanopia'
                 }[item.name]}
               </button>
             </div>

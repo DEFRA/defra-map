@@ -15,14 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 3  # Fetch enough history to check for recent reverts
-
-      - name: Check for Recent Revert in Main
-        run: |
-          if git log -3 --pretty=%s | grep -i "Revert"; then
-            echo "Recent revert found in main. Aborting Auto PR."
-            exit 1
-          fi
+          fetch-depth: 10  # Fetch enough history for PR creation
 
       - name: Authenticate with GitHub (Using GITHUB_TOKEN)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token

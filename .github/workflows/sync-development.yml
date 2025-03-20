@@ -15,14 +15,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 10  # Fetch enough history for PR creation
+          fetch-depth: 0
 
-      - name: Create Pull Request
+      - name: Create a Sync Branch from Main
+        run: |
+          git fetch origin
+          git checkout -b sync/main-to-dev origin/main
+          git push origin sync/main-to-dev --force
+
+      - name: Create Pull Request to Sync Development
         run: |
           gh pr create \
             --base development \
-            --head main \
+            --head sync/main-to-dev \
             --title "Sync main into development" \
-            --body "Auto PR to sync main into development. No manual merge required if auto-merge is enabled."
+            --body "This PR ensures development is fully in sync with main."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

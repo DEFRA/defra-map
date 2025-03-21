@@ -3,6 +3,7 @@ import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as turfCircle } from '@turf/circle'
+import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
@@ -42,10 +43,8 @@ export class Draw {
 
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
-      const type = oFeature.geometry.type
       const coords = oFeature.geometry.coordinates
-      const radius =  oFeature?.properties?.radius
-      const bounds = type === 'Point' && radius ? this.getBoundsFromPointAndRadius(coords, radius) : this.getBoundsFromCoordinates(coords[0])
+      const bounds = this.getBoundsFromCoordinates(coords[0])
       map.fitBounds(bounds, { animate: false })
     }
 
@@ -56,7 +55,8 @@ export class Draw {
 
     // Draw a new feature and set direct_select
     if (mode === 'vertex') {
-      this.drawFeature(oFeature || this.getFeatureFromElement(paddingBox, shape))
+      const currentFeature = oFeature?.id === shape ? oFeature : null
+      this.drawFeature(currentFeature || this.getFeatureFromElement(paddingBox, shape))
       this.draw.changeMode('direct_select', { featureId: shape })
     }
   }
@@ -155,24 +155,6 @@ export class Draw {
     return [minX, minY, maxX, maxY]
   }
 
-  getBoundsFromPointAndRadius (point, radius) {
-    const earthRadius = 6371000
-    const [x, y] = point
-    const lng = x * (Math.PI / 180)
-    const lat = y * (Math.PI / 180)
-    const angularDistance = radius / earthRadius
-    const minLat = lat - angularDistance
-    const maxLat = lat + angularDistance
-    const minLng = lng - angularDistance / Math.cos(lat)
-    const maxLng = lng + angularDistance / Math.cos(lat)
-    return [
-      minLng * (180 / Math.PI),
-      minLat * (180 / Math.PI),
-      maxLng * (180 / Math.PI),
-      maxLat * (180 / Math.PI)
-    ]
-  }
-
   getFeatureFromElement (el, shape) {
     const { map, scale } = this.provider
     const box = el.getBoundingClientRect()
@@ -187,7 +169,8 @@ export class Draw {
       const coords = [c.lng, c.lat]
       const radius = getDistance([nw.lng, nw.lat], [se.lng, nw.lat]) / 2
       const turfFeature = new turfCircle(coords, radius, { units: 'meters' })
-      feature.geometry.coordinates = turfFeature.geometry
+      const roundedCoords = turfFeature.geometry.coordinates[0].map(([lng, lat]) => [ +(lng.toFixed(defaults.PRECISION)), +(lat.toFixed(defaults.PRECISION))])
+      feature.geometry.coordinates = [roundedCoords]
     } else {
       // Polygon
       const b = [nw.lng, nw.lat, se.lng, se.lat]

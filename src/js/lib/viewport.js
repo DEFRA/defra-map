@@ -78,14 +78,13 @@ const getOffsetBoundingClientRect = (el) => {
   return offsetParent.getBoundingClientRect()
 }
 
-const isCirclePolygon = (geometry, tolerance = 0.0001) => {
-  if (!geometry?.coordinates?.[0]?.length) {
+const isCirclePolygon = (geometry) => {
+  const TOLERANCE = 0.007
+  const coordinates = geometry?.coordinates?.[0]
+  
+  // Expect exactly 64 points
+  if (coordinates?.length !== 65) {
     return false
-  }
-
-  const coordinates = geometry.coordinates[0]
-  if (coordinates.length - 1 !== 64) {
-    return false // Expect exactly 64 points
   }
 
   // Compute approximate center using two opposite points
@@ -111,7 +110,7 @@ const isCirclePolygon = (geometry, tolerance = 0.0001) => {
       maxEdge = Math.max(maxEdge, edgeDist)
   }
 
-  return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
+  return Math.abs(maxDist - minDist) < TOLERANCE && Math.abs(maxEdge - minEdge) < TOLERANCE
 }
 
 export const getDistance = (coord1, coord2) => {
@@ -276,15 +275,15 @@ export const getShortcutKey = (e, featuresViewport) => {
 }
 
 export const getFeatureShape = (feature) => {
-  let shape = null
   if (isCirclePolygon(feature?.geometry)) {
-    shape = 'circle'
-  } else if (feature?.geometry?.type === 'Polygon') {
+    return 'circle'
+  }
+  if (feature?.geometry?.type === 'Polygon') {
     const coords = feature.geometry?.coordinates
     const flatCoords = coords && Array.from(new Set(coords.flat(2))) || null
-    shape = flatCoords?.length === 4 ? 'square' : 'polygon'
+    return flatCoords?.length === 4 ? 'square' : 'polygon'
   }
-  return shape
+  return null
 }
 
 export const spatialNavigate = (direction, start, pixels) => {

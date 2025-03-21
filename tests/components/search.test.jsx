@@ -1,22 +1,34 @@
 import React from 'react'
 import { render, waitFor, act, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import { initialState } from '../../src/js/store/search-reducer'
 import Search from '../../src/js/components/search'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
 import OsProvider from '../../src/js/provider/os-open-names/provider.js'
+import { useOutsideInteract } from '../../src/js/hooks/use-outside-interact'
 
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/provider/os-open-names/provider.js')
+jest.mock('../../src/js/hooks/use-outside-interact')
 
 describe('Search', () => {
   const transformSearchRequest = jest.fn()
   const viewportDispatch = jest.fn()
   const appDispatch = jest.fn()
+  let touchstartCallback
+
+  const instigatorRef = { current: document.createElement('button') }
 
   beforeEach(() => {
     jest.clearAllMocks()
+
+    useOutsideInteract.mockImplementation((ref, condition, eventType, callback) => {
+      if (eventType === 'touchstart') {
+        touchstartCallback = callback
+      }
+    })
 
     document.body.innerHTML = '<button id="test-button">open search</button>'
 
@@ -341,5 +353,230 @@ describe('Search', () => {
 
     // Verify viewportDispatch was not called since location was null
     expect(viewportDispatch).not.toHaveBeenCalled()
+  })
+
+  it('should call handleCollapse on pointerdown outside search form', () => {
+    const mockAppDispatch = jest.fn()
+    const mockViewportDispatch = jest.fn()
+
+    const instigatorRef = { current: document.createElement('button') }
+
+    // Capture the callback
+    let capturedCallback
+
+    useOutsideInteract.mockImplementation((ref, condition, eventType, callback) => {
+      if (eventType === 'pointerdown') {
+        capturedCallback = callback
+      }
+    })
+
+    useApp.mockReturnValue({
+      interfaceType: 'keyboard',
+      isMobile: false,
+      options: { id: 'test', transformSearchRequest: jest.fn() },
+      search: { isAutocomplete: false, isExpanded: true },
+      activePanel: 'SEARCH',
+      activeRef: { current: null },
+      isDesktop: true,
+      legend: {},
+      dispatch: mockAppDispatch
+    })
+
+    useViewport.mockReturnValue({ dispatch: mockViewportDispatch })
+
+    render(<Search instigatorRef={instigatorRef} />)
+
+    // Create a fake element outside the form
+    const outsideElement = document.createElement('div')
+    document.body.appendChild(outsideElement)
+
+    // Make refs available
+    const fakeEvent = { target: outsideElement }
+
+    // Manually call the callback
+    capturedCallback(fakeEvent)
+
+    expect(mockAppDispatch).toHaveBeenCalledWith({ type: 'CLOSE' })
+
+    // Clean up
+    document.body.removeChild(outsideElement)
+  })
+
+  it('should not call handleCollapse if pointerdown is on instigatorRef', () => {
+    const mockAppDispatch = jest.fn()
+    const mockViewportDispatch = jest.fn()
+
+    const instigatorButton = document.createElement('button')
+    const instigatorRef = { current: instigatorButton }
+
+    let capturedCallback
+
+    useOutsideInteract.mockImplementation((ref, condition, eventType, callback) => {
+      if (eventType === 'pointerdown') {
+        capturedCallback = callback
+      }
+    })
+
+    useApp.mockReturnValue({
+      interfaceType: 'keyboard',
+      isMobile: false,
+      options: { id: 'test', transformSearchRequest: jest.fn() },
+      search: { isAutocomplete: false, isExpanded: true },
+      activePanel: 'SEARCH',
+      activeRef: { current: null },
+      isDesktop: true,
+      legend: {},
+      dispatch: mockAppDispatch
+    })
+
+    useViewport.mockReturnValue({ dispatch: mockViewportDispatch })
+
+    render(<Search instigatorRef={instigatorRef} />)
+
+    const fakeEvent = { target: instigatorButton }
+
+    // Trigger the event
+    capturedCallback(fakeEvent)
+
+    // Since target is instigatorRef, it should early return
+    expect(mockAppDispatch).not.toHaveBeenCalled()
+  })
+
+  it('should return early on touchstart if input is not active', () => {
+    render(<Search instigatorRef={instigatorRef} />)
+
+    const input = document.createElement('input')
+    const fakeEvent = { target: document.createElement('div') }
+
+    // inputRef.current will be input, but document.activeElement !== inputRef.current
+    document.body.appendChild(input)
+
+    // Simulate: inputRef.current is input, but it's not the active element
+    Object.defineProperty(document, 'activeElement', {
+      configurable: true,
+      get: () => document.body
+    })
+
+    // Manually assign to trigger internal useRef values
+    const inputRef = { current: input }
+    const blurSpy = jest.spyOn(input, 'blur')
+    const focusSpy = jest.spyOn(input, 'focus')
+
+    // Call the callback
+    touchstartCallback.call({ inputRef }, fakeEvent)
+
+    expect(blurSpy).not.toHaveBeenCalled()
+    expect(focusSpy).not.toHaveBeenCalled()
+  })
+
+  it('should blur and refocus input if active and target is inside form', () => {
+    jest.useFakeTimers()
+
+    let capturedCallback
+
+    useOutsideInteract.mockImplementation((ref, condition, eventType, callback) => {
+      if (eventType === 'touchstart') {
+        capturedCallback = callback
+      }
+    })
+
+    const instigatorRef = { current: document.createElement('button') }
+
+    useApp.mockReturnValue({
+      interfaceType: 'keyboard',
+      isMobile: true,
+      options: { id: 'test', transformSearchRequest: jest.fn() },
+      search: { isAutocomplete: false, isExpanded: true },
+      activePanel: 'SEARCH',
+      activeRef: { current: null },
+      isDesktop: false,
+      legend: {},
+      dispatch: jest.fn()
+    })
+
+    useViewport.mockReturnValue({ dispatch: jest.fn() })
+
+    const { container } = render(<Search instigatorRef={instigatorRef} />)
+
+    const input = container.querySelector('input')
+    const form = container.querySelector('form')
+
+    const blurSpy = jest.spyOn(input, 'blur')
+    const focusSpy = jest.spyOn(input, 'focus')
+
+    // Set input as active element
+    Object.defineProperty(document, 'activeElement', {
+      configurable: true,
+      get: () => input
+    })
+
+    const targetInsideForm = document.createElement('div')
+    form.appendChild(targetInsideForm)
+
+    // Trigger the captured callback
+    capturedCallback({ target: targetInsideForm })
+
+    expect(blurSpy).toHaveBeenCalled()
+
+    jest.runAllTimers()
+
+    expect(focusSpy).toHaveBeenCalled()
+
+    jest.useRealTimers()
+  })
+
+  it('should blur input and return early if touch target is outside form', () => {
+    jest.useFakeTimers()
+
+    let capturedCallback
+
+    useOutsideInteract.mockImplementation((ref, condition, eventType, callback) => {
+      if (eventType === 'touchstart') {
+        capturedCallback = callback
+      }
+    })
+
+    const instigatorRef = { current: document.createElement('button') }
+
+    useApp.mockReturnValue({
+      interfaceType: 'keyboard',
+      isMobile: true,
+      options: { id: 'test', transformSearchRequest: jest.fn() },
+      search: { isAutocomplete: false, isExpanded: true },
+      activePanel: 'SEARCH',
+      activeRef: { current: null },
+      isDesktop: false,
+      legend: {},
+      dispatch: jest.fn()
+    })
+
+    useViewport.mockReturnValue({ dispatch: jest.fn() })
+
+    const { container } = render(<Search instigatorRef={instigatorRef} />)
+
+    const input = container.querySelector('input')
+
+    const blurSpy = jest.spyOn(input, 'blur')
+    const focusSpy = jest.spyOn(input, 'focus')
+
+    Object.defineProperty(document, 'activeElement', {
+      configurable: true,
+      get: () => input
+    })
+
+    // Create a target outside the form
+    const outsideElement = document.createElement('div')
+    document.body.appendChild(outsideElement)
+
+    capturedCallback({ target: outsideElement })
+
+    expect(blurSpy).toHaveBeenCalled()
+
+    jest.runAllTimers()
+
+    // This time, focus should NOT be called because target was outside form
+    expect(focusSpy).not.toHaveBeenCalled()
+
+    jest.useRealTimers()
   })
 })

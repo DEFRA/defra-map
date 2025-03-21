@@ -2,9 +2,12 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
+import { circle as turfCircle } from '@turf/circle'
 
 export class Draw {
   constructor (provider, options) {
+    Object.assign(this, options)
+
     const { mode, shape, feature } = options
     const { map } = provider
     this.provider = provider
@@ -12,8 +15,15 @@ export class Draw {
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
 
-    const initialFeature = feature ? { ...feature, id: 'shape' } : null
+    const initialFeature = feature ? { ...feature, id: shape } : null
     this.oFeature = initialFeature
+
+    // Disable simple select
+    map.on('draw.modechange', e => {
+      if (e.mode === 'simple_select') {
+        this.draw.changeMode('direct_select', { featureId: shape })
+      }
+    })
 
     // Add existing feature
     if (initialFeature && mode === 'default') {
@@ -23,15 +33,6 @@ export class Draw {
 
     // Start new
     this.edit(mode, shape)
-
-    // Disable simple select
-    map.on('draw.modechange', e => {
-      if (e.mode === 'simple_select') {
-        this.draw.changeMode('direct_select', { featureId: 'shape' })
-      }
-    })
-
-    Object.assign(this, options)
   }
 
   // Add or edit
@@ -41,7 +42,10 @@ export class Draw {
 
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
-      const bounds = this.getBoundsFromFeature(oFeature)
+      const type = oFeature.geometry.type
+      const coords = oFeature.geometry.coordinates
+      const radius =  oFeature?.properties?.radius
+      const bounds = type === 'Point' && radius ? this.getBoundsFromPointAndRadius(coords, radius) : this.getBoundsFromCoordinates(coords[0])
       map.fitBounds(bounds, { animate: false })
     }
 
@@ -52,22 +56,20 @@ export class Draw {
 
     // Draw a new feature and set direct_select
     if (mode === 'vertex') {
-      const feature = oFeature || this.getFeatureFromElement(paddingBox, shape)
-      this.drawFeature(feature)
-      this.draw.changeMode('direct_select', { featureId: 'shape' })
+      this.drawFeature(oFeature || this.getFeatureFromElement(paddingBox, shape))
+      this.draw.changeMode('direct_select', { featureId: shape })
     }
   }
 
   // Cancel update
-  cancel () {
+  cancel (shape) {
     const { draw, oFeature } = this
     const { map } = this.provider
     const hasDrawControl = map.hasControl(draw)
 
     // Re-draw original feature and disable interactions
-    // Requires three conditions for performance
     if (hasDrawControl && oFeature) {
-      draw.delete(['shape'])
+      draw.delete([shape])
       draw.add(oFeature)
       draw.changeMode('disabled')
     }
@@ -85,7 +87,6 @@ export class Draw {
 
   // Confirm or update
   finish (shape) {
-    console.log('finish', shape)
     const { map, paddingBox } = this.provider
     const hasDrawControl = map.hasControl(this.draw)
 
@@ -101,7 +102,7 @@ export class Draw {
     }
 
     // Sert ref to feature
-    this.oFeature = this.draw.get('shape')
+    this.oFeature = this.draw.get(shape)
 
     return this.oFeature
   }
@@ -110,11 +111,11 @@ export class Draw {
   delete () {
     const { draw } = this
     const { map } = this.provider
-    this.oFeature = undefined
+    this.oFeature = null
 
     // Remove draw
     map.removeControl(draw)
-    this.draw = undefined
+    this.draw = null
   }
 
   drawFeature (feature) {
@@ -130,7 +131,8 @@ export class Draw {
     const draw = new MapboxDraw({
       modes,
       styles: drawStyles,
-      displayControlsDefault: false
+      displayControlsDefault: false,
+      userProperties: true
     })
 
     map.addControl(draw)
@@ -140,11 +142,11 @@ export class Draw {
     this.draw = draw
   }
 
-  getBoundsFromFeature (feature) {
-    const coordinates = feature.geometry.coordinates[0]
+  getBoundsFromCoordinates (coords) {
     let minX = Infinity; let minY = Infinity; let maxX = -Infinity; let maxY = -Infinity
-    coordinates.forEach(coord => {
-      const [x, y] = coord
+    coords.forEach(coord => {
+      const x = coord[0]
+      const y = coord[1]
       minX = x < minX ? x : minX
       minY = y < minY ? y : minY
       maxX = x > maxX ? x : maxX
@@ -153,35 +155,44 @@ export class Draw {
     return [minX, minY, maxX, maxY]
   }
 
+  getBoundsFromPointAndRadius (point, radius) {
+    const earthRadius = 6371000
+    const [x, y] = point
+    const lng = x * (Math.PI / 180)
+    const lat = y * (Math.PI / 180)
+    const angularDistance = radius / earthRadius
+    const minLat = lat - angularDistance
+    const maxLat = lat + angularDistance
+    const minLng = lng - angularDistance / Math.cos(lat)
+    const maxLng = lng + angularDistance / Math.cos(lat)
+    return [
+      minLng * (180 / Math.PI),
+      minLat * (180 / Math.PI),
+      maxLng * (180 / Math.PI),
+      maxLat * (180 / Math.PI)
+    ]
+  }
+
   getFeatureFromElement (el, shape) {
     const { map, scale } = this.provider
     const box = el.getBoundingClientRect()
     const padding = getFocusPadding(el, scale)
     const nw = map.unproject([padding.left, padding.top])
     const se = map.unproject([padding.left + (box.width / scale), padding.top + (box.height / scale)])
-    const feature = {
-      id: 'shape',
-      type: 'Feature',
-      properties: {},
-      geometry: {}
-    }
+    const feature = { id: shape, type: 'Feature', geometry: { type: 'Polygon' }}
 
     if (shape === 'circle') {
+      // Circle
       const c = map.getCenter()
       const coords = [c.lng, c.lat]
       const radius = getDistance([nw.lng, nw.lat], [se.lng, nw.lat]) / 2
-      feature.properties.radius = radius
-      feature.geometry = {
-        type: 'Point',
-        coordinates: coords
-      }
+      const turfFeature = new turfCircle(coords, radius, { units: 'meters' })
+      feature.geometry.coordinates = turfFeature.geometry
     } else {
+      // Polygon
       const b = [nw.lng, nw.lat, se.lng, se.lat]
       const coords = [[[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]]]]
-      feature.geometry = {
-        type: 'Polygon',
-        coordinates: coords
-      }
+      feature.geometry.coordinates = coords
     }
 
     return feature

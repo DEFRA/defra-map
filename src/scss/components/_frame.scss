@@ -72,3 +72,12 @@
 .fm-c-padding-box--circle .fm-c-padding-box__frame {
     border-radius: 100%;
 }
+
+// Text size
+.fm-o-viewport--medium .fm-c-padding-box__frame {
+    border-width: 3px;
+}
+
+.fm-o-viewport--large .fm-c-padding-box__frame {
+    border-width: 4px;
+}

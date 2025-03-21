@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
-import { events } from '../store/constants.js'
+import { events, drawModes } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
 export default function Draw () {
@@ -29,25 +29,18 @@ export default function Draw () {
     activeRef.current?.focus()
   }
 
+  const buttonPath = drawModes.find(m => m.id === shape)?.path
+
   return (
     <div className='fm-c-menu__group'>
       <h2 className='fm-c-menu__heading'>{queryArea.heading}</h2>
       <div className='fm-c-menu__item'>
         <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
-          {shape === 'polygon'
-            ? (
-              <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='none' stroke='currentColor' strokeWidth='2'>
-                <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
-                <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none' />
-              </svg>
-              )
-            : (
-              <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
-                <path d='M3.001 3h14v14h-14z' fill='none' stroke='currentColor' strokeWidth='2' />
-              </svg>
-              )}
+          <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
+            <path d={buttonPath} />
+          </svg>
           <span className='fm-c-btn__label'>
-            {`${query ? 'Edit' : 'Add'}`}
+            {`${query ? 'Edit' : 'Add'} ${shape}`}
           </span>
         </button>
       </div>
@@ -59,7 +52,7 @@ export default function Draw () {
               <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2' />
             </svg>
             <span className='fm-c-btn__label'>
-              Delete
+              Delete shape
             </span>
           </button>
         </div>

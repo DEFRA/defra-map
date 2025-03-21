@@ -54,6 +54,8 @@ export default function Container () {
   const hasLengedHeading = !(legend?.display === 'inset' || (isLegendFixed && isPage))
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
+  const srid = provider?.srid
+  const hasSizeCapability = provider?.capabilities?.hasSize
 
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
@@ -88,7 +90,7 @@ export default function Container () {
   }, [isPage, activePanel, hash])
 
   return (
-    <ViewportProvider options={{ ...options, srid: provider.srid }}>
+    <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
       <div
         className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
         onKeyDown={constrainFocus}

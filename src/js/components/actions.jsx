@@ -31,7 +31,7 @@ export default function Actions () {
   }
 
   const handleCancelClick = () => {
-    provider.draw.cancel()
+    provider.draw.cancel(shape)
     const featureShape = getFeatureShape(query)
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     if (drawMode) {

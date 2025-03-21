@@ -78,6 +78,42 @@ const getOffsetBoundingClientRect = (el) => {
   return offsetParent.getBoundingClientRect()
 }
 
+const isCirclePolygon = (geometry, tolerance = 0.0001) => {
+  if (!geometry?.coordinates?.[0]?.length) {
+    return false
+  }
+
+  const coordinates = geometry.coordinates[0]
+  if (coordinates.length - 1 !== 64) {
+    return false // Expect exactly 64 points
+  }
+
+  // Compute approximate center using two opposite points
+  const [x1, y1] = coordinates[0]
+  const [x2, y2] = coordinates[32]
+  const center = [(x1 + x2) / 2, (y1 + y2) / 2]
+
+  let minDist = Infinity, maxDist = -Infinity
+  let minEdge = Infinity, maxEdge = -Infinity
+
+  for (let i = 0; i < 64; i++) {
+      const [xA, yA] = coordinates[i]
+      const [xB, yB] = coordinates[(i + 1) % 64]
+
+      // Distance from center
+      const dist = Math.hypot(xA - center[0], yA - center[1])
+      minDist = Math.min(minDist, dist)
+      maxDist = Math.max(maxDist, dist)
+
+      // Distance to next vertex (edge length)
+      const edgeDist = Math.hypot(xB - xA, yB - yA)
+      minEdge = Math.min(minEdge, edgeDist)
+      maxEdge = Math.max(maxEdge, edgeDist)
+  }
+
+  return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
+}
+
 export const getDistance = (coord1, coord2) => {
   let distance
   if (coord1[0] > 1000) {
@@ -240,14 +276,15 @@ export const getShortcutKey = (e, featuresViewport) => {
 }
 
 export const getFeatureShape = (feature) => {
-  if (feature?.geometry?.type === 'Point' && feature?.poperties?.radius) {
-    return 'circle'
-  }
-  if (feature?.geometry?.type === 'Polygon') {
+  let shape = null
+  if (isCirclePolygon(feature?.geometry)) {
+    shape = 'circle'
+  } else if (feature?.geometry?.type === 'Polygon') {
     const coords = feature.geometry?.coordinates
     const flatCoords = coords && Array.from(new Set(coords.flat(2))) || null
-    return flatCoords?.length === 4 ? 'square' : 'polygon'
+    shape = flatCoords?.length === 4 ? 'square' : 'polygon'
   }
+  return shape
 }
 
 export const spatialNavigate = (direction, start, pixels) => {

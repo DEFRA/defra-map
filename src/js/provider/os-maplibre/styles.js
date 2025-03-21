@@ -1,3 +1,5 @@
+const devicePixelRatio = window.devicePixelRatio
+
 export const draw = [
   {
     id: 'stroke-active',
@@ -52,6 +54,16 @@ export const draw = [
     paint: {
       'circle-radius': 7,
       'circle-color': '#008000'
+    }
+  },
+  {
+    id: 'circle',
+    type: 'line',
+    filter: ['==', 'id', 'circle'],
+    paint: {
+      'line-color': '#ff0000',
+      'line-width': 2,
+      'line-opacity': 0.8
     }
   }
 ]

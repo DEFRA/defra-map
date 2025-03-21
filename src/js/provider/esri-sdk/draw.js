@@ -1,11 +1,14 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
+import Circle from '@arcgis/core/geometry/Circle.js'
+import Point from '@arcgis/core/geometry/Point.js'
 import Graphic from '@arcgis/core/Graphic'
+import { getDistance } from '../../lib/viewport'
 import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { mode, feature } = options
+    const { mode, shape, feature } = options
     this.provider = provider
     Object.assign(this, options)
 
@@ -14,7 +17,7 @@ export class Draw {
 
     // Add existing feature
     if (feature) {
-      const graphic = this.getGraphicFromFeature(feature)
+      const graphic = this.getGraphicFromFeature(feature, shape)
       this.oGraphic = graphic.clone()
     }
 
@@ -25,13 +28,13 @@ export class Draw {
     }
 
     // Start new
-    this.start(mode)
+    this.edit(mode, shape)
   }
 
-  start (mode) {
+  edit (mode, shape) {
     const { provider, oGraphic } = this
+    const { graphicsLayer, paddingBox } = this.provider
 
-    console.log(oGraphic)
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
@@ -39,28 +42,13 @@ export class Draw {
     }
 
     // Remove graphic if frame mode
-    if (mode === 'frame') {
-      const { graphicsLayer } = this.provider
-      graphicsLayer.removeAll()
-    }
+    graphicsLayer.removeAll()
 
     // Draw existing feature
-    if (mode === 'vertex' && oGraphic) {
-      this.editGraphic(oGraphic)
+    if (mode === 'vertex') {
+      const currentGraphic = oGraphic?.attributes?.id === shape ? oGraphic : null
+      this.editGraphic(currentGraphic || this.getGraphicFromElement(paddingBox))
     }
-
-    // Draw from paddingBox
-    if (mode === 'vertex' && !oGraphic) {
-      this.edit()
-    }
-  }
-
-  edit () {
-    const { graphicsLayer, paddingBox } = this.provider
-    const hasExisting = graphicsLayer.graphics.length
-    const elGraphic = this.getGraphicFromElement(paddingBox)
-    const graphic = hasExisting ? graphicsLayer.graphics.items[0] : elGraphic
-    this.editGraphic(graphic)
   }
 
   destroy () {
@@ -89,17 +77,21 @@ export class Draw {
     this.addGraphic(this.oGraphic)
   }
 
-  finish () {
+  finish (shape) {
     const { view, graphicsLayer, paddingBox } = this.provider
     const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const elGraphic = this.getGraphicFromElement(paddingBox)
+    const elGraphic = this.getGraphicFromElement(paddingBox, shape)
     const graphic = this.finishEdit() || currentGraphic || elGraphic
+    graphic.attributes.id = shape
+
     // Destroy sketchViewModel
     this.destroy()
+
     // Add graphic
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom
     this.addGraphic(graphic)
+
     return this.getFeature(graphic)
   }
 
@@ -160,34 +152,46 @@ export class Draw {
     return [nw.x, nw.y, se.x, se.y]
   }
 
-  getGraphicFromElement (el) {
+  getGraphicFromElement (el, shape) {
+    const { view } = this.provider
+
     const bounds = this.getBounds(el)
-    const coords = [[
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[1]],
-      [bounds[2], bounds[3]],
-      [bounds[0], bounds[3]],
-      [bounds[0], bounds[1]]
-    ]]
+    let rings
+
+    if (shape === 'circle') {
+      // Circle
+      const { x, y } = view.center
+      const center = new Point({ x, y, spatialReference: { wkid: 27700 } })
+      const radius = getDistance([bounds[0], bounds[1]], [bounds[2], bounds[1]]) / 2
+      const circle = new Circle({ center, geodesic: false, numberOfPoints: 64, radius, radiusUnit: 'meters' })
+      const roundedCoords = circle.rings[0].map(([e, n]) => [+(e.toFixed(1)), +(n.toFixed(1))])
+      rings = [roundedCoords]
+    } else {
+      // Polygon
+      rings = [[[bounds[0], bounds[1]], [bounds[2], bounds[1]], [bounds[2], bounds[3]], [bounds[0], bounds[3]], [bounds[0], bounds[1]]]]
+    }
 
     const graphic = new Graphic({
       geometry: {
         type: 'polygon',
-        rings: coords,
-        spatialReference: 27700
+        spatialReference: 27700,
+        rings
       },
       symbol: {
         type: 'simple-line',
         color: defaults.POLYGON_QUERY_STROKE,
         width: '2px',
         cap: 'square'
+      },
+      attributes: {
+        id: shape
       }
     })
 
     return graphic
   }
 
-  getGraphicFromFeature (feature) {
+  getGraphicFromFeature (feature, shape) {
     return new Graphic({
       geometry: {
         type: 'polygon',
@@ -199,6 +203,9 @@ export class Draw {
         color: defaults.POLYGON_QUERY_STROKE,
         width: '2px',
         cap: 'square'
+      },
+      attributes: {
+        id: shape
       }
     })
   }

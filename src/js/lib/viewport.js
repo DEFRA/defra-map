@@ -78,10 +78,23 @@ const getOffsetBoundingClientRect = (el) => {
   return offsetParent.getBoundingClientRect()
 }
 
+const detectCoordinateType = (coords) => {
+  if (coords.length === 3) {
+    return 'BNG' // If a third value exists (zone), it's UTM
+  }
+  const [x, y] = coords
+  if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
+    return 'WSG84'
+  }
+  if (x > 180 && y > 90) {
+    return 'BNG'
+  }
+  return 'Unknown'
+}
+
 const isCirclePolygon = (geometry) => {
-  const TOLERANCE = 0.007
   const coordinates = geometry?.coordinates?.[0]
-  
+
   // Expect exactly 64 points
   if (coordinates?.length !== 65) {
     return false
@@ -92,25 +105,29 @@ const isCirclePolygon = (geometry) => {
   const [x2, y2] = coordinates[32]
   const center = [(x1 + x2) / 2, (y1 + y2) / 2]
 
-  let minDist = Infinity, maxDist = -Infinity
-  let minEdge = Infinity, maxEdge = -Infinity
+  let minDist = Infinity; let maxDist = -Infinity
+  let minEdge = Infinity; let maxEdge = -Infinity
 
   for (let i = 0; i < 64; i++) {
-      const [xA, yA] = coordinates[i]
-      const [xB, yB] = coordinates[(i + 1) % 64]
+    const [xA, yA] = coordinates[i]
+    const [xB, yB] = coordinates[(i + 1) % 64]
 
-      // Distance from center
-      const dist = Math.hypot(xA - center[0], yA - center[1])
-      minDist = Math.min(minDist, dist)
-      maxDist = Math.max(maxDist, dist)
+    // Distance from center
+    const dist = Math.hypot(xA - center[0], yA - center[1])
+    minDist = Math.min(minDist, dist)
+    maxDist = Math.max(maxDist, dist)
 
-      // Distance to next vertex (edge length)
-      const edgeDist = Math.hypot(xB - xA, yB - yA)
-      minEdge = Math.min(minEdge, edgeDist)
-      maxEdge = Math.max(maxEdge, edgeDist)
+    // Distance to next vertex (edge length)
+    const edgeDist = Math.hypot(xB - xA, yB - yA)
+    minEdge = Math.min(minEdge, edgeDist)
+    maxEdge = Math.max(maxEdge, edgeDist)
   }
 
-  return Math.abs(maxDist - minDist) < TOLERANCE && Math.abs(maxEdge - minEdge) < TOLERANCE
+  const WSG84_TOLERANCE = 0.007
+  const BNG_TOLERANCE = 0.15
+  const tolerance = detectCoordinateType(center) === 'WSG84' ? WSG84_TOLERANCE : BNG_TOLERANCE
+
+  return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
 }
 
 export const getDistance = (coord1, coord2) => {
@@ -280,7 +297,7 @@ export const getFeatureShape = (feature) => {
   }
   if (feature?.geometry?.type === 'Polygon') {
     const coords = feature.geometry?.coordinates
-    const flatCoords = coords && Array.from(new Set(coords.flat(2))) || null
+    const flatCoords = (coords && Array.from(new Set(coords.flat(2)))) || null
     return flatCoords?.length === 4 ? 'square' : 'polygon'
   }
   return null

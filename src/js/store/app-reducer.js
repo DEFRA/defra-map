@@ -22,7 +22,7 @@ const getActivePanel = (mode, info, featureId, targetMarker, legend) => {
 const parseDrawModes = (mode, modes, defaultModes) => {
   let drawModes = modes ? defaultModes.filter(d => modes.includes(d.id)) : defaultModes
   // Sort drawModes on order provide by options
-  drawModes = drawModes.sort((a, b) => { return modes.indexOf(a.id) - modes.indexOf(b.id) })
+  drawModes = modes ? drawModes.sort((a, b) => { return modes.indexOf(a.id) - modes.indexOf(b.id) }) : drawModes
   const drawMode = drawModes.find(m => m.id === mode) ? mode : null
   return [drawMode, drawModes]
 }
@@ -38,8 +38,8 @@ export const initialState = (options) => {
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const query = queryArea?.feature
-  
-  const [ drawMode, drawModes ] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
+
+  const [drawMode, drawModes] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
   const featureShape = getFeatureShape(query)
   const shape = getShape(featureShape, drawMode, drawModes)
   const mode = drawMode ? defaultDrawModes.find(m => m.id === drawMode).mode : 'default'

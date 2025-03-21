@@ -1,5 +1,3 @@
-const devicePixelRatio = window.devicePixelRatio
-
 export const draw = [
   {
     id: 'stroke-active',

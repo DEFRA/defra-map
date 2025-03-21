@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
-import { events, drawModes } from '../store/constants.js'
+import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
 export default function Draw () {

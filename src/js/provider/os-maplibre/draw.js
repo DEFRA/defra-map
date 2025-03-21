@@ -2,7 +2,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
-import { circle as turfCircle } from '@turf/circle'
+import { circle as TurfCircle } from '@turf/circle'
 import { defaults } from './constants'
 
 export class Draw {
@@ -161,15 +161,15 @@ export class Draw {
     const padding = getFocusPadding(el, scale)
     const nw = map.unproject([padding.left, padding.top])
     const se = map.unproject([padding.left + (box.width / scale), padding.top + (box.height / scale)])
-    const feature = { id: shape, type: 'Feature', geometry: { type: 'Polygon' }}
+    const feature = { id: shape, type: 'Feature', geometry: { type: 'Polygon' } }
 
     if (shape === 'circle') {
       // Circle
       const c = map.getCenter()
       const coords = [c.lng, c.lat]
       const radius = getDistance([nw.lng, nw.lat], [se.lng, nw.lat]) / 2
-      const turfFeature = new turfCircle(coords, radius, { units: 'meters' })
-      const roundedCoords = turfFeature.geometry.coordinates[0].map(([lng, lat]) => [ +(lng.toFixed(defaults.PRECISION)), +(lat.toFixed(defaults.PRECISION))])
+      const turfFeature = new TurfCircle(coords, radius, { units: 'meters' })
+      const roundedCoords = turfFeature.geometry.coordinates[0].map(([lng, lat]) => [+(lng.toFixed(defaults.PRECISION)), +(lat.toFixed(defaults.PRECISION))])
       feature.geometry.coordinates = [roundedCoords]
     } else {
       // Polygon

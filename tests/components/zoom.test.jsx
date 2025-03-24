@@ -22,7 +22,6 @@ describe('zoom', () => {
 
     jest.mocked(useViewport).mockReturnValue({
       zoom: 5,
-      action: 'ZOOM_IN',
       dispatch: viewportDispatchMock
     })
   })
@@ -43,12 +42,11 @@ describe('zoom', () => {
     expect(zoomOutButton).toBeTruthy()
   })
 
-  it('should dispatch ZOOM_IN and MOVEEND actions on zoom in button click', () => {
+  it('should dispatch ZOOM_IN action on zoom in button click', () => {
     render(<Zoom />)
     const zoomInButton = screen.getByRole('button', { name: /zoom in/i })
     fireEvent.click(zoomInButton)
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_IN' })
-    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'MOVEEND' })
   })
 
   it('should dispatch ZOOM_OUT action on zoom out button click', () => {
@@ -56,6 +54,18 @@ describe('zoom', () => {
     const zoomOutButton = screen.getByRole('button', { name: /zoom out/i })
     fireEvent.click(zoomOutButton)
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_OUT' })
+  })
+
+  it('should dispatch MOVEEND action on a zoom action event', () => {
+    jest.mocked(useViewport).mockReturnValue({
+      zoom: 5,
+      action: 'ZOOM_IN',
+      dispatch: viewportDispatchMock
+    })
+
+    render(<Zoom />)
+
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'MOVEEND' })
   })
 
   it('should return on no valid action', () => {

@@ -1,67 +1,63 @@
 import React from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
-
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { drawModes } from '../../src/js/store/constants'
 import DrawEdit from '../../src/js/components/draw-edit'
 import { useApp } from '../../src/js/store/use-app'
 
 jest.mock('../../src/js/store/use-app')
 
 describe('draw-edit', () => {
-  const drawEdit = jest.fn()
-  const drawReset = jest.fn()
-  const dispatch = jest.fn()
+  it('should handle shape click and show current selection', () => {
+    const mockDispatch = jest.fn()
+    const mockDrawEdit = jest.fn()
+    const mockUseApp = jest.mocked(useApp)
 
-  it('should handle polygon click and show current selection: square', () => {
-    jest.mocked(useApp).mockReturnValue({
-      mode: 'frame',
-      shape: 'square',
-      dispatch,
-      provider: {
-        draw: {
-          edit: drawEdit,
-          reset: drawReset
-        }
-      },
-      options: {
-        id: 'test'
-      }
+    // Function to update mock return value dynamically
+    const updateMockUseApp = (shape, mode) => {
+      mockUseApp.mockReturnValue({
+        mode,
+        shape,
+        drawModes,
+        dispatch: mockDispatch,
+        provider: { draw: { edit: mockDrawEdit } },
+        options: { id: 'test' }
+      })
+    }
+
+    // Initialize with default shape
+    updateMockUseApp('circle', 'frame')
+
+    const shapes = [
+      { shape: 'circle', label: 'Circle', mode: 'frame' },
+      { shape: 'square', label: 'Square', mode: 'frame' },
+      { shape: 'polygon', label: 'Polygon', mode: 'vertex' }
+    ]
+
+    shapes.forEach(({ shape, label, mode }) => {
+      // Update mocks before clicking
+      updateMockUseApp(shape, mode)
+      render(<DrawEdit />)
+
+      // Open the menu
+      fireEvent.click(screen.getByText(`Current selection: ${label}`))
+      const menu = screen.getByRole('menu')
+      expect(screen.getByRole('menu')).toBeTruthy()
+
+      // Click on the shape option
+      const shapeOption = within(menu).getByText(label)
+      fireEvent.click(shapeOption)
+
+      // Verify drawEdit was called with updated values
+      expect(mockDrawEdit).toHaveBeenCalledWith(mode, shape)
+
+      // Verify dispatch was called with updated mode and shape
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'SET_MODE',
+        payload: { value: mode, shape }
+      })
+
+      // Verify that the correct selection is displayed
+      expect(screen.getByText(`Current selection: ${label}`)).toBeTruthy()
     })
-
-    render(<DrawEdit />)
-
-    expect(screen.getByText('Current selection: Square')).toBeTruthy()
-    const polygonOption = screen.getByText('Polygon')
-
-    fireEvent.click(polygonOption)
-
-    expect(drawEdit).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalled()
-  })
-
-  it('should handle square click and show current selection: polygon', () => {
-    jest.mocked(useApp).mockReturnValue({
-      mode: 'vertex',
-      shape: 'polygon',
-      dispatch,
-      provider: {
-        draw: {
-          edit: drawEdit,
-          reset: drawReset
-        }
-      },
-      options: {
-        id: 'test'
-      }
-    })
-
-    render(<DrawEdit />)
-
-    expect(screen.getByText('Current selection: Polygon')).toBeTruthy()
-    const squareOption = screen.getByText('Square')
-
-    fireEvent.click(squareOption)
-
-    expect(drawReset).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalled()
   })
 })

@@ -240,12 +240,12 @@ describe('lib/viewport - spatialNavigate', () => {
 
 describe('lib/viewport - getFeatureShape', () => {
   it('should return \'square\' for a square feature', () => {
-    const squareFeature = { geometry: { coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } }
+    const squareFeature = { geometry: { type: 'Polygon', coordinates: [[[2, 1], [6, 1], [6, 5], [2, 5], [2, 1]]] } }
     expect(getFeatureShape(squareFeature)).toBe('square')
   })
 
   it('should return \'polygon\' for a non-square feature', () => {
-    const nonSquareFeature = { geometry: { coordinates: [[[0, 0], [0, 2], [1, 1], [1, 0], [0, 0]]] } }
+    const nonSquareFeature = { geometry: { type: 'Polygon', coordinates: [[[0, 0], [0, 2], [1, 1], [1, 0], [0, 0]]] } }
     expect(getFeatureShape(nonSquareFeature)).toBe('polygon')
   })
 

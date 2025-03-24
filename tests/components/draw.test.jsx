@@ -13,7 +13,8 @@ jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/lib/viewport')
 
 describe('draw', () => {
-  const draw = jest.fn()
+  const mockEdit = jest.fn()
+  const mockDelete = jest.fn()
   const appDispatch = jest.fn()
   const viewportDispatch = jest.fn()
   const activeRef = {}
@@ -35,23 +36,26 @@ describe('draw', () => {
       activeRef,
       viewportRef,
       mode: 'frame',
+      drawModes: ['circle', 'square', 'polygon'],
+      shape: 'square',
       queryArea: {
         heading: ''
       },
       provider: {
         draw: {
-          start: draw
+          edit: mockEdit
         }
       }
     })
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add'))
+    fireEvent.click(screen.getByText('Add square'))
 
-    expect(screen.getByText('Add')).toBeTruthy()
-    expect(draw).toHaveBeenCalled()
-    expect(viewportDispatch).toHaveBeenCalled()
+    expect(screen.getByText('Add square')).toBeTruthy()
+    expect(mockEdit).toHaveBeenCalled()
+    expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', query: undefined } })
+    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 
@@ -61,45 +65,52 @@ describe('draw', () => {
       activeRef,
       viewportRef,
       mode: 'vertex',
+      drawModes: ['circle', 'square', 'polygon'],
+      shape: 'polygon',
       query: true,
       queryArea: {
         heading: ''
       },
       provider: {
         draw: {
-          start: draw
+          edit: mockEdit
         }
       }
     })
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Edit'))
+    fireEvent.click(screen.getByText('Edit polygon'))
 
-    expect(screen.getByText('Edit')).toBeTruthy()
-    expect(draw).toHaveBeenCalled()
-    expect(viewportDispatch).toHaveBeenCalled()
+    expect(screen.getByText('Edit polygon')).toBeTruthy()
+    expect(mockEdit).toHaveBeenCalled()
+    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 
-  it('should handle click for an initial draw', () => {
+  it('should handle click on Delete label', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
       activeRef,
       viewportRef,
+      query: {},
       queryArea: {
         heading: ''
       },
       provider: {
-        initDraw: draw
+        draw: {
+          delete: mockDelete
+        }
       },
-      drawMode: 'frame'
+      drawMode: 'frame',
+      drawModes: ['circle', 'square', 'polygon'],
+      shape: 'square'
     })
 
     render(<Draw />)
 
-    fireEvent.click(screen.getByText('Add'))
-
-    expect(draw).toHaveBeenCalled()
+    expect(screen.getByText('Delete shape')).toBeTruthy()
+    fireEvent.click(screen.getByText('Delete shape'))
+    expect(mockDelete).toHaveBeenCalled()
   })
 })

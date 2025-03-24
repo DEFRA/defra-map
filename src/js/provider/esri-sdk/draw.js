@@ -33,12 +33,12 @@ export class Draw {
 
   edit (mode, shape) {
     const { provider, oGraphic } = this
-    const { graphicsLayer, paddingBox } = this.provider
+    const { view, graphicsLayer, paddingBox } = provider
 
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      provider.view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
+      view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
     }
 
     // Remove graphic if frame mode
@@ -123,6 +123,7 @@ export class Draw {
 
     this.sketchViewModel = sketchViewModel
 
+    // Add update event handler
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
 
     // Fix SketchViewModel render bug

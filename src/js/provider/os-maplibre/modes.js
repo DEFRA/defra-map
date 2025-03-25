@@ -18,9 +18,11 @@ const spatialNavigate = (direction, start, pixels) => {
     }
     return isQuadrant && (JSON.stringify(p) !== JSON.stringify(start))
   })
+
   if (!quadrant.length) {
     quadrant.push(start)
   }
+
   const pythagorean = (a, b) => Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
   const distances = quadrant.map(p => pythagorean(Math.abs(start[0] - p[0]), Math.abs(start[1] - p[1])))
   const closest = quadrant[distances.indexOf(Math.min(...distances))]
@@ -101,11 +103,7 @@ export const EditVertexMode = {
 
   getVerticies(featureId) {
     const feature = this.getFeature(featureId)
-    if (!feature) {
-      return []
-    }
-
-    return feature.coordinates.flat(1)
+    return feature?.coordinates?.flat(1) || []
   },
 
   getMidpoints(featureId) {
@@ -117,24 +115,48 @@ export const EditVertexMode = {
     const coords = feature.coordinates.flat(1)
     const midpoints = []
 
-    for (let i = 0; i < coords.length - 1; i++) {
-      const midX = (coords[i][0] + coords[i + 1][0]) / 2
-      const midY = (coords[i][1] + coords[i + 1][1]) / 2
+    for (let i = 0; i < coords.length; i++) {
+      const nextIndex = (i + 1) % coords.length  // Ensure it loops back to the start
+      const midX = (coords[i][0] + coords[nextIndex][0]) / 2
+      const midY = (coords[i][1] + coords[nextIndex][1]) / 2
       midpoints.push([midX, midY])
     }
-    
+
     return midpoints
   },
 
   getVertexOrMidpoint(state, direction) {
     const { map } = this
     const start = Object.values(map.project(state.selectedVertexOrMidpoint || map.getCenter()))
-    const pixels = [...state.vertecies, ...state.midpoints]
-    console.log(start)
-    console.log(pixels)
-    console.log(state.vertecies)
-    console.log(state.midpoints)
-    // const getVertexOrMidpoint = spatialNavigate(direction, start, pixels)
+    const vertexPixels = state.vertecies.map(v => Object.values(map.project(v)))
+    const midpointPixels = state.midpoints.map(m => Object.values(map.project(m)))
+    const pixels = [...vertexPixels, ...midpointPixels]
+    const vertexOrMidpointIndex = spatialNavigate(direction, start, pixels)
+
+    if (vertexOrMidpointIndex < state.vertecies.length) {
+      const pixel = vertexPixels[vertexOrMidpointIndex]
+      const features = map.queryRenderedFeatures(pixel, { layers: ['vertex.cold', 'midpoint.cold'] })
+      const rect = map.getContainer().getBoundingClientRect()
+      console.log(features[0])
+      console.log(this._ctx.api.getMode())
+      map.getCanvas().dispatchEvent(new MouseEvent('click', {
+        clientX: pixel[0] - rect.left,
+        clientY: pixel[1] - rect.top,
+        bubbles: true
+      }))
+      // map.fire('click', {
+      //   lngLat: map.unproject(pixel),
+      //   point: { x: pixel[0], y: pixel[1] },
+      //   features,
+      //   originalEvent: new MouseEvent('click', {
+      //     clientX: pixel[0],
+      //     clientY: pixel[1],
+      //     bubbles: true
+      //   })
+      // })
+    } else {
+      console.log('Midpoint', vertexOrMidpointIndex - state.vertecies.length)
+    }
   },
 
   onStop(state, e) {

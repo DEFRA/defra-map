@@ -20,7 +20,7 @@ export default function Viewport () {
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
-  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate, isVertexEdit } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -40,9 +40,18 @@ export default function Viewport () {
   const bgColor = getColor(backgroundColor, style?.name)
 
   const handleKeyDown = e => {
+    // Disable body scroll
+    if (e.key !== 'Tab') {
+      e.preventDefault()
+    }
+
+    // When in vertex edit mode disable default keyboard behaviour
+    if (isVertexEdit) {
+      return
+    }
+
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
-      e.preventDefault()
       provider.panBy(offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()])
     }
 
@@ -51,8 +60,8 @@ export default function Viewport () {
       ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
     }
 
-    // Select feature or query center (Enter or Space)
-    if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
+    // Select feature or query center (Enter)
+    if (!e.altKey && e.key === 'Enter' && mode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
       } else if (queryLocation?.layers && !isMoving) {
@@ -65,16 +74,10 @@ export default function Viewport () {
 
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
-      e.preventDefault()
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
       appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
       activeRef.current = viewportRef.current
-    }
-
-    // Disable body scroll
-    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
-      e.preventDefault()
     }
   }
 
@@ -91,19 +94,28 @@ export default function Viewport () {
       appDispatch({ type: 'OPEN', payload: 'KEYBOARD' })
     }
 
+    // Clear selected feature and label
+    if (['Escape', 'Esc'].includes(e.key)) {
+      // Triggers an update event
+      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
+      viewportDispatch({ type: 'CLEAR' })
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
+    }
+
+    // When in vertex edit mode with keyboard disable default behaviour
+    if (isVertexEdit) {
+      return
+    }
+
+    // Edit vertecies
+    if (e.key === ' ' && mode === 'vertex') {
+      viewportDispatch({ type: 'TOGGLE_VERTEX_EDIT', payload: true })
+    }
+
     // Feature shortcut keys (Alt + 1 - 9)
     if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
       const fId = getShortcutKey(e, features?.featuresInViewport)
       provider.queryFeature(fId)
-    }
-
-    // Clear selected feature and label
-    if (['Escape', 'Esc'].includes(e.key)) {
-      e.preventDefault()
-      // Triggers an update event
-      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
-      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }
 
     // Select label (Alt + arrow key)
@@ -115,7 +127,7 @@ export default function Viewport () {
     }
 
     // Select label (Alt + Enter with mousehover)
-    if (e.altKey && ['Enter', 'Space'].includes(e.key) && pointerPixel.current && provider.showLabel) {
+    if (e.altKey && e.key === 'Enter' && pointerPixel.current && provider.showLabel) {
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }
@@ -191,6 +203,11 @@ export default function Viewport () {
     eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
   }
 
+  // Vertex events
+  const handleMapVertex = (e) => {
+    viewportDispatch({ type: 'TOGGLE_VERTEX_EDIT', payload: e.detail.isSelected })
+  }
+
   // Initial render
   useEffect(() => {
     if (isContainerReady && !provider.isLoaded) {
@@ -227,14 +244,16 @@ export default function Viewport () {
     }
   }, [isContainerReady])
 
-  // Movestart need access to some state
+  // Movestart and vertex edit need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMoveStart)
+    provider.addEventListener('vertex', handleMapVertex)
 
     return () => {
       provider.removeEventListener('movestart', handleMoveStart)
+      provider.removeEventListener('vertex', handleMapVertex)
     }
-  }, [isKeyboard, activePanel, action])
+  }, [isKeyboard, isVertexEdit, activePanel, action])
 
   // Handle viewport action
   useEffect(() => {

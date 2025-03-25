@@ -1,5 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { DisabledMode } from './modes'
+import { DisabledMode, EditVertexMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as TurfCircle } from '@turf/circle'
@@ -7,11 +7,13 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
+    const { map } = provider
     Object.assign(this, options)
 
     const { mode, shape, feature } = options
-    const { map } = provider
+    const { container } = provider
     this.provider = provider
+    this.shape = shape
 
     // Provider needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
@@ -19,18 +21,27 @@ export class Draw {
     const initialFeature = feature ? { ...feature, id: shape } : null
     this.oFeature = initialFeature
 
-    // Disable simple select
-    map.on('draw.modechange', e => {
-      if (e.mode === 'simple_select') {
-        this.draw.changeMode('direct_select', { featureId: shape })
-      }
-    })
-
     // Add existing feature
     if (initialFeature && mode === 'default') {
       this.drawFeature(initialFeature)
       return
     }
+
+    // Disable simple_select mode
+    map.on('draw.modechange', e => {
+      if (e.mode === 'simple_select') {
+        this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: this.shape })
+      }
+    })
+
+    // Pass vertex selected event to provider
+    map.on('draw.vertexselected', e => {
+      provider.dispatchEvent(new CustomEvent('vertex', {
+        detail: {
+          isSelected: e.isSelected
+        }
+      }))
+    })
 
     // Start new
     this.edit(mode, shape)
@@ -39,7 +50,7 @@ export class Draw {
   // Add or edit
   edit (mode, shape) {
     const { draw, oFeature } = this
-    const { map, paddingBox } = this.provider
+    const { map, container, paddingBox } = this.provider
 
     // Zoom to extent if we have an existing graphic
     if (oFeature) {
@@ -53,12 +64,14 @@ export class Draw {
       map.removeControl(this.draw)
     }
 
-    // Draw a new feature and set direct_select
+    // Draw a new feature and set edit_vertex
     if (mode === 'vertex') {
       const currentFeature = oFeature?.id === shape ? oFeature : null
       this.drawFeature(currentFeature || this.getFeatureFromElement(paddingBox, shape))
-      this.draw.changeMode('direct_select', { featureId: shape })
+      this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }
+
+    this.shape = shape
   }
 
   // Cancel update
@@ -127,6 +140,7 @@ export class Draw {
 
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
+    modes.edit_vertex = EditVertexMode
 
     const draw = new MapboxDraw({
       modes,

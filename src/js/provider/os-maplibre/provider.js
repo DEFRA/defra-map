@@ -130,8 +130,6 @@ class Provider extends EventTarget {
     const debounceHandleIdle = debounce(() => { handleIdle(this) }, defaults.DELAY)
     map.on('idle', debounceHandleIdle)
 
-    console.log('**idle on firing if map has features')
-
     // Map style change
     map.on('style.load', handleStyleLoad.bind(map, this))
 

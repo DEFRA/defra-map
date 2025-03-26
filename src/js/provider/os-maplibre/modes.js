@@ -58,8 +58,9 @@ export const EditVertexMode = {
 
   onSetup(options) {
     const state = DirectSelect.onSetup.call(this, options)
-    const { container } = options
-    state.selectedVertexOrMidpoint = null // Tracks selected vertex/midpoint
+    const { container, selectedIndex, selectedType } = options
+    state.selectedIndex = selectedIndex // Tracks selected vertex/midpoint
+    state.selectedType = selectedType // Tracks select type vertex or midpoint
     state.vertecies = this.getVerticies(state.featureId) // Store vertecies
     state.midpoints = this.getMidpoints(state.featureId) // Store midpoints
     state.isMidpoint = false // Is a midpoint selected?
@@ -76,28 +77,46 @@ export const EditVertexMode = {
     return state
   },
 
+  updateActiveMidpoint(coordinates) {
+    const { map } = this
+
+    // Shouldn't add to layer directly but can't get this._ctx.api.add(feature) to work
+    map.getSource('mapbox-gl-draw-hot').setData({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: {
+          meta: 'midpoint',
+          active: 'true',
+          id: 'active-midpoint'
+        },
+        geometry: {
+          type: 'Point',
+          coordinates
+        }
+      }]
+    })
+  },
+
   onSelectionChange(state, e) {
     const vertex = e.points[e.points.length - 1]
-    state.selectedVertexOrMidpoint = vertex
     this.map.fire('draw.vertexselected', {
       isSelected: !!vertex
     })
   },
 
   onKeyDown(state, e) {
+    console.log('onKeyDown', !!state.selectedIndex, state.selectedIndex, state.selectedType)
     // Set selected vertex
-    if (e.key === ' ') {
-      state.selectedVertexOrMidpoint = this.getVertexOrMidpoint(state)
+    if (e.key === ' ' && isNaN(state.selectedIndex)) {
+      this.getVertexOrMidpoint(state)
     }
 
     if (e.key === 'Escape') {
-      state.selectedVertexOrMidpoint = null
+      state.selectedIndex = null
+      state.selectedType = null
       const draw = this._ctx.api 
       draw.changeMode('edit_vertex', { container: state.container, featureId: state.featureId })
-    }
-
-    if (!state.selectedVertexOrMidpoint) {
-      return
     }
   },
 
@@ -127,37 +146,38 @@ export const EditVertexMode = {
 
   getVertexOrMidpoint(state, direction) {
     const { map } = this
-    const start = Object.values(map.project(state.selectedVertexOrMidpoint || map.getCenter()))
-    const vertexPixels = state.vertecies.map(v => Object.values(map.project(v)))
-    const midpointPixels = state.midpoints.map(m => Object.values(map.project(m)))
+    const start = Object.values(map.project(state.selectedIndex || map.getCenter()))
+    const vertexPixels = state.vertecies.map(p => Object.values(map.project(p)))
+    const midpointPixels = state.midpoints.map(p => Object.values(map.project(p)))
     const pixels = [...vertexPixels, ...midpointPixels]
-    const vertexOrMidpointIndex = spatialNavigate(direction, start, pixels)
+    const index = spatialNavigate(direction, start, pixels)
+    const draw = this._ctx.api 
 
-    if (vertexOrMidpointIndex < state.vertecies.length) {
-      const pixel = vertexPixels[vertexOrMidpointIndex]
-      const features = map.queryRenderedFeatures(pixel, { layers: ['vertex.cold', 'midpoint.cold'] })
-      const rect = map.getContainer().getBoundingClientRect()
-      console.log(features[0])
-      console.log(this._ctx.api.getMode())
-      map.getCanvas().dispatchEvent(new MouseEvent('click', {
-        clientX: pixel[0] - rect.left,
-        clientY: pixel[1] - rect.top,
-        bubbles: true
-      }))
-      // map.fire('click', {
-      //   lngLat: map.unproject(pixel),
-      //   point: { x: pixel[0], y: pixel[1] },
-      //   features,
-      //   originalEvent: new MouseEvent('click', {
-      //     clientX: pixel[0],
-      //     clientY: pixel[1],
-      //     bubbles: true
-      //   })
-      // })
+    if (index < state.vertecies.length) {
+      draw.changeMode('edit_vertex', {
+        container: state.container,
+        featureId: state.featureId,
+        selectedIndex: index,
+        selectedType: 'vertex',
+        coordPath: `0.${index}`
+      })
+
+      return [index, 'vertex']
     } else {
-      console.log('Midpoint', vertexOrMidpointIndex - state.vertecies.length)
+      const coords = state.midpoints[index - state.vertecies.length]
+      this.updateActiveMidpoint(coords)
+
+      return [index, 'midpoint']
     }
   },
+
+  // toDisplayFeatures(state, geojson, display) {
+  //   DirectSelect.toDisplayFeatures.call(this, state, geojson, display)
+
+  //   if (this.activeMidpoint) {
+  //     display(this.activeMidpoint) 
+  //   }
+  // },
 
   onStop(state, e) {
     this.map.off('draw.selectionchange', this.selectionChangeHandler)

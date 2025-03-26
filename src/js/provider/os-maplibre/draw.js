@@ -44,7 +44,7 @@ export class Draw {
     })
 
     map.on('click', e => {
-      console.log(e)
+      // console.log(e)
     })
 
     // Start new

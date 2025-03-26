@@ -1,6 +1,7 @@
 # Flood map
 
-## Useful Links
+## Useful links
+- [API](./docs/api.md)
 - [Development Guide](./docs/development-guide.md)
 - [How to Publish](./docs/how-to-publish.md)
 
@@ -14,7 +15,7 @@ Run:
 npm i @defra/flood-map
 ```
 
-### Client Side Javascript
+### Client side JavaScript
 
 You will need to initialise flood map in your client side code:
 

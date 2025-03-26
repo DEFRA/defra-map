@@ -171,14 +171,6 @@ export const EditVertexMode = {
     }
   },
 
-  // toDisplayFeatures(state, geojson, display) {
-  //   DirectSelect.toDisplayFeatures.call(this, state, geojson, display)
-
-  //   if (this.activeMidpoint) {
-  //     display(this.activeMidpoint) 
-  //   }
-  // },
-
   onStop(state, e) {
     this.map.off('draw.selectionchange', this.selectionChangeHandler)
     state.container.removeEventListener('keydown', this.keydownHandler)

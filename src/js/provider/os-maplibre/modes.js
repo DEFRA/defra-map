@@ -1,7 +1,7 @@
 import DirectSelect from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/direct_select'
 
 const spatialNavigate = (start, pixels, direction) => {
-  const quadrant = pixels.filter(p => {
+  const quadrant = pixels.filter((p, i) => {
     const offsetX = Math.abs(p[0] - start[0])
     const offsetY = Math.abs(p[1] - start[1])
     let isQuadrant = false
@@ -58,14 +58,15 @@ export const EditVertexMode = {
 
   onSetup(options) {
     const state = DirectSelect.onSetup.call(this, options)
-    const { container, selectedIndex, selectedType } = options
+    const { container, featureId, selectedIndex, selectedType } = options
+    state.featureId = featureId
     state.selectedIndex = selectedIndex // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
-    state.vertecies = this.getVerticies(state.featureId) // Store vertecies
-    state.midpoints = this.getMidpoints(state.featureId) // Store midpoints
-    state.isMidpoint = false // Is a midpoint selected?
+    state.vertecies = this.getVerticies(featureId) // Store vertecies
+    state.midpoints = this.getMidpoints(featureId) // Store midpoints
     state.container = container
 
+    console.log('onSetup', state)
     // Bind events as default events require map container to have focus
     this.keydownHandler = (e) => this.onKeyDown(state, e)
     container.addEventListener('keydown', this.keydownHandler)
@@ -74,49 +75,13 @@ export const EditVertexMode = {
     this.selectionChangeHandler = (e) => this.onSelectionChange(state, e)
     this.map.on('draw.selectionchange', this.selectionChangeHandler)
 
-    return state
-  },
-
-  updateActiveMidpoint(coordinates) {
-    const { map } = this
-
-    // Shouldn't add to layer directly but can't get this._ctx.api.add(feature) to work
-    map.getSource('mapbox-gl-draw-hot').setData({
-      type: 'Feature',
-      properties: {
-        meta: 'midpoint',
-        active: 'true',
-        id: 'active-midpoint'
-      },
-      geometry: {
-        type: 'Point',
-        coordinates
-      }
-    })
-  },
-
-  updateActiveVertex(state) {
-    const { container, featureId, selectedIndex, selectedType} = state
-    this._ctx.api.changeMode('edit_vertex', {
-      container,
-      featureId,
-      selectedIndex,
-      selectedType,
-      coordPath: `0.${selectedIndex}`
-    })
-  },
-
-  updateVertexOrMidpoint(state) {
-    const [ index, type ] = this.getVertexOrMidpoint(state)
-    state.selectedIndex = index
-    state.selectedType = type
-
-    if (type === 'vertex') {
-      this.updateActiveVertex(state)
-    } else {
-      const coords = state.midpoints[index - state.vertecies.length]
+    // Add midpoint
+    if (selectedType === 'midpoint') {
+      const coords = state.midpoints[selectedIndex - state.vertecies.length]
       this.updateActiveMidpoint(coords)
     }
+
+    return state
   },
 
   onSelectionChange(state, e) {
@@ -139,7 +104,7 @@ export const EditVertexMode = {
 
     // Navigate points
     if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && !isNaN(state.selectedIndex)) {
-      this.updateVertexOrMidpoint(state)
+      this.updateVertexOrMidpoint(state, e.key)
     }
 
     // Clear selecred index and type
@@ -180,14 +145,88 @@ export const EditVertexMode = {
     const vertexPixels = state.vertecies.map(p => Object.values(map.project(p)))
     const midpointPixels = state.midpoints.map(p => Object.values(map.project(p)))
     const pixels = [...vertexPixels, ...midpointPixels]
-    const startPixel = state.selectedIndex ? pixels[state.selectedIndex] : null
-    const start = Object.values(startPixel || map.project(map.getCenter()))
+    const startPixel = !isNaN(state.selectedIndex) ? pixels[state.selectedIndex] : null
+    const start = startPixel || Object.values(map.project(map.getCenter()))
 
     const index = spatialNavigate(start, pixels, direction)
 
     const type = index < state.vertecies.length ? 'vertex' : 'midpoint'
 
     return [index, type]
+  },
+
+  updateActiveMidpoint(coordinates) {
+    const { map } = this
+
+    // Shouldn't add to layer directly but can't get this._ctx.api.add(feature) to work
+    setTimeout(() => { map.getSource('mapbox-gl-draw-hot').setData({
+      type: 'Feature',
+      properties: {
+        meta: 'midpoint',
+        active: 'true',
+        id: 'active-midpoint'
+      },
+      geometry: {
+        type: 'Point',
+        coordinates
+      }
+    })}, 100)
+
+    // this._ctx.api.add({
+    //   type: 'Feature',
+    //   properties: {
+    //     meta: 'midpoint',
+    //     active: 'true',
+    //     id: 'active-midpoint'
+    //   },
+    //   geometry: {
+    //     type: 'Point',
+    //     coordinates
+    //   }
+    // })
+  },
+
+  // updateActiveVertex(state) {
+  //   const { container, featureId, selectedIndex, selectedType} = state
+  //   this._ctx.api.changeMode('edit_vertex', {
+  //     container,
+  //     featureId,
+  //     selectedIndex,
+  //     selectedType,
+  //     coordPath: `0.${selectedIndex}`
+  //   })
+  // },
+
+  updateVertexOrMidpoint(state, direction) {
+    const { container, featureId } = state
+    const [ index, type ] = this.getVertexOrMidpoint(state, direction)
+    // state.selectedIndex = index
+    // state.selectedType = type
+
+    console.log('updateVertexOrMidpoint', index, type)
+ 
+    this._ctx.api.changeMode('edit_vertex', {
+      container,
+      featureId,
+      selectedIndex: index,
+      selectedType: type,
+      ...(type === 'vertex' ? { coordPath: `0.${index}` } : {})
+      // coordPath: `0.${index}`
+    })
+
+    // Cause new onSetup which wipes the vertex
+
+    // if (type === 'midpoint') {
+    //   const coords = state.midpoints[index - state.vertecies.length]
+    //   this.updateActiveMidpoint(coords)
+    // }
+
+    // if (type === 'vertex') {
+    //   this.updateActiveVertex(state)
+    // } else {
+    //   const coords = state.midpoints[index - state.vertecies.length]
+    //   this.updateActiveMidpoint(coords)
+    // }
   },
 
   onStop(state, e) {

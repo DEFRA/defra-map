@@ -1,17 +1,17 @@
 import DirectSelect from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/direct_select'
 
-const spatialNavigate = (direction, start, pixels) => {
+const spatialNavigate = (start, pixels, direction) => {
   const quadrant = pixels.filter(p => {
     const offsetX = Math.abs(p[0] - start[0])
     const offsetY = Math.abs(p[1] - start[1])
     let isQuadrant = false
-    if (direction === 'up') {
+    if (direction === 'ArrowUp') {
       isQuadrant = p[1] <= start[1] && offsetY >= offsetX
-    } else if (direction === 'down') {
+    } else if (direction === 'ArrowDown') {
       isQuadrant = p[1] > start[1] && offsetY >= offsetX
-    } else if (direction === 'left') {
+    } else if (direction === 'ArrowLeft') {
       isQuadrant = p[0] <= start[0] && offsetY < offsetX
-    } else if (direction === 'right') {
+    } else if (direction === 'ArrowRight') {
       isQuadrant = p[0] > start[0] && offsetY < offsetX
     } else {
       isQuadrant = true
@@ -82,20 +82,41 @@ export const EditVertexMode = {
 
     // Shouldn't add to layer directly but can't get this._ctx.api.add(feature) to work
     map.getSource('mapbox-gl-draw-hot').setData({
-      type: 'FeatureCollection',
-      features: [{
-        type: 'Feature',
-        properties: {
-          meta: 'midpoint',
-          active: 'true',
-          id: 'active-midpoint'
-        },
-        geometry: {
-          type: 'Point',
-          coordinates
-        }
-      }]
+      type: 'Feature',
+      properties: {
+        meta: 'midpoint',
+        active: 'true',
+        id: 'active-midpoint'
+      },
+      geometry: {
+        type: 'Point',
+        coordinates
+      }
     })
+  },
+
+  updateActiveVertex(state) {
+    const { container, featureId, selectedIndex, selectedType} = state
+    this._ctx.api.changeMode('edit_vertex', {
+      container,
+      featureId,
+      selectedIndex,
+      selectedType,
+      coordPath: `0.${selectedIndex}`
+    })
+  },
+
+  updateVertexOrMidpoint(state) {
+    const [ index, type ] = this.getVertexOrMidpoint(state)
+    state.selectedIndex = index
+    state.selectedType = type
+
+    if (type === 'vertex') {
+      this.updateActiveVertex(state)
+    } else {
+      const coords = state.midpoints[index - state.vertecies.length]
+      this.updateActiveMidpoint(coords)
+    }
   },
 
   onSelectionChange(state, e) {
@@ -106,12 +127,22 @@ export const EditVertexMode = {
   },
 
   onKeyDown(state, e) {
-    console.log('onKeyDown', !!state.selectedIndex, state.selectedIndex, state.selectedType)
-    // Set selected vertex
+    // Set selected index and type
     if (e.key === ' ' && isNaN(state.selectedIndex)) {
-      this.getVertexOrMidpoint(state)
+      this.updateVertexOrMidpoint(state)
     }
 
+    // Move vertex
+    if (!e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && !isNaN(state.selectedIndex)) {
+      console.log('Move point')
+    }
+
+    // Navigate points
+    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && !isNaN(state.selectedIndex)) {
+      this.updateVertexOrMidpoint(state)
+    }
+
+    // Clear selecred index and type
     if (e.key === 'Escape') {
       state.selectedIndex = null
       state.selectedType = null
@@ -146,29 +177,17 @@ export const EditVertexMode = {
 
   getVertexOrMidpoint(state, direction) {
     const { map } = this
-    const start = Object.values(map.project(state.selectedIndex || map.getCenter()))
     const vertexPixels = state.vertecies.map(p => Object.values(map.project(p)))
     const midpointPixels = state.midpoints.map(p => Object.values(map.project(p)))
     const pixels = [...vertexPixels, ...midpointPixels]
-    const index = spatialNavigate(direction, start, pixels)
-    const draw = this._ctx.api 
+    const startPixel = state.selectedIndex ? pixels[state.selectedIndex] : null
+    const start = Object.values(startPixel || map.project(map.getCenter()))
 
-    if (index < state.vertecies.length) {
-      draw.changeMode('edit_vertex', {
-        container: state.container,
-        featureId: state.featureId,
-        selectedIndex: index,
-        selectedType: 'vertex',
-        coordPath: `0.${index}`
-      })
+    const index = spatialNavigate(start, pixels, direction)
 
-      return [index, 'vertex']
-    } else {
-      const coords = state.midpoints[index - state.vertecies.length]
-      this.updateActiveMidpoint(coords)
+    const type = index < state.vertecies.length ? 'vertex' : 'midpoint'
 
-      return [index, 'midpoint']
-    }
+    return [index, type]
   },
 
   onStop(state, e) {

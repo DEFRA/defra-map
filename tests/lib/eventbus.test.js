@@ -73,7 +73,7 @@ describe('eventBus', () => {
       element.addEventListener('direct-event', directCallback)
       element.dispatchEvent(new CustomEvent('direct-event'))
       expect(directCallback).toHaveBeenCalledTimes(1)
-      
+
       element.removeEventListener('direct-event', directCallback)
       element.dispatchEvent(new CustomEvent('direct-event'))
       expect(directCallback).toHaveBeenCalledTimes(1) // Not called again
@@ -82,15 +82,15 @@ describe('eventBus', () => {
     it('demonstrates current implementation limitations', () => {
       // Register with eventBus.on
       eventBus.on(element, 'test-event', callback)
-      
+
       // First dispatch works
       eventBus.dispatch(element, 'test-event', { id: 1 })
       expect(callback).toHaveBeenCalledWith({ id: 1 })
       expect(callback).toHaveBeenCalledTimes(1)
-      
+
       // Try to remove with eventBus.remove
       eventBus.remove(element, 'test-event', callback)
-      
+
       // Event still triggers due to implementation mismatch between on/remove
       eventBus.dispatch(element, 'test-event', { id: 2 })
       expect(callback).toHaveBeenCalledTimes(2)

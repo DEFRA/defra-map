@@ -1,5 +1,6 @@
 import React from 'react'
 import { act, fireEvent, render } from '@testing-library/react'
+import '@testing-library/jest-dom'
 
 import SegmentGroup from '../../src/js/components/segment-group'
 
@@ -135,4 +136,101 @@ describe('segment-group', () => {
       expect(viewportDispatch).toHaveBeenCalled()
     })
   })
+  it('should render with a display modifier class when display prop is provided', () => {
+    const { container } = render(
+      <SegmentGroup
+        id='test'
+        group={{
+          collapse: 'collapse',
+          heading: 'Datasets',
+          isDetails: true,
+          isExpanded: false,
+          display: 'timeline', // Testing with display prop
+          items: [
+            { id: 'fz', label: 'Flood zones 2 and 3' }
+          ]
+        }}
+      />
+    )
+
+    expect(container.querySelector('.fm-c-segments--timeline')).toBeTruthy()
+  })
+
+  it('should render without display modifier class when display prop is not provided', () => {
+    const { container } = render(
+      <SegmentGroup
+        id='test'
+        group={{
+          collapse: 'collapse',
+          heading: 'Datasets',
+          isDetails: true,
+          isExpanded: false,
+          items: [
+            { id: 'fz', label: 'Flood zones 2 and 3' }
+          ]
+        }}
+      />
+    )
+
+    expect(container.querySelector('.fm-c-segments')).toBeTruthy()
+    expect(container.querySelector('[class*="fm-c-segments--"]')).toBeFalsy()
+  })
+
+  it('should not be visible when isHidden is true', () => {
+    const { container } = render(
+      <SegmentGroup
+        id='test'
+        group={{
+          collapse: 'collapse',
+          heading: 'Datasets',
+          isDetails: true,
+          isExpanded: false,
+          isHidden: true, // Move isHidden into the group object
+          items: [
+            { id: 'fz', label: 'Flood zones 2 and 3' }
+          ]
+        }}
+      />
+    )
+
+    const segmentsElement = container.querySelector('.fm-c-segments')
+    expect(segmentsElement).toHaveAttribute('style', 'display: none;')
+  })
+
+  it('should render h3 heading when heading is provided and isDetails is false', () => {
+    const { container } = render(
+      <SegmentGroup
+        id='test'
+        group={{
+          heading: 'Test Heading',
+          isDetails: false,
+          items: [
+            { id: 'fz', label: 'Flood zones 2 and 3' }
+          ]
+        }}
+      />
+    )
+
+    const headingElement = container.querySelector('.fm-c-layers__heading')
+    expect(headingElement).toBeInTheDocument()
+    expect(headingElement.textContent).toBe('Test Heading')
+  })
+
+  it('should not render h3 heading when heading is not provided and isDetails is false', () => {
+    const { container } = render(
+      <SegmentGroup
+        id='test'
+        group={{
+          isDetails: false,
+          items: [
+            { id: 'fz', label: 'Flood zones 2 and 3' }
+          ]
+        }}
+      />
+    )
+
+    const headingElement = container.querySelector('.fm-c-layers__heading')
+    expect(headingElement).not.toBeInTheDocument()
+  })
+
 })

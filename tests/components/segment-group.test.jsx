@@ -232,5 +232,4 @@ describe('segment-group', () => {
     const headingElement = container.querySelector('.fm-c-layers__heading')
     expect(headingElement).not.toBeInTheDocument()
   })
-
 })

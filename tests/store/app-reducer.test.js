@@ -20,6 +20,21 @@ describe('app-reducer', () => {
     const action = { type: 'UNKNOWN_ACTION', payload: {} }
     expect(reducer(currentState, action)).toEqual(currentState)
   })
+
+  it('should return the correct active panel when panel is INFO', () => {
+    const currentState = { ...initialState, panel: 'INFO' }
+    expect(reducer(currentState, {}).panel).toEqual('INFO')
+  })
+
+  it('should return the correct active panel when panel is LEGEND', () => {
+    const currentState = { ...initialState, panel: 'LEGEND' }
+    expect(reducer(currentState, {}).panel).toEqual('LEGEND')
+  })
+
+  it('should return the correct active panel when panel is KEY', () => {
+    const currentState = { ...initialState, panel: 'KEY' }
+    expect(reducer(currentState, {}).panel).toEqual('KEY')
+  })
 })
 
 function getMockPayload (actionType) {

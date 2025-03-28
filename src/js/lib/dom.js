@@ -62,6 +62,8 @@ export const setInitialFocus = () => {
   if (el) {
     el.focus()
   }
+
+  return el
 }
 
 export const constrainFocus = e => {

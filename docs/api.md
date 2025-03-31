@@ -45,11 +45,41 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ## Options
 
+### `backgroundColor` (**string[color]**)
+
 ### `behaviour` (**string**)
 
-### `center` (**coordinate**)
+### `buttonType`  (**string**)
 
-### `zoom`  (**number**)
+### `framework`  (**string**)
+
+### `hasAutoMode`  (**boolean**)
+
+### `hasGeoLocation`  (**boolean**)
+
+### `hasReset`  (**boolean**)
+
+### `height`  (**string**)
+
+### `info`  (**InfoObject**)
+
+### `legend` (**LegendObject**)
+
+### `place` (**string**)
+
+### `queryArea` (**QueryAreaObject**)
+
+### `queryLocation` (**QueryLocationObject**)
+
+### `queryFeature` (**QueryFeatureObject**)
+
+### `search` (**SearchObject**)
+
+### `styles` (**array[StyleObject]**)
+
+### `symbols` (**array[string]**)
+
+### `transformSearchRequest` (**function**)
 
 ## Events
 

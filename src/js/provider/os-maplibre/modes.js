@@ -29,6 +29,8 @@ const spatialNavigate = (start, pixels, direction) => {
   return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }
 
+const STEP = 5
+
 const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
 
 export const DisabledMode = {
@@ -61,13 +63,13 @@ export const EditVertexMode = {
   onSetup(options) {
     const state = DirectSelect.onSetup.call(this, options)
     const { container, featureId, selectedIndex, selectedType, isPanEnabled } = options
+    state.container = container
     state.isPanEnabled = isPanEnabled
     state.featureId = featureId
-    state.selectedIndex = selectedIndex // Tracks selected vertex/midpoint
-    state.selectedType = selectedType // Tracks select type vertex or midpoint
     state.vertecies = this.getVerticies(featureId) // Store vertecies
     state.midpoints = this.getMidpoints(featureId) // Store midpoints
-    state.container = container
+    state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
+    state.selectedType = selectedType // Tracks select type vertex or midpoint
 
     // Bind events as default events require map container to have focus
     this.keydownHandler = (e) => this.onKeyDown(state, e)
@@ -91,8 +93,10 @@ export const EditVertexMode = {
   onSelectionChange(state, e) {
     const vertexCoord = e.points[e.points.length - 1]?.geometry.coordinates
     const coords = e.features[0].geometry.coordinates.flat(1)
-    console.log(vertexCoord)
-    console.log(coords)
+    const selectedIndex = coords.findIndex(c => vertexCoord && c[0] === vertexCoord[0] && c[1] === vertexCoord[1])
+    state.selectedIndex = state.selectedIndex < 0 ? selectedIndex : state.selectedIndex
+    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+
     this.map.fire('draw.vertexselected', {
       isSelected: !!vertexCoord
     })
@@ -100,25 +104,33 @@ export const EditVertexMode = {
 
   onKeyDown(state, e) {
     // Set selected index and type
-    if (e.key === ' ' && isNaN(state.selectedIndex)) {
+    if (e.key === ' ' && state.selectedIndex < 0) {
       state.isPanEnabled = false
       this.updateVertex(state)
     }
 
     // Move vertex
-    if (!e.altKey && ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+    if (!e.altKey && ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
       e.stopPropagation()
+
+      if (state.selectedType === 'midpoint') {
+        this.insertVertex(state, e)
+      }
+
+      if (state.selectedType === 'vertex') {
+        this.moveVertex(state, e)
+      }
     }
 
     // Navigate points
-    if (e.altKey && ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+    if (e.altKey && ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
       this.updateVertex(state, e.key)
     }
 
     // Clear selecred index and type
     if (e.key === 'Escape') {
       state.isPanEnabled = true
-      state.selectedIndex = null
+      state.selectedIndex = -1
       state.selectedType = null
       const draw = this._ctx.api 
       draw.changeMode('edit_vertex', { container: state.container, isPanEnabled: true, featureId: state.featureId })
@@ -126,8 +138,14 @@ export const EditVertexMode = {
   },
 
   onKeyUp(state, e) {
-    if (ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+    // Arrow keys propogating to container
+    if (ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
       e.stopPropagation()
+    }
+
+    // Delete a vertex
+    if (e.key === 'Delete') {
+      this.deleteVertex(state)
     }
   },
 
@@ -160,7 +178,7 @@ export const EditVertexMode = {
     const vertexPixels = state.vertecies.map(p => Object.values(map.project(p)))
     const midpointPixels = state.midpoints.map(p => Object.values(map.project(p)))
     const pixels = [...vertexPixels, ...midpointPixels]
-    const startPixel = !isNaN(state.selectedIndex) ? pixels[state.selectedIndex] : null
+    const startPixel = pixels[state.selectedIndex]
     const start = startPixel || Object.values(map.project(map.getCenter()))
 
     const index = spatialNavigate(start, pixels, direction)
@@ -212,6 +230,147 @@ export const EditVertexMode = {
       selectedIndex: index,
       selectedType: type,
       ...(type === 'vertex' ? { coordPath: `0.${index}` } : {})
+    })
+  },
+
+  getOffset(coord, e) {
+    const { map } = this
+    const pixel = map.project(coord)
+    if (e.key === 'ArrowUp') {
+      pixel.y -= STEP
+    } else if (e.key === 'ArrowDown') {
+      pixel.y += STEP
+    } else if (e.key === 'ArrowLeft') {
+      pixel.x -= STEP
+    } else {
+      pixel.x += STEP
+    }
+    return map.unproject(pixel)
+  },
+
+  insertVertex(state, e) {
+    const feature = this.getFeature(state.featureId)
+    const midpointIndex = state.selectedIndex - state.vertecies.length
+    
+    // Get the midpoint coordinates
+    let midpointCoord = state.midpoints[midpointIndex]
+
+    // Add the offset
+    const newMidpointCoord = this.getOffset(midpointCoord, e)
+    midpointCoord = [newMidpointCoord.lng, newMidpointCoord.lat]
+    
+    // Calculate the index where the new vertex should be inserted
+    // For a polygon/line, this is typically after the vertex that comes before the midpoint
+    const vertexIndex = midpointIndex
+    
+    // Get the feature's GeoJSON
+    const geojson = feature.toGeoJSON()
+    
+    // For a polygon, insert into the first ring (assuming simple polygons)
+    if (geojson.geometry.type === 'Polygon') {
+      const coordinates = geojson.geometry.coordinates[0]
+      coordinates.splice(vertexIndex + 1, 0, midpointCoord)
+      
+      // Update the feature with the new coordinates
+      this._ctx.api.add(geojson)
+    } 
+    
+    // For a line, insert directly into the coordinates array
+    if (geojson.geometry.type === 'LineString') {
+      geojson.geometry.coordinates.splice(vertexIndex + 1, 0, midpointCoord)
+      
+      // Update the feature
+      this._ctx.api.add(geojson)
+    }
+    
+    // Update the vertices and midpoints arrays
+    state.vertecies = this.getVerticies(state.featureId)
+    state.midpoints = this.getMidpoints(state.featureId)
+    
+    // Select the newly added vertex
+    const newVertexIndex = vertexIndex + 1
+    
+    // Change mode to select the new vertex
+    this._ctx.api.changeMode('edit_vertex', {
+      container: state.container,
+      isPanEnabled: state.isPanEnabled,
+      featureId: state.featureId,
+      selectedIndex: newVertexIndex,
+      selectedType: 'vertex',
+      coordPath: `0.${newVertexIndex}`
+    })
+    
+    // Fire update event
+    this.map.fire('draw.update', {
+      action: 'add_vertex',
+      features: [geojson]
+    })
+  },
+
+  moveVertex(state, e) {
+    const feature = this.getFeature(state.featureId)
+    const coords = feature.coordinates.flat(1)
+    
+    // Get current coordinate and its pixel position
+    const currentCoord = coords[state.selectedIndex]
+
+    // Calculate new coord based on direction
+    const newCoord = this.getOffset(currentCoord, e)
+    
+    // Directly update the coordinates in the feature's internal structure
+    // This depends on your feature type (point, line, polygon)
+    const geojson = feature.toGeoJSON()
+    
+    // For polygon: find the right ring and position (Assuming first ring (outer boundary) for simplicity)
+    if (geojson.geometry.type === 'Polygon') {
+      geojson.geometry.coordinates[0][state.selectedIndex] = [newCoord.lng, newCoord.lat]
+    }
+    
+    // For LineString: directly update the position
+    if (geojson.geometry.type === 'LineString') {
+      geojson.geometry.coordinates[state.selectedIndex] = [newCoord.lng, newCoord.lat]
+    }
+    
+    // Update the feature with the modified GeoJSON
+    this._ctx.api.add(geojson)
+    
+    // Update the vertices and midpoints arrays
+    state.vertecies = this.getVerticies(state.featureId)
+    state.midpoints = this.getMidpoints(state.featureId)
+    
+    // Fire update event
+    this.map.fire('draw.update', {
+      action: 'move',
+      features: [geojson]
+    })
+  },
+
+  deleteVertex(state) {
+    const draw = this._ctx.api
+    const feature = this.getFeature(state.featureId)
+    const featureType = feature.type
+    const numCoords = state.vertecies.length
+
+    // Return if too few coords
+    if (featureType === 'Polygon' && numCoords <= 3 || featureType === 'LineString' && numCoords <= 2) {
+      return
+    }
+
+    draw.trash()
+
+    // Update the vertices and midpoints arrays
+    state.vertecies = this.getVerticies(state.featureId)
+    state.midpoints = this.getMidpoints(state.featureId)
+  
+    // Reset selection after deletion
+    state.selectedIndex = -1
+    state.selectedType = null
+
+    // Reenter the mode to refresh the state
+    draw.changeMode('edit_vertex', {
+      container: state.container,
+      isPanEnabled: state.isPanEnabled,
+      featureId: state.featureId
     })
   },
 

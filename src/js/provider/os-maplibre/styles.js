@@ -58,7 +58,6 @@ export const draw = [
     id: 'midpoint-active',
     type: 'circle',
     filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint'], ['==', 'active', 'true']],
-    // filter: ['==', 'user_id', 'active-midpoint'],
     paint: {
       'circle-radius': 12,
       'circle-color': '#00ff00'

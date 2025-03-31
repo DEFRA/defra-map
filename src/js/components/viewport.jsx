@@ -20,7 +20,7 @@ export default function Viewport () {
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
-  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate, isVertexEdit } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -43,11 +43,6 @@ export default function Viewport () {
     // Disable body scroll
     if (e.key !== 'Tab') {
       e.preventDefault()
-    }
-
-    // When in vertex edit mode disable default keyboard behaviour
-    if (isVertexEdit) {
-      return
     }
 
     // Pan map (Cursor keys)
@@ -100,16 +95,6 @@ export default function Viewport () {
       labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
       viewportDispatch({ type: 'CLEAR' })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
-    }
-
-    // When in vertex edit mode with keyboard disable default behaviour
-    if (isVertexEdit) {
-      return
-    }
-
-    // Edit vertecies
-    if (e.key === ' ' && mode === 'vertex') {
-      viewportDispatch({ type: 'TOGGLE_VERTEX_EDIT', payload: true })
     }
 
     // Feature shortcut keys (Alt + 1 - 9)
@@ -203,11 +188,6 @@ export default function Viewport () {
     eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
   }
 
-  // Vertex events
-  const handleMapVertex = (e) => {
-    viewportDispatch({ type: 'TOGGLE_VERTEX_EDIT', payload: e.detail.isSelected })
-  }
-
   // Initial render
   useEffect(() => {
     if (isContainerReady && !provider.isLoaded) {
@@ -247,13 +227,11 @@ export default function Viewport () {
   // Movestart and vertex edit need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMoveStart)
-    provider.addEventListener('vertex', handleMapVertex)
 
     return () => {
       provider.removeEventListener('movestart', handleMoveStart)
-      provider.removeEventListener('vertex', handleMapVertex)
     }
-  }, [isKeyboard, isVertexEdit, activePanel, action])
+  }, [isKeyboard, activePanel, action])
 
   // Handle viewport action
   useEffect(() => {

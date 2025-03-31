@@ -194,13 +194,6 @@ const toggleShortcuts = (state, payload) => {
   }
 }
 
-const toggleVertexEdit = (state, payload) => {
-  return {
-    ...state,
-    isVertexEdit: payload
-  }
-}
-
 const clear = (state) => {
   return {
     ...state,
@@ -225,6 +218,5 @@ export const actionsMap = {
   CLEAR_STATUS: clearStatus,
   CLEAR_FEATURES: clearFeatures,
   SET_PADDING: setPadding,
-  TOGGLE_SHORTCUTS: toggleShortcuts,
-  TOGGLE_VERTEX_EDIT: toggleVertexEdit
+  TOGGLE_SHORTCUTS: toggleShortcuts
 }

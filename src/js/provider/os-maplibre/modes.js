@@ -29,6 +29,8 @@ const spatialNavigate = (start, pixels, direction) => {
   return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }
 
+const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+
 export const DisabledMode = {
   onSetup () {
     return {} // Return empty state
@@ -58,7 +60,8 @@ export const EditVertexMode = {
 
   onSetup(options) {
     const state = DirectSelect.onSetup.call(this, options)
-    const { container, featureId, selectedIndex, selectedType } = options
+    const { container, featureId, selectedIndex, selectedType, isPanEnabled } = options
+    state.isPanEnabled = isPanEnabled
     state.featureId = featureId
     state.selectedIndex = selectedIndex // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
@@ -66,10 +69,11 @@ export const EditVertexMode = {
     state.midpoints = this.getMidpoints(featureId) // Store midpoints
     state.container = container
 
-    console.log('onSetup', state)
     // Bind events as default events require map container to have focus
     this.keydownHandler = (e) => this.onKeyDown(state, e)
+    this.keyupHandler = (e) => this.onKeyUp(state, e)
     container.addEventListener('keydown', this.keydownHandler)
+    container.addEventListener('keyup', this.keyupHandler)
 
     // Selection change event
     this.selectionChangeHandler = (e) => this.onSelectionChange(state, e)
@@ -78,41 +82,52 @@ export const EditVertexMode = {
     // Add midpoint
     if (selectedType === 'midpoint') {
       const coords = state.midpoints[selectedIndex - state.vertecies.length]
-      this.updateActiveMidpoint(coords)
+      this.updateMidpoint(coords)
     }
 
     return state
   },
 
   onSelectionChange(state, e) {
-    const vertex = e.points[e.points.length - 1]
+    const vertexCoord = e.points[e.points.length - 1]?.geometry.coordinates
+    const coords = e.features[0].geometry.coordinates.flat(1)
+    console.log(vertexCoord)
+    console.log(coords)
     this.map.fire('draw.vertexselected', {
-      isSelected: !!vertex
+      isSelected: !!vertexCoord
     })
   },
 
   onKeyDown(state, e) {
     // Set selected index and type
     if (e.key === ' ' && isNaN(state.selectedIndex)) {
-      this.updateVertexOrMidpoint(state)
+      state.isPanEnabled = false
+      this.updateVertex(state)
     }
 
     // Move vertex
-    if (!e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && !isNaN(state.selectedIndex)) {
-      console.log('Move point')
+    if (!e.altKey && ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+      e.stopPropagation()
     }
 
     // Navigate points
-    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && !isNaN(state.selectedIndex)) {
-      this.updateVertexOrMidpoint(state, e.key)
+    if (e.altKey && ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+      this.updateVertex(state, e.key)
     }
 
     // Clear selecred index and type
     if (e.key === 'Escape') {
+      state.isPanEnabled = true
       state.selectedIndex = null
       state.selectedType = null
       const draw = this._ctx.api 
-      draw.changeMode('edit_vertex', { container: state.container, featureId: state.featureId })
+      draw.changeMode('edit_vertex', { container: state.container, isPanEnabled: true, featureId: state.featureId })
+    }
+  },
+
+  onKeyUp(state, e) {
+    if (ARROW_KEYS.includes(e.key) && !isNaN(state.selectedIndex)) {
+      e.stopPropagation()
     }
   },
 
@@ -155,7 +170,7 @@ export const EditVertexMode = {
     return [index, type]
   },
 
-  updateActiveMidpoint(coordinates) {
+  updateMidpoint(coordinates) {
     const { map } = this
 
     // Shouldn't add to layer directly but can't get this._ctx.api.add(feature) to work
@@ -170,7 +185,7 @@ export const EditVertexMode = {
         type: 'Point',
         coordinates
       }
-    })}, 100)
+    })}, 0)
 
     // this._ctx.api.add({
     //   type: 'Feature',
@@ -186,51 +201,23 @@ export const EditVertexMode = {
     // })
   },
 
-  // updateActiveVertex(state) {
-  //   const { container, featureId, selectedIndex, selectedType} = state
-  //   this._ctx.api.changeMode('edit_vertex', {
-  //     container,
-  //     featureId,
-  //     selectedIndex,
-  //     selectedType,
-  //     coordPath: `0.${selectedIndex}`
-  //   })
-  // },
-
-  updateVertexOrMidpoint(state, direction) {
-    const { container, featureId } = state
+  updateVertex(state, direction) {
+    const { container, isPanEnabled, featureId } = state
     const [ index, type ] = this.getVertexOrMidpoint(state, direction)
-    // state.selectedIndex = index
-    // state.selectedType = type
-
-    console.log('updateVertexOrMidpoint', index, type)
  
     this._ctx.api.changeMode('edit_vertex', {
       container,
+      isPanEnabled,
       featureId,
       selectedIndex: index,
       selectedType: type,
       ...(type === 'vertex' ? { coordPath: `0.${index}` } : {})
-      // coordPath: `0.${index}`
     })
-
-    // Cause new onSetup which wipes the vertex
-
-    // if (type === 'midpoint') {
-    //   const coords = state.midpoints[index - state.vertecies.length]
-    //   this.updateActiveMidpoint(coords)
-    // }
-
-    // if (type === 'vertex') {
-    //   this.updateActiveVertex(state)
-    // } else {
-    //   const coords = state.midpoints[index - state.vertecies.length]
-    //   this.updateActiveMidpoint(coords)
-    // }
   },
 
   onStop(state, e) {
     this.map.off('draw.selectionchange', this.selectionChangeHandler)
     state.container.removeEventListener('keydown', this.keydownHandler)
+    state.container.removeEventListener('keyup', this.keyupHandler)
   }
 }

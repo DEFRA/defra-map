@@ -15,7 +15,7 @@ export const handleStyleLoad = async (provider) => {
   const { map } = provider
   // Store ref to baselayers when a new style is loaded
   provider.baseLayers = map.getStyle().layers
-  // Amend symbol-placement prop to so labels have a coordinate
+  // Amend symbol-placement prop so labels have a coordinate
   amendLineSymbolLayers(map)
   // Add highlighted label layer and source
   addHighlightedLabelLayer(provider)

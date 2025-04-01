@@ -176,6 +176,9 @@ class Provider extends EventTarget {
   setStyle (style) {
     this.style = style
     this.map.setStyle(style.url, { diff: false })
+
+    // Udate draw style
+    this.draw?.setStyle?.()
   }
 
   setPadding (coord, isAnimate) {

@@ -29,6 +29,8 @@ const spatialNavigate = (start, pixels, direction) => {
   return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }
 
+const NUDGE = 1
+
 const STEP = 5
 
 const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
@@ -81,6 +83,10 @@ export const EditVertexMode = {
     this.selectionChangeHandler = (e) => this.onSelectionChange(state, e)
     this.map.on('draw.selectionchange', this.selectionChangeHandler)
 
+    // Feature or vertex update event
+    this.updateHandler = (e) => this.onUpdate(state, e)
+    this.map.on('draw.update', this.updateHandler)
+
     // Add midpoint
     if (selectedType === 'midpoint') {
       const coords = state.midpoints[selectedIndex - state.vertecies.length]
@@ -96,10 +102,11 @@ export const EditVertexMode = {
     const selectedIndex = coords.findIndex(c => vertexCoord && c[0] === vertexCoord[0] && c[1] === vertexCoord[1])
     state.selectedIndex = state.selectedIndex < 0 ? selectedIndex : state.selectedIndex
     state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+  },
 
-    this.map.fire('draw.vertexselected', {
-      isSelected: !!vertexCoord
-    })
+  onUpdate(state, e) {
+    const selectedIndex = parseInt(state.selectedCoordPaths[0]?.split('.')[1], 10)
+    state.selectedIndex = !isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
   },
 
   onKeyDown(state, e) {
@@ -132,7 +139,8 @@ export const EditVertexMode = {
       state.isPanEnabled = true
       state.selectedIndex = -1
       state.selectedType = null
-      const draw = this._ctx.api 
+
+      const draw = this._ctx.api
       draw.changeMode('edit_vertex', { container: state.container, isPanEnabled: true, featureId: state.featureId })
     }
   },
@@ -204,25 +212,12 @@ export const EditVertexMode = {
         coordinates
       }
     })}, 0)
-
-    // this._ctx.api.add({
-    //   type: 'Feature',
-    //   properties: {
-    //     meta: 'midpoint',
-    //     active: 'true',
-    //     id: 'active-midpoint'
-    //   },
-    //   geometry: {
-    //     type: 'Point',
-    //     coordinates
-    //   }
-    // })
   },
 
   updateVertex(state, direction) {
     const { container, isPanEnabled, featureId } = state
     const [ index, type ] = this.getVertexOrMidpoint(state, direction)
- 
+
     this._ctx.api.changeMode('edit_vertex', {
       container,
       isPanEnabled,
@@ -236,14 +231,15 @@ export const EditVertexMode = {
   getOffset(coord, e) {
     const { map } = this
     const pixel = map.project(coord)
+    const offset = e.shiftKey ? NUDGE : STEP
     if (e.key === 'ArrowUp') {
-      pixel.y -= STEP
+      pixel.y -= offset
     } else if (e.key === 'ArrowDown') {
-      pixel.y += STEP
+      pixel.y += offset
     } else if (e.key === 'ArrowLeft') {
-      pixel.x -= STEP
+      pixel.x -= offset
     } else {
-      pixel.x += STEP
+      pixel.x += offset
     }
     return map.unproject(pixel)
   },
@@ -299,12 +295,6 @@ export const EditVertexMode = {
       selectedType: 'vertex',
       coordPath: `0.${newVertexIndex}`
     })
-    
-    // Fire update event
-    this.map.fire('draw.update', {
-      action: 'add_vertex',
-      features: [geojson]
-    })
   },
 
   moveVertex(state, e) {
@@ -337,12 +327,6 @@ export const EditVertexMode = {
     // Update the vertices and midpoints arrays
     state.vertecies = this.getVerticies(state.featureId)
     state.midpoints = this.getMidpoints(state.featureId)
-    
-    // Fire update event
-    this.map.fire('draw.update', {
-      action: 'move',
-      features: [geojson]
-    })
   },
 
   deleteVertex(state) {
@@ -357,20 +341,18 @@ export const EditVertexMode = {
     }
 
     draw.trash()
-
-    // Update the vertices and midpoints arrays
-    state.vertecies = this.getVerticies(state.featureId)
-    state.midpoints = this.getMidpoints(state.featureId)
   
-    // Reset selection after deletion
-    state.selectedIndex = -1
-    state.selectedType = null
+    // Get next vertexIndex after deletion
+    const nextVertexIndex = state.selectedIndex >= (state.vertecies.length - 1) ? 0 : state.selectedIndex
 
     // Reenter the mode to refresh the state
     draw.changeMode('edit_vertex', {
       container: state.container,
       isPanEnabled: state.isPanEnabled,
-      featureId: state.featureId
+      featureId: state.featureId,
+      selectedIndex: nextVertexIndex,
+      selectedType: 'vertex',
+      coordPath: `0.${nextVertexIndex}`
     })
   },
 

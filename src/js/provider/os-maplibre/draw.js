@@ -63,9 +63,10 @@ export class Draw {
       map.fitBounds(bounds, { animate: false })
     }
 
-    // Remove existing feature
+    // Remove existing draw control
     if (map.hasControl(draw)) {
       map.removeControl(this.draw)
+      this.draw = null
     }
 
     // Draw a new feature and set edit_vertex
@@ -136,7 +137,7 @@ export class Draw {
   }
 
   drawFeature (feature) {
-    const { map } = this.provider
+    const { map, style } = this.provider
 
     MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
     MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
@@ -145,10 +146,10 @@ export class Draw {
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
     modes.edit_vertex = EditVertexMode
-
+    
     const draw = new MapboxDraw({
       modes,
-      styles: drawStyles,
+      styles: drawStyles(style.name),
       displayControlsDefault: false,
       userProperties: true
     })
@@ -197,6 +198,14 @@ export class Draw {
     }
 
     return feature
+  }
+
+  setStyle () {
+    const { draw, shape } = this
+
+    if (draw?.getMode() === 'edit_vertex') {
+      this.edit('vertex', shape)
+    }
   }
 }
 

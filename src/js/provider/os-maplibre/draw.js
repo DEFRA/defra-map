@@ -57,7 +57,7 @@ export class Draw {
     const { map, container, paddingBox } = this.provider
 
     // Zoom to extent if we have an existing graphic
-    if (oFeature) {
+    if (oFeature && this.shape === shape) {
       const coords = oFeature.geometry.coordinates
       const bounds = this.getBoundsFromCoordinates(coords[0])
       map.fitBounds(bounds, { animate: false })
@@ -204,6 +204,10 @@ export class Draw {
     const { draw, shape } = this
 
     if (draw?.getMode() === 'edit_vertex') {
+      // Need to switch to another mode first to call onStop
+      draw.changeMode('simple_select')
+
+      // Call edit again to reinstate the mode
       this.edit('vertex', shape)
     }
   }

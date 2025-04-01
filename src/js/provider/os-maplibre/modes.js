@@ -356,7 +356,7 @@ export const EditVertexMode = {
     })
   },
 
-  onStop(state, e) {
+  onStop(state) {
     this.map.off('draw.selectionchange', this.selectionChangeHandler)
     state.container.removeEventListener('keydown', this.keydownHandler)
     state.container.removeEventListener('keyup', this.keyupHandler)

@@ -45,7 +45,7 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ## Options
 
-### `backgroundColor` (**string[color]**)
+### `backgroundColor` (**string[[Color](./api/color.md)]**)
 
 ### `behaviour` (**string**)
 
@@ -75,9 +75,15 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ### `search` (**[Search](./api/search.md)**)
 
-### `styles` (**array[Style](./api/style.md)**)
+### `styles` (**array[[Style](./api/style.md)]**)
 
 ### `symbols` (**array[string]**)
+
+### _`tokenCallback`_
+
+<h3 style="color:gray;"><code>tokenCallback</code></h3>
+
+### _`interceptorsCallback`_
 
 ### `transformSearchRequest` (**function**)
 

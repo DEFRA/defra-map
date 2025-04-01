@@ -1,0 +1,7 @@
+# InfoObject
+
+### `width`
+
+### `label`
+
+### `html`

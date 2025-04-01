@@ -61,7 +61,7 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ### `height`  (**string**)
 
-### `info`  (**[InfoObject](./docs/api/info-object.md)**)
+### `info`  (**[InfoObject](./api/info-object.md)**)
 
 ### `legend` (**LegendObject**)
 
@@ -87,6 +87,6 @@ To follow...
 
 ## Methods
 
-### `setInfo` (**[InfoObject](./docs/api/info-object.md)**)
+### `setInfo` (**[InfoObject](./api/info-object.md)**)
 
 To follow...

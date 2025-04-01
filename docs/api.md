@@ -61,21 +61,21 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ### `height`  (**string**)
 
-### `info`  (**[InfoObject](./api/info-object.md)**)
+### `info`  (**[Info](./api/info.md)**)
 
-### `legend` (**LegendObject**)
+### `legend` (**[Legend](./api/legend.md)**)
 
 ### `place` (**string**)
 
-### `queryArea` (**QueryAreaObject**)
+### `queryArea` (**[QueryArea](./api/query-area.md)**)
 
-### `queryLocation` (**QueryLocationObject**)
+### `queryLocation` (**[QueryLocation](./api/query-location.md)**)
 
-### `queryFeature` (**QueryFeatureObject**)
+### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
 
-### `search` (**SearchObject**)
+### `search` (**[Search](./api/search.md)**)
 
-### `styles` (**array[StyleObject]**)
+### `styles` (**array[Style](./api/style.md)**)
 
 ### `symbols` (**array[string]**)
 
@@ -87,6 +87,6 @@ To follow...
 
 ## Methods
 
-### `setInfo` (**[InfoObject](./api/info-object.md)**)
+### `setInfo` (**[Info](./api/info.md)**)
 
 To follow...

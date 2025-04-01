@@ -1,4 +1,4 @@
-# InfoObject
+# Info
 
 ### `width`
 

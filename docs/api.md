@@ -17,9 +17,9 @@ This parameter is required. This `id` of the html element on the page that will 
 
 ### `options` ([**Options**](#options))
 
-An object containing initial configuration options. The options object contains FloodMap specific `options` such as whether a button should be rendered to view the map. You can also add options for the framework map constructor such as the intial center and zoom.
+An object containing initial configuration options. The options object contains FloodMap specific `options` such as whether a button should be rendered to view the map. You can also add options for the framework constructor such as the intial center and zoom.
 
-See also [MapOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MapOptions/) for a full list of the MapLibre options
+See [MapOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MapOptions/) for a full list of the MapLibre options
 
 ```js
 // Example that creates a minimal FloodMap

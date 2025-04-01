@@ -81,9 +81,13 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ### _`tokenCallback`_
 
-<h3 style="color:gray;"><code>tokenCallback</code></h3>
+> [!NOTE]
+> ESRI specific
 
 ### _`interceptorsCallback`_
+
+> [!NOTE]
+> ESRI specific
 
 ### `transformSearchRequest` (**function**)
 

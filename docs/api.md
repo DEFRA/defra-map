@@ -2,9 +2,9 @@
 
 The **Flood Map** is a customizable mapping interface, designed for specific use cases and with a focus on accessibiity. It is provided as a high-level API that works in conjunction with the MapLibre API.
 
-The `FloodMap` object represents an instance of a flood map on your page. It provides methods and properties that allow you to programmatically modify the flood map and trigger events as users interact with it.
+The `FloodMap` object represents an instance of a flood map on your page. It provides methods and properties that allow you to programmatically modify the map and trigger events as users interact with it.
 
-You create an instance of a `FloodMap` by specifying a `container`, map `options`, and an optional `callback` in the constructor. The Flood Map is then initialized on the page and returns an instance of a `FloodMap` object.
+You create an instance of a `FloodMap` by specifying a `container`, map `options`, and an optional `callback` in the constructor. A Flood Map is then initialized on the page and returns an instance of a `FloodMap` object.
 
 ## Constructor
 
@@ -46,6 +46,13 @@ const floodMap = new FloodMap('map', options, (provider) => {
 ## Options
 
 ### `backgroundColor` (**string[[Color](./api/color.md)]**)
+
+The fill colour of the map container, defaults to `transparent`. You can specify a single colour that applys to all map styles or a different colour for each map style. 
+
+```js
+// Example: Biege for the default style and black for the dark style
+backgroundColor: 'default: #f5f5f0, dark: #060606'
+```
 
 ### `behaviour` (**string**)
 

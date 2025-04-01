@@ -1,9 +1,9 @@
 # Flood map
 
 ## Useful links
-- [API](./docs/api.md)
-- [Development Guide](./docs/development-guide.md)
-- [How to Publish](./docs/how-to-publish.md)
+- [API reference](./docs/api.md)
+- [Development guide](./docs/development-guide.md)
+- [How to publish](./docs/how-to-publish.md)
 
 ## Usage
 

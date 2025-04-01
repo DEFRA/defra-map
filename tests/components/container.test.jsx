@@ -86,6 +86,7 @@ describe('Container', () => {
       default: { CLASS: 'default-class', HEIGHT: '100%', attribution: 'Default Attribution' },
       custom: { CLASS: 'custom-class', HEIGHT: '80%', attribution: 'Custom Attribution' }
     }
+    useApp.mockReset()
     mockUseApp = {
       activePanel: 'LEGEND',
       isLegendInset: false,
@@ -104,7 +105,7 @@ describe('Container', () => {
     useApp.mockReturnValue(mockUseApp)
 
     matchMediaMock = {
-      matches: false, // Simulate dark mode for specific tests
+      matches: false,
       media: '',
       onchange: null,
       addListener: jest.fn(),
@@ -299,5 +300,272 @@ describe('Container', () => {
       type: 'SET_IS_DARK_MODE',
       payload: { colourScheme: 'light' }
     })
+  })
+
+  it('renders info panel when info exists, panel is INFO and is mobile', () => {
+    // Set up the required conditions
+    mockUseApp.info = {
+      label: 'Test Info Label',
+      html: '<p>Test info content</p>'
+    }
+    mockUseApp.activePanel = 'INFO'
+    mockUseApp.isMobile = true
+    mockUseApp.viewportRef = { current: {} }
+
+    render(<Container />)
+
+    // Check the Panel is rendered with correct props
+    expect(screen.getByText('Test Info Label')).toBeInTheDocument()
+  })
+
+  it('does not render when info is null', () => {
+    mockUseApp.info = null
+    mockUseApp.activePanel = 'INFO'
+    mockUseApp.isMobile = true
+
+    render(<Container />)
+    const panel = screen.queryByRole('complementary')
+    expect(panel).not.toBeInTheDocument()
+  })
+
+  it('does not render when activePanel is not INFO', () => {
+    mockUseApp.info = { label: 'Test Info', html: '<p>Test</p>' }
+    mockUseApp.activePanel = 'LEGEND'
+    mockUseApp.isMobile = true
+
+    render(<Container />)
+    const panel = screen.queryByRole('complementary', { name: 'Test Info' })
+    expect(panel).not.toBeInTheDocument()
+  })
+
+  it('does not render when not mobile', () => {
+    mockUseApp.info = { label: 'Test Info', html: '<p>Test</p>' }
+    mockUseApp.activePanel = 'INFO'
+    mockUseApp.isMobile = false
+
+    render(<Container />)
+    const panel = screen.queryByRole('complementary', { name: 'Test Info' })
+    expect(panel).not.toBeInTheDocument()
+  })
+  it('renders with page title when isPage is true', () => {
+    mockUseApp.isPage = true // Set isPage directly
+    mockUseApp.options = {
+      ...mockUseApp.options,
+      pageTitle: 'Custom Page Title'
+    }
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-container')).toHaveAttribute('data-fm-page', 'Custom Page Title')
+  })
+
+  it('uses default Map view title when no pageTitle provided', () => {
+    mockUseApp.isPage = true
+    mockUseApp.options = {
+      ...mockUseApp.options,
+      pageTitle: undefined
+    }
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-container')).toHaveAttribute('data-fm-page', 'Map view')
+  })
+
+  it('does not render data-fm-page when isPage is false', () => {
+    mockUseApp.isPage = false
+
+    const { container } = render(<Container />)
+    expect(container.firstChild).not.toHaveAttribute('data-fm-page')
+  })
+
+  it('renders side panel when isDesktop is true and legend display is not inset', () => {
+    mockUseApp.isDesktop = true
+    mockUseApp.legend = {
+      ...mockUseApp.legend,
+      display: 'fixed'
+    }
+    mockUseApp.isQueryMode = false
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-side')).toBeInTheDocument()
+  })
+
+  it('does not render side panel when isDesktop is false', () => {
+    mockUseApp.isDesktop = false
+    mockUseApp.legend = {
+      ...mockUseApp.legend,
+      display: 'fixed'
+    }
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+  })
+
+  it('does not render side panel when legend display is inset', () => {
+    mockUseApp = {
+      activePanel: 'LEGEND',
+      isLegendInset: false,
+      error: { label: 'Error', message: 'Error message' },
+      queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
+      isLegendFixed: false,
+      isMobile: false,
+      isDesktop: true, // Add this as we need it
+      hasLengedHeading: true,
+      provider: {},
+      options: {
+        behaviour: 'default',
+        legend: {
+          title: 'Legend Title',
+          display: 'inset' // Change this to inset
+        },
+        hasAutoMode: true
+      },
+      dispatch: jest.fn(),
+      activeRef: { current: null },
+      viewportRef: { current: null },
+      parent: 'test-parent'
+    }
+
+    useApp.mockReturnValue(mockUseApp)
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+  })
+  it('does not render side panel when isLegendFixed is false', () => {
+    mockUseApp.isLegendFixed = false
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+  })
+
+  it('does not render side panel when legend display is inset', () => {
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+  })
+
+  it('does not render Panel component when in query mode', () => {
+    mockUseApp.isLegendFixed = true
+    mockUseApp.isQueryMode = true
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.legend')).not.toBeInTheDocument()
+  })
+
+  it('renders Draw component when queryArea exists', () => {
+    mockUseApp.isLegendFixed = true
+    mockUseApp.isQueryMode = false
+    mockUseApp.queryArea = { some: 'data' }
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-c-menu')).toBeInTheDocument()
+  })
+
+  it('does not render Draw component when queryArea is null', () => {
+    mockUseApp.isLegendFixed = true
+    mockUseApp.isQueryMode = false
+    mockUseApp.queryArea = null
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.fm-c-menu')).not.toBeInTheDocument()
+  })
+
+  it('passes correct props to Panel component', () => {
+    mockUseApp = {
+      ...mockUseApp,
+      isDesktop: true, // needed for isLegendFixed calculation
+      isMobile: false,
+      mode: '', // empty string for isQueryMode to be false
+      options: {
+        behaviour: 'default',
+        legend: {
+          title: 'Test Legend',
+          width: '250px',
+          display: 'fixed' // 'fixed' instead of true to ensure !isLegendInset
+        },
+        hasAutoMode: true
+      },
+      activePanel: 'LEGEND',
+      provider: {},
+      dispatch: jest.fn(),
+      activeRef: { current: null },
+      viewportRef: { current: null },
+      parent: 'test-parent'
+    }
+
+    useApp.mockReturnValue(mockUseApp)
+
+    const { container } = render(<Container />)
+    const panel = container.querySelector('.mock-panel')
+    expect(panel).toBeInTheDocument()
+    expect(panel.querySelector('div')).toHaveTextContent('Test Legend')
+  })
+
+  it('handles case when legend display is false', () => {
+    mockUseApp.isLegendFixed = true
+    mockUseApp.isQueryMode = false
+    mockUseApp.legend = {
+      title: 'Test Legend',
+      width: '250px',
+      display: false
+    }
+
+    render(<Container />)
+    const layers = screen.getByText('Layers Mock')
+    expect(layers).toBeInTheDocument()
+  })
+  it('renders key panel when activePanel is KEY and isMobile is true', () => {
+    mockUseApp = {
+      ...mockUseApp,
+      activePanel: 'KEY',
+      isMobile: true,
+      isKeyExpanded: true, // for isModal prop
+      options: {
+        behaviour: 'default',
+        legend: {
+          title: 'Legend Title',
+          display: 'fixed'
+        }
+      },
+      provider: {},
+      dispatch: jest.fn(),
+      activeRef: { current: null },
+      viewportRef: { current: null }
+    }
+    useApp.mockReturnValue(mockUseApp)
+
+    const { container } = render(<Container />)
+
+    // Look for mock-panel instead of .key
+    const panel = container.querySelector('.mock-panel')
+    expect(panel).toBeInTheDocument()
+
+    // Check for the Key label
+    expect(panel.querySelector('div')).toHaveTextContent('Key')
+
+    // Check that Layers component is rendered
+    expect(screen.getByText('Layers Mock')).toBeInTheDocument()
+  })
+
+  it('does not render key panel when activePanel is not KEY', () => {
+    mockUseApp = {
+      ...mockUseApp,
+      activePanel: 'LEGEND',
+      isMobile: true,
+      isKeyExpanded: true
+    }
+    useApp.mockReturnValue(mockUseApp)
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.key')).not.toBeInTheDocument()
+  })
+
+  it('does not render key panel when not mobile', () => {
+    mockUseApp = {
+      ...mockUseApp,
+      activePanel: 'KEY',
+      isMobile: false,
+      isKeyExpanded: true
+    }
+    useApp.mockReturnValue(mockUseApp)
+
+    const { container } = render(<Container />)
+    expect(container.querySelector('.key')).not.toBeInTheDocument()
   })
 })

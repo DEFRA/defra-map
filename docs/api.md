@@ -47,7 +47,7 @@ const floodMap = new FloodMap('map', options, (provider) => {
 
 ### `backgroundColor` (**string[[Color](./api/color.md)]**)
 
-The fill colour of the map container, defaults to `transparent`. You can specify a single colour that applys to all map styles or a different colour for each map style. 
+The fill colour of the map container. You can specify a single colour that applies to all map styles or a different colour for each map style. Defaults to `transparent`
 
 ```js
 // Example: Biege for the default style and black for the dark style
@@ -56,11 +56,47 @@ backgroundColor: 'default: #f5f5f0, dark: #060606'
 
 ### `behaviour` (**string**)
 
+Determines whether a view map button or the map itself should be displayed initially. This can be one of three values, `buttonFirst`, `hybrid` or `inline`. Defaults to `buttonFirst`.
+
+If `buttonFirst` a view map button is displayed. Selecting the button opens the map and it is displayed fullscreen on all devices. An entry is added to the browser history and a back button is displayed within the map interface.
+
+If `hybrid`, behaviour as per buttonFirst on a mobile device. On tablet and desktop devices there is no view map button. The map is always displayed inline on the page.
+
+If `inline` there is no view map button. The map is displayed inline on all devices.
+
+```js
+// Example: View map button on mobile devices, map inline on tablet and desktop
+behaviour: 'hybrid'
+```
+
 ### `buttonType`  (**string**)
+
+Whether to use a button or anchor link to open the map. Values include `button` or `anchor`. Defaults to `button`. Only applicable if the behaviour is `buttonFirst` or `hybrid`.
+
+```js
+// Example: Use an anchor link to open the map
+buttonType: 'anchor'
+```
+
+### `buttonText`  (**string**)
+
+The button or anchor text used for the view map button. Defaults to 'View map'.
+
+```js
+// Example: Custom button text
+buttonText: 'View map of custom features'
+```
 
 ### `framework`  (**string**)
 
+The name of the framework used if not MapLibre. This allows the component to check the device capabilities before the framework is loaded. If the the devices does not meet the requirements then a appropriate error message will be displayed in the container.
+
+> [!NOTE]
+> Only applicable if using a an alternative framework. Currently the only value supported is `esri`.
+
 ### `hasAutoMode`  (**boolean**)
+
+
 
 ### `hasGeoLocation`  (**boolean**)
 
@@ -85,6 +121,8 @@ backgroundColor: 'default: #f5f5f0, dark: #060606'
 ### `styles` (**array[[Style](./api/style.md)]**)
 
 ### `symbols` (**array[string]**)
+
+### `target` (**string**)
 
 ### _`tokenCallback`_
 

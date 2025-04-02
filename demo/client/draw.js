@@ -35,7 +35,7 @@ const fm = new FloodMap('map', {
   },{
     name: 'aerial',
     attribution: 'Test',
-    url: process.env.AERIAL_URL
+    url: process.env.ESRI_WORLD_IMAGERY // process.env.AERIAL_URL
   },{
     name: 'deuteranopia',
     attribution: 'Test',

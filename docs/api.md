@@ -10,10 +10,10 @@ You create an instance of a `FloodMap` by specifying a `container`, map `options
 
 ### `container` (**string**)
 
-This parameter is required. This `id` of the html element on the page that will contain the map components
+This parameter is required. The `id` of the html element on the page that will contain the map components
 
 > [!NOTE]
-> With the default behaviour a map open button is rendered into the container and the map, when open, is added to a new element immediately following the container. You can overide this behaviour by specifiying a specifc target for the map within the map options
+> The default behaviour is to render a view map button into the container. The map, when open, is added to a new element immediately following the container. You can overide this behaviour by specifiying a specifc target for the map within the map options
 
 ### `options` ([**Options**](#options))
 

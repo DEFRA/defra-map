@@ -89,14 +89,21 @@ buttonText: 'View map of custom features'
 
 ### `framework`  (**string**)
 
-The name of the framework used if not MapLibre. This allows the component to check the device capabilities before the framework is loaded. If the the devices does not meet the requirements then a appropriate error message will be displayed in the container.
+The name of the framework used if not MapLibre. This allows the component to check the device capabilities before the framework is loaded. If the the device does not meet the requirements then an appropriate error message will be displayed in the container.
 
 > [!NOTE]
 > Only applicable if using a an alternative framework. Currently the only value supported is `esri`.
 
 ### `hasAutoMode`  (**boolean**)
 
+If `true` then a light or dark theme will be used for the map style and interface that corresponds to the current operating system appearance. If the operating appearance is changed the map style and interface will update automatically. If `false` then a light theme will be used for the initial map style and interafce, regardless of operating system appearance.
 
+Selecting a dark basemap if available will always overide the map style and interface.
+
+```js
+// Example: Enable autoMode
+hasAutoMode: true
+```
 
 ### `hasGeoLocation`  (**boolean**)
 

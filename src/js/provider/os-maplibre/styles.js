@@ -1,7 +1,7 @@
 export const draw = (styleName) => {
-  const fgColor = styleName === 'dark' ? '#ffffff' : '#d4351c'
+  const fgColor = styleName === 'dark' ? '#ffffff' : '#0b0c0c'
   const bgColor = styleName === 'dark' ? '#373737' : '#ffffff'
-  const hColor = styleName === 'dark' ? '#ffffff' : '#373737'
+  const hColor = styleName === 'dark' ? '#ffffff' : '#0b0c0c'
 
   return [
     strokeActive(fgColor),

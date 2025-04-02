@@ -24,9 +24,9 @@ See [MapOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MapOp
 ```js
 // Example that creates a minimal FloodMap
 const floodMap = new FloodMap('map', {
-    behaviour: 'hybrid',
-    center: [-2.938769, 54.893806],
-    zoom: 12
+    behaviour: 'hybrid', // FloodMap option
+    center: [-2.938769, 54.893806], // MapLibre option
+    zoom: 12 // MapLibre option
 })
 ```
 

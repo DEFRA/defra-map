@@ -1,6 +1,5 @@
 import { reducer, initialState } from '../../src/js/store/app-reducer'
 import { actionsMap } from '../../src/js/store/app-actions-map'
-import { parseSegments, parseLayers } from '../../src/js/lib/query'
 import { getStyle } from '../../src/js/lib/viewport'
 
 // Mock parseSegments and parseLayers to return predictable values
@@ -181,7 +180,7 @@ describe('app-reducer and initialState', () => {
   })
 })
 
-function getMockPayload(actionType) {
+function getMockPayload (actionType) {
   switch (actionType) {
     case 'CONTAINER_READY':
       return {}

@@ -1,6 +1,6 @@
 # API reference
 
-The **Flood Map** is a customizable mapping interface, designed for specific use cases and with a focus on accessibiity. It is provided as a high-level API that works in conjunction with the MapLibre API.
+The **Flood Map** is a customizable mapping interface, designed for specific use cases and with a focus on accessibiity. It is provided as a high-level API that works in conjunction with the MapLibre API. Alternative frameworks can be catererd for through the development of a custom provider.
 
 The `FloodMap` object represents an instance of a flood map on your page. It provides methods and properties that allow you to programmatically modify the map and trigger events as users interact with it.
 

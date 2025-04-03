@@ -115,8 +115,8 @@ describe('Location', () => {
     // Manually create and call a function that mimics handleGeoLocationSuccess
     // with the same logic from the component
     const simulateGeoLocationSuccess = (coord, place) => {
-      const hasSession = !!sessionStorage.getItem('geoloc')
-      sessionStorage.setItem('geoloc', JSON.stringify({ coord, place }))
+      const hasSession = !!window.sessionStorage.getItem('geoloc')
+      window.sessionStorage.setItem('geoloc', JSON.stringify({ coord, place }))
       if (hasSession) {
         return
       }

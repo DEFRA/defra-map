@@ -1,4 +1,4 @@
-import { toggleInert, updateTitle, findTabStop } from '../../src/js/lib/dom'
+import { toggleInert, updateTitle, findTabStop, setInitialFocus, constrainFocus } from '../../src/js/lib/dom'
 
 describe('lib/dom - updateTitle', () => {
   it('should return the document title without page', () => {
@@ -79,5 +79,99 @@ describe('lib/dom - findTabStop', () => {
     const el = findTabStop(document.querySelector('select'), 'next')
 
     expect(el).toEqual(document.querySelector('input'))
+  })
+})
+
+describe('lib/dom - setInitialFocus', () => {
+  it('should focus on modal when active element is not within modal', () => {
+    document.body.innerHTML = `
+      <div data-fm-page>
+        <div id="outsideElement">Outside Element</div>
+        <div aria-modal="true" open id="modal">Modal Content</div>
+      </div>
+    `
+    
+    const modalEl = document.getElementById('modal')
+    const outsideEl = document.getElementById('outsideElement')
+    outsideEl.focus()
+    
+    const focusSpy = jest.spyOn(modalEl, 'focus')
+    
+    setInitialFocus()
+    
+    expect(focusSpy).toHaveBeenCalled()
+    focusSpy.mockRestore()
+  })
+  
+  it('should focus on viewport when active element is not within container', () => {
+    document.body.innerHTML = `
+      <div data-fm-page>
+        <div id="outsideElement">Outside Element</div>
+        <div data-fm-viewport id="viewport">Viewport</div>
+      </div>
+    `
+    
+    const viewportEl = document.getElementById('viewport')
+    
+    document.body.focus()
+    
+    const focusSpy = jest.spyOn(viewportEl, 'focus')
+    
+    setInitialFocus()
+    
+    expect(focusSpy).toHaveBeenCalled()
+    focusSpy.mockRestore()
+  })
+  
+  it('should not focus anything if no modal or viewport is found', () => {
+    document.body.innerHTML = `
+      <div>
+        <div id="someElement">Some Element</div>
+      </div>
+    `
+    
+    document.body.focus()
+    
+    setInitialFocus()
+  })
+})
+
+describe('lib/dom - constrainFocus', () => {
+  it('should do nothing if key is not Tab', () => {
+    const event = { key: 'Enter', preventDefault: jest.fn() }
+    constrainFocus(event)
+    expect(event.preventDefault).not.toHaveBeenCalled()
+  })
+  
+  it('should do nothing if active element is not in modal or page', () => {
+    document.body.innerHTML = `
+      <div id="outsideElement">Outside Element</div>
+    `
+    
+    const outsideEl = document.getElementById('outsideElement')
+    outsideEl.focus()
+    
+    const event = { key: 'Tab', preventDefault: jest.fn() }
+    constrainFocus(event)
+    expect(event.preventDefault).not.toHaveBeenCalled()
+  })
+  
+  
+  it('should not trap focus when tabbing forward from a non-last element', () => {
+    document.body.innerHTML = `
+      <div aria-modal="true" open>
+        <button id="first">First</button>
+        <button id="middle">Middle</button>
+        <button id="last">Last</button>
+      </div>
+    `
+    
+    const middleEl = document.getElementById('middle')
+    middleEl.focus()
+    
+    const event = { key: 'Tab', shiftKey: false, preventDefault: jest.fn() }
+    constrainFocus(event)
+    
+    expect(event.preventDefault).not.toHaveBeenCalled()
   })
 })

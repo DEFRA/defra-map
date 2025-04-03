@@ -47,7 +47,7 @@ describe('search-button', () => {
     })
 
     render(<SearchButton />)
-    
+
     // Use hidden: true to find the hidden button
     const button = screen.getByRole('button', { hidden: true })
     expect(button).toHaveAttribute('style', expect.stringContaining('display: none'))
@@ -93,8 +93,8 @@ describe('search-button', () => {
       mode: null
     })
 
-    render(<SearchButton tooltip="right" />)
-    
+    render(<SearchButton tooltip='right' />)
+
     const button = screen.getByRole('button')
     expect(button.getAttribute('aria-labelledby')).toBe('test-id-search-label')
     expect(screen.queryByText('Search')).toBeNull()
@@ -109,7 +109,7 @@ describe('search-button', () => {
     })
 
     render(<SearchButton searchBtnRef={mockRef} />)
-    
+
     const button = screen.getByRole('button')
     expect(button).not.toBeNull()
   })

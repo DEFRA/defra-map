@@ -1,4 +1,4 @@
-import { toggleInert, updateTitle, findTabStop } from '../../src/js/lib/dom'
+import { toggleInert, updateTitle, findTabStop, setInitialFocus } from '../../src/js/lib/dom'
 
 describe('lib/dom - updateTitle', () => {
   it('should return the document title without page', () => {
@@ -79,5 +79,23 @@ describe('lib/dom - findTabStop', () => {
     const el = findTabStop(document.querySelector('select'), 'next')
 
     expect(el).toEqual(document.querySelector('input'))
+  })
+})
+
+describe('lib/dom - setInitialFocus', () => {
+  it('should set the focus to the modal', () => {
+    document.body.innerHTML = `
+    <div data-fm-page>
+      <button type="submit">button</button
+      <textarea></texarea>
+      <div aria-modal="true" open>
+        <a href="" id="modal-link">modal link</a>
+      </div>
+    </div>
+    `
+
+    const el = setInitialFocus()
+
+    expect(el).toEqual(document.querySelector('[aria-modal]'))
   })
 })

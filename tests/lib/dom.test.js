@@ -50,6 +50,32 @@ describe('lib/dom - toggleInert', () => {
 
     expect(document.querySelectorAll('[data-fm-inert]').length).toEqual(0)
   })
+
+  it('should add aria-hidden and data-fm-inert attributes to siblings', () => {
+    // Set up a minimal DOM structure that would trigger the inert behavior
+    document.body.innerHTML = `
+      <div data-fm-page>
+        <div aria-modal="true" open id="modal">Modal content</div>
+        <div id="sibling1">Sibling 1</div>
+        <div id="sibling2">Sibling 2</div>
+      </div>
+    `
+
+    // Mock document.activeElement to point to the modal
+    Object.defineProperty(document, 'activeElement', {
+      value: document.getElementById('modal'),
+      writable: true
+    })
+
+    // Call toggleInert
+    toggleInert()
+
+    // Check that siblings got the inert attributes
+    expect(document.getElementById('sibling1').getAttribute('aria-hidden')).toBe('true')
+    expect(document.getElementById('sibling1').getAttribute('data-fm-inert')).toBe('')
+    expect(document.getElementById('sibling2').getAttribute('aria-hidden')).toBe('true')
+    expect(document.getElementById('sibling2').getAttribute('data-fm-inert')).toBe('')
+  })
 })
 
 describe('lib/dom - findTabStop', () => {
@@ -155,7 +181,6 @@ describe('lib/dom - constrainFocus', () => {
     constrainFocus(event)
     expect(event.preventDefault).not.toHaveBeenCalled()
   })
-  
   
   it('should not trap focus when tabbing forward from a non-last element', () => {
     document.body.innerHTML = `

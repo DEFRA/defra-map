@@ -37,6 +37,7 @@ const addFeatureProperties = (map, features) => {
     const distance = turfDistance(p1, p2, { units: 'metres' })
     return {
       ...f.properties,
+      id: f.id || f.properties.id,
       geometryType: f.geometry.type,
       coord,
       distance
@@ -147,6 +148,7 @@ export const getFeatures = (provider, pixel) => {
 
   // Get all features at given pixel
   let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
+
   featuresAtPixel = (featuresAtPixel.map(f => {
     return {
       ...f.properties,
@@ -218,6 +220,7 @@ export const getHighlightedLabel = (map) => {
 
 export const getSelectedFeatureId = (map, selectedLayers) => {
   const features = map.queryRenderedFeatures({ layers: selectedLayers })
+  setTimeout(() => { console.log(map.queryRenderedFeatures({ layers: ['counties'] })) }, 100)
   return features.length ? (features[0]?.id || features[0].properties?.id) : null
 }
 

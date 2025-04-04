@@ -29,9 +29,9 @@
       const fm = new defra.FloodMap('map', {
         behaviour: 'hybrid', // 'buttonFirst | inline',
         place: 'Carlisle',
-        zoom: 14,
-        minZoom: 8,
-        maxZoom: 18,
+        zoom: 4,
+        minZoom: 4,
+        maxZoom: 10,
         center: [-2.938769, 54.893806],
         // bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
         hasGeoLocation: true,
@@ -72,7 +72,35 @@
         search: {
           country: 'england',
           isAutocomplete: true
+        },
+        queryFeature: {
+          layers: ['counties']
         }
+      })
+
+      fm.addEventListener('ready', e => {
+        const map = fm.map
+
+        map.addSource('counties', {
+          type: 'geojson',
+          data: '/data/counties.geojson',
+          promoteId: 'GlobalID'
+        })
+
+        map.addLayer({
+          id: 'counties',
+          type: 'fill',
+          source: 'counties',
+          paint: {
+            'fill-color': '#00703c',
+            'fill-opacity': 0.5
+          }
+        })
+      })
+
+      fm.addEventListener('query', e => {
+        const map = fm.map
+
       })
     </script>
   </body>

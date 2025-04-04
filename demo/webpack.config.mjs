@@ -4,6 +4,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import dotenv from 'dotenv'
 import { setupMiddlewares } from './server/main.js'
 import CompressionPlugin from 'compression-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import zlib from 'zlib'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -31,6 +32,10 @@ export default {
     {
       directory: path.resolve(__dirname, 'dist'),
       publicPath: '/dist/'
+    },
+    {
+      directory: path.resolve(__dirname, '../dist'),
+      publicPath: '/public/'
     }],
     devMiddleware: {
       writeToDisk: true
@@ -69,9 +74,14 @@ export default {
         OS_VTAPI_DARK_URL: JSON.stringify(process.env.OS_VTAPI_DARK_URL),
         OS_VTAPI_DEFAULT_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_DRAW_URL),
         OS_VTAPI_DARK_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DARK_DRAW_URL),
-        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY),
-        ESRI_WORLD_IMAGERY: JSON.stringify(process.env.ESRI_WORLD_IMAGERY)
+        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY)
       }
+    }),
+    new HtmlWebpackPlugin({
+      template: './plugin.html',
+      filename: 'plugin.html',
+      inject: false,
+      templateParameters: process.env
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css'

@@ -1,23 +1,30 @@
-{% extends "layouts/main.html" %}
-
-{% block pageTitle %}
-  Map – {{ serviceName }} – GOV.UK Prototype Kit
-{% endblock %}
-
-{% block content %}
-
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Example use - Service</title>
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="assets/images/favicon.ico" type="image/x-icon">
+    <meta name="description" content="Example use">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="">
+    <meta name="robots" content="noindex, nofollow">
+    <link href="/public/css/flood-map.css" rel="stylesheet" media="all">
+  </head>
+  <body>
     <script>
       document.body.classList.add('fm-js-hidden')
     </script>
-
-    <h1 class="govuk-heading-l">A basic map</h1>
-    
-    <div id="map" data-zoom="10" data-center="[-1.318249,50.673456]"></div>
-
-{% endblock %}
-
-{% block pageScripts %}
-
+    <main style="padding: 20px">
+      <h1 class="govuk-heading-l">Map component</h1>
+      <p class="govuk-body">A map component with a focus on accessibility</p>
+      <noscript>
+        <div class="fm-error">
+          <p class="govuk-body">Your device is not supported. A map would be a available with JavaScript enabled.</p>
+        </div>
+      </noscript>
+      <div class="map-container" id="map"></div>
+    </main>
+    <script src="/public/js/flood-map.js"></script>
     <script>
       const fm = new defra.FloodMap('map', {
         behaviour: 'hybrid', // 'buttonFirst | inline',
@@ -31,36 +38,36 @@
         height: '600px',
         transformRequest: function(url, resourceType) {
           if (resourceType === 'Style' && url.startsWith('https://api.maptiler.com')) {
-            url = `${url}?key={{ MAPTILER_API_KEY }}`
+            url = `${url}?key=<%= MAPTILER_API_KEY %>`
           }
           return { url }
         },
         transformSearchRequest: function(url) {
-          return new Request(`${url}&key={{ env.OS_CLIENT_ID }}`)
+          return new Request(`${url}&key=<%= OS_CLIENT_ID %>`)
         },
         hasAutoMode: true,
         backgroundColor: 'default: #f5f5f0, dark: #162639',
         styles: [{
           name: 'default',
           attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-          url: '{{ env.DEFAULT_URL }}'
+          url: '<%= DEFAULT_URL %>'
         }, {
           name: 'dark',
           attribution: 'Test',
-          url: '{{ env.DARK_URL }}'
+          url: '<%= DARK_URL %>'
         },{
           name: 'aerial',
           attribution: 'MapTiler attribution',
-          url: '{{ env.AERIAL_URL }}',
+          url: '<%= AERIAL_URL %>',
           logo: null
         },{
           name: 'deuteranopia',
           attribution: 'Test',
-          url: '{{ env.DEUTERANOPIA_URL }}'
+          url: '<%= DEUTERANOPIA_URL %>'
         },{
           name: 'tritanopia',
           attribution: 'Test',
-          url: '{{ env.TRITANOPIA_URL }}'
+          url: '<%= TRITANOPIA_URL %>'
         }],
         search: {
           country: 'england',
@@ -68,5 +75,5 @@
         }
       })
     </script>
-
-{% endblock %}
+  </body>
+</html>

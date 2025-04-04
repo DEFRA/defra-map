@@ -1,5 +1,4 @@
 import path from 'path'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 
@@ -12,18 +11,20 @@ export default {
     errorDetails: true
   },
   entry: {
-    'flood-map': path.join(dirname, 'src/flood-map.js'),
-    css: path.join(dirname, 'src/flood-map.scss')
+    'flood-map': path.join(dirname, 'src/flood-map.js')
   },
   output: {
-    path: path.resolve(dirname, 'plugin'),
-    filename: 'js/[name].js',
+    path: path.resolve(dirname, 'dist/js'),
+    filename: '[name].js',
     library: {
       name: 'defra',
       type: 'window'
     }
   },
   target: ['web', 'es5'],
+  // externals: {
+  //   'maplibre-gl': 'maplibregl'
+  // },
   optimization: {
     splitChunks: {
       chunks () {
@@ -34,15 +35,12 @@ export default {
   },
   plugins: [
     new RemoveEmptyScriptsPlugin(),
-    new MiniCssExtractPlugin({
-      filename: 'css/flood-map.css'
-    }),
     new CopyWebpackPlugin({
       patterns: [
         {
           context: dirname + '/src/templates',
           from: path.resolve(dirname, 'src/templates/*'),
-          to: path.resolve(dirname, 'plugin/templates')
+          to: path.resolve(dirname, 'dist/templates')
         }
       ]
     })
@@ -51,28 +49,10 @@ export default {
     rules: [
       {
         test: /\.jsx?$/i,
-        exclude: /node_modules\/(?!(maplibre-gl)\/).*/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
         }
-      },
-      {
-        test: /\.s?css$/i,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              esModule: true
-            }
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              url: false
-            }
-          },
-          'sass-loader'
-        ]
       },
       {
         test: /\.jsx?$/,

@@ -11,13 +11,18 @@ export default {
     ]
   },
   devtool: 'source-map',
-  mode: 'development',
+  mode: 'production',
   output: {
-    path: e.resolve(t, 'dist'),
+    path: e.resolve(t, 'dist/es5'),
+    filename: '[name].js',
     library: {
-      type: 'commonjs2'
+      type: 'module'
     }
   },
+  experiments: {
+    outputModule: true  // Enable support for module output
+  },
+  // externals: [e()],
   target: ['web', 'es5'],
   optimization: {
     splitChunks: {
@@ -33,7 +38,7 @@ export default {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].css'
+      filename: '../css/[name].css'
     })
   ],
   module: {
@@ -52,5 +57,13 @@ export default {
         ]
       }
     ]
+  },
+  resolve: {
+    alias: {
+      react: 'preact/compat',
+      'react-dom/test-utils': 'preact/test-utils',
+      'react-dom': 'preact/compat',
+      'react/jsx-runtime': 'preact/jsx-runtime'
+    }
   }
 }

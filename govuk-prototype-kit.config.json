@@ -8,17 +8,17 @@
       }
     },
     "assets": [
-      "/plugin/js"
+      "/dist/js"
     ],
     "scripts": [
-      "/plugin/js/flood-map.js"
+      "/dist/js/flood-map.js"
     ],
     "stylesheets": [
-      "/plugin/css/flood-map.css"
+      "/dist/css/flood-map.css"
     ],
     "templates": [
       {
-        "path": "/plugin/templates/map.njk",
+        "path": "/dist/templates/map.njk",
         "name": "Map",
         "type": "nunjucks"
       }

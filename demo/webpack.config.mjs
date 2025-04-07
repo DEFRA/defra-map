@@ -78,8 +78,8 @@ export default {
       }
     }),
     new HtmlWebpackPlugin({
-      template: './plugin.html',
-      filename: 'plugin.html',
+      template: './counties.html',
+      filename: 'counties.html',
       inject: false,
       templateParameters: process.env
     }),

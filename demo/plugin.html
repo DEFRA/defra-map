@@ -78,13 +78,13 @@
         }
       })
 
-      fm.addEventListener('ready', (e) => {
+      fm.addEventListener('ready', function(e) {
         const map = fm.map
 
         addLayers(map, e.detail.style)        
       })
 
-      fm.addEventListener('change', (e) => {
+      fm.addEventListener('change', function(e) {
         const map = fm.map
 
         if (e.detail.type === 'style') {
@@ -92,8 +92,9 @@
         }
       })
 
-      fm.addEventListener('query', e => {
-        const name = e.detail.features.items[0]?.name
+      fm.addEventListener('query', function(e) {
+        const item = e.detail.features.items[0]
+        const name = item && item.name ? item.name : null
 
         fm.setInfo(name ? {
           label: 'County details',
@@ -128,7 +129,7 @@
       ]
 
 
-      const createColorExpression = (style) => {
+      const createColorExpression = function(style) {
         const colours = style === 'default' ? coloursLight : coloursDark
         const expression = ['step', ['id']]
         expression.push('#cccccc')
@@ -142,7 +143,7 @@
         return expression
       }
 
-      const addLayers = (map, style) => {
+      const addLayers = function(map, style) {
         map.addSource('counties', {
           type: 'geojson',
           data: '/data/counties.geojson'

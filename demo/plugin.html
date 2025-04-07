@@ -78,30 +78,61 @@
         }
       })
 
-      fm.addEventListener('ready', e => {
+      fm.addEventListener('ready', () => {
         const map = fm.map
 
         map.addSource('counties', {
           type: 'geojson',
-          data: '/data/counties.geojson',
-          promoteId: 'GlobalID'
+          data: '/data/counties.geojson'
         })
+
+        const colorExpression = createColorExpression()
 
         map.addLayer({
           id: 'counties',
           type: 'fill',
           source: 'counties',
           paint: {
-            'fill-color': '#00703c',
+            'fill-color': colorExpression,
             'fill-opacity': 0.5
           }
         })
       })
 
       fm.addEventListener('query', e => {
-        const map = fm.map
+        const name = e.detail.features.items[0]?.name
 
+        fm.setInfo(name ? {
+          label: 'County details',
+          html: `<p>${name}</p>`
+        } : null)
       })
+
+      const colors = [
+        '#e41a1c', // red
+        '#377eb8', // blue
+        '#4daf4a', // green
+        '#984ea3', // purple
+        '#ff7f00', // orange
+        '#ffff33', // yellow
+        '#a65628', // brown
+        '#f781bf', // pink
+        '#999999', // gray
+        '#66c2a5'  // teal
+      ]
+
+      const createColorExpression = () => {
+        const expression = ['step', ['id']]
+        expression.push('#cccccc')
+        
+        for (let id = 1; id <= 212; id++) {
+          const colorIndex = ((id % 7) * 19 + Math.floor(id / 5) * 13) % colors.length
+          expression.push(id)
+          expression.push(colors[colorIndex])
+        }
+        
+        return expression
+      }
     </script>
   </body>
 </html>

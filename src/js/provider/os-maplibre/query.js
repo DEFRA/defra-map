@@ -203,7 +203,11 @@ export const toggleSelectedFeature = (map, selectedLayers, id) => {
   if (map?.getStyle()) {
     for (const layer of selectedLayers) {
       map.setLayoutProperty(layer, 'visibility', id ? 'visible' : 'none')
-      map.setFilter(layer, ['==', 'id', id || ''])
+      map.setFilter(layer, [
+        'any',
+        ['==', ['id'], id || ''],
+        ['==', ['get', 'id'], id || '']
+      ])
     }
   }
 }
@@ -220,7 +224,6 @@ export const getHighlightedLabel = (map) => {
 
 export const getSelectedFeatureId = (map, selectedLayers) => {
   const features = map.queryRenderedFeatures({ layers: selectedLayers })
-  setTimeout(() => { console.log(map.queryRenderedFeatures({ layers: ['counties'] })) }, 100)
   return features.length ? (features[0]?.id || features[0].properties?.id) : null
 }
 

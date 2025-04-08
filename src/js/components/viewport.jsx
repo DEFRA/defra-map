@@ -29,7 +29,7 @@ export default function Viewport () {
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-  const STATUS_DELAY = 500
+  const STATUS_DELAY = 750
 
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
@@ -318,7 +318,7 @@ export default function Viewport () {
       className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
-      aria-describedby={`${id}-viewport-description`}
+      // aria-describedby={`${id}-viewport-description`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}

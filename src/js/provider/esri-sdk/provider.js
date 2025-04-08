@@ -114,15 +114,19 @@ class Provider extends EventTarget {
       }
     })
 
-    // All changes. Must debounce, min 500ms
+    // All changes. Must debounced, min 500ms
     const debounceStationary = debounce(() => {
       isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 
+    let isStationary = false
     reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
-      if (stationary) {
+      if (isStationary && stationary) {
         debounceStationary()
+      }
+      if (stationary) {
+        isStationary = true
       }
     })
 

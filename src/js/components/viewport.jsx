@@ -29,7 +29,7 @@ export default function Viewport () {
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-  const STATUS_DELAY = 300
+  const STATUS_DELAY = 500
 
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
@@ -38,6 +38,7 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style?.name)
+  const assertive = action === 'SEARCH' ? 'polite' : 'assertive'
 
   const handleKeyDown = e => {
     // Disable body scroll
@@ -52,7 +53,8 @@ export default function Viewport () {
 
     // Zoom map (+ or -)
     if (['+', '-', '=', '_'].includes(e.key)) {
-      ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
+      // ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
+      ['+', '='].includes(e.key) ? viewportDispatch({ type: 'ZOOM_IN' }) : viewportDispatch({ type: 'ZOOM_OUT' })
     }
 
     // Select feature or query center (Enter)
@@ -245,6 +247,8 @@ export default function Viewport () {
     switch (action) {
       case 'SEARCH':
         bounds ? provider.fitBounds(bounds) : provider.setCentre(center, zoom)
+        appDispatch({ type: 'CLOSE' })
+        activeRef.current = viewportRef.current
         break
       case 'RESET':
         provider.setCentre(oCentre, rZoom)
@@ -342,7 +346,7 @@ export default function Viewport () {
       </ul>
       {useMemo(() => {
         return (
-          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live={assertive}>
             <div id={`${id}-viewport-description`} className='fm-c-status__inner' aria-atomic>
               {status}
             </div>

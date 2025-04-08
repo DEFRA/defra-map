@@ -39,7 +39,7 @@ const getDirection = (coord1, coord2) => {
   const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
   const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
   const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
-  return ns + (ewc && nsc ? ', ' : '') + ew
+  return `Map move: ${ns + (ewc && nsc ? ', ' : '') + ew}`
 }
 
 const getArea = (bounds) => {
@@ -60,7 +60,7 @@ const getBoundsChange = (oCentre, originalZoom, center, zoom, bounds) => {
       change = `${getDirection(oCentre, center)}`
     } else {
       const direction = zoom > originalZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, focus area covering ${getArea(bounds)}`
+      change = `Zoomed ${direction}: focus area covering ${getArea(bounds)}`
     }
     change = `${change}`
   }
@@ -100,7 +100,7 @@ const isCirclePolygon = (geometry) => {
     return false
   }
 
-  // Compute approximate center using two opposite points
+  // Compute approximate centre using two opposite points
   const [x1, y1] = coordinates[0]
   const [x2, y2] = coordinates[32]
   const center = [(x1 + x2) / 2, (y1 + y2) / 2]
@@ -217,10 +217,10 @@ export const getDescription = (place, center, bounds, features) => {
     coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
   }
 
-  return `Focus area approximate center ${place || coord}. Covering ${getArea(bounds)}. ${text}`
+  return `Focus area approximate centre ${place || coord}. Covering ${getArea(bounds)}. ${text}`
 }
 
-export const getStatus = (action, isPanZoom, place, state, current) => {
+export const getStatus = (action, isBoundsChange, place, state, current) => {
   const { center, bounds, zoom, features, label, selectedId } = current
   let status = null
   if (label) {
@@ -230,10 +230,12 @@ export const getStatus = (action, isPanZoom, place, state, current) => {
     status = selected
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
-  } else if (isPanZoom || action === 'GEOLOC') {
-    const description = getDescription(place, center, bounds, features)
-    const direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
-    status = place ? description : `${direction}. Use ALT plus I to get new details`
+  } else if (['SEARCH', 'GEOLOC'].includes(action) || isBoundsChange) {
+    let description = getDescription(place, center, bounds, features)
+    description = place ? description : 'Use ALT plus I to get new details'
+    let direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
+    direction = direction ? `${direction}. ` : ''
+    status = direction + description
   } else {
     status = ''
   }

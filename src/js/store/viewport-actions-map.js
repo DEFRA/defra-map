@@ -5,17 +5,12 @@ import { margin } from './constants'
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, center, zoom, features } = payload
-
-  // If no changes return original state
-  if (isSame(state.features, features) && isSame(state.bounds, bounds)) {
-    return state
-  }
-
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
-  const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
-  const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
-  const status = getStatus(action, isPanZoom, place, state, payload)
+  const isBoundsChange = !isSame(state.bounds, bounds)
+  const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isBoundsChange
+  const status = getStatus(action, isBoundsChange, place, state, payload)
+  const newAction = isBoundsChange && action === 'SEARCH' && !isUserInitiated ? 'SEARCH' : null
 
   return {
     ...state,
@@ -29,7 +24,7 @@ const update = (state, payload) => {
     isUpdate,
     isMoving: false,
     isStatusVisuallyHidden: true,
-    action: null
+    action: newAction
   }
 }
 
@@ -48,7 +43,7 @@ const updatePlace = (state, payload) => {
 const moveStart = (state, payload) => {
   return {
     ...state,
-    status: 'Map move',
+    status: '',
     isMoving: true,
     isUpdate: false,
     isUserInitiated: payload,
@@ -98,6 +93,7 @@ const zoomIn = (state) => {
   return {
     ...state,
     action: 'ZOOM_IN',
+    isUserInitiated: true,
     isUpdate: false
   }
 }
@@ -106,6 +102,7 @@ const zoomOut = (state) => {
   return {
     ...state,
     action: 'ZOOM_OUT',
+    isUserInitiated: true,
     isUpdate: false
   }
 }
@@ -155,8 +152,6 @@ const setSize = (state, payload) => {
 }
 
 const clearStatus = (state) => {
-  console.log('CLEAR_STATUS', state.status)
-
   return {
     ...state,
     status: '',
@@ -165,10 +160,12 @@ const clearStatus = (state) => {
 }
 
 const clearFeatures = (state) => {
+  const status = state.action === 'SEARCH' ? state.status : null
+
   return {
     ...state,
     features: null,
-    status: '',
+    status,
     action: 'DATA'
   }
 }

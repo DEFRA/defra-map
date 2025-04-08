@@ -95,6 +95,7 @@ export class Draw {
     // Remove draw
     if (hasDrawControl && !oFeature) {
       map.removeControl(draw)
+      this.draw = null
     }
 
     // Draw original feature

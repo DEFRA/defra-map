@@ -114,7 +114,7 @@ class Provider extends EventTarget {
       }
     })
 
-    // All changes. Must debounce, min 300ms
+    // All changes. Must debounce, min 500ms
     const debounceStationary = debounce(() => {
       isMoving = false
       handleStationary(this)

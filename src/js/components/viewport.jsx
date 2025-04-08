@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react'
+import React, { useEffect, useRef, useMemo, useCallback } from 'react'
 import { useQueryState } from '../hooks/use-query-state.js'
 import { useResizeObserver } from '../hooks/use-resize-observer.js'
 import { useApp } from '../store/use-app.js'
@@ -154,10 +154,10 @@ export default function Viewport () {
   }
 
   // Update place after Alt + i
-  const debounceUpdatePlace = debounce(async (coord) => {
+  const debounceUpdatePlace = useCallback(debounce(async (coord) => {
     const place = await provider.getNearest(coord)
     viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
-  }, STATUS_DELAY)
+  }, STATUS_DELAY), [])
 
   // Provider events
   const handleMoveStart = e => {
@@ -169,8 +169,13 @@ export default function Viewport () {
   }
 
   // Get new bounds after map has moved
-  const handleUpdate = e => {
+  const debounceUpdate = useCallback(debounce(async (e) => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
+  }, STATUS_DELAY), [])
+
+  const handleUpdate = e => {
+    viewportDispatch({ type: 'CLEAR_STATUS' })
+    debounceUpdate(e)
   }
 
   // Map query
@@ -309,6 +314,7 @@ export default function Viewport () {
       className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
+      aria-describedby={`${id}-viewport-description`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
@@ -337,7 +343,7 @@ export default function Viewport () {
       {useMemo(() => {
         return (
           <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
-            <div className='fm-c-status__inner' aria-atomic>
+            <div id={`${id}-viewport-description`} className='fm-c-status__inner' aria-atomic>
               {status}
             </div>
           </div>

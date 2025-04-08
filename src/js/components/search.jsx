@@ -21,7 +21,7 @@ const hasPanel = (search, activePanel, isDesktop) => {
 }
 
 export default function Search ({ instigatorRef }) {
-  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, viewportRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { id, transformSearchRequest } = options

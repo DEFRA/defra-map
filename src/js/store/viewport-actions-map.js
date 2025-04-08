@@ -5,11 +5,18 @@ import { margin } from './constants'
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, center, zoom, features } = payload
+
+  // If no changes return original state
+  if (isSame(state.features, features) && isSame(state.bounds, bounds)) {
+    return state
+  }
+
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const status = getStatus(action, isPanZoom, place, state, payload)
+
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -21,6 +28,7 @@ const update = (state, payload) => {
     status,
     isUpdate,
     isMoving: false,
+    isStatusVisuallyHidden: true,
     action: null
   }
 }
@@ -147,6 +155,8 @@ const setSize = (state, payload) => {
 }
 
 const clearStatus = (state) => {
+  console.log('CLEAR_STATUS', state.status)
+
   return {
     ...state,
     status: '',

@@ -106,7 +106,8 @@ const submit = (state, payload) => {
     isVisible: false,
     value: payload,
     message: `${state.isVisible ? 'Collapsed ' : ''}${state.selected >= 0 ? 'Completion selected' : ''}`,
-    selected: -1
+    selected: -1,
+    status: ''
   }
 }
 

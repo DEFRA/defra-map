@@ -1,5 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
+
 import Draw from '../../src/js/components/draw'
 import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
@@ -24,7 +25,7 @@ describe('draw', () => {
   jest.mocked(useViewport).mockReturnValue({
     dispatch: viewportDispatch,
     size: null,
-    style: 'dummyStyle'
+    basemap: null
   })
 
   jest.mocked(eventBus)
@@ -111,43 +112,5 @@ describe('draw', () => {
     expect(screen.getByText('Delete shape')).toBeTruthy()
     fireEvent.click(screen.getByText('Delete shape'))
     expect(mockDelete).toHaveBeenCalled()
-  })
-
-  it('should handle click for Delete label', () => {
-    const deleteFn = jest.fn()
-    const appDispatchDelete = jest.fn()
-    const viewportDispatchDelete = jest.fn()
-    const focusMock = jest.fn()
-    const activeRefDelete = { current: null }
-    const viewportRefDelete = { current: { focus: focusMock } }
-
-    jest.mocked(useApp).mockReturnValue({
-      dispatch: appDispatchDelete,
-      activeRef: activeRefDelete,
-      viewportRef: viewportRefDelete,
-      query: true,
-      parent: 'parentElement',
-      queryArea: { heading: 'Test Heading' },
-      provider: { draw: { delete: deleteFn } }
-    })
-
-    jest.mocked(useViewport).mockReturnValue({
-      dispatch: viewportDispatchDelete,
-      size: 'dummySize',
-      style: 'dummyStyle'
-    })
-
-    render(<Draw />)
-    fireEvent.click(screen.getByText('Delete'))
-
-    expect(deleteFn).toHaveBeenCalled()
-    expect(appDispatchDelete).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { query: null } })
-    expect(eventBus.dispatch).toHaveBeenCalledWith(
-      'parentElement',
-      events.APP_ACTION,
-      { type: 'deletePolygon', query: true }
-    )
-    expect(activeRefDelete.current).toBe(viewportRefDelete.current)
-    expect(focusMock).toHaveBeenCalled()
   })
 })

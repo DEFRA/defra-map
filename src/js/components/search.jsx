@@ -12,7 +12,8 @@ const getDerivedProps = (search, transformSearchRequest, isMobile, legend, state
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
-  const label = `Search for a place${search?.country ? ' in ' + search?.country.charAt(0).toUpperCase() + search?.country.slice(1) : ''}`
+  const country = ` in ${search?.country.charAt(0).toUpperCase()}${search?.country.slice(1)}`
+  const label = `Search for a place${search?.country ? country : ''}`
   return { geocode, searchWidth, hasClear, className, formClassName, label }
 }
 
@@ -21,7 +22,7 @@ const hasPanel = (search, activePanel, isDesktop) => {
 }
 
 export default function Search ({ instigatorRef }) {
-  const { interfaceType, isMobile, options, search, activeRef, viewportRef, activePanel, isDesktop, legend } = useApp()
+  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
   const { id, transformSearchRequest } = options

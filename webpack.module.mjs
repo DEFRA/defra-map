@@ -20,7 +20,7 @@ export default {
     }
   },
   experiments: {
-    outputModule: true  // Enable support for module output
+    outputModule: true // Enable support for module output
   },
   // externals: [e()],
   target: ['web', 'es5'],

@@ -147,7 +147,7 @@ export class Draw {
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
     modes.edit_vertex = EditVertexMode
-    
+
     const draw = new MapboxDraw({
       modes,
       styles: drawStyles(style.name),

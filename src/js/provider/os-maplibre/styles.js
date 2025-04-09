@@ -15,7 +15,7 @@ export const draw = (styleName) => {
     circle(fgColor)
   ]
 }
-  
+
 const strokeActive = (fgColor) => ({
   id: 'stroke-active',
   type: 'line',

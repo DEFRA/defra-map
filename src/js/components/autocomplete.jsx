@@ -12,7 +12,7 @@ export default function Autocomplete ({ id, state, dispatch, geocode, errorText,
     const items = await geocode.suggest(text)
     dispatch({ type: 'SHOW_SUGGESTIONS', payload: items })
     updateStatus()
-  }, DELAY),[])
+  }, DELAY), [])
 
   const updateStatus = () => {
     dispatch({ type: 'CLEAR_STATUS' })
@@ -21,7 +21,7 @@ export default function Autocomplete ({ id, state, dispatch, geocode, errorText,
 
   const debounceUpdateStatus = useCallback(debounce(() => {
     dispatch({ type: 'UPDATE_STATUS' })
-  }, DELAY),[])
+  }, DELAY), [])
 
   const handleClick = (e, i) => {
     e.preventDefault()

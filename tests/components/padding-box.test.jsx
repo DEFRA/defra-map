@@ -191,6 +191,7 @@ describe('PaddingBox', () => {
       },
       isContainerReady: true,
       mode: 'frame',
+      shape: 'square',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -206,13 +207,13 @@ describe('PaddingBox', () => {
     const { container } = render(<PaddingBox />)
 
     expect(container.firstChild).toHaveClass('fm-c-padding-box')
-    expect(container.firstChild).toHaveClass('fm-c-padding-box--frame-mode')
+    expect(container.firstChild).toHaveClass('fm-c-padding-box--square')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--visible')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--active')
 
     // You can also test the complete className string
     expect(container.firstChild).toHaveClass(
-      'fm-c-padding-box fm-c-padding-box--frame-mode fm-c-padding-box--visible fm-c-padding-box--active'
+      'fm-c-padding-box fm-c-padding-box--square fm-c-padding-box--visible fm-c-padding-box--active'
     )
   })
 })

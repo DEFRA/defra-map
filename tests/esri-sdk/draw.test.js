@@ -57,18 +57,19 @@ describe('Draw Class', () => {
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should start with \'undefined\' mode when no feature is provided', () => {
-      const startSpy = jest.spyOn(Draw.prototype, 'start')
+    it('should start with \'undefined, undefined\' mode when no feature is provided', () => {
+      const editSpy = jest.spyOn(Draw.prototype, 'edit')
       drawInstance = new Draw(mockProvider, {})
-      expect(startSpy).toHaveBeenCalledWith(undefined)
-      startSpy.mockRestore()
+      expect(editSpy).toHaveBeenCalledWith(undefined, undefined)
+      editSpy.mockRestore()
     })
 
     it('should generate a new Graphic from the provided feature', () => {
       const getGraphicFromFeatureSpy = jest.spyOn(Draw.prototype, 'getGraphicFromFeature')
+      const shape = 'square'
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      drawInstance = new Draw(mockProvider, { feature })
-      expect(getGraphicFromFeatureSpy).toHaveBeenCalledWith(feature)
+      drawInstance = new Draw(mockProvider, { feature, shape })
+      expect(getGraphicFromFeatureSpy).toHaveBeenCalledWith(feature, shape)
       getGraphicFromFeatureSpy.mockRestore()
     })
 
@@ -100,17 +101,17 @@ describe('Draw Class', () => {
     })
   })
 
-  describe('start()', () => {
+  describe('edit()', () => {
     it('should zoom to the existing graphic when available', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      drawInstance.start('default')
+      drawInstance.edit('default')
       expect(mockProvider.view.goTo).toHaveBeenCalledWith({ target: drawInstance.oGraphic })
     })
 
-    it('should remove all graphics when started in "frame" mode"', () => {
+    it('should remove all graphics when editing in "frame" mode', () => {
       drawInstance = new Draw(mockProvider, {})
-      drawInstance.start('frame')
+      drawInstance.edit('frame')
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
     })
 
@@ -118,7 +119,7 @@ describe('Draw Class', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       drawInstance = new Draw(mockProvider, {})
       drawInstance.oGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      drawInstance.start('vertex')
+      drawInstance.edit('vertex')
       expect(editGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
       editGraphicSpy.mockRestore()
     })
@@ -126,20 +127,18 @@ describe('Draw Class', () => {
     it('should initiate edit() when mode is "vertex" and there is an original graphic', () => {
       const editSpy = jest.spyOn(Draw.prototype, 'edit')
       drawInstance = new Draw(mockProvider, {})
-      drawInstance.start('vertex')
+      drawInstance.edit('vertex')
       expect(editSpy).toHaveBeenCalled()
       editSpy.mockRestore()
     })
-  })
 
-  describe('edit()', () => {
     it('should edit an existing graphic if available', () => {
       const editGraphicSpy = jest.spyOn(Draw.prototype, 'editGraphic')
       drawInstance = new Draw(mockProvider, {})
       const existingGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       existingGraphic.clone = jest.fn().mockReturnValue(existingGraphic)
       mockProvider.graphicsLayer.graphics.items = [existingGraphic]
-      drawInstance.edit()
+      drawInstance.edit('vertex', 'square')
       expect(editGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       editGraphicSpy.mockRestore()
     })
@@ -150,7 +149,7 @@ describe('Draw Class', () => {
       drawInstance = new Draw(mockProvider, {})
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       getGraphicSpy.mockReturnValue(mockGraphic)
-      drawInstance.edit()
+      drawInstance.edit('vertex', 'square')
       expect(editGraphicSpy).toHaveBeenCalledWith(mockGraphic)
       editGraphicSpy.mockRestore()
       getGraphicSpy.mockRestore()
@@ -221,9 +220,10 @@ describe('Draw Class', () => {
     it('should retrieve the correct graphic in priority order', () => {
       const mockFinishedGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockFinishedGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockFinishedGraphic.attributes = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockFinishedGraphic)
       mockProvider.graphicsLayer.graphics.items = []
-      const result = drawInstance.finish()
+      const result = drawInstance.finish('square')
       expect(result).toBeDefined()
       expect(drawInstance.finishEdit).toHaveBeenCalled()
       expect(result.geometry.coordinates).toEqual(mockFinishedGraphic.geometry.rings)
@@ -233,8 +233,9 @@ describe('Draw Class', () => {
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(null)
       const mockLayerGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockLayerGraphic.geometry = { rings: [[[3, 3], [4, 4], [5, 5]]] }
+      mockLayerGraphic.attributes = {}
       mockProvider.graphicsLayer.graphics.items = [mockLayerGraphic]
-      const result = drawInstance.finish()
+      const result = drawInstance.finish('square')
       expect(result).toBeDefined()
       expect(drawInstance.finishEdit).toHaveBeenCalled()
       expect(result.geometry.coordinates).toEqual(mockLayerGraphic.geometry.rings)
@@ -245,8 +246,9 @@ describe('Draw Class', () => {
       mockProvider.graphicsLayer.graphics.items = []
       const mockElementGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockElementGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockElementGraphic.attributes = {}
       getGraphicSpy.mockReturnValue(mockElementGraphic)
-      const result = drawInstance.finish()
+      const result = drawInstance.finish('square')
       expect(result).toBeDefined()
       expect(drawInstance.finishEdit).toHaveBeenCalled()
       expect(getGraphicSpy).toHaveBeenCalled()
@@ -256,8 +258,9 @@ describe('Draw Class', () => {
     it('should cancel sketchViewModel after finishing', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.attributes = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
-      drawInstance.finish()
+      drawInstance.finish('square')
       expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
     })
 
@@ -265,9 +268,10 @@ describe('Draw Class', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.clone = jest.fn().mockReturnValue(mockGraphic)
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.attributes = {}
       mockGraphic.symbol = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
-      drawInstance.finish()
+      drawInstance.finish('square')
       expect(drawInstance.oGraphic).toBeDefined()
       expect(drawInstance.oGraphic.clone).toBeDefined()
     })
@@ -276,8 +280,9 @@ describe('Draw Class', () => {
       mockProvider.view.zoom = 15
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.attributes = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
-      drawInstance.finish()
+      drawInstance.finish('square')
       expect(drawInstance.originalZoom).toBe(15)
     })
 
@@ -285,10 +290,11 @@ describe('Draw Class', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.clone = jest.fn().mockReturnValue(mockGraphic)
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.attributes = {}
       mockGraphic.symbol = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
       const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
-      drawInstance.finish()
+      drawInstance.finish('square')
       expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       addGraphicSpy.mockRestore()
     })
@@ -296,9 +302,10 @@ describe('Draw Class', () => {
     it('should return the feature representation using getFeature()', () => {
       const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       mockGraphic.geometry = { rings: [[[0, 0], [1, 1], [2, 2]]] }
+      mockGraphic.attributes = {}
       jest.spyOn(drawInstance, 'finishEdit').mockReturnValue(mockGraphic)
       const getFeatureSpy = jest.spyOn(drawInstance, 'getFeature')
-      const result = drawInstance.finish()
+      const result = drawInstance.finish('square')
       expect(getFeatureSpy).toHaveBeenCalledWith(mockGraphic)
       expect(result).toBeDefined()
       getFeatureSpy.mockRestore()
@@ -685,10 +692,10 @@ describe('Draw Class', () => {
         graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() },
         paddingBox: document.createElement('div')
       }
-      // Prevent start() from running in the constructor.
-      jest.spyOn(Draw.prototype, 'start').mockImplementation(() => {})
+      // Prevent edit() from running in the constructor.
+      jest.spyOn(Draw.prototype, 'edit').mockImplementation(() => {})
       drawInstance = new Draw(mockProvider, {})
-      Draw.prototype.start.mockRestore()
+      Draw.prototype.edit.mockRestore()
     })
 
     it('should call getBounds(el) to retrieve bounding box', () => {
@@ -763,10 +770,10 @@ describe('Draw Class', () => {
         graphicsLayer: { graphics: { items: [] }, removeAll: jest.fn(), add: jest.fn() },
         paddingBox: document.createElement('div')
       }
-      // Prevent start() from running during instantiation.
-      jest.spyOn(Draw.prototype, 'start').mockImplementation(() => {})
+      // Prevent edit() from running during instantiation.
+      jest.spyOn(Draw.prototype, 'edit').mockImplementation(() => {})
       drawInstance = new Draw(mockProvider, {})
-      Draw.prototype.start.mockRestore()
+      Draw.prototype.edit.mockRestore()
     })
 
     it('should extract rings from feature.geometry.coordinates', () => {

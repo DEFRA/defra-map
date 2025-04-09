@@ -403,7 +403,8 @@ describe('Provider', () => {
         maxZoon: TEST_MAX_ZOOM,
         style: { url: 'test-url', name: 'default' },
         locationLayers: [],
-        callBack: jest.fn()
+        callBack: jest.fn(),
+        isStationary: true
       }
 
       await provider.addMap(modules, options)

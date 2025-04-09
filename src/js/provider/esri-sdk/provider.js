@@ -101,32 +101,33 @@ class Provider extends EventTarget {
     this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
     this.framework = { map, view, esriConfig }
+    this.isMoving = !!options.isMoving
+    this.isStationary = !!options.isStationary
 
     // Map ready event (first load)
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
-    let isMoving = false
     reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
-      if (!isMoving && !stationary) {
+      if (!this.isMoving && !stationary) {
         handleMoveStart(this)
-        isMoving = true
+        this.isMoving = true
       }
     })
 
     // All changes. Must debounced, min 500ms
     const debounceStationary = debounce(() => {
-      isMoving = false
+      this.isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 
-    let isStationary = false
     reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
-      if (isStationary && stationary) {
+      if (this.isStationary && stationary) {
         debounceStationary()
       }
+      // Address event firing twice on page load
       if (stationary) {
-        isStationary = true
+        this.isStationary = true
       }
     })
 

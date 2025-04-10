@@ -87,4 +87,17 @@ describe('autocomplete', () => {
     renderComponent({ value: 'te' })
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'CLEAR_STATUS' })
   })
+
+  it('should handle onMouseDown event correctly', () => {
+    const suggestions = [
+      { id: '1', text: 'Suggestion 1', marked: { __html: 'Suggestion 1' } },
+      { id: '2', text: 'Suggestion 2', marked: { __html: 'Suggestion 2' } }
+    ]
+    renderComponent({ suggestions })
+    const suggestionElement = screen.getByText('Suggestion 1')
+    suggestionElement.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+
+    expect(dispatchMock).toHaveBeenCalledWith({ type: 'SUBMIT', payload: 'Suggestion 1' })
+    expect(updateViewportMock).toHaveBeenCalledWith('Suggestion 1', '1')
+  })
 })

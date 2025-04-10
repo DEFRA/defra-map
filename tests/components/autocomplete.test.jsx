@@ -95,7 +95,7 @@ describe('autocomplete', () => {
     ]
     renderComponent({ suggestions })
     const suggestionElement = screen.getByText('Suggestion 1')
-    suggestionElement.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+    suggestionElement.dispatchEvent(new window.MouseEvent('mousedown', { bubbles: true }))
 
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'SUBMIT', payload: 'Suggestion 1' })
     expect(updateViewportMock).toHaveBeenCalledWith('Suggestion 1', '1')

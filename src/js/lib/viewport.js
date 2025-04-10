@@ -39,7 +39,7 @@ const getDirection = (coord1, coord2) => {
   const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
   const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
   const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
-  return `Map move: ${ns + (ewc && nsc ? ', ' : '') + ew}`
+  return `${ns + (ewc && nsc ? ', ' : '') + ew}`
 }
 
 const getArea = (bounds) => {
@@ -48,21 +48,20 @@ const getArea = (bounds) => {
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-const getBoundsChange = (oCentre, originalZoom, center, zoom, bounds) => {
+const getBoundsChange = (oCentre, originalZoom, center, zoom) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
   const isSameZoom = originalZoom === zoom
   const isMove = oCentre && originalZoom && !(isSameCentre && isSameZoom)
-  let change
+  let change = ''
   if (isMove) {
     if (!isSameCentre && !isSameZoom) {
-      change = 'New area'
+      change = 'New area: '
     } else if (!isSameCentre) {
-      change = `${getDirection(oCentre, center)}`
+      change = `Map move: ${getDirection(oCentre, center)}, `
     } else {
       const direction = zoom > originalZoom ? 'in' : 'out'
-      change = `Zoomed ${direction}: focus area covering ${getArea(bounds)}`
+      change = `Zoomed ${direction}: `
     }
-    change = `${change}`
   }
   return change
 }
@@ -194,7 +193,7 @@ export const getMapPixel = (el, scale) => {
   return point
 }
 
-export const getDescription = (place, center, bounds, features) => {
+export const getDescription = (place, bounds, features) => {
   const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
   let text = ''
 
@@ -210,14 +209,20 @@ export const getDescription = (place, center, bounds, features) => {
     // Null
   }
 
-  let coord
-  if (center[0] > 1000) {
-    coord = `easting ${Math.round(center[0])} long ${Math.round(center[1])}`
-  } else {
-    coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
-  }
+  // let coord
+  // if (center[0] > 1000) {
+  //   coord = `easting ${Math.round(center[0])} long ${Math.round(center[1])}`
+  // } else {
+  //   coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
+  // }
 
-  return `Focus area approximate centre ${place || coord}. Covering ${getArea(bounds)}. ${text}`
+  const focusPlace = place ? `approximate centre ${place}, ` : ''
+  const focusArea = `covering ${getArea(bounds)}`
+  const findPlace = place ? '' : '. Use ALT plus I to find closest place'
+
+  console.log(`focus area ${focusPlace}${focusArea}. ${text}${findPlace}`)
+  return `focus area ${focusPlace}${focusArea}. ${text}${findPlace}`
+  // return place ? `Focus area approximate centre ${place || coord}. Covering ${getArea(bounds)}. ${text}` : null
 }
 
 export const getStatus = (action, isBoundsChange, place, state, current) => {
@@ -231,10 +236,8 @@ export const getStatus = (action, isBoundsChange, place, state, current) => {
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
   } else if (['SEARCH', 'GEOLOC'].includes(action) || isBoundsChange) {
-    let description = getDescription(place, center, bounds, features)
-    description = place ? description : 'Use ALT plus I to get new details'
-    let direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
-    direction = direction ? `${direction}. ` : ''
+    const direction = getBoundsChange(state.center, state.zoom, center, zoom)
+    const description = getDescription(place, bounds, features)
     status = direction + description
   } else {
     status = ''

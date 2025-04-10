@@ -29,7 +29,7 @@ export default function Viewport () {
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-  const STATUS_DELAY = 750
+  const STATUS_DELAY = 500
 
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
@@ -38,7 +38,6 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style?.name)
-  const assertive = action === 'SEARCH' ? 'polite' : 'assertive'
 
   const handleKeyDown = e => {
     // Disable body scroll
@@ -247,6 +246,7 @@ export default function Viewport () {
     switch (action) {
       case 'SEARCH':
         bounds ? provider.fitBounds(bounds) : provider.setCentre(center, zoom)
+        // Close search and move focus to viewport
         appDispatch({ type: 'CLOSE' })
         activeRef.current = viewportRef.current
         break
@@ -280,7 +280,7 @@ export default function Viewport () {
     }
   }, [timestamp, action, mode, style, size])
 
-  // All query params, debounced by provider. Must be min 300ms
+  // All query params, debounced by provider. Must be min 500ms
   useEffect(() => {
     if (isUpdate) {
       setQueryCz(`${center.toString()},${zoom}`)
@@ -318,7 +318,7 @@ export default function Viewport () {
       className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
-      // aria-describedby={`${id}-viewport-description`}
+      {...isUpdate ? { 'aria-describedby': `${id}-viewport-description` } : {}}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
@@ -346,7 +346,7 @@ export default function Viewport () {
       </ul>
       {useMemo(() => {
         return (
-          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live={assertive}>
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live={isUpdate ? 'polite' : 'assertive'}>
             <div id={`${id}-viewport-description`} className='fm-c-status__inner' aria-atomic>
               {status}
             </div>

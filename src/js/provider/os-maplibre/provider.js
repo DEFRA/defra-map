@@ -126,7 +126,7 @@ class Provider extends EventTarget {
     // Detect map layer addition
     map.on('styledata', handleStyleData.bind(map, this))
 
-    // All render/changes/animations complete. Must debounce, min 300ms
+    // All render/changes/animations complete. Must debounce, min 500ms
     const debounceHandleIdle = debounce(() => { handleIdle(this) }, defaults.DELAY)
     map.on('idle', debounceHandleIdle)
 

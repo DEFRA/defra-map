@@ -115,7 +115,7 @@ class Provider extends EventTarget {
       }
     })
 
-    // All changes. Must debounced, min 500ms
+    // All render/changes/animations complete. Must debounce, min 500ms
     const debounceStationary = debounce(() => {
       this.isMoving = false
       handleStationary(this)
@@ -177,23 +177,23 @@ class Provider extends EventTarget {
     const newPixel = { x: x + offset[0], y: y + offset[1] }
     const newCentre = this.view.toMap(newPixel)
     this.isUserInitiated = isUserInitiated
-    this.view.goTo({ center: newCentre }).catch(err => console.log(err))
+    this.view.goTo({ center: newCentre, duration: defaults.DELAY }).catch(err => console.log(err))
   }
 
   panTo (coord) {
-    this.view.goTo({ target: { x: coord[0], y: coord[1] } }).catch(err => console.log(err))
+    this.view.goTo({ target: { x: coord[0], y: coord[1] }, duration: defaults.DELAY }).catch(err => console.log(err))
   }
 
   zoomIn () {
     this.view.animation?.destroy()
     this.isUserInitiated = true
-    this.view.goTo({ zoom: this.view.zoom + 1 }).catch(err => console.log(err))
+    this.view.goTo({ zoom: this.view.zoom + 1, duration: defaults.DELAY }).catch(err => console.log(err))
   }
 
   zoomOut () {
     this.view.animation?.destroy()
     this.isUserInitiated = true
-    this.view.goTo({ zoom: this.view.zoom - 1 }).catch(err => console.log(err))
+    this.view.goTo({ zoom: this.view.zoom - 1, duration: defaults.DELAY }).catch(err => console.log(err))
   }
 
   setStyle (style, minZoom, maxZoom) {
@@ -242,12 +242,12 @@ class Provider extends EventTarget {
         ymin: bounds[1],
         xmax: bounds[2],
         ymax: bounds[3]
-      })).catch(err => console.log(err))
+      }), { duration: defaults.DELAY }).catch(err => console.log(err))
     })
   }
 
   setCentre (coord, zoom) {
-    this.view.goTo({ center: coord, zoom }).catch(err => console.log(err))
+    this.view.goTo({ center: coord, zoom, duration: defaults.DELAY }).catch(err => console.log(err))
   }
 
   initDraw (options) {

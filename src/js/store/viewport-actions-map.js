@@ -29,8 +29,8 @@ const update = (state, payload) => {
 }
 
 const updatePlace = (state, payload) => {
-  const { center, bounds, features } = state
-  const status = getDescription(payload, center, bounds, features)
+  const { bounds, features } = state
+  const status = getDescription(payload, bounds, features)
   return {
     ...state,
     place: payload,

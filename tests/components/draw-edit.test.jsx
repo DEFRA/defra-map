@@ -58,4 +58,21 @@ describe('draw-edit', () => {
     expect(dispatch).toHaveBeenCalled()
     expect(editButton.style.display).toEqual('none')
   })
+
+  it('should return null when isQueryMode is false', () => {
+    jest.mocked(useApp).mockReturnValue({
+      mode: 'other',
+      dispatch,
+      provider: {
+        draw: {
+          edit: drawEdit,
+          reset: drawReset
+        }
+      }
+    })
+
+    const { container } = render(<DrawEdit />)
+
+    expect(container.firstChild).toBeNull()
+  })
 })

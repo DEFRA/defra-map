@@ -497,7 +497,7 @@ describe('Provider', () => {
 
       expect(provider.view.toScreen).toHaveBeenCalledWith(provider.view.center)
       expect(provider.view.toMap).toHaveBeenCalledWith({ x: 200, y: 400 })
-      expect(provider.view.goTo).toHaveBeenCalledWith({ center: { x: 150, y: 300 } })
+      expect(provider.view.goTo).toHaveBeenCalledWith({ center: { x: 150, y: 300 }, duration: 500 })
       expect(provider.isUserInitiated).toBe(true)
     })
 
@@ -517,7 +517,7 @@ describe('Provider', () => {
       const coord = [50, 100]
       provider.panTo(coord)
 
-      expect(provider.view.goTo).toHaveBeenCalledWith({ target: { x: coord[0], y: coord[1] } })
+      expect(provider.view.goTo).toHaveBeenCalledWith({ target: { x: coord[0], y: coord[1] }, duration: 500 })
     })
 
     it('should zoom in by one level', async () => {
@@ -525,7 +525,7 @@ describe('Provider', () => {
 
       expect(provider.view.animation.destroy).toHaveBeenCalled()
       expect(provider.isUserInitiated).toBe(true)
-      expect(provider.view.goTo).toHaveBeenCalledWith({ zoom: 6 })
+      expect(provider.view.goTo).toHaveBeenCalledWith({ zoom: 6, duration: 500 })
     })
 
     it('should zoom out by one level', async () => {
@@ -533,7 +533,7 @@ describe('Provider', () => {
 
       expect(provider.view.animation.destroy).toHaveBeenCalled()
       expect(provider.isUserInitiated).toBe(true)
-      expect(provider.view.goTo).toHaveBeenCalledWith({ zoom: 4 })
+      expect(provider.view.goTo).toHaveBeenCalledWith({ zoom: 4, duration: 500 })
     })
 
     it('should set the style and zoom constraints', async () => {
@@ -679,6 +679,9 @@ describe('Provider', () => {
           ymin: bounds[1],
           xmax: bounds[2],
           ymax: bounds[3]
+        }),
+        expect.objectContaining({
+          duration: 500
         })
       )
     })
@@ -715,7 +718,8 @@ describe('Provider', () => {
 
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: coord,
-        zoom
+        zoom,
+        duration: 500
       })
     })
 
@@ -723,19 +727,22 @@ describe('Provider', () => {
       await provider.setCentre(null, 12)
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: null,
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
 
       await provider.setCentre(undefined, 12)
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: undefined,
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
 
       await provider.setCentre([], 12)
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: [],
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
     })
 
@@ -743,7 +750,8 @@ describe('Provider', () => {
       await provider.setCentre(TEST_CENTER)
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: TEST_CENTER,
-        zoom: undefined
+        zoom: undefined,
+        duration: 500
       })
     })
 
@@ -774,7 +782,8 @@ describe('Provider', () => {
 
       expect(provider.view.goTo).toHaveBeenCalledWith({
         center: coord,
-        zoom: undefined
+        zoom: undefined,
+        duration: 500
       })
     })
 
@@ -786,15 +795,18 @@ describe('Provider', () => {
       expect(provider.view.goTo).toHaveBeenCalledTimes(3)
       expect(provider.view.goTo).toHaveBeenNthCalledWith(1, {
         center: null,
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
       expect(provider.view.goTo).toHaveBeenNthCalledWith(2, {
         center: undefined,
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
       expect(provider.view.goTo).toHaveBeenNthCalledWith(3, {
         center: [],
-        zoom: 12
+        zoom: 12,
+        duration: 500
       })
     })
 

@@ -8,9 +8,10 @@ jest.mock('../../src/js/lib/query', () => ({
   parseLayers: jest.fn((key) => key ? `parsed_${key}` : undefined)
 }))
 
-// Mock getStyle to return an object with a name property based on the input
+// Mock getStyle to return an object with a name property based on the input and getFeatureShape to return 'square'
 jest.mock('../../src/js/lib/viewport', () => ({
-  getStyle: jest.fn(() => ({ name: 'light' }))
+  getStyle: jest.fn(() => ({ name: 'light' })),
+  getFeatureShape: jest.fn(() => ('square'))
 }))
 
 describe('app-reducer and initialState', () => {

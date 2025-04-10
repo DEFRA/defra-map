@@ -58,33 +58,34 @@ describe('lib/viewport - getMapPixel', () => {
 
 describe('lib/viewport - getDescription', () => {
   it('should return correct description for featuresTotal', () => {
-    const description = getDescription('Test Place', [-2.989707, 54.864555], [1, 1, 1, 1], { featuresTotal: 5 })
+    const description = getDescription('Test Place', [1, 1, 1, 1], { featuresTotal: 5 })
     expect(description).toContain('5 features in this area')
   })
 
   it('should return correct description for isPixelFeaturesAtPixel', () => {
-    const description = getDescription(null, [-2.989707, 54.864555], [1, 1, 1, 1], { isPixelFeaturesAtPixel: true })
+    const description = getDescription(null, [1, 1, 1, 1], { isPixelFeaturesAtPixel: true })
     expect(description).toContain('Data visible at the center coordinate')
   })
 
   it('should return correct description for isPixelFeaturesInMap', () => {
-    const description = getDescription(null, [-2.989707, 54.864555], [1, 1, 1, 1], { isPixelFeaturesInMap: true })
+    const description = getDescription(null, [1, 1, 1, 1], { isPixelFeaturesInMap: true })
     expect(description).toContain('No data visible at the center coordinate')
   })
 
   it('should return correct description for isFeaturesInMap', () => {
-    const description = getDescription(null, [-2.989707, 54.864555], [1, 1, 1, 1], { isFeaturesInMap: true })
+    const description = getDescription(null, [1, 1, 1, 1], { isFeaturesInMap: true })
     expect(description).toContain('No feature data in this area')
   })
 
   it('should format coordinate correctly for lat long', () => {
-    const description = getDescription(null, [-2.989707, 54.864555], [-2.989707, 54.864555, -2.878635, 54.937635], {})
+    const description = getDescription(null, [-2.989707, 54.864555, -2.878635, 54.937635], {})
     expect(description).toContain('Focus area approximate center lat 54.8646 long -2.9897. Covering 4 miles by 5 miles.')
   })
 
   it('should format format coordinate correctly for eastings and northings', () => {
-    const description = getDescription(null, [324973, 536891], [338388, 554644, 340881, 557137], {})
+    const description = getDescription(null, [338388, 554644, 340881, 557137], {})
     expect(description).toContain('Focus area approximate center easting 324973 long 536891. Covering 1.5 miles by 1.5 miles.')
+    // expect(description).toContain('Focus area approximate center easting 324973 long 536891. Covering 1.5 miles by 1.5 miles.')
   })
 })
 

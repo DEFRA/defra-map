@@ -276,7 +276,7 @@ describe('store/viewport-actions-map - updatePlace', () => {
       isUserInitiated: false,
       isStatusVisuallyHidden: true
     })
-    expect(getDescription).toHaveBeenCalledWith(payload, state.center, state.bounds, state.features)
+    expect(getDescription).toHaveBeenCalledWith(payload, state.bounds, state.features)
   })
 
   it('should handle null and empty object payloads correctly', () => {
@@ -301,7 +301,7 @@ describe('store/viewport-actions-map - updatePlace', () => {
         isStatusVisuallyHidden: true
       })
 
-      expect(getDescription).toHaveBeenCalledWith(payload, state.center, state.bounds, state.features)
+      expect(getDescription).toHaveBeenCalledWith(payload, state.bounds, state.features)
     })
   })
 
@@ -345,7 +345,7 @@ describe('store/viewport-actions-map - moveStart', () => {
 
       expect(result).toEqual({
         ...state,
-        status: 'Map move',
+        status: '',
         isMoving: true,
         isUpdate: false,
         isUserInitiated: payload,
@@ -585,29 +585,29 @@ describe('store/viewport-actions-map - geoloc', () => {
 
 describe('store/viewport-actions-map - zoomIn', () => {
   it('should add ZOOM_IN action to empty state', () => {
-    expect(actionsMap.ZOOM_IN({})).toEqual({ action: 'ZOOM_IN', isUpdate: false })
+    expect(actionsMap.ZOOM_IN({})).toEqual({ action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
   })
 
   it('should add ZOOM_IN action while preserving existing properties', () => {
-    expect(actionsMap.ZOOM_IN({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_IN', isUpdate: false })
+    expect(actionsMap.ZOOM_IN({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
   })
 
   it('should override existing action and isUpdate values', () => {
-    expect(actionsMap.ZOOM_IN({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_IN', isUpdate: false })
+    expect(actionsMap.ZOOM_IN({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
   })
 })
 
 describe('store/viewport-actions-map - zoomOut', () => {
   it('should add ZOOM_OUT action to empty state', () => {
-    expect(actionsMap.ZOOM_OUT({})).toEqual({ action: 'ZOOM_OUT', isUpdate: false })
+    expect(actionsMap.ZOOM_OUT({})).toEqual({ action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
   })
 
   it('should add ZOOM_OUT action while preserving existing properties', () => {
-    expect(actionsMap.ZOOM_OUT({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_OUT', isUpdate: false })
+    expect(actionsMap.ZOOM_OUT({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
   })
 
   it('should override existing action and isUpdate values', () => {
-    expect(actionsMap.ZOOM_OUT({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_OUT', isUpdate: false })
+    expect(actionsMap.ZOOM_OUT({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
   })
 })
 
@@ -719,7 +719,7 @@ describe('store/viewport-actions-map - clearFeatures', () => {
     const state = { features: [{ id: 1 }], status: 'Test status', action: 'OTHER' }
     expect(actionsMap.CLEAR_FEATURES(state)).toEqual({
       features: null,
-      status: '',
+      status: null,
       action: 'DATA'
     })
   })

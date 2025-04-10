@@ -14,6 +14,7 @@ describe('layer-group', () => {
   const viewportDispatch = jest.fn()
 
   beforeEach(() => {
+    jest.clearAllMocks()
     jest.mocked(useViewport).mockReturnValue({
       dispatch: viewportDispatch,
       size: 100,
@@ -337,4 +338,158 @@ describe('layer-group', () => {
     expect(container.querySelector('svg[fill="red"]')).toBeTruthy()
     expect(container.querySelector('svg[stroke="red"]')).toBeTruthy()
   })
+
+  it('should handle details click and toggle expanded state', () => {
+    const group = {
+      heading: 'Test Group',
+      collapse: 'expanded',
+      layout: 'row',
+      items: [
+        { id: 'item1', label: 'Item 1' }
+      ]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols
+        hasInputs
+      />
+    )
+
+    // Find the details button
+    const detailsButton = container.querySelector('.fm-c-details')
+    expect(detailsButton).toBeTruthy()
+
+    // Initial state should be expanded
+    expect(detailsButton.getAttribute('aria-expanded')).toBe('true')
+
+    // Click the button
+    fireEvent.click(detailsButton)
+
+    // State should now be collapsed
+    expect(detailsButton.getAttribute('aria-expanded')).toBe('false')
+
+    // Click again
+    fireEvent.click(detailsButton)
+
+    // State should be expanded again
+    expect(detailsButton.getAttribute('aria-expanded')).toBe('true')
+  })
+  it('should not render items when hasSymbols is false', () => {
+    const group = {
+      heading: 'Test Group',
+      items: [{
+        label: 'Parent Item',
+        items: [{ label: 'Child Item' }]
+      }]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols={false}
+        hasInputs
+      />
+    )
+
+    expect(container.querySelector('.fm-c-layers__item')).toBeNull()
+  })
+
+  it('should render items with icon display when child has icon', () => {
+    const group = {
+      heading: 'Test Group',
+      items: [{
+        label: 'Parent Item',
+        items: [{
+          label: 'Child Item',
+          icon: 'test-icon'
+        }]
+      }]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols
+        hasInputs
+      />
+    )
+
+    expect(container.querySelector('.fm-c-layers__item--icon')).toBeTruthy()
+  })
+
+  it('should render items with fill display when child has no icon', () => {
+    const group = {
+      heading: 'Test Group',
+      items: [{
+        label: 'Parent Item',
+        items: [{
+          label: 'Child Item'
+        }]
+      }]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols
+        hasInputs
+      />
+    )
+
+    expect(container.querySelector('.fm-c-layers__item--fill')).toBeTruthy()
+  })
+
+  it('should use parent item display when specified', () => {
+    const group = {
+      heading: 'Test Group',
+      items: [{
+        label: 'Parent Item',
+        display: 'custom-display',
+        items: [{
+          label: 'Child Item',
+          icon: 'test-icon' // This would normally make it 'icon' display
+        }]
+      }]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols
+        hasInputs
+      />
+    )
+
+    expect(container.querySelector('.fm-c-layers__item--custom-display')).toBeTruthy()
+  })
+
+  it('should handle items without child items array', () => {
+    const group = {
+      heading: 'Test Group',
+      items: [{
+        label: 'Parent Item'
+        // No items array
+      }]
+    }
+
+    const { container } = render(
+      <LayerGroup
+        id='test-group'
+        group={group}
+        hasSymbols
+        hasInputs
+      />
+    )
+
+    // Should render without errors
+    expect(container).toBeTruthy()
+  })
+
 })

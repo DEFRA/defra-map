@@ -491,5 +491,4 @@ describe('layer-group', () => {
     // Should render without errors
     expect(container).toBeTruthy()
   })
-
 })

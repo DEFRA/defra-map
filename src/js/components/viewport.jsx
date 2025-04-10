@@ -157,7 +157,7 @@ export default function Viewport () {
   // Update place after Alt + i
   const debounceUpdatePlace = useCallback(debounce(async (coord) => {
     const place = await provider.getNearest(coord)
-    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
+    viewportDispatch({ type: 'UPDATE_PLACE', payload: place || 'remote area' })
   }, STATUS_DELAY), [])
 
   // Provider events

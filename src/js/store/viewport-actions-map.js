@@ -30,7 +30,9 @@ const update = (state, payload) => {
 
 const updatePlace = (state, payload) => {
   const { bounds, features } = state
-  const status = getDescription(payload, bounds, features)
+  let status = getDescription(payload, bounds, features)
+  status = status ? String(status[0]).toUpperCase() + String(status).slice(1) : status
+
   return {
     ...state,
     place: payload,

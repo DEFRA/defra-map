@@ -209,18 +209,10 @@ export const getDescription = (place, bounds, features) => {
     // Null
   }
 
-  // let coord
-  // if (center[0] > 1000) {
-  //   coord = `easting ${Math.round(center[0])} long ${Math.round(center[1])}`
-  // } else {
-  //   coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
-  // }
-
   const focusPlace = place ? `approximate centre ${place}, ` : ''
   const focusArea = `covering ${getArea(bounds)}`
   const findPlace = place ? '' : '. Use ALT plus I to find closest place'
 
-  console.log(`focus area ${focusPlace}${focusArea}. ${text}${findPlace}`)
   return `${focusPlace}${focusArea}. ${text}${findPlace}`
 }
 

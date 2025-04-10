@@ -282,7 +282,7 @@ fm.addEventListener('query', e => {
     fm.setInfo({
       width: '360px',
       label: feature.name,
-      html: '<p class="govuk-body-s">Feature content2</p>'
+      html: `<p class="govuk-body-s">id: ${feature.id}</p>`
     })
   }
 

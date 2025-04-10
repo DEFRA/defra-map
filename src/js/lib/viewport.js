@@ -221,8 +221,7 @@ export const getDescription = (place, bounds, features) => {
   const findPlace = place ? '' : '. Use ALT plus I to find closest place'
 
   console.log(`focus area ${focusPlace}${focusArea}. ${text}${findPlace}`)
-  return `focus area ${focusPlace}${focusArea}. ${text}${findPlace}`
-  // return place ? `Focus area approximate centre ${place || coord}. Covering ${getArea(bounds)}. ${text}` : null
+  return `${focusPlace}${focusArea}. ${text}${findPlace}`
 }
 
 export const getStatus = (action, isBoundsChange, place, state, current) => {
@@ -238,7 +237,7 @@ export const getStatus = (action, isBoundsChange, place, state, current) => {
   } else if (['SEARCH', 'GEOLOC'].includes(action) || isBoundsChange) {
     const direction = getBoundsChange(state.center, state.zoom, center, zoom)
     const description = getDescription(place, bounds, features)
-    status = direction + description
+    status = `${direction}${direction ? 'f' : 'F'}ocus area ${description}`
   } else {
     status = ''
   }

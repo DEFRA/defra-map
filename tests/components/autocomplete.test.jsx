@@ -53,7 +53,7 @@ describe('autocomplete', () => {
 
   it('should render status message correctly', () => {
     renderComponent()
-    const statusElement = screen.getByText('Loading...', { selector: '[aria-live="assertive"]' })
+    const statusElement = screen.getByText('Loading...', { selector: '[aria-live="polite"]' })
     expect(statusElement).toBeTruthy()
   })
 

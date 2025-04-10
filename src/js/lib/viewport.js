@@ -198,20 +198,20 @@ export const getDescription = (place, bounds, features) => {
   let text = ''
 
   if (featuresTotal) {
-    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
+    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area. `
   } else if (isPixelFeaturesAtPixel) {
-    text = 'Data visible at the center coordinate'
+    text = 'Data visible at the center coordinate. '
   } else if (isPixelFeaturesInMap) {
-    text = 'No data visible at the center coordinate'
+    text = 'No data visible at the center coordinate. '
   } else if (isFeaturesInMap) {
-    text = 'No feature data in this area'
+    text = 'No feature data in this area. '
   } else {
     // Null
   }
 
   const focusPlace = place ? `approximate centre ${place}, ` : ''
   const focusArea = `covering ${getArea(bounds)}`
-  const findPlace = place ? '' : '. Use ALT plus I to find closest place'
+  const findPlace = place ? '' : 'Use ALT plus I to find closest place'
 
   return `${focusPlace}${focusArea}. ${text}${findPlace}`
 }

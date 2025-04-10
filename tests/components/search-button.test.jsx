@@ -75,11 +75,11 @@ describe('search-button', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('should not render when in draw query mode', () => {
+  it('should not render when in draw \'vertex\' mode', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: 'draw'
+      mode: 'vertex'
     })
 
     const { container } = render(<SearchButton />)

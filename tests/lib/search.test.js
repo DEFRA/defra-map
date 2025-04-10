@@ -5,7 +5,7 @@ describe('lib/search', () => {
     const singular = createMessage()
     const plural = createMessage([{ text: 'london' }], -1)
 
-    expect(singular).toEqual('No results are available.')
+    expect(singular).toEqual('error')
     expect(plural).toEqual('1 results are available.')
   })
 

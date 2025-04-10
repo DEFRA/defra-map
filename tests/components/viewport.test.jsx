@@ -9,7 +9,7 @@ import eventBus from '../../src/js/lib/eventbus'
 import { useResizeObserver } from '../../src/js/hooks/use-resize-observer.js'
 
 jest.mock('../../src/js/lib/eventbus')
-jest.mock('../../src/js/lib/debounce')
+// jest.mock('../../src/js/lib/debounce')
 jest.mock('../../src/js/hooks/use-resize-observer.js')
 
 const pointerEventProps = ['clientX', 'clientY', 'layerX', 'layerY', 'pointerType']
@@ -193,6 +193,7 @@ describe('viewport', () => {
   })
 
   it('should handle provider \'update\' event with a new center', async () => {
+    jest.useFakeTimers()
     const { container } = renderComponent({
       center: [-2.934171, 54.901112],
       zoom: 11.111696,
@@ -201,12 +202,14 @@ describe('viewport', () => {
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
     const updateEvent = new CustomEvent('update', { detail: { bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.902397, 54.901112], zoom: 11.111696, features: { featuresTotal: null, featuresInViewport: [] } } })
-    act(() => { jest.runAllTimers() })
     act(() => { providerMock.dispatchEvent(updateEvent) })
-    expect(screen.getByText('east 1.3 miles. Use ALT plus I to get new details')).toBeInTheDocument()
+    act(() => { jest.runAllTimers() })
+    expect(screen.getByText('Map move: east 1.3 miles, focus area covering 5 miles by 5 miles. Use ALT plus I to find closest place')).toBeInTheDocument()
+    jest.useRealTimers()
   })
 
   it('should handle provider \'update\' event with a new label', async () => {
+    jest.useFakeTimers()
     const { container } = renderComponent({
       bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
       center: [-2.934171, 54.901112],
@@ -217,10 +220,13 @@ describe('viewport', () => {
     expect(statusElement).toHaveTextContent('')
     const updateEvent = new CustomEvent('update', { detail: { label: 'Test label', bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.902397, 54.901112], zoom: 11.111696, resultType: null, selectedId: null, features: { featuresTotal: null, featuresInViewport: [] } } })
     act(() => { providerMock.dispatchEvent(updateEvent) })
+    act(() => { jest.runAllTimers() })
     expect(screen.getByText('Test label')).toBeInTheDocument()
+    jest.useRealTimers()
   })
 
   it('should handle provider \'mapquery\' event with a map move', async () => {
+    jest.useFakeTimers()
     renderComponent({
       bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
       center: [-2.934171, 54.901112],
@@ -231,7 +237,9 @@ describe('viewport', () => {
     expect(viewportElement).toBeTruthy()
     const mapQueryEvent = new CustomEvent('mapquery', { detail: { resultType: 'feature', coord: [-2.926546, 54.915543], features: { featuresTotal: 1, items: [{ id: '1000', name: 'Flood alert for Lower River Eden' }], featuresInViewport: [{ id: '1000', name: 'Flood alert for Lower River Eden' }] } } })
     act(() => { providerMock.dispatchEvent(mapQueryEvent) })
+    act(() => { jest.runAllTimers() })
     expect(viewportElement).toHaveAttribute('aria-activedescendant')
+    jest.useRealTimers()
   })
 
   it('should handle provider \'style\' event', async () => {
@@ -330,8 +338,8 @@ describe('viewport', () => {
   // Test that viewport responds correctly to keyup events
 
   it('should call \'debounce\' with coordinate when \'Alt + I\' is pressed', async () => {
-    const mockDebouncedFn = jest.fn()
-    debounce.mockReturnValue(mockDebouncedFn)
+    jest.mock('../../src/js/lib/debounce')
+
     renderComponent({
       bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
       center: [-2.934171, 54.901112],
@@ -342,7 +350,7 @@ describe('viewport', () => {
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyUp(viewportElement, { key: 'I', code: 'KeyI', altKey: true }) })
-    waitFor(() => { expect(mockDebouncedFn).toHaveBeenCalled([-2.902397, 54.901112]) })
+    waitFor(() => { expect(debounce).toHaveBeenCalled([-2.902397, 54.901112]) })
   })
 
   it('should call appDispatch with { type: \'OPEN\', payload: \'KEYBOARD\' } when \'Alt + K\' is pressed', async () => {
@@ -372,7 +380,7 @@ describe('viewport', () => {
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyUp(viewportElement, { key: 'Escape' }) })
-    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_SHORTCUTS', payload: true })
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'CLEAR' })
     expect(appDispatchMock).toHaveBeenCalledWith({ type: 'SET_SELECTED', payload: { featureId: null } })
   })
 

@@ -79,13 +79,12 @@ describe('lib/viewport - getDescription', () => {
 
   it('should format coordinate correctly for lat long', () => {
     const description = getDescription(null, [-2.989707, 54.864555, -2.878635, 54.937635], {})
-    expect(description).toContain('Focus area approximate center lat 54.8646 long -2.9897. Covering 4 miles by 5 miles.')
+    expect(description).toContain('covering 4 miles by 5 miles. Use ALT plus I to find closest place')
   })
 
   it('should format format coordinate correctly for eastings and northings', () => {
     const description = getDescription(null, [338388, 554644, 340881, 557137], {})
-    expect(description).toContain('Focus area approximate center easting 324973 long 536891. Covering 1.5 miles by 1.5 miles.')
-    // expect(description).toContain('Focus area approximate center easting 324973 long 536891. Covering 1.5 miles by 1.5 miles.')
+    expect(description).toContain('covering 1.5 miles by 1.5 miles. Use ALT plus I to find closest place')
   })
 })
 

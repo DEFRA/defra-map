@@ -74,7 +74,8 @@ export default {
         OS_VTAPI_DARK_URL: JSON.stringify(process.env.OS_VTAPI_DARK_URL),
         OS_VTAPI_DEFAULT_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_DRAW_URL),
         OS_VTAPI_DARK_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DARK_DRAW_URL),
-        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY)
+        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY),
+        MAPBOX_API_KEY: JSON.stringify(process.env.MAPBOX_API_KEY)
       }
     }),
     new HtmlWebpackPlugin({

@@ -10,6 +10,31 @@ export const getTileRequest = (url, resourceType) => {
     url = `${url}?key=${process.env.MAPTILER_API_KEY}`
   }
 
+  // Mapbox request
+  if (resourceType === 'Style' && url.startsWith('https://api.mapbox.com')) {
+    url = `${url}?access_token=${process.env.MAPBOX_API_KEY}`
+  }
+
+  if (resourceType === 'Source' && url.startsWith('mapbox://mapbox.satellite')) {
+    url = `https://api.mapbox.com/v4/mapbox.satellite.json?secure&access_token=${process.env.MAPBOX_API_KEY}`
+  }
+
+  if (resourceType === 'Source' && url.startsWith('mapbox://mapbox.mapbox-streets-v8')) {
+    url = `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8.json?secure&access_token=${process.env.MAPBOX_API_KEY}`
+  }
+
+  if (resourceType === 'SpriteJSON' && url.startsWith('mapbox://sprites/mapbox/satellite-streets-v11.json')) {
+    url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/sprite@2x.json?access_token=${process.env.MAPBOX_API_KEY}`
+  }
+
+  if (resourceType === 'SpriteImage' && url.startsWith('mapbox://sprites/mapbox/satellite-streets-v11.png')) {
+    url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/sprite@2x.png?access_token=${process.env.MAPBOX_API_KEY}`
+  }
+
+  if (resourceType === 'Glyphs' && url.startsWith('mapbox://fonts/mapbox/')) {
+    url = url.replace('mapbox://fonts/mapbox/', 'https://api.mapbox.com/fonts/v1/mapbox/')
+  }
+
   // OS Vector Tile API
   // if (resourceType === 'Style' && url.startsWith('https://api.os.uk/maps/vector/v1/vts')) {
   //   headers = { Authorization: 'Bearer ' + osAuth.token }

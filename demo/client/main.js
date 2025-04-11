@@ -259,6 +259,7 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   const map = fm.map
+
   addSources(map)
   addLayers(map, e.detail.style)
   toggleVisibility(map, e.detail)
@@ -270,6 +271,7 @@ fm.addEventListener('change', e => {
   if (e.detail.type === 'style') {
     addSources(map)
     addLayers(fm.map, e.detail.style)
+    console.log(map.getStyle())
   }
   toggleVisibility(fm.map, e.detail)
 })

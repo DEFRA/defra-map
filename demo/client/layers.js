@@ -248,9 +248,9 @@ export const addLayers = (map, basemap) => {
 
 export const toggleVisibility = (map, detail) => {
   // Set zoom constraints
-  map.setMaxZoom(20)
+  map.setMaxZoom(18)
   map.setMinZoom(detail.segments.includes(queryMap.outlook) || detail.segments.includes(queryMap.live) ? 6 : 12)
-  map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 16)
+  map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 18)
   // Toggle layers
   map.setLayoutProperty('warning-fill', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
   map.setLayoutProperty('warning-symbol', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')

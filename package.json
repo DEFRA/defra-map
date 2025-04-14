@@ -74,8 +74,8 @@
     "mini-css-extract-plugin": "^2.9.2",
     "node-cache": "^5.1.2",
     "polylabel": "^2.0.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "resize-observer": "^1.0.4",
     "sass": "^1.83.0",
     "sass-loader": "^16.0.4",
@@ -94,14 +94,14 @@
     "webpack-remove-empty-scripts": "^1.0.4"
   },
   "dependencies": {
-    "@arcgis/core": "^4.31.6",
+    "@arcgis/core": "^4.32.10",
     "@turf/area": "^7.2.0",
     "@turf/bbox-clip": "^7.2.0",
     "@turf/circle": "^7.2.0",
     "@turf/distance": "^7.2.0",
     "@turf/helpers": "^7.2.0",
-    "maplibre-gl": "^4.7.1",
+    "maplibre-gl": "^5.3.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@^1.15.3",
-    "preact": "^10.25.2"
+    "preact": "^10.26.5"
   }
 }

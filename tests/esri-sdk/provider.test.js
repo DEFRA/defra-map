@@ -367,19 +367,15 @@ describe('Provider', () => {
 
       const reactiveWatch = modules[9].watch
       const view = provider.view
+      view.animation = { state: 'running' }
 
       // Mock the reactiveWatch callback
       const watchCallback = reactiveWatch.mock.calls[0][1]
 
-      // Initial state
-      let isMoving = false
-
       // Simulate view change to trigger move start
-      watchCallback([view.center, view.zoom, false])
+      watchCallback([view.animation])
 
       expect(handleMoveStart).toHaveBeenCalledWith(provider)
-      isMoving = true
-      expect(isMoving).toBe(true)
     })
 
     it('should call debounceStationary when view becomes stationary', async () => {

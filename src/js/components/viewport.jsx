@@ -120,6 +120,13 @@ export default function Viewport () {
   }
 
   const handleClick = e => {
+    // Hide panel
+    if (['SEARCH', 'KEY'].includes(activePanel)) {
+      appDispatch({ type: 'CLOSE' })
+      return
+    }
+
+    // Query point
     if (!isDraggingRef.current) {
       const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {

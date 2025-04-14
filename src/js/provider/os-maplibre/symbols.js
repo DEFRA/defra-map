@@ -97,7 +97,7 @@ export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
       map.removeLayer(layer.id)
     }
     selectedLayers.push(layer.id)
-    map.addLayer(layer)
+    setTimeout(() => map.addLayer(layer), 0)
   }
   return selectedLayers
 }

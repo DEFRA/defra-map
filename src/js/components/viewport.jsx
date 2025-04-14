@@ -10,6 +10,7 @@ import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
+import { toggleInert } from '../lib/dom.js'
 
 const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
   return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-style' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
@@ -38,6 +39,10 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style?.name)
+
+  const handleFocus = () => {
+    toggleInert(viewportRef.current)
+  }
 
   const handleKeyDown = e => {
     // Disable body scroll
@@ -327,6 +332,7 @@ export default function Viewport () {
       aria-labelledby={`${id}-viewport-label`}
       {...isUpdate ? { 'aria-describedby': `${id}-viewport-description` } : {}}
       onClick={handleClick}
+      onFocus={handleFocus}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       onPointerDown={handlePointerDown}

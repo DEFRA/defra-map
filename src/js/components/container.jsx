@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { ViewportProvider } from '../store/viewport-provider.jsx'
 import { useApp } from '../store/use-app'
 import { defaults, events, settings } from '../store/constants'
-import { updateTitle, toggleInert, constrainFocus } from '../lib/dom'
+import { updateTitle, toggleInert } from '../lib/dom'
 import eventBus from '../lib/eventbus'
 import Viewport from './viewport.jsx'
 import Exit from './exit.jsx'
@@ -93,7 +93,6 @@ export default function Container () {
     <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
       <div
         className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
-        onKeyDown={constrainFocus}
         style={{ height }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''

@@ -226,7 +226,7 @@ export const getStatus = (action, isBoundsChange, place, state, current) => {
     status = selected
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
-  } else if (['SEARCH', 'GEOLOC'].includes(action) || isBoundsChange) {
+  } else if (isBoundsChange) {
     const direction = getBoundsChange(state.center, state.zoom, center, zoom)
     const description = getDescription(place, bounds, features)
     status = `${direction}${direction ? 'f' : 'F'}ocus area ${description}`

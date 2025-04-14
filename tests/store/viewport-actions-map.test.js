@@ -350,7 +350,8 @@ describe('store/viewport-actions-map - moveStart', () => {
         isUpdate: false,
         isUserInitiated: payload,
         isStatusVisuallyHidden: true,
-        hasShortcuts: true
+        hasShortcuts: true,
+        action: null
       })
     })
   })

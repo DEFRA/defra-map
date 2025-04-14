@@ -56,18 +56,6 @@ describe('zoom', () => {
     expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'ZOOM_OUT' })
   })
 
-  it('should dispatch MOVEEND action on a zoom action event', () => {
-    jest.mocked(useViewport).mockReturnValue({
-      zoom: 5,
-      action: 'ZOOM_IN',
-      dispatch: viewportDispatchMock
-    })
-
-    render(<Zoom />)
-
-    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'MOVEEND' })
-  })
-
   it('should return on no valid action', () => {
     jest.mocked(useViewport).mockReturnValue({
       zoom: 5,

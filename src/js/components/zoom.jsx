@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import Tooltip from './tooltip.jsx'
@@ -6,15 +6,8 @@ import Tooltip from './tooltip.jsx'
 export default function Zoom () {
   const { options, isMobile } = useApp()
   const { id, maxZoom, minZoom } = options
-  const { zoom, action } = useViewport()
+  const { zoom } = useViewport()
   const viewportDispatch = useViewport().dispatch
-
-  useEffect(() => {
-    if (!['ZOOM_IN', 'ZOOM_OUT'].includes(action)) {
-      return
-    }
-    viewportDispatch({ type: 'MOVEEND' })
-  }, [action])
 
   if (isMobile) {
     return null

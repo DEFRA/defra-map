@@ -50,7 +50,8 @@ const moveStart = (state, payload) => {
     isUpdate: false,
     isUserInitiated: payload,
     isStatusVisuallyHidden: true,
-    hasShortcuts: true
+    hasShortcuts: true,
+    action: null
   }
 }
 

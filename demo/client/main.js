@@ -271,7 +271,6 @@ fm.addEventListener('change', e => {
   if (e.detail.type === 'style') {
     addSources(map)
     addLayers(fm.map, e.detail.style)
-    console.log(map.getStyle())
   }
   toggleVisibility(fm.map, e.detail)
 })

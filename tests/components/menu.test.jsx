@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import Draw from '../../src/js/components/draw'
+import Menu from '../../src/js/components/menu'
 import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
@@ -12,7 +12,7 @@ jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/lib/viewport')
 
-describe('draw', () => {
+describe('menu', () => {
   const mockEdit = jest.fn()
   const mockDelete = jest.fn()
   const appDispatch = jest.fn()
@@ -48,7 +48,7 @@ describe('draw', () => {
       }
     })
 
-    render(<Draw />)
+    render(<Menu />)
 
     fireEvent.click(screen.getByText('Add square'))
 
@@ -78,7 +78,7 @@ describe('draw', () => {
       }
     })
 
-    render(<Draw />)
+    render(<Menu />)
 
     fireEvent.click(screen.getByText('Edit polygon'))
 
@@ -107,7 +107,7 @@ describe('draw', () => {
       shape: 'square'
     })
 
-    render(<Draw />)
+    render(<Menu />)
 
     expect(screen.getByText('Delete shape')).toBeTruthy()
     fireEvent.click(screen.getByText('Delete shape'))

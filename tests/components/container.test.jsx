@@ -50,7 +50,7 @@ jest.mock('../../src/js/components/exit.jsx', () => () => <div>Exit Mock</div>)
 jest.mock('../../src/js/components/search.jsx', () => () => <div>Search Mock</div>)
 jest.mock('../../src/js/components/segments.jsx', () => () => <div>Segments Mock</div>)
 jest.mock('../../src/js/components/layers.jsx', () => () => <div>Layers Mock</div>)
-jest.mock('../../src/js/components/draw.jsx', () => () => <div>Draw Mock</div>)
+jest.mock('../../src/js/components/menu.jsx', () => () => <div>Menu Mock</div>)
 jest.mock('../../src/js/components/styles.jsx', () => () => <div>Styles Mock</div>)
 jest.mock('../../src/js/components/keyboard.jsx', () => () => <div>Keyboard Mock</div>)
 jest.mock('../../src/js/components/legend-button.jsx', () => () => <div>LegendButton Mock</div>)
@@ -446,24 +446,6 @@ describe('Container', () => {
 
     const { container } = render(<Container />)
     expect(container.querySelector('.legend')).not.toBeInTheDocument()
-  })
-
-  it('renders Draw component when queryArea exists', () => {
-    mockUseApp.isLegendFixed = true
-    mockUseApp.isQueryMode = false
-    mockUseApp.queryArea = { some: 'data' }
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-c-menu')).toBeInTheDocument()
-  })
-
-  it('does not render Draw component when queryArea is null', () => {
-    mockUseApp.isLegendFixed = true
-    mockUseApp.isQueryMode = false
-    mockUseApp.queryArea = null
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-c-menu')).not.toBeInTheDocument()
   })
 
   it('passes correct props to Panel component', () => {

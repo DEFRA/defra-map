@@ -3,7 +3,7 @@
 
 // All layers styles
 .fm-c-layers {
-    &__group {
+    &__group:not(:first-child) {
         border-top: 1px solid var(--border-colour);
     }
 
@@ -445,9 +445,9 @@
 }
 
 // Segments first group overides
-.fm-c-segments--timeline,
-.fm-c-segments--segmented {
+.fm-c-menu,
+.fm-c-segments:not(.fm-c-segments--timeline):not(.fm-c-segments--segmented) {
     + .fm-c-layers .fm-c-layers__group:first-child {
-        border-top: 0;
+        border-top: 1px solid var(--border-colour);
     }
 }

@@ -55,6 +55,13 @@ const moveStart = (state, payload) => {
   }
 }
 
+const move = (state, payload) => {
+  return {
+    ...state,
+    ...payload
+  }
+}
+
 const reset = (state) => {
   return {
     ...state,
@@ -216,6 +223,7 @@ export const actionsMap = {
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
   MOVE_START: moveStart,
+  MOVE: move,
   RESET: reset,
   SEARCH: search,
   GEOLOC: geoloc,

@@ -1,4 +1,4 @@
-import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleStationary } from './events'
+import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleMove, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
 import { getFocusPadding } from '../../lib/viewport.js'
@@ -111,6 +111,11 @@ class Provider extends EventTarget {
       if (animation?.state === 'running') {
         handleMoveStart(this)
       }
+    })
+
+    // Move
+    reactiveWatch(() => [view.zoom], ([newZoom]) => {
+      handleMove(this, newZoom)
     })
 
     // All render/changes/animations complete. Must debounce, min 500ms

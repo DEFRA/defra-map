@@ -1,5 +1,6 @@
 import { getDetail } from './query'
 import { reColourMarkers } from './marker'
+import { defaults } from './constants'
 
 export const handleBaseTileLayerLoaded = (provider) => {
   const { framework, modules } = provider
@@ -39,6 +40,18 @@ export const handleMoveStart = (provider) => {
   provider.dispatchEvent(new CustomEvent('movestart', {
     detail: {
       isUserInitiated: provider.isUserInitiated
+    }
+  }))
+}
+
+export const handleMove = (provider, zoom) => {
+  const { maxZoom, minZoom } = provider.view.constraints
+  const isMaxZoom = zoom + defaults.ZOOM_TOLERANCE >= maxZoom
+  const isMinZoom = zoom - defaults.ZOOM_TOLERANCE <= minZoom
+  provider.dispatchEvent(new CustomEvent('move', {
+    detail: {
+      isMaxZoom,
+      isMinZoom
     }
   }))
 }

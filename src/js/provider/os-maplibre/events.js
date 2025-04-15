@@ -54,6 +54,19 @@ export const handleMoveStart = (provider, e) => {
   }))
 }
 
+export const handleMove = (provider) => {
+  const { map } = provider
+  const isMaxZoom = map.getZoom() >= map.getMaxZoom()
+  const isMinZoom = map.getZoom() <= map.getMinZoom()
+  // Need to include maxBounds check as this can also constrain zoom
+  provider.dispatchEvent(new CustomEvent('move', {
+    detail: {
+      isMaxZoom,
+      isMinZoom
+    }
+  }))
+}
+
 export const handleStyleData = (provider, e) => {
   if (provider.baseLayers.length) {
     const { map, style, selectedId } = provider

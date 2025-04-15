@@ -1,4 +1,4 @@
-import { handleLoad, handleMoveStart, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
 import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
@@ -122,6 +122,9 @@ class Provider extends EventTarget {
 
     // Map movestart
     map.on('movestart', handleMoveStart.bind(map, this))
+
+    // Detect max/min zoom on move
+    map.on('move', handleMove.bind(map, this))
 
     // Detect map layer addition
     map.on('styledata', handleStyleData.bind(map, this))

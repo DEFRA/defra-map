@@ -48,19 +48,21 @@ const getArea = (bounds) => {
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-const getBoundsChange = (oCentre, originalZoom, center, zoom) => {
+const getBoundsChange = (oCentre, originalZoom, isMaxZoom, isMinZoom, center, zoom) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
   const isSameZoom = originalZoom === zoom
   const isMove = oCentre && originalZoom && !(isSameCentre && isSameZoom)
+  const maxZoom = isMaxZoom ? ' (Maximum zoom reached)' : ''
+  const minZoom = isMinZoom ? ' (Minimum zoom reached)' : ''
   let change = ''
   if (isMove) {
     if (!isSameCentre && !isSameZoom) {
-      change = 'New area: '
+      change = `New area${maxZoom}${minZoom}: `
     } else if (!isSameCentre) {
       change = `Map move: ${getDirection(oCentre, center)}, `
     } else {
       const direction = zoom > originalZoom ? 'in' : 'out'
-      change = `Zoomed ${direction}: `
+      change = `Zoomed ${direction}${maxZoom}${minZoom}: `
     }
   }
   return change
@@ -217,7 +219,7 @@ export const getDescription = (place, bounds, features) => {
 }
 
 export const getStatus = (action, isBoundsChange, place, state, current) => {
-  const { center, bounds, zoom, features, label, selectedId } = current
+  const { center, bounds, zoom, isMaxZoom, isMinZoom, features, label, selectedId } = current
   let status = null
   if (label) {
     status = label
@@ -227,7 +229,7 @@ export const getStatus = (action, isBoundsChange, place, state, current) => {
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
   } else if (isBoundsChange) {
-    const direction = getBoundsChange(state.center, state.zoom, center, zoom)
+    const direction = getBoundsChange(state.center, state.zoom, isMaxZoom, isMinZoom, center, zoom)
     const description = getDescription(place, bounds, features)
     status = `${direction}${direction ? 'f' : 'F'}ocus area ${description}`
   } else {

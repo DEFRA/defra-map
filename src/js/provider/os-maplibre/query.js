@@ -131,10 +131,14 @@ export const getViewport = (map) => {
   let center = map.getCenter()
   center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   const zoom = parseFloat(map.getZoom().toFixed(defaults.PRECISION))
+  const isMaxZoom = map.getZoom() >= map.getMaxZoom()
+  const isMinZoom = map.getZoom() <= map.getMinZoom()
   return {
     bounds,
     center,
-    zoom
+    zoom,
+    isMaxZoom,
+    isMinZoom
   }
 }
 

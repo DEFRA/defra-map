@@ -22,13 +22,16 @@ export const getDetail = async (provider, point, isUserInitiated = false) => {
 export const getViewport = async (provider) => {
   // Needs to be paddingBox or boundary extent not view
   const { view } = provider
+  const { maxZoom, minZoom } = provider.view.constraints
   const { xmin, ymin, xmax, ymax } = view.extent
   const bounds = [xmin, ymin, xmax, ymax]
   const { x, y } = view.center
   // Easting and northings rounded (10cm) precision
   const center = [x, y].map(n => Math.round(n * 10) / 10)
   const zoom = parseFloat(view.zoom.toFixed(defaults.PRECISION))
-  return { bounds, center, zoom }
+  const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
+  const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
+  return { bounds, center, zoom, isMaxZoom, isMinZoom }
 }
 
 export const getFeatures = async (provider, point) => {

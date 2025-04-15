@@ -362,24 +362,6 @@
     margin-top: -5px;
 }
 
-// Overide first group
-.fm-c-segments--timeline + .fm-c-segments:nth-child(2) + .fm-c-layers .fm-c-layers__group:first-child,
-.fm-c-segments:first-of-type + .fm-c-layers .fm-c-layers__group--column:first-child,
-.fm-c-layers--style .fm-c-layers__group:first-child {
-    border-top: 0;
-}
-
-.fm-c-segments--timeline + .fm-c-segments:nth-child(2) + .fm-c-layers,
-.fm-c-segments:first-of-type + .fm-c-layers,
-.fm-c-panel__body > .fm-c-layers:first-child {
-    margin-top: 0;
-}
-
-// Overide layers only, first group
-.fm-c-panel__header + .fm-c-panel__body .fm-c-layers:first-child .fm-c-layers__group:first-child .fm-c-layers__header {
-    padding-top: 0;
-}
-
 // Overide key
 .fm-c-panel--key .fm-c-layers__group {
     border-top: 0;
@@ -460,4 +442,12 @@
 .fm-c-layers .fm-c-details[aria-expanded="false"] + .fm-c-layers__rows,
 .fm-c-layers .fm-c-switch[aria-expanded="false"] + .fm-c-layers__rows {
     display: none;
+}
+
+// Segments first group overides
+.fm-c-segments--timeline,
+.fm-c-segments--segmented {
+    + .fm-c-layers .fm-c-layers__group:first-child {
+        border-top: 0;
+    }
 }

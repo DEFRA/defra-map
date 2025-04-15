@@ -316,6 +316,7 @@
     font-weight: 700;
 }
 
-.fm-c-segments .fm-c-details[aria-expanded="false"] + .fm-c-segments__inner {
+// Toggle details
+.fm-c-segments--hidden .fm-c-segments__inner {
     display: none;
 }

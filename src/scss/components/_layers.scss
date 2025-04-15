@@ -439,8 +439,8 @@
     font-weight: 700;
 } 
 
-.fm-c-layers .fm-c-details[aria-expanded="false"] + .fm-c-layers__rows,
-.fm-c-layers .fm-c-switch[aria-expanded="false"] + .fm-c-layers__rows {
+// Toggle details
+.fm-c-layers__group--hidden .fm-c-layers__rows {
     display: none;
 }
 

@@ -148,23 +148,25 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }, [group])
 
   return (
-    <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
+    <div className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
       {isDetails
         ? (
-          <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
-            <span className='fm-c-details__label'>
-              <span className='fm-c-details__label-focus'>{heading}</span>
-            </span>
-            <span className='fm-c-details__summary'>
-              <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
-            </span>
-            <span className='fm-c-details__toggle'>
-              <span className='fm-c-details__toggle-focus'>
-                <span className='fm-c-details__chevron' />
-                {isExpanded ? 'Hide' : 'Show'}
+          <h3 className='fm-c-layers__heading'>
+            <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+              <span className='fm-c-details__label'>
+                <span className='fm-c-details__label-focus'>{heading}</span>
               </span>
-            </span>
-          </button>
+              <span className='fm-c-details__summary'>
+                <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
+              </span>
+              <span className='fm-c-details__toggle'>
+                <span className='fm-c-details__toggle-focus'>
+                  <span className='fm-c-details__chevron' />
+                  {isExpanded ? 'Hide' : 'Show'}
+                </span>
+              </span>
+            </button>
+          </h3>
           )
         : heading && (
           <h3 className='fm-c-layers__heading' aria-hidden='true'>{heading}</h3>

@@ -156,7 +156,7 @@ describe('segment-group', () => {
     expect(container.querySelector('.fm-c-segments--timeline')).toBeTruthy()
   })
 
-  it('should render without display modifier class when display prop is not provided', () => {
+  it('should render without display modifier class when display \'ramp\' is not provided', () => {
     const { container } = render(
       <SegmentGroup
         id='test'
@@ -173,7 +173,7 @@ describe('segment-group', () => {
     )
 
     expect(container.querySelector('.fm-c-segments')).toBeTruthy()
-    expect(container.querySelector('[class*="fm-c-segments--"]')).toBeFalsy()
+    expect(container.querySelector('[class*="fm-c-segments--ramp"]')).toBeFalsy()
   })
 
   it('should not be visible when isHidden is true', () => {

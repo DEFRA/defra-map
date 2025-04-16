@@ -19,6 +19,7 @@ jest.mock('../../src/js/provider/esri-sdk/events', () => ({
   handleBaseTileLayerLoaded: jest.fn(),
   handleStyleChange: jest.fn(),
   handleMoveStart: jest.fn(),
+  handleMove: jest.fn(),
   handleStationary: jest.fn()
 }))
 
@@ -408,9 +409,10 @@ describe('Provider', () => {
       const reactiveWatch = modules[9].watch
 
       // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[1][1]
+      const watchCallback = reactiveWatch.mock.calls[2][1]
 
       // Simulate view becoming stationary
+
       watchCallback([true, false]) // stationary is true
 
       expect(debounce).toHaveBeenCalled()

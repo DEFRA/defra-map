@@ -51,6 +51,8 @@ describe('Query Module', () => {
     })
 
     it('should return viewport, features, and place information', async () => {
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
+
       const point = [10, 10]
       const detail = await getDetail(mockProvider, point, true)
 
@@ -63,6 +65,8 @@ describe('Query Module', () => {
     })
 
     it('should not call getNearest if not user-initiated', async () => {
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
+
       const point = [10, 10]
       await getDetail(mockProvider, point, false)
 
@@ -70,12 +74,16 @@ describe('Query Module', () => {
     })
 
     it('should call getNearest with correct parameters when user-initiated', async () => {
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
+
       const point = [10, 10]
       await getDetail(mockProvider, point, true)
       expect(mockProvider.getNearest).toHaveBeenCalledWith([500, 500], 'mock-token')
     })
 
     it('should combine results from getViewport and getFeatures', async () => {
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
+
       const point = [10, 10]
       const detail = await getDetail(mockProvider, point, false)
 
@@ -86,6 +94,7 @@ describe('Query Module', () => {
 
   describe('getViewport()', () => {
     it('should retrieve bounds, center, and zoom from the view', async () => {
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport(mockProvider)
 
       expect(viewport).toHaveProperty('bounds')
@@ -95,6 +104,7 @@ describe('Query Module', () => {
 
     it('should format center coordinates correctly', async () => {
       mockProvider.view.center = { x: 123.456789, y: 987.654321 }
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport(mockProvider)
 
       expect(viewport.center).toEqual([123.5, 987.7])
@@ -102,6 +112,7 @@ describe('Query Module', () => {
 
     it('should format zoom level using defaults precision', async () => {
       mockProvider.view.zoom = 12.3456789
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport(mockProvider)
 
       expect(viewport.zoom).toEqual(parseFloat(12.3456789.toFixed(defaults.PRECISION)))
@@ -109,6 +120,7 @@ describe('Query Module', () => {
 
     it('should extract extent bounds correctly', async () => {
       mockProvider.view.extent = { xmin: 10, ymin: 20, xmax: 30, ymax: 40 }
+      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport(mockProvider)
 
       expect(viewport.bounds).toEqual([10, 20, 30, 40])

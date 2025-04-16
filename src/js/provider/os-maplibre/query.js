@@ -37,7 +37,7 @@ const addFeatureProperties = (map, features) => {
     const distance = turfDistance(p1, p2, { units: 'metres' })
     return {
       ...f.properties,
-      id: f.id || f.properties.id,
+      id: f.properties.id || f.id,
       geometryType: f.geometry.type,
       coord,
       distance
@@ -156,7 +156,7 @@ export const getFeatures = (provider, pixel) => {
   featuresAtPixel = (featuresAtPixel.map(f => {
     return {
       ...f.properties,
-      id: f.id || f.properties.id,
+      id: f.properties.id || f.id,
       name: f.properties.name,
       layer: f.layer.id
     }
@@ -166,7 +166,7 @@ export const getFeatures = (provider, pixel) => {
   const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers: featureLayers })
 
   // Get total 'featureLayer' features in viewport (May be more than 9)
-  const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.id || f.properties.id))).length
+  const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.properties.id || f.id))).length
 
   // Get geometry that intersects bounds
   const intersectingFeatures = intersectFeatures(getPaddedBounds(map).flat(1), renderedFeaturesInViewport)
@@ -228,7 +228,7 @@ export const getHighlightedLabel = (map) => {
 
 export const getSelectedFeatureId = (map, selectedLayers) => {
   const features = map.queryRenderedFeatures({ layers: selectedLayers })
-  return features.length ? (features[0]?.id || features[0].properties?.id) : null
+  return features.length ? (features[0].properties?.id || features[0]?.id) : null
 }
 
 export const getLabel = (provider, pixel) => {

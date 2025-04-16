@@ -33,14 +33,14 @@ export const queryMap = {
 }
 
 export const addSources = (map) => {
-  map.addSource('warning-areas', {
-    type: 'vector',
-    url: `${process.env.TILE_SERVER_URL}/warning_areas`
-  })
-  map.addSource('warning-centroids', {
-    type: 'vector',
-    url: `${process.env.TILE_SERVER_URL}/warning_centroids`
-  })
+  // map.addSource('warning-areas', {
+  //   type: 'vector',
+  //   url: `${process.env.TILE_SERVER_URL}/warning_areas`
+  // })
+  // map.addSource('warning-centroids', {
+  //   type: 'vector',
+  //   url: `${process.env.TILE_SERVER_URL}/warning_centroids`
+  // })
   map.addSource('station-centroids', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/station_centroids`
@@ -57,6 +57,16 @@ export const addSources = (map) => {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/ufmfsw_enw_extent_1in30_bv,ufmfsw_enw_extent_1in100_bv,ufmfsw_enw_extent_1in1000_bv`
   })
+
+  // GeoJSON sources
+  map.addSource('warning-areas', {
+    type: 'geojson',
+    data: 'https://lfw-dev.aws-int.defra.cloud/api/ows?service=wfs&version=2.0.0&request=getFeature&typename=flood:flood_warning_alert&outputFormat=application/json'
+  })
+  map.addSource('warning-centroids', {
+    type: 'geojson',
+    data: 'https://lfw-dev.aws-int.defra.cloud/api/warnings.geojson'
+  })
 }
 
 export const addLayers = (map, basemap) => {
@@ -70,7 +80,7 @@ export const addLayers = (map, basemap) => {
     id: 'warning-fill',
     type: 'fill',
     source: 'warning-areas',
-    'source-layer': 'warning_areas',
+    // 'source-layer': 'warning_areas',
     layout: {
       visibility: 'none'
     },
@@ -89,6 +99,7 @@ export const addLayers = (map, basemap) => {
     },
     minzoom: 12
   }, position)
+
   map.addLayer({
     id: 'stations',
     type: 'symbol',
@@ -110,6 +121,7 @@ export const addLayers = (map, basemap) => {
     },
     minzoom: 12
   })
+
   map.addLayer({
     id: 'stations-small',
     type: 'symbol',
@@ -138,11 +150,12 @@ export const addLayers = (map, basemap) => {
     },
     maxzoom: 12
   })
+
   map.addLayer({
     id: 'warning-symbol',
     type: 'symbol',
     source: 'warning-centroids',
-    'source-layer': 'warning_centroids',
+    // 'source-layer': 'warning_centroids',
     layout: {
       'icon-image': ['get', 'state'],
       'icon-size': 0.5,
@@ -158,6 +171,7 @@ export const addLayers = (map, basemap) => {
     },
     maxzoom: 12
   })
+
   map.addLayer({
     id: 'five-day-forecast',
     type: 'fill',
@@ -183,6 +197,7 @@ export const addLayers = (map, basemap) => {
     },
     filter: ['==', 'id', '']
   }, position)
+
   map.addLayer({
     id: 'river-sea-fill',
     type: 'fill',
@@ -204,7 +219,8 @@ export const addLayers = (map, basemap) => {
       ],
       'fill-opacity': 0.75
     }
-  }, position),
+  }, position)
+  
   map.addLayer({
     id: 'surface-water-1000-fill',
     type: 'fill',
@@ -217,7 +233,8 @@ export const addLayers = (map, basemap) => {
       'fill-color': fills[basemap][2],
       'fill-opacity': 1
     }
-  }, position),
+  }, position)
+
   map.addLayer({
     id: 'surface-water-100-fill',
     type: 'fill',
@@ -230,7 +247,8 @@ export const addLayers = (map, basemap) => {
       'fill-color': fills[basemap][1],
       'fill-opacity': 1
     }
-  }, position),
+  }, position)
+  
   map.addLayer({
     id: 'surface-water-30-fill',
     type: 'fill',

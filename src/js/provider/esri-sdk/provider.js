@@ -107,19 +107,22 @@ class Provider extends EventTarget {
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
-    reactiveWatch(() => [view.animation], ([animation]) => {
-      if (animation?.state === 'running') {
+    let isMoving = false
+    reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
+      if (!isMoving && !stationary) {
         handleMoveStart(this)
+        isMoving = true
       }
     })
 
-    // Move
+    // Move (zoom)
     reactiveWatch(() => [view.zoom], ([newZoom]) => {
       handleMove(this, newZoom)
     })
 
     // All render/changes/animations complete. Must debounce, min 500ms
     const debounceStationary = debounce(() => {
+      isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 

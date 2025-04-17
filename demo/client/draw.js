@@ -1,9 +1,11 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getRequest, getTileRequest } from './request.js'
+import { getRequest, createTileRequest } from './request.js'
 
 const symbols = () => {
   return ['water-storage', 'flood-defence'].map(s => `/assets/images/symbols/${s}.svg`)
 }
+
+let map
 
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
@@ -19,7 +21,7 @@ const fm = new FloodMap('map', {
   height: '700px',
   // buttonType: 'anchor',
   symbols,
-  transformRequest: getTileRequest,
+  transformRequest: createTileRequest(() => map),
   transformSearchRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
@@ -343,7 +345,7 @@ const fm = new FloodMap('map', {
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
-  const map = fm.map
+  map = fm.map
 })
 
 // Listen for segments, layers or style changes

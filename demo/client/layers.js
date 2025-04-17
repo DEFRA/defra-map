@@ -130,9 +130,9 @@ export const addLayers = (map, basemap) => {
     layout: {
       'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
         'high', 'alert',
-        'wet', 'alert',
+        'wet', 'normal',
         'normal', 'normal',
-        'dry', 'normal',
+        'dry', 'low',
         'low', 'low',
         'error'
       ]],

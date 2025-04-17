@@ -33,14 +33,14 @@ export const queryMap = {
 }
 
 export const addSources = (map) => {
-  // map.addSource('warning-polygons', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/warning_areas`
-  // })
-  // map.addSource('warning-centroids', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/warning_centroids`
-  // })
+  map.addSource('warning-polygons', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/warning_areas`
+  })
+  map.addSource('warning-centroids', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/warning_centroids`
+  })
   map.addSource('station-centroids', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/station_centroids`
@@ -59,14 +59,14 @@ export const addSources = (map) => {
   })
 
   // GeoJSON sources
-  map.addSource('warning-polygons', {
-    type: 'geojson',
-    data: process.env.CFF_WARNING_POLYGONS
-  })
-  map.addSource('warning-centroids', {
-    type: 'geojson',
-    data: process.env.CFF_WARNING_CENTROIDS
-  })
+  // map.addSource('warning-polygons', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_POLYGONS
+  // })
+  // map.addSource('warning-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_CENTROIDS
+  // })
 }
 
 export const addLayers = (map, basemap) => {
@@ -80,7 +80,7 @@ export const addLayers = (map, basemap) => {
     id: 'warning-fill',
     type: 'fill',
     source: 'warning-polygons',
-    // 'source-layer': 'warning_areas',
+    'source-layer': 'warning_areas',
     layout: {
       visibility: 'none'
     },
@@ -155,7 +155,7 @@ export const addLayers = (map, basemap) => {
     id: 'warning-symbol',
     type: 'symbol',
     source: 'warning-centroids',
-    // 'source-layer': 'warning_centroids',
+    'source-layer': 'warning_centroids',
     layout: {
       'icon-image': ['get', 'state'],
       'icon-size': 0.5,

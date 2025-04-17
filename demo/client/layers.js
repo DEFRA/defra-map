@@ -33,7 +33,7 @@ export const queryMap = {
 }
 
 export const addSources = (map) => {
-  // map.addSource('warning-areas', {
+  // map.addSource('warning-polygons', {
   //   type: 'vector',
   //   url: `${process.env.TILE_SERVER_URL}/warning_areas`
   // })
@@ -59,13 +59,13 @@ export const addSources = (map) => {
   })
 
   // GeoJSON sources
-  map.addSource('warning-areas', {
+  map.addSource('warning-polygons', {
     type: 'geojson',
-    data: 'https://lfw-dev.aws-int.defra.cloud/api/ows?service=wfs&version=2.0.0&request=getFeature&typename=flood:flood_warning_alert&outputFormat=application/json'
+    data: process.env.CFF_WARNING_POLYGONS
   })
   map.addSource('warning-centroids', {
     type: 'geojson',
-    data: 'https://lfw-dev.aws-int.defra.cloud/api/warnings.geojson'
+    data: process.env.CFF_WARNING_CENTROIDS
   })
 }
 
@@ -79,7 +79,7 @@ export const addLayers = (map, basemap) => {
   map.addLayer({
     id: 'warning-fill',
     type: 'fill',
-    source: 'warning-areas',
+    source: 'warning-polygons',
     // 'source-layer': 'warning_areas',
     layout: {
       visibility: 'none'

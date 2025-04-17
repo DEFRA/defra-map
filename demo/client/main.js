@@ -1,9 +1,11 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getRequest, getTileRequest } from './request.js'
+import { getRequest, createTileRequest, isBoundsWithin } from './request.js'
 import getSymbols from './symbols.js'
 import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 
 const symbols = getSymbols()
+
+let map, bounds
 
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
@@ -19,7 +21,7 @@ const fm = new FloodMap('map', {
   height: '600px',
   // buttonType: 'anchor',
   symbols,
-  transformRequest: getTileRequest,
+  transformRequest: createTileRequest(() => map),
   transformSearchRequest: getRequest,
   hasAutoMode: true,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
@@ -253,12 +255,21 @@ const fm = new FloodMap('map', {
   queryFeature: {
     layers: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
   }
+}, (provider) => {
+  // Call GeoJSON source with new bbox on map move end if zoom is greater than layer minzoom
+  provider.map.on('moveend', () => {
+    // Make new request only when necessary
+    if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
+      bounds = map.getBounds()
+      map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
+    }
+  })
 })
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
-  const map = fm.map
+  map = fm.map
 
   addSources(map)
   addLayers(map, e.detail.style)
@@ -267,7 +278,6 @@ fm.addEventListener('ready', e => {
 
 // Listen for segments, layers or style changes
 fm.addEventListener('change', e => {
-  const map = fm.map
   if (e.detail.type === 'style') {
     addSources(map)
     addLayers(fm.map, e.detail.style)

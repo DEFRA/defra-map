@@ -130,7 +130,7 @@ describe('viewport', () => {
       }),
       init: jest.fn(),
       map: jest.fn(),
-      transformSearchRequest: jest.fn(),
+      transformGeocodeRequest: jest.fn(),
       transformCallback: jest.fn(),
       setPadding: jest.fn(),
       setTargetMarker: jest.fn(),

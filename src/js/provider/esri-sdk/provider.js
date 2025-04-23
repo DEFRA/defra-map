@@ -8,11 +8,11 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
+  constructor ({ transformGeocodeRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
     super()
     this.srid = 27700
     this.capabilities = capabilities.esri
-    this.transformSearchRequest = transformSearchRequest
+    this.transformGeocodeRequest = transformGeocodeRequest
     this.esriConfigCallback = esriConfigCallback
     this.tokenCallback = tokenCallback
     this.interceptorsCallback = interceptorsCallback
@@ -297,19 +297,17 @@ class Provider extends EventTarget {
 
   async queryPoint (point) {
     const detail = await getDetail(this, point)
-    const place = await this.getNearest(detail.coord)
     this.dispatchEvent(new CustomEvent('mapquery', {
       detail: {
         resultType: detail.features.resultType,
-        ...detail,
-        place
+        ...detail
       }
     }))
   }
 
   async getNearest (coord) {
     const { getNearest } = await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
-    const response = await getNearest(coord, this.transformSearchRequest)
+    const response = await getNearest(coord, this.transformGeocodeRequest)
     return response
   }
 

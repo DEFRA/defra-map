@@ -25,8 +25,8 @@ describe('getNearest', () => {
       })
     )
     const coord = [123456, 654321]
-    const transformSearchRequest = jest.fn(url => url)
-    const result = await getNearest(coord, transformSearchRequest)
+    const transformGeocodeRequest = jest.fn(url => url)
+    const result = await getNearest(coord, transformGeocodeRequest)
     expect(result).toBe('Test Name, Test Place, Test County, Test Region')
   })
 
@@ -44,8 +44,8 @@ describe('getNearest', () => {
       })
     )
     const coord = [123456, 654321]
-    const transformSearchRequest = jest.fn(url => url)
-    const result = await getNearest(coord, transformSearchRequest)
+    const transformGeocodeRequest = jest.fn(url => url)
+    const result = await getNearest(coord, transformGeocodeRequest)
     expect(result).toBe('Test Name, Test Region')
   })
 
@@ -56,8 +56,8 @@ describe('getNearest', () => {
       })
     )
     const coord = [123456, 654321]
-    const transformSearchRequest = jest.fn(url => url)
-    await expect(getNearest(coord, transformSearchRequest))
+    const transformGeocodeRequest = jest.fn(url => url)
+    await expect(getNearest(coord, transformGeocodeRequest))
       .rejects.toThrow(/Cannot read properties of undefined/)
   })
 
@@ -70,8 +70,8 @@ describe('getNearest', () => {
       })
     )
     const coord = [123456, 654321]
-    const transformSearchRequest = jest.fn(url => url)
-    await expect(getNearest(coord, transformSearchRequest))
+    const transformGeocodeRequest = jest.fn(url => url)
+    await expect(getNearest(coord, transformGeocodeRequest))
       .rejects.toThrow(/Cannot read properties of undefined/)
   })
 
@@ -80,8 +80,8 @@ describe('getNearest', () => {
       Promise.reject(new Error('Network error'))
     )
     const coord = [123456, 654321]
-    const transformSearchRequest = jest.fn(url => url)
-    await expect(getNearest(coord, transformSearchRequest))
+    const transformGeocodeRequest = jest.fn(url => url)
+    await expect(getNearest(coord, transformGeocodeRequest))
       .rejects.toThrow('Network error')
   })
 
@@ -90,9 +90,9 @@ describe('getNearest', () => {
       json: () => Promise.resolve({ results: null })
     }))
     const coord = [123.456, 654.321]
-    const transformSearchRequest = jest.fn(url => 'transformed-' + url)
-    await getNearest(coord, transformSearchRequest)
-    expect(transformSearchRequest).toHaveBeenCalledWith('https://example.com/123/654')
+    const transformGeocodeRequest = jest.fn(url => 'transformed-' + url)
+    await getNearest(coord, transformGeocodeRequest)
+    expect(transformGeocodeRequest).toHaveBeenCalledWith('https://example.com/123/654')
     expect(global.fetch).toHaveBeenCalledWith('transformed-https://example.com/123/654')
   })
 })

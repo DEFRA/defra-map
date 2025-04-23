@@ -6,8 +6,8 @@ import { reducer, initialState } from '../store/search-reducer'
 import Autocomplete from './autocomplete.jsx'
 import OsProvider from '../provider/os-open-names/provider.js'
 
-const getDerivedProps = (search, transformSearchRequest, isMobile, legend, state) => {
-  const geocode = new OsProvider(transformSearchRequest)
+const getDerivedProps = (search, transformGeocodeRequest, isMobile, legend, state) => {
+  const geocode = new OsProvider(transformGeocodeRequest)
   const searchWidth = !isMobile ? (legend?.keyWidth || legend?.width) : null
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
@@ -25,12 +25,12 @@ export default function Search ({ instigatorRef }) {
   const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const { id, transformSearchRequest } = options
+  const { id, transformGeocodeRequest } = options
   const [state, dispatch] = useReducer(reducer, initialState)
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
-  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, transformSearchRequest, isMobile, legend, state)
+  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, transformGeocodeRequest, isMobile, legend, state)
 
   // Hide soft keyboard on touchstart outside search input
   useOutsideInteract(inputRef, true, 'touchstart', e => {

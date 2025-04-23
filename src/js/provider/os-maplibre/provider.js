@@ -10,7 +10,7 @@ import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformSearchRequest, transformRequest, symbols }) {
+  constructor ({ transformGeocodeRequest, transformRequest, symbols }) {
     super()
     this.srid = 4326
     this.capabilities = {
@@ -18,15 +18,13 @@ class Provider extends EventTarget {
       hasDraw: true,
       hasSize: !!window.globalThis
     }
-    this.transformSearchRequest = transformSearchRequest
+    this.transformGeocodeRequest = transformGeocodeRequest
     this.transformRequest = transformRequest
     this.symbols = symbols
     this.baseLayers = []
     this.selectedId = ''
     this.selectedCoordinate = null
     this.isLoaded = false
-    // Not sure why this is needed?
-    this.getNearest = this.getNearest.bind(this)
   }
 
   init (options) {
@@ -258,15 +256,12 @@ class Provider extends EventTarget {
   }
 
   async queryPoint (point) {
-    const { getNearest } = this
     const detail = await getDetail(this, point)
-    const place = await getNearest(detail.coord)
     this.hideLabel()
     this.dispatchEvent(new CustomEvent('mapquery', {
       detail: {
         resultType: detail.features.resultType,
-        ...detail,
-        place
+        ...detail
       }
     }))
   }
@@ -284,10 +279,10 @@ class Provider extends EventTarget {
 
     if (this.capabilities.isLatest) {
       const { getNearest } = await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.transformSearchRequest)
+      response = await getNearest(coord, this.transformGeocodeRequest)
     } else {
       const { getNearest } = await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.transformSearchRequest)
+      response = await getNearest(coord, this.transformGeocodeRequest)
     }
 
     return response

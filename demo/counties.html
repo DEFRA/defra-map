@@ -42,7 +42,7 @@
           }
           return { url }
         },
-        transformSearchRequest: function(url) {
+        transformGeocodeRequest: function(url) {
           return new Request(`${url}&key=<%= OS_CLIENT_ID %>`)
         },
         hasAutoMode: true,

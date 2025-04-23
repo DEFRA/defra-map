@@ -22,7 +22,7 @@ const fm = new FloodMap('map', {
   // buttonType: 'anchor',
   symbols,
   transformRequest: createTileRequest(() => map),
-  transformSearchRequest: getRequest,
+  transformGeocodeRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
   // drawMode: 'circle',

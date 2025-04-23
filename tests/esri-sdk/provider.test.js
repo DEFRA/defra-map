@@ -162,7 +162,7 @@ describe('Provider', () => {
     }
     mockInterceptorsCallback = jest.fn().mockReturnValue([])
     provider = new Provider({
-      transformSearchRequest: jest.fn(),
+      transformGeocodeRequest: jest.fn(),
       tokenCallback: mockTokenCallback,
       interceptorsCallback: mockInterceptorsCallback
     })
@@ -860,12 +860,10 @@ describe('Provider', () => {
       await provider.queryPoint(point)
 
       expect(getDetail).toHaveBeenCalledWith(provider, point)
-      expect(provider.getNearest).toHaveBeenCalledWith(mockDetail.coord)
       expect(dispatchEventSpy).toHaveBeenCalledWith(new CustomEvent('mapquery', {
         detail: {
           resultType: mockDetail.features.resultType,
-          ...mockDetail,
-          place: 'mockPlace'
+          ...mockDetail
         }
       }))
     })

@@ -84,7 +84,7 @@ export default function Viewport () {
 
   const handleKeyUp = e => {
     // Get map details (Alt + i)
-    if (provider.getNearest && e.altKey && e.code.slice(-1) === 'I') {
+    if (e.altKey && e.code.slice(-1) === 'I') {
       viewportDispatch({ type: 'CLEAR_STATUS' })
       // Debounce place update
       debounceUpdatePlace(center)

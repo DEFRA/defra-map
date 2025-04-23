@@ -22,7 +22,7 @@ const fm = new FloodMap('map', {
   // buttonType: 'anchor',
   symbols,
   transformRequest: createTileRequest(() => map),
-  transformSearchRequest: getRequest,
+  transformGeocodeRequest: getRequest,
   hasAutoMode: true,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: [{

@@ -14,7 +14,7 @@ jest.mock('../../src/js/provider/os-open-names/provider.js')
 jest.mock('../../src/js/hooks/use-outside-interact')
 
 describe('Search', () => {
-  const transformSearchRequest = jest.fn()
+  const transformGeocodeRequest = jest.fn()
   const viewportDispatch = jest.fn()
   const appDispatch = jest.fn()
   let touchstartCallback
@@ -73,7 +73,7 @@ describe('Search', () => {
       activeRef: {},
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: false
@@ -104,7 +104,7 @@ describe('Search', () => {
       activeRef: {},
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: false
@@ -133,7 +133,7 @@ describe('Search', () => {
       activeRef: {},
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: true
@@ -161,7 +161,7 @@ describe('Search', () => {
       activeRef: {},
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: false
@@ -211,7 +211,7 @@ describe('Search', () => {
       },
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: false
@@ -263,7 +263,7 @@ describe('Search', () => {
       activeRef: {},
       options: {
         id: 'test',
-        transformSearchRequest
+        transformGeocodeRequest
       },
       search: {
         isAutocomplete: false
@@ -310,7 +310,7 @@ describe('Search', () => {
       isMobile: false,
       options: {
         id: 'test',
-        transformSearchRequest: jest.fn()
+        transformGeocodeRequest: jest.fn()
       },
       search: {
         isAutocomplete: true,
@@ -398,7 +398,7 @@ describe('Search', () => {
     useApp.mockReturnValue({
       interfaceType: 'keyboard',
       isMobile: true,
-      options: { id: 'test', transformSearchRequest: jest.fn() },
+      options: { id: 'test', transformGeocodeRequest: jest.fn() },
       search: { isAutocomplete: false, isExpanded: true },
       activePanel: 'SEARCH',
       activeRef: { current: null },
@@ -454,7 +454,7 @@ describe('Search', () => {
     useApp.mockReturnValue({
       interfaceType: 'keyboard',
       isMobile: true,
-      options: { id: 'test', transformSearchRequest: jest.fn() },
+      options: { id: 'test', transformGeocodeRequest: jest.fn() },
       search: { isAutocomplete: false, isExpanded: true },
       activePanel: 'SEARCH',
       activeRef: { current: null },

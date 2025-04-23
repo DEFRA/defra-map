@@ -35,7 +35,7 @@
           }
           return { url }
         },
-        transformSearchRequest: function(url) {
+        transformGeocodeRequest: function(url) {
           return new Request(`${url}&key={{ env.OS_CLIENT_ID }}`)
         },
         hasAutoMode: true,

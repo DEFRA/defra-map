@@ -10,14 +10,11 @@ import { defaults as storeDefaults } from '../../store/constants.js'
 class Provider extends EventTarget {
   static name = 'esri'
 
-  constructor ({ transformGeocodeRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
+  constructor ({ esriConfigCallback }) {
     super()
     this.srid = 27700
     this.capabilities = capabilities.esri
-    this.transformGeocodeRequest = transformGeocodeRequest
     this.esriConfigCallback = esriConfigCallback
-    this.tokenCallback = tokenCallback
-    this.interceptorsCallback = interceptorsCallback
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -49,16 +46,6 @@ class Provider extends EventTarget {
     // Implementation has full control over esriConfig
     if (this.esriConfigCallback) {
       await this.esriConfigCallback(esriConfig)
-    }
-
-    // *Can be removed, but will be a breaking change
-    if (this.tokenCallback) {
-      esriConfig.apiKey = (await this.tokenCallback()).token
-    }
-
-    // *Can be removed, but will be a breaking change
-    if (this.interceptorsCallback) {
-      this.interceptorsCallback().forEach(interceptor => esriConfig.request.interceptors.push(interceptor))
     }
 
     // Define layers
@@ -307,18 +294,11 @@ class Provider extends EventTarget {
     }))
   }
 
-  async getNearest (coord) {
-    const { getNearest } = await import(/* webpackChunkName: "esri-sdk" */ '../os-open-names/nearest.js')
-    const response = await getNearest(coord, this.transformGeocodeRequest)
-    return response
-  }
-
   getGeoLocation (success, error) {
     navigator.geolocation.getCurrentPosition(async (position) => {
       let coord = [position.coords.longitude, position.coords.latitude]
       coord = coord.map(n => parseFloat(n.toFixed(defaults.PRECISION)))
-      const place = this.getNearest ? await this.getNearest(coord, 4326) : null
-      success(coord, place)
+      success(coord, null)
     }, (err) => {
       console.log(err)
       error(err)

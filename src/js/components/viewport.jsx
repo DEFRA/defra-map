@@ -18,7 +18,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 
 export default function Viewport () {
   const { isContainerReady, provider, options, parent, mode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
-  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
+  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea, reverseGeocode, transformGeocodeRequest } = options
   const appDispatch = useApp().dispatch
 
   const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -168,7 +168,7 @@ export default function Viewport () {
 
   // Update place after Alt + i
   const debounceUpdatePlace = useCallback(debounce(async (coord) => {
-    const place = await provider.getNearest(coord)
+    const place = await reverseGeocode(zoom, coord, transformGeocodeRequest)
     viewportDispatch({ type: 'UPDATE_PLACE', payload: place || 'remote area' })
   }, STATUS_DELAY), [])
 

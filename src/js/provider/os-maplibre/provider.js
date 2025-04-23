@@ -6,11 +6,10 @@ import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
-import { LatLon } from 'geodesy/osgridref.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformGeocodeRequest, transformRequest, symbols }) {
+  constructor ({ transformRequest, symbols }) {
     super()
     this.srid = 4326
     this.capabilities = {
@@ -18,7 +17,6 @@ class Provider extends EventTarget {
       hasDraw: true,
       hasSize: !!window.globalThis
     }
-    this.transformGeocodeRequest = transformGeocodeRequest
     this.transformRequest = transformRequest
     this.symbols = symbols
     this.baseLayers = []
@@ -266,34 +264,12 @@ class Provider extends EventTarget {
     }))
   }
 
-  async getNearest (coord) {
-    try {
-      const bng = (new LatLon(coord[1], coord[0])).toOsGrid()
-      coord = [bng.easting, bng.northing]
-    } catch (err) {
-      console.log(err)
-      return null
-    }
-
-    let response
-
-    if (this.capabilities.isLatest) {
-      const { getNearest } = await import(/* webpackChunkName: "maplibre" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.transformGeocodeRequest)
-    } else {
-      const { getNearest } = await import(/* webpackChunkName: "maplibre-legacy" */ '../os-open-names/nearest.js')
-      response = await getNearest(coord, this.transformGeocodeRequest)
-    }
-
-    return response
-  }
-
   getGeoLocation (success, error) {
     navigator.geolocation.getCurrentPosition(async (position) => {
       let coord = [position.coords.longitude, position.coords.latitude]
       coord = coord.map(n => parseFloat(n.toFixed(defaults.PRECISION)))
-      const place = this.getNearest ? await this.getNearest(coord) : null
-      success(coord, place)
+      // const place = this.getNearest ? await this.getNearest(coord) : null
+      success(coord, null)
     }, (err) => {
       console.log(err)
       error(err)

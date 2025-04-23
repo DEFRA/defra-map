@@ -211,35 +211,30 @@ export class FloodMap extends EventTarget {
     this.interfaceType = null
   }
 
-  _importComponent () {
+  async _importComponent () {
     this.button?.setAttribute('style', 'display: none')
+
     // Add loading spinner
 
-    const promises = [import(/* webpackChunkName: "flood-map-ui" */ './root.js')]
-
-    // Load default provider if none provided through options
+    // Load default provider if not provided
     if (!this.props.provider) {
-      promises.push(import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js'))
+      this.props.provider ??= (await import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js')).default
     }
 
-    Promise.all(promises).then(modules => {
-      const [App, Provider] = modules.map(m => m.default)
-      this.props.provider ??= Provider
+    // Load default reverse geocode provider if not provided
+    if (!this.props.geocodeProvider) {
+      this.props.reverseGeocode ??= (await import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-open-names/nearest.js')).default
+    }
+
+    // Load main App
+    import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
+      const App = module.default
       this._addComponent(App)
     }).catch(err => {
       // Display error content
       this._renderError('There was a problem loading the map. Please try again later')
       console.log(err)
     })
-
-    // import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
-    //   this._addComponent(module.default)
-    //   delete options.provider
-    // }).catch(err => {
-    //   // Display error content
-    //   this._renderError('There was a problem loading the map. Please try again later')
-    //   console.log(err)
-    // })
   }
 
   _addComponent (root) {

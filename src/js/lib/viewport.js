@@ -79,20 +79,6 @@ const getOffsetBoundingClientRect = (el) => {
   return offsetParent.getBoundingClientRect()
 }
 
-const detectCoordinateType = (coords) => {
-  if (coords.length === 3) {
-    return 'BNG' // If a third value exists (zone), it's UTM
-  }
-  const [x, y] = coords
-  if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
-    return 'WSG84'
-  }
-  if (x > 180 && y > 90) {
-    return 'BNG'
-  }
-  return 'Unknown'
-}
-
 const isCirclePolygon = (geometry) => {
   const coordinates = geometry?.coordinates?.[0]
 
@@ -129,6 +115,20 @@ const isCirclePolygon = (geometry) => {
   const tolerance = detectCoordinateType(center) === 'WSG84' ? WSG84_TOLERANCE : BNG_TOLERANCE
 
   return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
+}
+
+export const detectCoordinateType = (coords) => {
+  if (coords.length === 3) {
+    return 'BNG' // If a third value exists (zone), it's UTM
+  }
+  const [x, y] = coords
+  if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
+    return 'WSG84'
+  }
+  if (x > 180 && y > 90) {
+    return 'BNG'
+  }
+  return 'Unknown'
 }
 
 export const getDistance = (coord1, coord2) => {

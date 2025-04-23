@@ -17,10 +17,13 @@ export default mergeWithCustomize({
   }
 })(common, {
   entry: {
-    planning: [
+    main: [
       path.join(__dirname, 'client/planning.js'),
       path.join(__dirname, 'client/main.scss')
     ]
+  },
+  output: {
+    filename: 'planning.js'
   },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(

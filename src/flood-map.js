@@ -213,12 +213,17 @@ export class FloodMap extends EventTarget {
   _importComponent () {
     this.button?.setAttribute('style', 'display: none')
     // Add loading spinner
-    Promise.all([
-      import(/* webpackChunkName: "flood-map-ui" */ './root.js'),
-      import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js')
-    ]).then(promises => {
-      const [App, Provider] = promises.map(m => m.default)
-      this.props.provider = Provider
+
+    const promises = [import(/* webpackChunkName: "flood-map-ui" */ './root.js')]
+
+    // Load default provider if none provided through options
+    if (!this.props.provider) {
+      promises.push(import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js'))
+    }
+
+    Promise.all(promises).then(modules => {
+      const [App, Provider] = modules.map(m => m.default)
+      this.props.provider ??= Provider
       this._addComponent(App)
     }).catch(err => {
       // Display error content

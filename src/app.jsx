@@ -4,7 +4,6 @@ import { settings, events } from './js/store/constants.js'
 import eventBus from './js/lib/eventbus.js'
 import { AppProvider } from './js/store/app-provider.jsx'
 import Container from './js/components/container.jsx'
-import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
   const { behaviour, parent, container, handleExit } = options
@@ -14,8 +13,8 @@ export default function App (options) {
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
   const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
-  const MapProvider = options.provider || Provider
-  delete options.provider
+
+  const MapProvider = options.provider
 
   // Create a provider instance
   const provider = useRef(new MapProvider(options))

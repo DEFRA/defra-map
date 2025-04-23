@@ -1,5 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
+import Provider from '../src/js/provider/os-maplibre/provider'
 
 import App from '../src/app'
 
@@ -33,6 +34,7 @@ describe('App', () => {
     render(
       <App
         parent={document.querySelector('#app')}
+        provider={Provider}
         styles={[{
           name: 'default',
           attribution: '',
@@ -51,6 +53,7 @@ describe('App', () => {
     render(
       <App
         parent={document.querySelector('#app')}
+        provider={Provider}
         container={containerEl}
         styles={[{
           name: 'default',

@@ -213,13 +213,27 @@ export class FloodMap extends EventTarget {
   _importComponent () {
     this.button?.setAttribute('style', 'display: none')
     // Add loading spinner
-    import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
-      this._addComponent(module.default)
+    Promise.all([
+      import(/* webpackChunkName: "flood-map-ui" */ './root.js'),
+      import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js')
+    ]).then(promises => {
+      const [App, Provider] = promises.map(m => m.default)
+      this.props.provider = Provider
+      this._addComponent(App)
     }).catch(err => {
       // Display error content
       this._renderError('There was a problem loading the map. Please try again later')
       console.log(err)
     })
+
+    // import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
+    //   this._addComponent(module.default)
+    //   delete options.provider
+    // }).catch(err => {
+    //   // Display error content
+    //   this._renderError('There was a problem loading the map. Please try again later')
+    //   console.log(err)
+    // })
   }
 
   _addComponent (root) {

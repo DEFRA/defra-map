@@ -8,6 +8,8 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
+  static name = 'esri'
+
   constructor ({ transformGeocodeRequest, esriConfigCallback, tokenCallback, interceptorsCallback }) {
     super()
     this.srid = 27700

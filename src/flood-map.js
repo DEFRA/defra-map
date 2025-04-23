@@ -19,6 +19,7 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
+    props.framework ??= props.provider?.name || 'default'
     const device = this._testDevice(props)
 
     if (!device.isSupported) {
@@ -125,8 +126,8 @@ export class FloodMap extends EventTarget {
   }
 
   _testDevice (props) {
-    const device = framework => capabilities[framework || 'default'].getDevice()
-    const { isSupported, error } = device(props?.framework)
+    const device = framework => capabilities[framework].getDevice()
+    const { isSupported, error } = device(props.framework)
     const isImplementationSupported = props?.deviceTestCallback ? props.deviceTestCallback() : true
     return {
       isSupported: isSupported && isImplementationSupported,

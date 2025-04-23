@@ -103,16 +103,12 @@ export const addMapHoverBehaviour = (provider) => {
   map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })
 }
 
-export const getDetail = async (provider, pixel, isUserInitiated = false) => {
-  const { map, getNearest, reverseGeocodeToken, selectedLayers } = provider
+export const getDetail = async (provider, pixel) => {
+  const { map, selectedLayers } = provider
   const viewport = getViewport(map)
   const features = getFeatures(provider, pixel)
   const label = getHighlightedLabel(map)
   const selectedId = getSelectedFeatureId(map, selectedLayers)
-  let place
-  if (isUserInitiated && features.resultType === 'pixel') {
-    place = await getNearest(features.coord, reverseGeocodeToken)
-  }
 
   return {
     ...viewport,
@@ -120,7 +116,6 @@ export const getDetail = async (provider, pixel, isUserInitiated = false) => {
     coord: features.coord,
     selectedId,
     features,
-    place,
     label
   }
 }

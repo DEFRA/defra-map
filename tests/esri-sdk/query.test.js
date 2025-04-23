@@ -50,7 +50,7 @@ describe('Query Module', () => {
       mockProvider.getNearest.mockResolvedValue({ name: 'Mock Place' })
     })
 
-    it('should return viewport, features, and place information', async () => {
+    it('should return viewport and feature information', async () => {
       mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
 
       const point = [10, 10]
@@ -60,7 +60,6 @@ describe('Query Module', () => {
       expect(detail).toHaveProperty('center')
       expect(detail).toHaveProperty('zoom')
       expect(detail).toHaveProperty('features')
-      expect(detail).toHaveProperty('place')
       expect(detail.resultType).toBe('pixel')
     })
 
@@ -71,14 +70,6 @@ describe('Query Module', () => {
       await getDetail(mockProvider, point, false)
 
       expect(mockProvider.getNearest).not.toHaveBeenCalled()
-    })
-
-    it('should call getNearest with correct parameters when user-initiated', async () => {
-      mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
-
-      const point = [10, 10]
-      await getDetail(mockProvider, point, true)
-      expect(mockProvider.getNearest).toHaveBeenCalledWith([500, 500], 'mock-token')
     })
 
     it('should combine results from getViewport and getFeatures', async () => {

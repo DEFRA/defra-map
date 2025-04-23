@@ -1,21 +1,14 @@
 import { defaults } from './constants'
 
-export const getDetail = async (provider, point, isUserInitiated = false) => {
-  const { getNearest, reverseGeocodeToken } = provider
+export const getDetail = async (provider, point) => {
   const viewport = await getViewport(provider)
   const features = await getFeatures(provider, point)
-
-  let place
-  if (isUserInitiated && features.resultType === 'pixel') {
-    place = await getNearest(features.lngLat, reverseGeocodeToken)
-  }
 
   return {
     ...viewport,
     resultType: features.resultType,
     coord: features.coord,
-    features,
-    place
+    features
   }
 }
 

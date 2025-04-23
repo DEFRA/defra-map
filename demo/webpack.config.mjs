@@ -77,7 +77,8 @@ export default {
         MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY),
         MAPBOX_API_KEY: JSON.stringify(process.env.MAPBOX_API_KEY),
         CFF_WARNING_POLYGONS: JSON.stringify(process.env.CFF_WARNING_POLYGONS),
-        CFF_WARNING_CENTROIDS: JSON.stringify(process.env.CFF_WARNING_CENTROIDS)
+        CFF_WARNING_CENTROIDS: JSON.stringify(process.env.CFF_WARNING_CENTROIDS),
+        CFF_STATION_CENTROIDS: JSON.stringify(process.env.CFF_STATION_CENTROIDS)
       }
     }),
     new HtmlWebpackPlugin({

@@ -24,12 +24,8 @@ export const createTileRequest = (getMap) => { // Factory function to pass a ref
       url = `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8.json?secure&access_token=${process.env.MAPBOX_API_KEY}`
     }
 
-    if (resourceType === 'SpriteJSON' && url.startsWith('mapbox://sprites/mapbox/satellite-streets-v11.json')) {
-      url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/sprite@2x.json?access_token=${process.env.MAPBOX_API_KEY}`
-    }
-
-    if (resourceType === 'SpriteImage' && url.startsWith('mapbox://sprites/mapbox/satellite-streets-v11.png')) {
-      url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/sprite@2x.png?access_token=${process.env.MAPBOX_API_KEY}`
+    if (['SpriteJSON', 'SpriteImage'].includes(resourceType) && url.startsWith('mapbox://sprites/mapbox/satellite-streets-v11')) {
+      url = url.replace('mapbox://sprites/mapbox/satellite-streets-v11', 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/sprite') + `?access_token=${process.env.MAPBOX_API_KEY}`
     }
 
     if (resourceType === 'Glyphs' && url.startsWith('mapbox://fonts/mapbox/')) {

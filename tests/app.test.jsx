@@ -1,6 +1,8 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import Provider from '../src/js/provider/os-maplibre/provider'
+import Geocode from '../src/js/provider/os-open-names/geocode'
+import ReverseGeocode from '../src/js/provider/os-open-names/reverse-geocode'
 
 import App from '../src/app'
 
@@ -35,6 +37,8 @@ describe('App', () => {
       <App
         parent={document.querySelector('#app')}
         provider={Provider}
+        geocodeProvider={Geocode}
+        reverseGeocodeProvider={ReverseGeocode}
         styles={[{
           name: 'default',
           attribution: '',
@@ -54,6 +58,8 @@ describe('App', () => {
       <App
         parent={document.querySelector('#app')}
         provider={Provider}
+        geocodeProvider={Geocode}
+        reverseGeocodeProvider={ReverseGeocode}
         container={containerEl}
         styles={[{
           name: 'default',

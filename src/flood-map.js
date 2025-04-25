@@ -216,14 +216,19 @@ export class FloodMap extends EventTarget {
 
     // Add loading spinner
 
-    // Load default provider if not provided
+    // Load default map provider if not provided
     if (!this.props.provider) {
-      this.props.provider ??= (await import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-maplibre/provider.js')).default
+      this.props.provider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-maplibre/provider.js')).default
+    }
+
+    // Load default geocode provider if not provided
+    if (!this.props.geocodeProvider) {
+      this.props.geocodeProvider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/geocode.js')).default
     }
 
     // Load default reverse geocode provider if not provided
-    if (!this.props.geocodeProvider) {
-      this.props.reverseGeocode ??= (await import(/* webpackChunkName: "flood-map-ui" */ './js/provider/os-open-names/nearest.js')).default
+    if (!this.props.reverseGeocodeProvider) {
+      this.props.reverseGeocodeProvider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
     }
 
     // Load main App

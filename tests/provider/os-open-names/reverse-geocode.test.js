@@ -1,4 +1,4 @@
-import getNearest from '../../../src/js/provider/os-open-names/nearest'
+import ReverseGeocode from '../../../src/js/provider/os-open-names/reverse-geocode'
 
 jest.mock('../../../src/js/provider/os-open-names/config.json', () => ({
   OS_NEAREST_URL: 'https://example.com/{easting}/{northing}'
@@ -27,7 +27,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123456, 654321]
     const transformGeocodeRequest = jest.fn(url => url)
-    const result = await getNearest(zoom, coord, transformGeocodeRequest)
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    const result = await reverseGeocode.getNearest(zoom, coord)
     expect(result).toBe('Test Name, Test Place, Test County, Test Region')
   })
 
@@ -47,7 +48,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123456, 654321]
     const transformGeocodeRequest = jest.fn(url => url)
-    const result = await getNearest(zoom, coord, transformGeocodeRequest)
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    const result = await reverseGeocode.getNearest(zoom, coord)
     expect(result).toBe('Test Name, Test Region')
   })
 
@@ -60,7 +62,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123456, 654321]
     const transformGeocodeRequest = jest.fn(url => url)
-    await expect(getNearest(zoom, coord, transformGeocodeRequest))
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    await expect(reverseGeocode.getNearest(zoom, coord))
       .rejects.toThrow(/Cannot read properties of undefined/)
   })
 
@@ -75,7 +78,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123456, 654321]
     const transformGeocodeRequest = jest.fn(url => url)
-    await expect(getNearest(zoom, coord, transformGeocodeRequest))
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    await expect(reverseGeocode.getNearest(zoom, coord))
       .rejects.toThrow(/Cannot read properties of undefined/)
   })
 
@@ -86,7 +90,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123456, 654321]
     const transformGeocodeRequest = jest.fn(url => url)
-    await expect(getNearest(zoom, coord, transformGeocodeRequest))
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    await expect(reverseGeocode.getNearest(zoom, coord))
       .rejects.toThrow('Network error')
   })
 
@@ -97,7 +102,8 @@ describe('getNearest', () => {
     const zoom = 14
     const coord = [123.456, 654.321]
     const transformGeocodeRequest = jest.fn(url => 'transformed-' + url)
-    await getNearest(zoom, coord, transformGeocodeRequest)
+    const reverseGeocode = new ReverseGeocode(transformGeocodeRequest)
+    await reverseGeocode.getNearest(zoom, coord)
     expect(transformGeocodeRequest).toHaveBeenCalledWith('https://example.com/123/654')
     expect(global.fetch).toHaveBeenCalledWith('transformed-https://example.com/123/654')
   })

@@ -4,17 +4,15 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { reducer, initialState } from '../store/search-reducer'
 import Autocomplete from './autocomplete.jsx'
-import OsProvider from '../provider/os-open-names/provider.js'
 
-const getDerivedProps = (search, transformGeocodeRequest, isMobile, legend, state) => {
-  const geocode = new OsProvider(transformGeocodeRequest)
+const getDerivedProps = (search, isMobile, legend, state) => {
   const searchWidth = !isMobile ? (legend?.keyWidth || legend?.width) : null
   const hasClear = isMobile && !!state.value?.length
   const className = 'fm-c-search'
   const formClassName = `fm-c-search__form${state.isFocusWithin ? ' fm-u-focus-within' : ''}${state.isFocusVisibleWithin ? ' fm-u-focus-visible-within' : ''}`
   const country = ` in ${search?.country?.charAt(0).toUpperCase()}${search?.country?.slice(1)}`
   const label = `Search for a place${search?.country ? country : ''}`
-  return { geocode, searchWidth, hasClear, className, formClassName, label }
+  return { searchWidth, hasClear, className, formClassName, label }
 }
 
 const hasPanel = (search, activePanel, isDesktop) => {
@@ -22,15 +20,15 @@ const hasPanel = (search, activePanel, isDesktop) => {
 }
 
 export default function Search ({ instigatorRef }) {
-  const { interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
+  const { geocode, interfaceType, isMobile, options, search, activeRef, activePanel, isDesktop, legend } = useApp()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const { id, transformGeocodeRequest } = options
+  const { id } = options
   const [state, dispatch] = useReducer(reducer, initialState)
   const formRef = useRef()
   const clearBtnRef = useRef()
   const inputRef = useRef()
-  const { geocode, searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, transformGeocodeRequest, isMobile, legend, state)
+  const { searchWidth, hasClear, className, formClassName, label } = getDerivedProps(search, isMobile, legend, state)
 
   // Hide soft keyboard on touchstart outside search input
   useOutsideInteract(inputRef, true, 'touchstart', e => {

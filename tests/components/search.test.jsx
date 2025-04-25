@@ -5,16 +5,17 @@ import { initialState } from '../../src/js/store/search-reducer'
 import Search from '../../src/js/components/search'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
-import OsProvider from '../../src/js/provider/os-open-names/provider.js'
+import Geocode from '../../src/js/provider/os-open-names/geocode.js'
 import { useOutsideInteract } from '../../src/js/hooks/use-outside-interact'
 
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
-jest.mock('../../src/js/provider/os-open-names/provider.js')
+jest.mock('../../src/js/provider/os-open-names/geocode.js')
 jest.mock('../../src/js/hooks/use-outside-interact')
 
 describe('Search', () => {
   const transformGeocodeRequest = jest.fn()
+  const geocode = new Geocode(transformGeocodeRequest)
   const viewportDispatch = jest.fn()
   const appDispatch = jest.fn()
   let touchstartCallback
@@ -39,6 +40,7 @@ describe('Search', () => {
     // Mock useApp with all required properties including dispatch
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
+      geocode,
       interfaceType: 'keyboard',
       isMobile: true,
       activePanel: 'SEARCH',
@@ -68,6 +70,7 @@ describe('Search', () => {
 
     jest.mocked(useApp).mockReturnValue({
       interfaceType: null,
+      geocode,
       isMobile: false,
       activePanel: 'SEARCH',
       activeRef: {},
@@ -99,6 +102,7 @@ describe('Search', () => {
 
     jest.mocked(useApp).mockReturnValue({
       interfaceType: null,
+      geocode,
       isMobile: true,
       activePanel: 'SEARCH',
       activeRef: {},
@@ -128,6 +132,7 @@ describe('Search', () => {
 
     jest.mocked(useApp).mockReturnValue({
       interfaceType: null,
+      geocode,
       isMobile: false,
       activePanel: 'SEARCH',
       activeRef: {},
@@ -154,8 +159,16 @@ describe('Search', () => {
       dispatch: viewportDispatch
     })
 
+    const mockGeocodeFind = jest.fn().mockResolvedValue({
+      bounds: 0,
+      center: 0,
+      zoom: 0,
+      text: 'london'
+    })
+
     jest.mocked(useApp).mockReturnValue({
       interfaceType: null,
+      geocode: { find: mockGeocodeFind },
       isMobile: false,
       activePanel: 'SEARCH',
       activeRef: {},
@@ -172,19 +185,6 @@ describe('Search', () => {
       }
     })
 
-    const mockGeocodeFind = jest.fn().mockResolvedValue({
-      bounds: 0,
-      center: 0,
-      zoom: 0,
-      text: 'london'
-    })
-
-    OsProvider.mockImplementation(() => {
-      return {
-        find: mockGeocodeFind
-      }
-    })
-
     const { container } = render(<Search instigatorRef={null} />)
 
     act(() => {
@@ -196,6 +196,7 @@ describe('Search', () => {
       expect(mockGeocodeFind).toHaveBeenCalled()
     })
   })
+
   it('should collapse when close search button is clicked', () => {
     jest.mocked(useViewport).mockReturnValue({
       viewportDispatch
@@ -203,6 +204,7 @@ describe('Search', () => {
 
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
+      geocode,
       interfaceType: null,
       isMobile: false,
       activePanel: 'SEARCH',
@@ -258,6 +260,7 @@ describe('Search', () => {
     // Mock useApp with values that would make hasPanel return false
     jest.mocked(useApp).mockReturnValue({
       interfaceType: null,
+      geocode,
       isMobile: false,
       activePanel: null, // Setting activePanel to null should trigger the condition
       activeRef: {},
@@ -282,14 +285,6 @@ describe('Search', () => {
   })
 
   it('should return early if geocode.find returns no location', async () => {
-    // Mock the find method to return null
-    const mockFind = jest.fn().mockResolvedValue(null)
-
-    // Mock the OsProvider class implementation
-    OsProvider.mockImplementation(() => ({
-      find: mockFind
-    }))
-
     // Create state with a selected suggestion
     const stateWithSuggestion = {
       ...initialState,
@@ -304,9 +299,13 @@ describe('Search', () => {
     // Mock dispatch function
     const mockDispatch = jest.fn()
 
+    // Mock the find method to return null
+    const mockGeocodeFind = jest.fn().mockResolvedValue(null)
+
     // Mock useApp hook with necessary values
     jest.mocked(useApp).mockReturnValue({
       interfaceType: 'keyboard',
+      geocode: { find: mockGeocodeFind },
       isMobile: false,
       options: {
         id: 'test',
@@ -349,7 +348,7 @@ describe('Search', () => {
     })
 
     // Verify the mock was called with both value and suggestionId
-    expect(mockFind).toHaveBeenCalledWith('test location', undefined)
+    expect(mockGeocodeFind).toHaveBeenCalledWith('test location', undefined)
 
     // Verify viewportDispatch was not called since location was null
     expect(viewportDispatch).not.toHaveBeenCalled()
@@ -397,6 +396,7 @@ describe('Search', () => {
 
     useApp.mockReturnValue({
       interfaceType: 'keyboard',
+      geocode,
       isMobile: true,
       options: { id: 'test', transformGeocodeRequest: jest.fn() },
       search: { isAutocomplete: false, isExpanded: true },
@@ -453,6 +453,7 @@ describe('Search', () => {
 
     useApp.mockReturnValue({
       interfaceType: 'keyboard',
+      geocode,
       isMobile: true,
       options: { id: 'test', transformGeocodeRequest: jest.fn() },
       search: { isAutocomplete: false, isExpanded: true },

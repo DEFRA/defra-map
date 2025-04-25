@@ -1,11 +1,11 @@
-import Provider from '../../../src/js/provider/os-open-names/provider'
+import Geocode from '../../../src/js/provider/os-open-names/geocode'
 
-describe('OS Open Names Provider', () => {
-  let provider
+describe('OS Open Names Geocode', () => {
+  let geocode
   const mockTransform = (url) => Promise.resolve(url)
 
   beforeEach(() => {
-    provider = new Provider(mockTransform)
+    geocode = new Geocode(mockTransform)
     global.fetch = jest.fn()
   })
 
@@ -32,7 +32,7 @@ describe('OS Open Names Provider', () => {
 
   describe('suggest method', () => {
     it('returns empty array for empty query', async () => {
-      const results = await provider.suggest('')
+      const results = await geocode.suggest('')
       expect(results).toEqual([])
     })
 
@@ -41,7 +41,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(mockResponse) })
       )
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results.length).toBe(1)
       expect(results[0]).toHaveProperty('id', '1')
       expect(results[0]).toHaveProperty('text', 'London')
@@ -53,7 +53,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve({ error: 'API Error' }) })
       )
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results).toEqual([])
     })
 
@@ -62,14 +62,14 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve({}) })
       )
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results).toEqual([])
     })
   })
 
   describe('find method', () => {
     it('returns null for empty query', async () => {
-      const result = await provider.find('')
+      const result = await geocode.find('')
       expect(result).toBeNull()
     })
 
@@ -78,7 +78,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(mockResponse) })
       )
 
-      const result = await provider.find('London')
+      const result = await geocode.find('London')
       expect(result).toHaveProperty('id', '1')
       expect(result).toHaveProperty('text', 'London')
       expect(result).toHaveProperty('bounds')
@@ -103,7 +103,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(pointResponse) })
       )
 
-      const result = await provider.find('Point')
+      const result = await geocode.find('Point')
       expect(result).toHaveProperty('bounds')
       expect(result).toHaveProperty('center')
     })
@@ -157,7 +157,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(mixedResponse) })
       )
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results.length).toBe(1)
       expect(results[0].text).toBe('London')
     })
@@ -175,14 +175,14 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(duplicateResponse) })
       )
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results.length).toBe(1)
     })
 
     it('handles network errors gracefully', async () => {
       global.fetch.mockImplementationOnce(() => Promise.reject(new Error('Network error')))
 
-      const results = await provider.suggest('London')
+      const results = await geocode.suggest('London')
       expect(results).toEqual([])
     })
 
@@ -208,7 +208,7 @@ describe('OS Open Names Provider', () => {
         Promise.resolve({ json: () => Promise.resolve(nullGeometryResponse) })
       )
 
-      const result = await provider.find('Test')
+      const result = await geocode.find('Test')
       expect(result.center).toEqual([-0.120969, 51.508369])
     })
   })

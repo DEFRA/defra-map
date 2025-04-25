@@ -14,10 +14,22 @@ export default function App (options) {
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
   const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
 
-  const MapProvider = options.provider
+  // Create a map provider instance
+  const Provider = options.provider
+  const provider = useRef(new Provider(options))
 
-  // Create a provider instance
-  const provider = useRef(new MapProvider(options))
+  // Create the geocode functions
+  const GeocodeProvider = options.geocodeProvider
+  const geocodeProvider = new GeocodeProvider(options.transformGeocodeRequest)
+  const ReverseGecodeProvider = options.reverseGeocodeProvider
+  const reverseGeocodeProvider = new ReverseGecodeProvider(options.transformGeocodeRequest)
+  const geocode = useRef({
+    find: geocodeProvider.find.bind(geocodeProvider),
+    suggest: geocodeProvider.suggest.bind(geocodeProvider),
+    getNearest: reverseGeocodeProvider.getNearest.bind(reverseGeocodeProvider)
+  })
+
+  // Refs to elements
   const viewportRef = useRef(null)
   const frameRef = useRef(null)
   const obscurePanelRef = useRef(null)
@@ -58,6 +70,7 @@ export default function App (options) {
       options={options}
       app={{
         provider: provider.current,
+        geocode: geocode.current,
         isPage,
         isMobile,
         isDesktop,

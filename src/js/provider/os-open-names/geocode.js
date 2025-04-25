@@ -93,8 +93,8 @@ const parseResults = async (query, transformGeocodeRequest) => {
   return results
 }
 
-class Provider {
-  constructor (transformGeocodeRequest) {
+class Geocode {
+  constructor (transformGeocodeRequest = (u) => u) {
     this.transformGeocodeRequest = transformGeocodeRequest
   }
 
@@ -115,4 +115,4 @@ class Provider {
   }
 }
 
-export default Provider
+export default Geocode

@@ -17,9 +17,9 @@ export default {
       path.join(__dirname, 'client/main.js'),
       path.join(__dirname, 'client/main.scss')
     ],
-    // planning: [
-    //   path.join(__dirname, 'client/planning.js')
-    // ],
+    planning: [
+      path.join(__dirname, 'client/planning.js')
+    ],
     draw: [
       path.join(__dirname, 'client/draw.js')
     ]

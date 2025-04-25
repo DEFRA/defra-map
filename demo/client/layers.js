@@ -41,10 +41,10 @@ export const addSources = (map) => {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/warning_centroids`
   })
-  // map.addSource('station-centroids', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/station_centroids`
-  // })
+  map.addSource('station-centroids', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/station_centroids`
+  })
   map.addSource('five-day-forecast', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/five_day_forecast_areas`
@@ -67,10 +67,10 @@ export const addSources = (map) => {
   //   type: 'geojson',
   //   data: process.env.CFF_WARNING_CENTROIDS
   // })
-  map.addSource('station-centroids', {
-    type: 'geojson',
-    data: process.env.CFF_STATION_CENTROIDS
-  })
+  // map.addSource('station-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_STATION_CENTROIDS
+  // })
 }
 
 export const addLayers = (map, basemap) => {
@@ -108,7 +108,7 @@ export const addLayers = (map, basemap) => {
     id: 'stations',
     type: 'symbol',
     source: 'station-centroids',
-    // 'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids',
     layout: {
       'icon-image': ['concat', ['get', 'type'], '-', ['get', 'state']],
       'icon-size': 0.5,
@@ -130,7 +130,7 @@ export const addLayers = (map, basemap) => {
     id: 'stations-small',
     type: 'symbol',
     source: 'station-centroids',
-    // 'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids',
     layout: {
       'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
         'high', 'alert',

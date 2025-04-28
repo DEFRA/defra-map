@@ -6,6 +6,8 @@ export const createTileRequest = (getMap) => { // Factory function to pass a ref
   return (url, resourceType) => {
     let headers = {}
 
+    // ESRI World Imagery OAuth?
+    
     // Maptiler API key
     if (resourceType === 'Style' && url.startsWith('https://api.maptiler.com')) {
       url = `${url}?key=${process.env.MAPTILER_API_KEY}`

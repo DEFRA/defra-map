@@ -33,6 +33,10 @@ $govuk-new-typography-scale: true;
     @include mq ($from: tablet) {
         height: 650px;
     }
+
+    // canvas {
+    //     filter: brightness(125%);
+    // }
 }
 
 // Disable page elements when map is fullscreen on mobile

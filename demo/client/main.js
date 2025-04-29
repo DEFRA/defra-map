@@ -253,16 +253,16 @@ const fm = new FloodMap('map', {
     layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
   },
   queryFeature: {
-    layers: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+    layers: ['warning-fill', 'warning-symbol', 'rainfall', 'stations', 'rainfall-small', 'stations-small', 'five-day-forecast']
   }
 }, (provider) => {
   // Call GeoJSON source with new bbox on map move end if zoom is greater than layer minzoom
   provider.map.on('moveend', () => {
     // Make new request only when necessary
-    // if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
-    //   bounds = map.getBounds()
-    //   map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
-    // }
+    if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
+      bounds = map.getBounds()
+      map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
+    }
   })
 })
 

@@ -8,7 +8,7 @@
     flex-direction: column;
     position: relative;
     pointer-events: auto;
-    outline: 0;
+    outline: 3px solid transparent;
     background-color: var(--background-colour);
     box-shadow: $panel-shadow;
     border-radius: $panel-radius;

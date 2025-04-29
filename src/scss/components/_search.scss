@@ -17,6 +17,7 @@
         display: flex;
         position: relative;
         flex: 1 1 auto;
+        outline: 3px solid transparent;
     }
 
     &__input {
@@ -195,8 +196,17 @@
 
     mark {
         font-weight: bold;
-        color: var(--foreground-colour);
-        background-color: transparent;
+    }
+
+    @media (forced-colors: active) {
+        border: 1px solid var(--border-colour);
+    }
+
+    @media (forced-colors: none) {
+        mark {
+            color: var(--foreground-colour);
+            background-color: transparent;
+        }
     }
 
     &:hover {

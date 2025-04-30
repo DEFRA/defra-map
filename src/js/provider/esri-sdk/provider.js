@@ -8,8 +8,6 @@ import { targetMarkerGraphic } from './marker'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  static name = 'esri'
-
   constructor ({ esriConfigCallback }) {
     super()
     this.srid = 27700
@@ -93,26 +91,31 @@ class Provider extends EventTarget {
     this.isStationary = !!options.isStationary
 
     // Map ready event (first load)
-    baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
+    reactiveWatch(() => [baseTileLayer.loaded], ([loaded]) => {
+      if (loaded) {
+        handleBaseTileLayerLoaded.bind(this)()
+      }
+    })
+    // baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
     let isMoving = false
     reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
       if (!isMoving && !stationary) {
-        handleMoveStart(this)
+        handleMoveStart.bind(this)()
         isMoving = true
       }
     })
 
     // Move (zoom)
     reactiveWatch(() => [view.zoom], ([newZoom]) => {
-      handleMove(this, newZoom)
+      handleMove.bind(this)(newZoom)
     })
 
     // All render/changes/animations complete. Must debounce, min 500ms
     const debounceStationary = debounce(() => {
       isMoving = false
-      handleStationary(this)
+      handleStationary.bind(this)()
     }, defaults.DELAY)
 
     reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
@@ -197,7 +200,7 @@ class Provider extends EventTarget {
     this.style = style
     this.isDark = ['dark', 'aerial'].includes(style.name)
     this.baseTileLayer.loadStyle(style.url).then(() => {
-      handleStyleChange(this)
+      handleStyleChange.bind(this)()
     })
   }
 

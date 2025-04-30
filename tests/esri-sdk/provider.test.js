@@ -1,6 +1,6 @@
 import Provider from '../../src/js/provider/esri-sdk/provider.js'
 import { capabilities } from '../../src/js/lib/capabilities.js'
-import { handleMoveStart, handleStationary, handleStyleChange } from '../../src/js/provider/esri-sdk/events'
+import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../src/js/provider/esri-sdk/events'
 import { debounce } from '../../src/js/lib/debounce.js'
 import { getFocusPadding } from '../../src/js/lib/viewport.js'
 import { getDetail } from '../../src/js/provider/esri-sdk/query.js'
@@ -288,7 +288,18 @@ describe('Provider', () => {
       }
 
       await provider.addMap(modules, options)
-      expect(provider.baseTileLayer.watch).toHaveBeenCalled()
+
+      const reactiveWatch = modules[9].watch
+      const baseTileLayer = provider.baseTileLayer
+      baseTileLayer.loaded = true
+
+      // Mock the reactiveWatch callback
+      const watchCallback = reactiveWatch.mock.calls[0][1]
+
+      // Simulate view change to trigger move start
+      watchCallback([baseTileLayer.loaded])
+
+      expect(handleBaseTileLayerLoaded).toHaveBeenCalled()
       expect(provider.map).toBeDefined()
       expect(provider.view).toBeDefined()
       expect(provider.baseTileLayer).toBeDefined()
@@ -366,12 +377,12 @@ describe('Provider', () => {
       view.animation = { state: 'running' }
 
       // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[0][1]
+      const watchCallback = reactiveWatch.mock.calls[1][1]
 
       // Simulate view change to trigger move start
       watchCallback([view.animation])
 
-      expect(handleMoveStart).toHaveBeenCalledWith(provider)
+      expect(handleMoveStart).toHaveBeenCalled()
     })
 
     it('should call debounceStationary when view becomes stationary', async () => {
@@ -404,14 +415,14 @@ describe('Provider', () => {
       const reactiveWatch = modules[9].watch
 
       // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[2][1]
+      const watchCallback = reactiveWatch.mock.calls[3][1]
 
       // Simulate view becoming stationary
 
       watchCallback([true, false]) // stationary is true
 
       expect(debounce).toHaveBeenCalled()
-      expect(handleStationary).toHaveBeenCalledWith(provider)
+      expect(handleStationary).toHaveBeenCalled()
     })
   })
 
@@ -541,7 +552,7 @@ describe('Provider', () => {
       expect(provider.style).toBe(style)
       expect(provider.isDark).toBe(true)
       expect(provider.baseTileLayer.loadStyle).toHaveBeenCalledWith(style.url)
-      expect(handleStyleChange).toHaveBeenCalledWith(provider)
+      expect(handleStyleChange).toHaveBeenCalled()
     })
 
     it('should handle setPadding with undefined view', async () => {

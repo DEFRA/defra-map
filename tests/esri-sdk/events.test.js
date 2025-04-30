@@ -20,7 +20,7 @@ describe('esri-sdk events', () => {
       dispatchEvent: jest.fn()
     }
 
-    handleBaseTileLayerLoaded(provider)
+    handleBaseTileLayerLoaded.bind(provider)()
 
     expect(provider.dispatchEvent).toHaveBeenCalled()
     expect(provider.isLoaded).toEqual(true)
@@ -34,7 +34,7 @@ describe('esri-sdk events', () => {
       dispatchEvent: jest.fn()
     }
 
-    handleStyleChange(provider)
+    handleStyleChange.bind(provider)()
 
     expect(provider.dispatchEvent).toHaveBeenCalled()
     expect(provider.draw.reColour).toHaveBeenCalled()
@@ -58,7 +58,7 @@ describe('esri-sdk events', () => {
       dispatchEvent: jest.fn()
     }
 
-    await handleStationary(provider)
+    await handleStationary.bind(provider)()
 
     expect(getDetail).toHaveBeenCalled()
     expect(provider.dispatchEvent).toHaveBeenCalled()
@@ -70,7 +70,7 @@ describe('esri-sdk events', () => {
       dispatchEvent: jest.fn()
     }
 
-    handleMoveStart(provider)
+    handleMoveStart.bind(provider)()
 
     expect(provider.dispatchEvent).toHaveBeenCalled()
   })

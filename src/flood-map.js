@@ -19,7 +19,7 @@ export class FloodMap extends EventTarget {
     this.el = document.getElementById(id)
 
     // Check capabilities
-    props.framework ??= props.provider?.name || 'default'
+    props.framework ??= 'default'
     const device = this._testDevice(props)
 
     if (!device.isSupported) {
@@ -216,19 +216,24 @@ export class FloodMap extends EventTarget {
 
     // Add loading spinner
 
-    // Load default map provider if not provided
+    // Load custom map provider
+    if (typeof this.props.provider === 'function') {
+      this.props.provider = await this.props.provider()
+    }
+
+    // Load default map provider
     if (!this.props.provider) {
-      this.props.provider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-maplibre/provider.js')).default
+      this.props.provider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-maplibre/provider.js')).default
     }
 
-    // Load default geocode provider if not provided
+    // Load default geocode provider
     if (!this.props.geocodeProvider) {
-      this.props.geocodeProvider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/geocode.js')).default
+      this.props.geocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/geocode.js')).default
     }
 
-    // Load default reverse geocode provider if not provided
+    // Load default reverse geocode provider
     if (!this.props.reverseGeocodeProvider) {
-      this.props.reverseGeocodeProvider ??= (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
+      this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
     }
 
     // Load main App

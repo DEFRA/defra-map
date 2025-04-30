@@ -1,6 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
 import { setEsriConfig, getRequest } from './request.js'
-import Provider from '../../src/js/provider/esri-sdk/provider.js'
 
 let map, isDark, isRamp
 
@@ -168,8 +167,8 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   behaviour: 'inline',
-  // framework: 'esri',
-  provider: Provider,
+  framework: 'esri',
+  provider: async () => (await import(/* webpackChunkName: "custom-provider" */ '../../src/js/provider/esri-sdk/provider.js')).default,
   place: 'Ambleside',
   zoom: 16,
   minZoom: 7,

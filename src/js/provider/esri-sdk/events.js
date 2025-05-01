@@ -30,7 +30,7 @@ export async function handleStationary () {
   const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
   const point = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)]
   this.isUserInitiated = false
-  const detail = await getDetail(this, point)
+  const detail = await getDetail.bind(this)(point)
   this.dispatchEvent(new CustomEvent('update', {
     detail
   }))

@@ -288,7 +288,7 @@ class Provider extends EventTarget {
   }
 
   async queryPoint (point) {
-    const detail = await getDetail(this, point)
+    const detail = await getDetail.bind(this)(point)
     this.dispatchEvent(new CustomEvent('mapquery', {
       detail: {
         resultType: detail.features.resultType,

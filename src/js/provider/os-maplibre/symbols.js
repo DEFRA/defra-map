@@ -8,15 +8,16 @@ const TEXT_FIELD = 'text-field'
 const SCALE_FACTOR_SMALL = 1.5
 const SCALE_FACTOR_LARGE = 1.25
 
-export const amendLineSymbolLayers = (map) => {
+export function amendLineSymbolLayers () {
+  const { map } = this
   const lineSymbolLayers = map.getStyle().layers.filter(l => l.layout && (SYMBOL_PLACEMENT in l.layout) && l.layout[SYMBOL_PLACEMENT] === 'line')
   lineSymbolLayers.forEach(l => map.setLayoutProperty(l.id, SYMBOL_PLACEMENT, 'line-center'))
 }
 
-export const addHighlightedLabelLayer = (provider) => {
-  const { map } = provider
+export function addHighlightedLabelLayer () {
+  const { map } = this
   const layers = map.getStyle().layers
-  provider.labelLayers = layers.filter(l => l.id !== 'label' && l.layout ? l.layout[TEXT_FIELD] : null).map(l => l.id)
+  this.labelLayers = layers.filter(l => l.id !== 'label' && l.layout ? l.layout[TEXT_FIELD] : null).map(l => l.id)
   map.addSource('label', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
   map.addLayer({
     id: 'label',
@@ -34,9 +35,9 @@ export const addHighlightedLabelLayer = (provider) => {
   })
 }
 
-export const addShortcutMarkers = (provider, features) => {
-  const { map, shortcutMarkers } = provider
-  const { Marker } = provider.modules
+export function addShortcutMarkers (features) {
+  const { map, shortcutMarkers } = this
+  const { Marker } = this.modules
   shortcutMarkers.forEach(m => m.remove())
   features.forEach((f, i) => {
     const offset = f.geometryType === 'Point' ? [0, defaults.SHORTCUT_LABEL_OFFSET] : [0, 0]
@@ -44,7 +45,9 @@ export const addShortcutMarkers = (provider, features) => {
   })
 }
 
-export const highlightLabel = (map, scale, style, feature) => {
+export function highlightLabel (feature) {
+  const { map, scale, style } = this
+
   if (!map.style) {
     return
   }
@@ -81,7 +84,8 @@ export const highlightLabel = (map, scale, style, feature) => {
   }
 }
 
-export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
+export function addSelectedLayers (layers, selectedId, isDarkBasemap) {
+  const { map } = this
   const selectedLayers = []
   for (const layer of layers) {
     layer.id = `${layer.id}-selected`
@@ -102,10 +106,10 @@ export const addSelectedLayers = (map, layers, selectedId, isDarkBasemap) => {
   return selectedLayers
 }
 
-export const loadSymbols = (provider) => {
+export function loadSymbols () {
   let fn
-  if (provider.symbols?.length) {
-    const { map, symbols, style } = provider
+  if (this.symbols?.length) {
+    const { map, symbols, style } = this
     const isDarkBasemap = ['dark', 'aerial'].includes(style.name)
 
     fn = Promise.all(symbols.map(u => fetch(u))).then(responses =>

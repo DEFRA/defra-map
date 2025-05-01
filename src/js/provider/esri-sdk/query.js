@@ -1,8 +1,8 @@
 import { defaults } from './constants'
 
-export const getDetail = async (provider, point) => {
-  const viewport = await getViewport(provider)
-  const features = await getFeatures(provider, point)
+export async function getDetail (point) {
+  const viewport = await getViewport.bind(this)()
+  const features = await getFeatures.bind(this)(point)
 
   return {
     ...viewport,
@@ -12,10 +12,10 @@ export const getDetail = async (provider, point) => {
   }
 }
 
-export const getViewport = async (provider) => {
+export async function getViewport () {
   // Needs to be paddingBox or boundary extent not view
-  const { view } = provider
-  const { maxZoom, minZoom } = provider.view.constraints
+  const { view } = this
+  const { maxZoom, minZoom } = view.constraints
   const { xmin, ymin, xmax, ymax } = view.extent
   const bounds = [xmin, ymin, xmax, ymax]
   const { x, y } = view.center
@@ -27,8 +27,8 @@ export const getViewport = async (provider) => {
   return { bounds, center, zoom, isMaxZoom, isMinZoom }
 }
 
-export const getFeatures = async (provider, point) => {
-  const { view, map, locationLayers } = provider
+export async function getFeatures (point) {
+  const { view, map, locationLayers } = this
 
   const hasVisiblePixelLayers = map.layers.some(l => locationLayers?.includes(l.id) && l.visible)
 

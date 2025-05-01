@@ -114,26 +114,26 @@ class Provider extends EventTarget {
     this.framework = { map }
 
     // Map ready event (first load)
-    map.on('load', handleLoad.bind(map, this))
+    map.on('load', handleLoad.bind(this))
 
     // Map movestart
-    map.on('movestart', handleMoveStart.bind(map, this))
+    map.on('movestart', handleMoveStart.bind(this))
 
     // Detect max/min zoom on move
-    map.on('move', handleMove.bind(map, this))
+    map.on('move', handleMove.bind(this))
 
     // Detect map layer addition
-    map.on('styledata', handleStyleData.bind(map, this))
+    map.on('styledata', handleStyleData.bind(this))
 
     // All render/changes/animations complete. Must debounce, min 500ms
-    const debounceHandleIdle = debounce(() => { handleIdle(this) }, defaults.DELAY)
+    const debounceHandleIdle = debounce(() => { handleIdle.bind(this)() }, defaults.DELAY)
     map.on('idle', debounceHandleIdle)
 
     // Map style change
-    map.on('style.load', handleStyleLoad.bind(map, this))
+    map.on('style.load', handleStyleLoad.bind(this))
 
     // Capture errors
-    map.on('error', handleError.bind(map, this))
+    map.on('error', handleError.bind(this))
 
     // Implementation callback after initialisation
     if (callBack) {
@@ -238,7 +238,7 @@ class Provider extends EventTarget {
 
   selectFeature (id) {
     this.selectedId = id
-    toggleSelectedFeature(this.map, this.selectedLayers, id)
+    toggleSelectedFeature.bind(this)(id)
   }
 
   selectCoordinate (coord) {
@@ -247,14 +247,14 @@ class Provider extends EventTarget {
 
   async queryFeature (id) {
     if (id) {
-      const detail = await getDetail(this, null, false)
+      const detail = await getDetail.bind(this)(null, false)
       detail.features.items = [detail.features.items.find(f => f.id === id)]
       this.dispatchEvent(new CustomEvent('mapquery', { detail }))
     }
   }
 
   async queryPoint (point) {
-    const detail = await getDetail(this, point)
+    const detail = await getDetail.bind(this)(point, this.selectedLayers)
     this.hideLabel()
     this.dispatchEvent(new CustomEvent('mapquery', {
       detail: {
@@ -284,25 +284,25 @@ class Provider extends EventTarget {
   }
 
   showNextLabel (pixel, direction) {
-    const labels = getLabels(this)
+    const labels = getLabels.bind(this)
     const { lng, lat } = this.map.getCenter()
     const center = this.map.project([lng, lat])
     const pixels = labels.map(c => c.pixel)
     const index = spatialNavigate(direction, pixel || [center.x, center.y], pixels)
     const feature = labels[index]?.feature
-    highlightLabel(this.map, this.scale, this.style.name, feature)
+    highlightLabel.bind(this)(feature)
     return labels[index]?.pixel
   }
 
   showLabel (point) {
-    const feature = getLabel(this, point)
-    highlightLabel(this.map, this.scale, this.style.name, feature)
+    const feature = getLabel.bind(this)(point)
+    highlightLabel.bind(this)(feature)
     return point
   }
 
   hideLabel () {
     if (this.map) {
-      highlightLabel(this.map)
+      highlightLabel.bind(this)
     }
   }
 }

@@ -33,18 +33,19 @@ export const queryMap = {
 }
 
 export const addSources = (map) => {
-  // map.addSource('warning-polygons', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/warning_areas`
-  // })
-  // map.addSource('warning-centroids', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/warning_centroids`
-  // })
-  // map.addSource('station-centroids', {
-  //   type: 'vector',
-  //   url: `${process.env.TILE_SERVER_URL}/station_centroids`
-  // })
+  map.addSource('warning-polygons', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/warning_areas`
+  })
+  map.addSource('warning-centroids', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/warning_centroids`
+  })
+  map.addSource('station-centroids', {
+    type: 'vector',
+    url: `${process.env.TILE_SERVER_URL}/station_centroids`
+  })
+
   map.addSource('five-day-forecast', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/five_day_forecast_areas`
@@ -59,22 +60,22 @@ export const addSources = (map) => {
   })
 
   // GeoJSON sources
-  map.addSource('warning-polygons', {
-    type: 'geojson',
-    data: process.env.CFF_WARNING_POLYGONS
-  })
-  map.addSource('warning-centroids', {
-    type: 'geojson',
-    data: process.env.CFF_WARNING_CENTROIDS
-  })
-  map.addSource('station-centroids', {
-    type: 'geojson',
-    data: process.env.CFF_STATION_CENTROIDS
-  })
-  map.addSource('rainfall-centroids', {
-    type: 'geojson',
-    data: process.env.CFF_RAINFALL_CENTROIDS
-  })
+  // map.addSource('warning-polygons', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_POLYGONS
+  // })
+  // map.addSource('warning-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_CENTROIDS
+  // })
+  // map.addSource('station-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_STATION_CENTROIDS
+  // })
+  // map.addSource('rainfall-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_RAINFALL_CENTROIDS
+  // })
 }
 
 export const addLayers = (map, basemap) => {
@@ -88,7 +89,7 @@ export const addLayers = (map, basemap) => {
     id: 'warning-fill',
     type: 'fill',
     source: 'warning-polygons',
-    // 'source-layer': 'warning_areas',
+    'source-layer': 'warning_areas',
     layout: {
       visibility: 'none',
       // 'fill-sort-key': ['match', ['get', 'state'],
@@ -114,32 +115,31 @@ export const addLayers = (map, basemap) => {
     minzoom: 12
   }, position)
 
-  map.addLayer({
-    id: 'rainfall',
-    type: 'symbol',
-    source: 'rainfall-centroids',
-    layout: {
-      'icon-image': ['concat', ['get', 'category'], '-', ['get', 'state']],
-      'icon-size': 0.5,
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'symbol-z-order': 'source',
-      'symbol-sort-key': ['match', ['get', 'state'],
-        'wet', 4,
-        'dry', 2,
-        1
-      ]
-    },
-    minzoom: 12
-  })
+  // map.addLayer({
+  //   id: 'rainfall',
+  //   type: 'symbol',
+  //   source: 'rainfall-centroids',
+  //   layout: {
+  //     'icon-image': ['concat', ['get', 'category'], '-', ['get', 'state']],
+  //     'icon-size': 0.5,
+  //     'icon-allow-overlap': true,
+  //     'icon-ignore-placement': true,
+  //     'symbol-z-order': 'source',
+  //     'symbol-sort-key': ['match', ['get', 'state'],
+  //       'wet', 4,
+  //       'dry', 2,
+  //       1
+  //     ]
+  //   },
+  //   minzoom: 12
+  // })
 
   map.addLayer({
     id: 'stations',
     type: 'symbol',
     source: 'station-centroids',
-    // 'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids',
     layout: {
-      // 'icon-image': ['concat', ['get', 'type'], '-', ['get', 'state']],
       'icon-image': ['concat', ['get', 'category'], '-', ['get', 'state']],
       'icon-size': 0.5,
       'icon-allow-overlap': true,
@@ -156,34 +156,34 @@ export const addLayers = (map, basemap) => {
     minzoom: 12
   })
 
-  map.addLayer({
-    id: 'rainfall-small',
-    type: 'symbol',
-    source: 'rainfall-centroids',
-    layout: {
-      'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
-        'wet', 'normal',
-        'dry', 'low',
-        'error'
-      ]],
-      'icon-size': 0.5,
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'symbol-z-order': 'source',
-      'symbol-sort-key': ['match', ['get', 'state'],
-        'wet', 4,
-        'dry', 2,
-        1
-      ]
-    },
-    maxzoom: 12
-  })
+  // map.addLayer({
+  //   id: 'rainfall-small',
+  //   type: 'symbol',
+  //   source: 'rainfall-centroids',
+  //   layout: {
+  //     'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
+  //       'wet', 'normal',
+  //       'dry', 'low',
+  //       'error'
+  //     ]],
+  //     'icon-size': 0.5,
+  //     'icon-allow-overlap': true,
+  //     'icon-ignore-placement': true,
+  //     'symbol-z-order': 'source',
+  //     'symbol-sort-key': ['match', ['get', 'state'],
+  //       'wet', 4,
+  //       'dry', 2,
+  //       1
+  //     ]
+  //   },
+  //   maxzoom: 12
+  // })
 
   map.addLayer({
     id: 'stations-small',
     type: 'symbol',
     source: 'station-centroids',
-    // 'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids',
     layout: {
       'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
         'high', 'alert',
@@ -212,7 +212,7 @@ export const addLayers = (map, basemap) => {
     id: 'warning-symbol',
     type: 'symbol',
     source: 'warning-centroids',
-    // 'source-layer': 'warning_centroids',
+    'source-layer': 'warning_centroids',
     layout: {
       'icon-image': ['get', 'state'],
       'icon-size': 0.5,
@@ -234,12 +234,10 @@ export const addLayers = (map, basemap) => {
     type: 'fill',
     source: 'five-day-forecast',
     'source-layer': 'five_day_forecast_areas',
-    // 'source-layer': 'main.five_day_forecast',
     layout: {
       visibility: 'none'
     },
     paint: {
-      // 'fill-color': '#00703c',
       'fill-color': ['match',
         ['get', 'risk_level'],
         4,

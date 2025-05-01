@@ -865,7 +865,7 @@ describe('Provider', () => {
 
       await provider.queryPoint(point)
 
-      expect(getDetail).toHaveBeenCalledWith(provider, point)
+      expect(getDetail).toHaveBeenCalledWith(point)
       expect(dispatchEventSpy).toHaveBeenCalledWith(new CustomEvent('mapquery', {
         detail: {
           resultType: mockDetail.features.resultType,

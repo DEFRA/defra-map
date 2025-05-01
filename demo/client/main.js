@@ -257,13 +257,13 @@ const fm = new FloodMap('map', {
   }
 }, (provider) => {
   // Call GeoJSON source with new bbox on map move end if zoom is greater than layer minzoom
-  provider.map.on('moveend', () => {
-    // Make new request only when necessary
-    if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
-      bounds = map.getBounds()
-      map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
-    }
-  })
+  // const { map } = provider
+  // map.on('moveend', () => {
+  //   if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
+  //     bounds = map.getBounds()
+  //     map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
+  //   }
+  // })
 })
 
 // Component is ready and we have access to map

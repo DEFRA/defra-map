@@ -6,7 +6,8 @@ import { bboxClip as TurfBboxClip } from '@turf/bbox-clip'
 import { getFocusBounds } from '../../lib/viewport'
 import { defaults } from './constants'
 
-const getPaddedBounds = map => {
+function getPaddedBounds () {
+  const { map } = this
   const padding = map.getPadding()
   const bounds = map.getBounds()
 
@@ -28,7 +29,8 @@ const getPaddedBounds = map => {
   return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
 }
 
-const addFeatureProperties = (map, features) => {
+function addFeatureProperties (features) {
+  const { map } = this
   return features.map(f => {
     const { lng, lat } = map.getCenter()
     const coord = f.geometry.type === 'Polygon' ? polylabel(f.geometry.coordinates, 0.00001) : f.geometry.coordinates
@@ -45,7 +47,7 @@ const addFeatureProperties = (map, features) => {
   })
 }
 
-const intersectFeatures = (bounds, features) => {
+function intersectFeatures (bounds, features) {
   features = features.map(f => {
     if (['Polygon', 'MultiPolygon'].includes(f.geometry.type)) {
       const polygon = f.geometry.type === 'Polygon' ? new TurfPolygon(f.geometry.coordinates) : new TurfMultiPolygon(f.geometry.coordinates)
@@ -60,7 +62,7 @@ const intersectFeatures = (bounds, features) => {
   return features
 }
 
-const combineFeatures = (features) => {
+function combineFeatures (features) {
   const combined = []
   features.forEach(f => {
     const group = combined.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
@@ -88,40 +90,9 @@ const combineFeatures = (features) => {
   return combined.map(g => g.find(f => f.properties.area === Math.max(...g.map(b => b.properties.area))))
 }
 
-export const addMapHoverBehaviour = (provider) => {
-  const { map, featureLayers, labelLayers } = provider
-
-  // Toggle cursor style for features
-  map.on('mousemove', [...featureLayers, ...labelLayers], e => {
-    const features = map.queryRenderedFeatures(e.point, { layers: [...featureLayers, ...labelLayers] })
-    const isFeature = !e.originalEvent.altKey && features && !!features.find(f => featureLayers.includes(f.layer.id))
-    const isLabel = e.originalEvent.altKey && features && !!features.find(f => labelLayers.includes(f.layer.id))
-    map.getCanvas().style.cursor = isFeature || isLabel ? 'pointer' : ''
-  })
-
-  // Revert cursor on mouseout
-  map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })
-}
-
-export const getDetail = async (provider, pixel) => {
-  const { map, selectedLayers } = provider
-  const viewport = getViewport(map)
-  const features = getFeatures(provider, pixel)
-  const label = getHighlightedLabel(map)
-  const selectedId = getSelectedFeatureId(map, selectedLayers)
-
-  return {
-    ...viewport,
-    resultType: features.resultType,
-    coord: features.coord,
-    selectedId,
-    features,
-    label
-  }
-}
-
-export const getViewport = (map) => {
-  let bounds = getPaddedBounds(map)
+function getViewport () {
+  const { map } = this
+  let bounds = getPaddedBounds.bind(this)()
   bounds = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   let center = map.getCenter()
   center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
@@ -137,8 +108,40 @@ export const getViewport = (map) => {
   }
 }
 
-export const getFeatures = (provider, pixel) => {
-  const { map, featureLayers, locationLayers, paddingBox, scale } = provider
+export function addMapHoverBehaviour () {
+  const { map, featureLayers, labelLayers } = this
+
+  // Toggle cursor style for features
+  map.on('mousemove', [...featureLayers, ...labelLayers], e => {
+    const features = map.queryRenderedFeatures(e.point, { layers: [...featureLayers, ...labelLayers] })
+    const isFeature = !e.originalEvent.altKey && features && !!features.find(f => featureLayers.includes(f.layer.id))
+    const isLabel = e.originalEvent.altKey && features && !!features.find(f => labelLayers.includes(f.layer.id))
+    map.getCanvas().style.cursor = isFeature || isLabel ? 'pointer' : ''
+  })
+
+  // Revert cursor on mouseout
+  map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })
+}
+
+export async function getDetail (pixel) {
+  const { selectedLayers } = this
+  const viewport = getViewport.bind(this)()
+  const features = getFeatures.bind(this)(pixel)
+  const label = getHighlightedLabel.bind(this)()
+  const selectedId = getSelectedFeatureId.bind(this)(selectedLayers)
+
+  return {
+    ...viewport,
+    resultType: features.resultType,
+    coord: features.coord,
+    selectedId,
+    features,
+    label
+  }
+}
+
+export function getFeatures (pixel) {
+  const { map, featureLayers, locationLayers, paddingBox, scale } = this
   const bounds = getFocusBounds(paddingBox, scale)
 
   // Get all visible feature and pixel layers
@@ -164,13 +167,13 @@ export const getFeatures = (provider, pixel) => {
   const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.properties.id || f.id))).length
 
   // Get geometry that intersects bounds
-  const intersectingFeatures = intersectFeatures(getPaddedBounds(map).flat(1), renderedFeaturesInViewport)
+  const intersectingFeatures = intersectFeatures(getPaddedBounds.bind(this)().flat(1), renderedFeaturesInViewport)
 
   // Split multi polygons and combine duplicate features
   const polygonFeatures = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFeatures) : []
 
   // Add props and sort features
-  const featuresInViewport = addFeatureProperties(map, polygonFeatures).sort((a, b) => a.distance - b.distance)
+  const featuresInViewport = addFeatureProperties.bind(this)(polygonFeatures).sort((a, b) => a.distance - b.distance)
 
   // Get long lat of query
   let lngLat
@@ -198,7 +201,8 @@ export const getFeatures = (provider, pixel) => {
   }
 }
 
-export const toggleSelectedFeature = (map, selectedLayers, id) => {
+export function toggleSelectedFeature (id) {
+  const { map, selectedLayers } = this
   if (map?.getStyle()) {
     for (const layer of selectedLayers) {
       map.setLayoutProperty(layer, 'visibility', id ? 'visible' : 'none')
@@ -211,7 +215,8 @@ export const toggleSelectedFeature = (map, selectedLayers, id) => {
   }
 }
 
-export const getHighlightedLabel = (map) => {
+export function getHighlightedLabel () {
+  const { map } = this
   const features = map.queryRenderedFeatures({ layers: ['label'] })
   let text
   if (features?.length) {
@@ -221,21 +226,22 @@ export const getHighlightedLabel = (map) => {
   return text
 }
 
-export const getSelectedFeatureId = (map, selectedLayers) => {
+export function getSelectedFeatureId (selectedLayers) {
+  const { map } = this
   const features = map.queryRenderedFeatures({ layers: selectedLayers })
   return features.length ? (features[0].properties?.id || features[0]?.id) : null
 }
 
-export const getLabel = (provider, pixel) => {
-  const { map, labelLayers } = provider
+export function getLabel (pixel) {
+  const { map, labelLayers } = this
   const feature = map.queryRenderedFeatures(pixel, { layers: labelLayers })[0]
   return feature
 }
 
-export const getLabels = (provider) => {
-  const { map, paddingBox, scale } = provider
+export function getLabels () {
+  const { map, paddingBox, scale } = this
   const bounds = getFocusBounds(paddingBox, scale)
-  const features = map.queryRenderedFeatures(bounds, { layers: provider.labelLayers })
+  const features = map.queryRenderedFeatures(bounds, { layers: this.labelLayers })
   const labels = features.map(f => {
     let pixel = f.geometry.type === 'Point' && map.project(f.geometry.coordinates)
     if (f.geometry.type !== 'Point') {

@@ -237,6 +237,7 @@ export class FloodMap extends EventTarget {
       this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
     }
 
+    // All providers loaded
     this.isLoaded = true
 
     // Load main App

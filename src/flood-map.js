@@ -213,28 +213,31 @@ export class FloodMap extends EventTarget {
 
   async _importComponent () {
     this.button?.setAttribute('style', 'display: none')
+    const isLoaded = !!this.isLoaded
 
     // Add loading spinner
 
     // Load custom map provider
-    if (typeof this.props.provider === 'function') {
+    if (!isLoaded && this.props.provider) {
       this.props.provider = await this.props.provider()
     }
 
     // Load default map provider
-    if (!this.props.provider) {
+    if (!isLoaded && !this.props.provider) {
       this.props.provider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-maplibre/provider.js')).default
     }
 
     // Load default geocode provider
-    if (!this.props.geocodeProvider) {
+    if (!isLoaded && !this.props.geocodeProvider) {
       this.props.geocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/geocode.js')).default
     }
 
     // Load default reverse geocode provider
-    if (!this.props.reverseGeocodeProvider) {
+    if (!isLoaded && !this.props.reverseGeocodeProvider) {
       this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
     }
+
+    this.isLoaded = true
 
     // Load main App
     import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {

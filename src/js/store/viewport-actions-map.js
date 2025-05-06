@@ -2,6 +2,13 @@ import { getDescription, getStatus, getPlace } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
+const ready = (state, payload) => {
+  return {
+    ...state,
+    ...payload
+  }
+}
+
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, center, zoom, features } = payload
@@ -11,7 +18,6 @@ const update = (state, payload) => {
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isBoundsChange
   const status = getStatus(action, isBoundsChange, place, state, payload)
   const newAction = isBoundsChange && action === 'SEARCH' && !isUserInitiated ? 'SEARCH' : null
-
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -220,6 +226,7 @@ const clear = (state) => {
 }
 
 export const actionsMap = {
+  READY: ready,
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
   MOVE_START: moveStart,

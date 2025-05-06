@@ -3,12 +3,14 @@ import { reColourMarkers } from './marker'
 import { defaults } from './constants'
 
 export function handleBaseTileLayerLoaded () {
-  const { framework, modules } = this
+  const { framework, modules, view } = this
   this.isLoaded = true
+  const resolution = view.resolution
   this.dispatchEvent(new CustomEvent('load', {
     detail: {
       modules,
-      framework
+      framework,
+      resolution
     }
   }))
 }
@@ -45,13 +47,16 @@ export function handleMoveStart () {
 }
 
 export function handleMove (zoom) {
-  const { maxZoom, minZoom } = this.view.constraints
+  const { view } = this
+  const { maxZoom, minZoom } = view.constraints
   const isMaxZoom = zoom + defaults.ZOOM_TOLERANCE >= maxZoom
   const isMinZoom = zoom - defaults.ZOOM_TOLERANCE <= minZoom
+  const resolution = view.resolution
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,
-      isMinZoom
+      isMinZoom,
+      resolution
     }
   }))
 }

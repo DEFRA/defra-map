@@ -28,7 +28,7 @@ class Provider extends EventTarget {
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/GraphicsLayer.js'),
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/support/TileInfo.js'),
-      import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch", "when"] */ '@arcgis/core/core/reactiveUtils.js')
+      import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch"] */ '@arcgis/core/core/reactiveUtils.js')
     ]).then(modules => this.addMap(modules, options))
   }
 
@@ -39,7 +39,7 @@ class Provider extends EventTarget {
   async addMap (modules, options) {
     const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
     const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
-    const reactiveWatch = modules[9].watch
+    const { watch: reactiveWatch } = modules[9]
 
     // Implementation has full control over esriConfig
     if (this.esriConfigCallback) {
@@ -91,16 +91,13 @@ class Provider extends EventTarget {
     this.isStationary = !!options.isStationary
 
     // Map ready event (first load)
-    reactiveWatch(() => [baseTileLayer.loaded], ([loaded]) => {
-      if (loaded) {
-        handleBaseTileLayerLoaded.bind(this)()
-      }
+    reactiveWatch(() => baseTileLayer.loaded && view.resolution > 0, () => {
+      handleBaseTileLayerLoaded.call(this)
     })
-    // baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
     // Movestart
     let isMoving = false
-    reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
+    reactiveWatch(() => [view.stationary], ([stationary]) => {
       if (!isMoving && !stationary) {
         handleMoveStart.bind(this)()
         isMoving = true

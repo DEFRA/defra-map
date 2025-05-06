@@ -1,0 +1,20 @@
+@use '../tools/mixins' as *;
+
+.fm-c-scale {
+    @include body-font(16px, 400);
+    position: relative;
+    background-color: var(--foreground-colour);
+    margin: 0 5px 5px auto;
+    height: 5px;
+
+    &__label {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        text-shadow:
+            -1px -1px 0 var(--background-colour),
+            1px -1px 0 var(--background-colour),
+            -1px  1px 0 var(--background-colour),
+            1px  1px 0 var(--background-colour);
+    }
+}

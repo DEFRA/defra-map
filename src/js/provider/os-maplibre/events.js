@@ -1,12 +1,29 @@
 import { getDetail, addMapHoverBehaviour } from './query'
 import { loadSymbols, addHighlightedLabelLayer, amendLineSymbolLayers, addShortcutMarkers, addSelectedLayers } from './symbols'
 
+export const getResolution = (map) => {
+  const center = map.getCenter()
+  const zoom = map.getZoom()
+  const lat = center.lat
+
+  const EARTH_CIRCUMFERENCE = 40075016.686
+  const TILE_SIZE = 512
+  const scale = Math.pow(2, zoom)
+
+  const resolution = (EARTH_CIRCUMFERENCE * Math.cos((lat * Math.PI) / 180)) / (scale * TILE_SIZE)
+
+  return resolution
+}
+
 export async function handleLoad () {
+  const { map } = this
   await loadSymbols.bind(this)()
   this.isLoaded = true
+  const resolution = getResolution(map)
   this.dispatchEvent(new CustomEvent('load', {
     detail: {
-      framework: { map: this.map }
+      framework: { map },
+      resolution
     }
   }))
 }
@@ -58,11 +75,14 @@ export function handleMove () {
   const { map } = this
   const isMaxZoom = map.getZoom() >= map.getMaxZoom()
   const isMinZoom = map.getZoom() <= map.getMinZoom()
+  const resolution = getResolution(map)
+
   // Need to include maxBounds check as this can also constrain zoom
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,
-      isMinZoom
+      isMinZoom,
+      resolution
     }
   }))
 }

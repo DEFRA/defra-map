@@ -306,10 +306,19 @@
     right: 0;
 }
 
-.fm-o-logo,
+.fm-o-logo {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
 .fm-o-scale {
     flex-grow: 1;
     flex-basis: 0;
+}
+
+.fm-tablet .fm-o-scale,
+.fm-desktop .fm-o-scale {
+    margin-bottom: 20px;
 }
 
 .fm-o-actions {

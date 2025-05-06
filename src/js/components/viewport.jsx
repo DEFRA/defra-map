@@ -150,6 +150,7 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
+    viewportDispatch({ type: 'READY', payload: e.detail })
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, style: style.name, size
     })

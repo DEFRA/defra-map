@@ -17,6 +17,7 @@ describe('esri-sdk events', () => {
   it('should handleBaseTileLayerLoaded', () => {
     const provider = {
       isLoaded: false,
+      view: { resolution: 15 },
       dispatchEvent: jest.fn()
     }
 

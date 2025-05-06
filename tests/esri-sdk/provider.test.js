@@ -197,6 +197,7 @@ describe('Provider', () => {
       animation: {
         destroy: jest.fn()
       },
+      stationary: true,
       goTo: jest.fn().mockResolvedValue()
     }
 
@@ -374,13 +375,13 @@ describe('Provider', () => {
 
       const reactiveWatch = modules[9].watch
       const view = provider.view
-      view.animation = { state: 'running' }
+      view.stationary = false
 
       // Mock the reactiveWatch callback
       const watchCallback = reactiveWatch.mock.calls[1][1]
 
-      // Simulate view change to trigger move start
-      watchCallback([view.animation])
+      // Set reactive watch property
+      watchCallback([view.stationary])
 
       expect(handleMoveStart).toHaveBeenCalled()
     })

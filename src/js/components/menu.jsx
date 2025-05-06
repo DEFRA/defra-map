@@ -12,9 +12,9 @@ export default function Menu () {
 
   const handleStartClick = () => {
     const mode = drawModes.find(m => m.id === shape)?.mode || 'frame'
-    provider.draw?.edit(mode, shape)
     appDispatch({ type: 'SET_MODE', payload: { value: mode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
+    provider.draw?.edit(mode, shape)
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode, style, size, segments, layers })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()

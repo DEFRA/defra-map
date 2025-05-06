@@ -95,10 +95,12 @@ function getViewport () {
   let bounds = getPaddedBounds.bind(this)()
   bounds = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
   let center = map.getCenter()
+  let zoom = map.getZoom()
   center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
-  const zoom = parseFloat(map.getZoom().toFixed(defaults.PRECISION))
+  zoom = parseFloat(zoom.toFixed(defaults.PRECISION))
   const isMaxZoom = map.getZoom() >= map.getMaxZoom()
   const isMinZoom = map.getZoom() <= map.getMinZoom()
+
   return {
     bounds,
     center,

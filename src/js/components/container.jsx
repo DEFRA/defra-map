@@ -27,6 +27,7 @@ import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
+import ScaleBar from './scale-bar.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -194,7 +195,9 @@ export default function Container () {
                   <Logo />
                 </div>
                 {!isMobile && <Actions />}
-                <div className='fm-o-scale' />
+                <div className='fm-o-scale'>
+                  <ScaleBar />
+                </div>
               </div>
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />

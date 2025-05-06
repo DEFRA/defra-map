@@ -55,7 +55,7 @@ const fm = new FloodMap('map', {
   },
   legend: {
     width: '280px',
-    display: 'compact',
+    // display: 'compact',
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',

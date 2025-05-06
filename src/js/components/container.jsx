@@ -91,7 +91,6 @@ export default function Container () {
     activeRef.current?.focus({ preventScroll: true })
   }, [isPage, activePanel, hash])
 
-  console.log(activePanel)
   return (
     <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
       <div

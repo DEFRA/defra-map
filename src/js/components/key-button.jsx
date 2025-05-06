@@ -4,8 +4,9 @@ import { useApp } from '../store/use-app'
 export default function KeyButton ({ keyBtnRef }) {
   const { dispatch, activePanel, options, mode } = useApp()
   const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const hasBtn = options?.legend?.display === 'inset'
 
-  if (!(options?.legend && !isQueryMode && !options?.legend?.display)) {
+  if (!(options?.legend && !isQueryMode && !hasBtn)) {
     return null
   }
 

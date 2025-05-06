@@ -249,13 +249,19 @@
 
 // Draw
 .fm-o-viewport-controls .fm-c-btn,
-.fm-c-btn--help {
+.fm-c-btn--help,
+.fm-c-btn--edit {
     display: flex;
     justify-content: center;
 }
 
-.fm-tablet .fm-c-btn--help svg,
-.fm-desktop .fm-c-btn--help svg {
+.fm-tablet .fm-c-btn--help,
+.fm-desktop .fm-c-btn--help {
+    margin-left: auto;
+}
+
+.fm-tablet .fm-c-btn--edit svg,
+.fm-desktop .fm-c-btn--edit svg {
     margin-right: 5px;
 }
 

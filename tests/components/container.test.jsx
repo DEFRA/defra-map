@@ -63,7 +63,7 @@ jest.mock('../../src/js/components/location.jsx', () => () => <div>Location Mock
 jest.mock('../../src/js/components/logo.jsx', () => () => <div>Logo Mock</div>)
 jest.mock('../../src/js/components/map-error.jsx', () => () => <div>MapError Mock</div>)
 jest.mock('../../src/js/components/viewport-label.jsx', () => () => <div>ViewportLabel Mock</div>)
-jest.mock('../../src/js/components/draw-edit.jsx', () => () => <div>DrawEdit Mock</div>)
+jest.mock('../../src/js/components/draw-shape.jsx', () => () => <div>DrawShape Mock</div>)
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
@@ -93,7 +93,7 @@ describe('Container', () => {
       isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
       queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
-      isLegendFixed: false,
+      isFixed: false,
       isMobile: false,
       hasLengedHeading: true,
       provider: {},
@@ -146,11 +146,11 @@ describe('Container', () => {
     expect(screen.getByText('Legend Title')).toBeInTheDocument()
   })
 
-  it('renders the Help panel when activePanel is HELP', () => {
-    mockUseApp.activePanel = 'HELP'
-    mockUseApp.isLegendFixed = true
+  it('renders the Help panel when activePanel is EDIT', () => {
+    mockUseApp.activePanel = 'EDIT'
+    mockUseApp.isMobile = true
     render(<Container />)
-    expect(screen.getByText('Help')).toBeInTheDocument()
+    expect(screen.getByText('Dimensions')).toBeInTheDocument()
   })
 
   it('renders the Style panel when activePanel is STYLE', () => {
@@ -405,7 +405,7 @@ describe('Container', () => {
       isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
       queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
-      isLegendFixed: false,
+      isFixed: false,
       isMobile: false,
       isDesktop: true, // Add this as we need it
       hasLengedHeading: true,
@@ -429,8 +429,8 @@ describe('Container', () => {
     const { container } = render(<Container />)
     expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
   })
-  it('does not render side panel when isLegendFixed is false', () => {
-    mockUseApp.isLegendFixed = false
+  it('does not render side panel when isFixed is false', () => {
+    mockUseApp.isFixed = false
 
     const { container } = render(<Container />)
     expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
@@ -442,7 +442,7 @@ describe('Container', () => {
   })
 
   it('does not render Panel component when in query mode', () => {
-    mockUseApp.isLegendFixed = true
+    mockUseApp.isFixed = true
     mockUseApp.isQueryMode = true
 
     const { container } = render(<Container />)
@@ -452,7 +452,7 @@ describe('Container', () => {
   it('passes correct props to Panel component', () => {
     mockUseApp = {
       ...mockUseApp,
-      isDesktop: true, // needed for isLegendFixed calculation
+      isDesktop: true, // needed for isFixed calculation
       isMobile: false,
       mode: '', // empty string for isQueryMode to be false
       options: {
@@ -481,7 +481,7 @@ describe('Container', () => {
   })
 
   it('handles case when legend display is false', () => {
-    mockUseApp.isLegendFixed = true
+    mockUseApp.isFixed = true
     mockUseApp.isQueryMode = false
     mockUseApp.legend = {
       title: 'Test Legend',

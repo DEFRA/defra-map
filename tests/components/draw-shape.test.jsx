@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { drawModes } from '../../src/js/store/constants'
-import DrawEdit from '../../src/js/components/draw-edit'
+import DrawShape from '../../src/js/components/draw-shape'
 import { useApp } from '../../src/js/store/use-app'
 
 jest.mock('../../src/js/store/use-app')
@@ -9,7 +9,7 @@ jest.mock('../../src/js/store/use-app')
 describe('draw-edit', () => {
   it('should handle shape click and show current selection', () => {
     const mockDispatch = jest.fn()
-    const mockDrawEdit = jest.fn()
+    const mockDrawShape = jest.fn()
     const mockUseApp = jest.mocked(useApp)
 
     // Function to update mock return value dynamically
@@ -19,7 +19,7 @@ describe('draw-edit', () => {
         shape,
         drawModes,
         dispatch: mockDispatch,
-        provider: { draw: { edit: mockDrawEdit } },
+        provider: { draw: { edit: mockDrawShape } },
         options: { id: 'test' }
       })
     }
@@ -36,7 +36,7 @@ describe('draw-edit', () => {
     shapes.forEach(({ shape, label, mode }) => {
       // Update mocks before clicking
       updateMockUseApp(shape, mode)
-      render(<DrawEdit />)
+      render(<DrawShape />)
 
       // Open the menu
       fireEvent.click(screen.getByText(`Current selection: ${label}`))
@@ -48,7 +48,7 @@ describe('draw-edit', () => {
       fireEvent.click(shapeOption)
 
       // Verify drawEdit was called with updated values
-      expect(mockDrawEdit).toHaveBeenCalledWith(mode, shape)
+      expect(mockDrawShape).toHaveBeenCalledWith(mode, shape)
 
       // Verify dispatch was called with updated mode and shape
       expect(mockDispatch).toHaveBeenCalledWith({

@@ -12,7 +12,7 @@ const getActivePanel = (mode, info, featureId, targetMarker, legend) => {
   if (mode === 'default' && info && (featureId || targetMarker)) {
     panel = 'INFO'
   } else if (mode === 'default' && legend?.isVisible) {
-    panel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
+    panel = legend?.display === 'inset' ? 'LEGEND' : 'KEY'
   } else {
     panel = null
   }

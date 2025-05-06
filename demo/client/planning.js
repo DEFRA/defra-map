@@ -479,9 +479,8 @@ const fm = new FloodMap('map', {
   queryArea: {
     heading: 'Site boundary',
     submitLabel: 'Get site report',
-    helpLabel: 'How to draw a shape',
+    helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',
-    html: '<p class="govuk-body-s">Instructions</p>',
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,

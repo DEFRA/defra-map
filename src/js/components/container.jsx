@@ -23,8 +23,9 @@ import Reset from './reset.jsx'
 import Location from './location.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
-import DrawEdit from './draw-edit.jsx'
+import DrawShape from './draw-shape.jsx'
 import Actions from './actions.jsx'
+import EditButton from './edit-button.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import ScaleBar from './scale-bar.jsx'
@@ -42,17 +43,17 @@ export default function Container () {
   const keyBtnRef = useRef(null)
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
-  const helpBtnRef = useRef(null)
+  const editBtnRef = useRef(null)
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
   const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
   const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour]?.HEIGHT
   const legend = options.legend
+  const isFixed = legend && isDesktop && !['compact', 'inset'].includes(legend.display)
   const isLegendInset = legend?.display === 'inset'
-  const isLegendFixed = legend && isDesktop && !isLegendInset
-  const isLegendModal = !isLegendFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
-  const hasLengedHeading = !(legend?.display === 'inset' || (isLegendFixed && isPage))
+  const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
+  const hasLengedHeading = !(legend?.display === 'inset' || (isFixed && isPage))
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
@@ -90,6 +91,7 @@ export default function Container () {
     activeRef.current?.focus({ preventScroll: true })
   }, [isPage, activePanel, hash])
 
+  console.log(activePanel)
   return (
     <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
       <div
@@ -98,11 +100,14 @@ export default function Container () {
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
-        {isLegendFixed && (
+        {isFixed && (
           <div className='fm-o-side'>
             <Exit />
+            {isQueryMode && (
+              <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isFixed={isFixed} />
+            )}
             {!isQueryMode && (
-              <Panel className='legend' label={legend?.title} width={legend?.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
+              <Panel className='legend' label={legend?.title} width={legend?.width} isFixed={isFixed} isHideHeading={!hasLengedHeading}>
                 {queryArea && <Menu />}
                 <Segments />
                 <Layers hasSymbols={!!legend?.display} hasInputs />
@@ -124,7 +129,7 @@ export default function Container () {
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
                 <KeyButton keyBtnRef={keyBtnRef} />
-                <HelpButton helpBtnRef={helpBtnRef} label={queryArea?.helpLabel} />
+                {!isFixed && <EditButton editBtnRef={editBtnRef} />}
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend?.keyWidth || legend?.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
@@ -143,9 +148,10 @@ export default function Container () {
               </div>
               <div className='fm-o-top__column'>
                 <ViewportLabel />
-                <DrawEdit />
+                <DrawShape />
               </div>
               <div className='fm-o-top__column'>
+                <HelpButton />
                 {isMobile && (
                   <>
                     <SearchButton searchBtnRef={searchBtnRef} tooltip='left' />
@@ -163,15 +169,15 @@ export default function Container () {
               </div>
             </div>
             <div className='fm-o-middle'>
-              {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
+              {activePanel === 'LEGEND' && !isFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legend?.title} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                   {queryArea && <Menu />}
                   <Segments />
                   <Layers hasSymbols={!!legend?.display} hasInputs />
                 </Panel>
               )}
-              {activePanel === 'HELP' && (
-                <Panel className='help' label={queryArea.helpLabel} width={legend?.width} instigatorRef={helpBtnRef} html={queryArea.html} isModal />
+              {activePanel === 'EDIT' && !isFixed && (
+                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal />
               )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
@@ -208,7 +214,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
-                <Panel className='legend' isNotObscure label={legend?.title} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure label={legend?.title} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                   {queryArea && <Menu />}
                   <Segments />
                   <Layers hasSymbols hasInputs />

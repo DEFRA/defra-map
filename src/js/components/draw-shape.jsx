@@ -1,9 +1,9 @@
 import React from 'react'
-import { useApp } from '../store/use-app'
+import { useApp } from '../store/use-app.js'
 import Tooltip from './tooltip.jsx'
 import ActionMenu from './action-menu.jsx'
 
-export default function DrawEdit () {
+export default function DrawShape () {
   const { provider, options, mode, shape, drawModes, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'vertex'].includes(mode)

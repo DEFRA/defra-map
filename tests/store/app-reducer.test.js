@@ -44,21 +44,6 @@ describe('app-reducer and initialState', () => {
       expect(state.activePanel).toBe('INFO')
     })
 
-    it('should set activePanel to LEGEND when no info and legend is visible with display "compact"', () => {
-      const options = {
-        styles: 'dummyStyle',
-        legend: { isVisible: true, display: 'compact', segments: 'seg1', key: 'key1' },
-        search: {},
-        info: null,
-        queryArea: { feature: 'dummyFeature' },
-        hasAutoMode: false
-      }
-      const state = initialState(options)
-      expect(state.activePanel).toBe('LEGEND')
-      expect(state.segments).toBe('parsed_seg1')
-      expect(state.layers).toBe('parsed_key1')
-    })
-
     it('should set activePanel to LEGEND when no info and legend is visible with display "inset"', () => {
       const options = {
         styles: 'dummyStyle',
@@ -74,7 +59,7 @@ describe('app-reducer and initialState', () => {
       expect(state.layers).toBe('parsed_key2')
     })
 
-    it('should set activePanel to KEY when no info and legend is visible with display other than compact/inset', () => {
+    it('should set activePanel to KEY when no info and legend is visible with display compact or default', () => {
       const options = {
         styles: 'dummyStyle',
         legend: { isVisible: true, display: 'full', segments: 'seg3', key: 'key3' },

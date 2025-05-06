@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import HelpButton from '../../src/js/components/help-button'
 import { useApp } from '../../src/js/store/use-app'
@@ -12,7 +12,7 @@ describe('help-button', () => {
       dispatch: jest.fn(),
       activePanel: null,
       isDesktop: false,
-      options: { id: 'test' },
+      options: { id: 'test', queryArea: { helpURL: 'http://test.org' } },
       mode: 'frame'
     })
 
@@ -21,35 +21,17 @@ describe('help-button', () => {
     expect(screen.getByText('Help')).toBeTruthy()
   })
 
-  it('should not display button', () => {
+  it('should not display button when no url provided', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: jest.fn(),
       activePanel: 'HELP',
       isDesktop: false,
-      options: { id: 'test' },
-      mode: 'frame'
-    })
-
-    const { container } = render(<HelpButton />)
-
-    expect(container.querySelector('button').style.display).toEqual('none')
-  })
-
-  it('should handle click', () => {
-    const dispatch = jest.fn()
-
-    jest.mocked(useApp).mockReturnValue({
-      dispatch,
-      activePanel: null,
-      isDesktop: false,
-      options: { id: 'test' },
+      options: { id: 'test', queryArea: { helpURL: null } },
       mode: 'frame'
     })
 
     render(<HelpButton />)
 
-    fireEvent.click(screen.getByText('Help'))
-
-    expect(dispatch).toHaveBeenCalled()
+    expect(screen.queryByText('Help')).toBeFalsy()
   })
 })

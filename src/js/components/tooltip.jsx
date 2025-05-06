@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 
-export default function Tooltip ({ id, position, text, cssModifier, display, children }) {
+export default function Tooltip ({ id, position, text, cssModifier, display, visuallyHiddenText, children }) {
   const { interfaceType } = useApp()
   const [isVisible, setIsVisible] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
@@ -62,6 +62,7 @@ export default function Tooltip ({ id, position, text, cssModifier, display, chi
       <div id={id} className='fm-c-tooltip__label' role='tooltip'>
         <div className='fm-c-tooltip__label-inner'>
           {text}
+          {visuallyHiddenText && (<span className='fm-u-visually-hidden'>{visuallyHiddenText}</span>)}
         </div>
       </div>
     </div>

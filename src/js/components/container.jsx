@@ -103,7 +103,9 @@ export default function Container () {
           <div className='fm-o-side'>
             <Exit />
             {isQueryMode && (
-              <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isFixed={isFixed} />
+              <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isFixed={isFixed}>
+                <p>Dimensions panel</p>
+              </Panel>
             )}
             {!isQueryMode && (
               <Panel className='legend' label={legend?.title} width={legend?.width} isFixed={isFixed} isHideHeading={!hasLengedHeading}>
@@ -176,7 +178,9 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'EDIT' && !isFixed && (
-                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal />
+                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal>
+                  <p>Dimensions panel</p>
+                </Panel>
               )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>

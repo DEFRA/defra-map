@@ -11,14 +11,14 @@ const getRole = (instigatorRef) => {
   return instigatorRef ? 'dialog' : 'region'
 }
 
-const getProps = (id, className, isFixed, isMobile, isInset, instigatorRef, width) => {
+const getProps = (id, className, isMobile, isInset, instigatorRef, width) => {
   const panelId = `${id}-panel${className ? '-' + className : ''}`
-  const hasCloseBtn = !isFixed && instigatorRef
+  const hasCloseBtn = !!instigatorRef?.current
   const hasWidth = width && !(isMobile && isInset)
   return { panelId, hasCloseBtn, hasWidth }
 }
 
-export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
+export default function Panel ({ className, label, isInset, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { id } = options
 
@@ -56,7 +56,7 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
   }
 
   // Template properties
-  const { panelId, hasCloseBtn, hasWidth } = getProps(id, className, isFixed, isMobile, isInset, instigatorRef, width)
+  const { panelId, hasCloseBtn, hasWidth } = getProps(id, className, isMobile, isInset, instigatorRef, width)
 
   // Container is now ready
   useEffect(() => {

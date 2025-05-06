@@ -385,7 +385,7 @@ describe('Container', () => {
     mockUseApp.isQueryMode = false
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).toBeInTheDocument()
+    expect(container.querySelector('.fm-o-panel')).toBeInTheDocument()
   })
 
   it('does not render side panel when isDesktop is false', () => {
@@ -396,7 +396,7 @@ describe('Container', () => {
     }
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
   })
 
   it('does not render side panel when legend display is inset', () => {
@@ -427,18 +427,18 @@ describe('Container', () => {
     useApp.mockReturnValue(mockUseApp)
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
   })
   it('does not render side panel when isFixed is false', () => {
     mockUseApp.isFixed = false
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
   })
 
   it('does not render side panel when legend display is inset', () => {
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
   })
 
   it('does not render Panel component when in query mode', () => {

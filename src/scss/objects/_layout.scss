@@ -24,7 +24,7 @@
 .fm-o-container {
     position:fixed;
     box-sizing: border-box;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     justify-content: space-between;
     z-index: 999;
@@ -40,6 +40,11 @@
     p, dd, dt {
         color: var(--foreground-colour);
     }
+}
+
+.fm-tablet.fm-o-container,
+.fm-desktop.fm-o-container {
+    flex-direction: row;
 }
 
 // MediaQuery (from tablet)
@@ -63,7 +68,7 @@
     width: 100%;
 }
 
-.fm-o-side {
+.fm-o-panel {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -379,23 +384,23 @@
 }
 
 // Side panel
-.fm-o-side .fm-c-panel {
+.fm-o-panel .fm-c-panel {
     background-color: transparent;
     box-shadow: none;
     min-height: 0;
 }
 
-.fm-o-side .fm-c-btn--exit + .fm-c-panel--legend {
+.fm-o-panel .fm-c-btn--exit + .fm-c-panel--legend {
     border-top: 1px solid var(--border-colour);
 }
 
-.fm-o-side .fm-c-btn--exit {
+.fm-o-panel .fm-c-btn--exit {
     margin: 3px;
     width: auto;
 }
 
-.fm-o-side .fm-c-btn--exit.fm-u-focus-visible,
-.fm-o-side .fm-c-btn--exit:hover.fm-u-focus-visible {
+.fm-o-panel .fm-c-btn--exit.fm-u-focus-visible,
+.fm-o-panel .fm-c-btn--exit:hover.fm-u-focus-visible {
     @media (hover: hover) and (pointer: fine) {
         background-color: var(--focus-colour);
         border-color: var(--focus-colour);

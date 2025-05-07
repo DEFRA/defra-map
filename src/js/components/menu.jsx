@@ -38,10 +38,16 @@ export default function Menu () {
         <div className='fm-c-menu__item'>
           <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
             <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-              <path d={buttonPath} />
+              {query
+                ? (
+                  <path d='M11.298 4.666l3.536 3.536-7.071 7.071-3.536-3.536 7.071-7.071zm2.475-2.475a1.5 1.5 0 0 1 2.121 0l1.415 1.415a1.5 1.5 0 0 1 0 2.121l-1.768 1.768-3.536-3.536 1.768-1.768zM3.52 12.444l3.536 3.536-5.304 1.768 1.768-5.304z' fill='currentColor' stroke='none' />
+                  )
+                : (
+                  <path d={buttonPath} />
+                  )}
             </svg>
             <span className='fm-c-btn__label'>
-              {`${query ? 'Edit' : 'Add'} ${shape}`}
+              {query ? 'Edit shape' : 'Add shape'}
             </span>
           </button>
         </div>

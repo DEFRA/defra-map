@@ -388,65 +388,12 @@ describe('Container', () => {
     expect(container.querySelector('.fm-o-panel')).toBeInTheDocument()
   })
 
-  it('does not render side panel when isDesktop is false', () => {
-    mockUseApp.isDesktop = false
-    mockUseApp.legend = {
-      ...mockUseApp.legend,
-      display: 'fixed'
-    }
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
-  })
-
-  it('does not render side panel when legend display is inset', () => {
-    mockUseApp = {
-      activePanel: 'LEGEND',
-      isLegendInset: false,
-      error: { label: 'Error', message: 'Error message' },
-      queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
-      isFixed: false,
-      isMobile: false,
-      isDesktop: true, // Add this as we need it
-      hasLengedHeading: true,
-      provider: {},
-      options: {
-        behaviour: 'default',
-        legend: {
-          title: 'Legend Title',
-          display: 'inset' // Change this to inset
-        },
-        hasAutoMode: true
-      },
-      dispatch: jest.fn(),
-      activeRef: { current: null },
-      viewportRef: { current: null },
-      parent: 'test-parent'
-    }
-
-    useApp.mockReturnValue(mockUseApp)
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
-  })
-  it('does not render side panel when isFixed is false', () => {
-    mockUseApp.isFixed = false
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
-  })
-
-  it('does not render side panel when legend display is inset', () => {
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-panel')).not.toBeInTheDocument()
-  })
-
-  it('does not render Panel component when in query mode', () => {
+  it('does not render legend component when in query mode', () => {
     mockUseApp.isFixed = true
     mockUseApp.isQueryMode = true
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.legend')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-c-panel--legend')).not.toBeInTheDocument()
   })
 
   it('passes correct props to Panel component', () => {

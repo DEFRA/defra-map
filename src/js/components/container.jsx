@@ -100,23 +100,21 @@ export default function Container () {
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
-        {!isMobile && (
-          <div className='fm-o-panel'>
-            {isFixed && (<Exit />)}
-            {isDesktop && isQueryMode && (hasEditPanel || isFixed) && (
-              <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
-                <p>Dimensions panel</p>
-              </Panel>
-            )}
-            {isFixed && !isQueryMode && (
-              <Panel className='legend' label={legend?.title} width={legend?.width} isHideHeading={!hasLengedHeading}>
-                {queryArea && <Menu />}
-                <Segments />
-                <Layers hasSymbols={!!legend?.display} hasInputs />
-              </Panel>
-            )}
-          </div>
-        )}
+        <div className='fm-o-panel'>
+          {isFixed && (<Exit />)}
+          {isDesktop && isQueryMode && (hasEditPanel || isFixed) && (
+            <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
+              <p>Dimensions panel</p>
+            </Panel>
+          )}
+          {isFixed && !isQueryMode && (
+            <Panel className='legend' label={legend?.title} width={legend?.width} isHideHeading={!hasLengedHeading}>
+              {queryArea && <Menu />}
+              <Segments />
+              <Layers hasSymbols={!!legend?.display} hasInputs />
+            </Panel>
+          )}
+        </div>
         <div className='fm-o-main' data-fm-main>
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
@@ -229,13 +227,13 @@ export default function Container () {
             <Attribution />
           </div>
         </div>
-        {isMobile && hasEditPanel && (
-          <div className='fm-o-panel'>
+        <div className='fm-o-panel'>
+          {isMobile && hasEditPanel && (
             <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
               <p>Dimensions panel</p>
             </Panel>
-          </div>
-        )}
+          )}
+        </div>
         {isMobile && activePanel === 'STYLE' && (
           <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
             <Styles />

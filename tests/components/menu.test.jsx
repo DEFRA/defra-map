@@ -50,9 +50,9 @@ describe('menu', () => {
 
     render(<Menu />)
 
-    fireEvent.click(screen.getByText('Add square'))
+    fireEvent.click(screen.getByText('Add shape'))
 
-    expect(screen.getByText('Add square')).toBeTruthy()
+    expect(screen.getByText('Add shape')).toBeTruthy()
     expect(mockEdit).toHaveBeenCalled()
     expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', query: undefined } })
     expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
@@ -80,9 +80,9 @@ describe('menu', () => {
 
     render(<Menu />)
 
-    fireEvent.click(screen.getByText('Edit polygon'))
+    fireEvent.click(screen.getByText('Edit shape'))
 
-    expect(screen.getByText('Edit polygon')).toBeTruthy()
+    expect(screen.getByText('Edit shape')).toBeTruthy()
     expect(mockEdit).toHaveBeenCalled()
     expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()

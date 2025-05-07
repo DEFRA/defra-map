@@ -28,6 +28,7 @@ import Actions from './actions.jsx'
 import EditButton from './edit-button.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
+import Banner from './banner.jsx'
 import ScaleBar from './scale-bar.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
@@ -100,7 +101,7 @@ export default function Container () {
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
-        <div className='fm-o-panel'>
+        <div className='fm-o-side'>
           {isFixed && (<Exit />)}
           {isDesktop && isQueryMode && (hasEditPanel || isFixed) && (
             <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
@@ -117,7 +118,10 @@ export default function Container () {
         </div>
         <div className='fm-o-main' data-fm-main>
           <Viewport />
-          <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
+          <div className={`fm-o-overlay${isLegendInset ? ' fm-o-overlay--inset' : ''}`}>
+            <div className='fm-o-banner'>
+              <Banner />
+            </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 <Exit />
@@ -151,6 +155,11 @@ export default function Container () {
                 <DrawShape />
               </div>
               <div className='fm-o-top__column'>
+                {!isMobile && activePanel === 'STYLE' && (
+                  <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
+                    <Styles />
+                  </Panel>
+                )}
                 <HelpButton />
                 {isMobile && (
                   <>
@@ -179,11 +188,6 @@ export default function Container () {
               {activePanel === 'EDIT' && !isMobile && !isDesktop && (
                 <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal>
                   <p>Dimensions panel</p>
-                </Panel>
-              )}
-              {!isMobile && activePanel === 'STYLE' && (
-                <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
-                  <Styles />
                 </Panel>
               )}
               {activePanel === 'KEYBOARD' && (
@@ -227,7 +231,7 @@ export default function Container () {
             <Attribution />
           </div>
         </div>
-        <div className='fm-o-panel'>
+        <div className='fm-o-side'>
           {isMobile && hasEditPanel && (
             <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
               <p>Dimensions panel</p>

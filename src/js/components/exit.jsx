@@ -2,7 +2,7 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function Exit () {
-  const { options, mode, isPage, isBack, handleExit, isDesktop } = useApp()
+  const { options, mode, isPage, isBack, handleExit, isDesktop, activePanel } = useApp()
   const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   const isFixed = options?.legend?.display !== 'inset' && isDesktop
@@ -29,7 +29,7 @@ export default function Exit () {
   }
 
   return (
-    <button onClick={handleExit} className='fm-c-btn fm-c-btn--exit'>
+    <button onClick={handleExit} className='fm-c-btn fm-c-btn--exit' {...activePanel === 'SEARCH' ? { style: { display: 'none' } } : {}}>
       <svg aria-hidden='true' focusable='false' width={isBack ? '14' : '20'} height='20' viewBox={isBack ? '0 0 14 20' : '0 0 20 20'}>
         <Path />
       </svg>

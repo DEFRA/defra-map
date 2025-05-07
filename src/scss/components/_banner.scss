@@ -1,0 +1,36 @@
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+@use '../settings/colours' as *;
+
+.fm-c-banner {
+    padding: 10px;
+    margin: 5px 5px 0;
+    background-color: var(--background-colour);
+    box-shadow: $panel-shadow;
+    border-radius: $panel-radius;
+    @include body-font(16px, 400);
+    pointer-events: auto;
+    color: var(--foreground-colour);
+    display: flex;
+    align-items: baseline;
+    // border: 2px solid var(--foreground-colour);
+
+    &__icon {
+        @include body-font(16px, 700);
+        flex-shrink: 0;
+        display: block;
+        border-radius: 100%;
+        background-color: var(--foreground-colour);
+        color: var(--background-colour);
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        margin-right: 7.5px;
+    }
+
+    a {
+        color: var(--foreground-colour);
+    }
+}

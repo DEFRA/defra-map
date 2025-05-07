@@ -385,7 +385,7 @@ describe('Container', () => {
     mockUseApp.isQueryMode = false
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-panel')).toBeInTheDocument()
+    expect(container.querySelector('.fm-o-side')).toBeInTheDocument()
   })
 
   it('does not render legend component when in query mode', () => {

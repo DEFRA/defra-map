@@ -170,6 +170,7 @@ const fm = new FloodMap('map', {
   framework: 'esri',
   provider: async () => (await import(/* webpackChunkName: "custom-provider" */ '../../src/js/provider/esri-sdk/provider.js')).default,
   place: 'Ambleside',
+  banner: '<p>Rivers and sea supporting data may show inconsistent results. <a href="">Find out more</a></p>',
   zoom: 16,
   minZoom: 7,
   maxZoom: 20,

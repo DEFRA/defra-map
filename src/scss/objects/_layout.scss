@@ -64,11 +64,15 @@
 
 .fm-o-main {
     position: relative;
+    display: flex;
+    flex-direction: column;
     height: 100%;
     width: 100%;
+    min-width: 0;
+    min-height: 0;
 }
 
-.fm-o-panel {
+.fm-o-side {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -80,7 +84,7 @@
 }
 
 .fm-o-viewport {
-    position: absolute;
+    // position: absolute;
     width: 100%;
     height: 100%;
     outline: 0;
@@ -149,7 +153,15 @@
     height: 100%;
 }
 
-.fm-o-inner {
+.fm-o-map {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.fm-o-overlay {
     position: absolute;
     z-index: 2;
     left: 0;
@@ -162,8 +174,8 @@
     flex-wrap: nowrap;
 }
 
-.fm-o-inner > .fm-c-panel--legend,
-.fm-o-inner > .fm-c-panel--edit {
+.fm-o-overlay > .fm-c-panel--legend,
+.fm-o-overlay > .fm-c-panel--edit {
     clip-path: inset(0 -20px 0 0);
     height: 100%;
 }
@@ -171,11 +183,11 @@
 .fm-o-top__column:first-child > .fm-c-panel {
     position: absolute;
     left: $margin;
-    top: calc(40px + ($margin * 2));
+    margin-top: 50px;
     max-height: calc(100% - (110px + $margin));
 }
 
-.fm-o-inner--inset > .fm-c-panel--legend { 
+.fm-o-overlay--inset > .fm-c-panel--legend { 
     height: auto;
     clip-path: none;
     bottom: auto;
@@ -190,23 +202,21 @@
     padding: $margin;
     pointer-events: none;
 
-    &__column {
-        // position: relative;
-        z-index: 1;
-    }
-
     &__column:first-child {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         flex-grow: 1;
         flex-basis: 0;
-        z-index: 2;
+        z-index: -1;
+    }
+
+    &__column:nth-child(2) {
+        z-index: -2;
     }
 
     &__column:last-child {
         display: flex;
-        z-index: 2;
         flex-direction: column;
         flex-grow: 1;
         flex-basis: 0;
@@ -221,18 +231,12 @@
     margin-left: auto;
 }
 
-.fm-tablet .fm-o-top__column:last-child,
-.fm-desktop .fm-o-top__column:last-child {
-    position: relative;
-    z-index: -1;
-}
-
 .fm-draw .fm-o-top__column:nth-child(2) {
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.fm-draw .fm-o-inner .fm-o-focus-box {
+.fm-draw .fm-o-overlay .fm-o-focus-box {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -274,6 +278,7 @@
     align-items: center;
     justify-content: center;
     backface-visibility: hidden;
+    pointer-events: none;
 }
 
 .fm-o-bottom {
@@ -384,23 +389,23 @@
 }
 
 // Side panel
-.fm-o-panel .fm-c-panel {
+.fm-o-side .fm-c-panel {
     background-color: transparent;
     box-shadow: none;
     min-height: 0;
 }
 
-.fm-o-panel .fm-c-btn--exit + .fm-c-panel--legend {
+.fm-o-side .fm-c-btn--exit + .fm-c-panel--legend {
     border-top: 1px solid var(--border-colour);
 }
 
-.fm-o-panel .fm-c-btn--exit {
+.fm-o-side .fm-c-btn--exit {
     margin: 3px;
     width: auto;
 }
 
-.fm-o-panel .fm-c-btn--exit.fm-u-focus-visible,
-.fm-o-panel .fm-c-btn--exit:hover.fm-u-focus-visible {
+.fm-o-side .fm-c-btn--exit.fm-u-focus-visible,
+.fm-o-side .fm-c-btn--exit:hover.fm-u-focus-visible {
     @media (hover: hover) and (pointer: fine) {
         background-color: var(--focus-colour);
         border-color: var(--focus-colour);
@@ -475,7 +480,6 @@
 
 .fm-tablet .fm-c-panel--style,
 .fm-desktop .fm-c-panel--style {
-    top: $margin;
     right: calc(40px + ($margin * 2));
     bottom: auto;
 }
@@ -507,7 +511,7 @@
 }
 
 // Viewport focus
-.fm-o-viewport.fm-u-focus-visible ~ .fm-o-inner {
+.fm-o-viewport.fm-u-focus-visible ~ .fm-o-overlay {
     .fm-o-viewport-controls,
     .fm-o-top__column:first-child,
     .fm-o-top__column:last-child {

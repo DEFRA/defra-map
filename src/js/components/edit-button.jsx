@@ -20,7 +20,7 @@ export default function EditButton ({ editBtnRef }) {
     <Tooltip id={`${id}-edit-label`} position='right' cssModifier='edit' text='Edit dimensions' display={!isVisible ? 'none' : 'block'}>
       <button onClick={handleClick} className='fm-c-btn fm-c-btn--edit govuk-body-s' ref={editBtnRef} aria-expanded={false} aria-labelledby={`${id}-edit-label`} {...!isVisible ? { style: { display: 'none' } } : {}}>
         <svg width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
-          <path d='M11.298 4.666l3.536 3.536-7.071 7.071-3.536-3.536 7.071-7.071zm2.475-2.475a1.5 1.5 0 0 1 2.121 0l1.415 1.415a1.5 1.5 0 0 1 0 2.121l-1.768 1.768-3.536-3.536 1.768-1.768zM3.52 12.444l3.536 3.536-5.304 1.768 1.768-5.304z' fill='currentColor' stroke='none' />
+          <path d='M5.914 14.5l.828-.829 1.415 1.415-3.243 3.242-3.243-3.242 1.415-1.415.707.707.121.122V3.914H14.5l-.829-.828 1.415-1.415 3.242 3.243-3.242 3.243-1.415-1.415.707-.707.122-.121H5.914V14.5zm7 1.405v2.018h-2v-2.018h2zm-3 0v2.018h-2v-2.018h2zm8-1.991v4.009h-4v-2.018h2v-1.991h2zm0-2.958v2.018h-2v-2.018h2zm0-3.042v2.018h-2V7.914h2z' fill='currentColor' stroke='none' />
         </svg>
       </button>
     </Tooltip>

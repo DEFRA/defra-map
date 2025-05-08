@@ -30,6 +30,7 @@ import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import Banner from './banner.jsx'
 import ScaleBar from './scale-bar.jsx'
+import Dimensions from './dimensions.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -106,7 +107,7 @@ export default function Container () {
           {isFixed && (<Exit />)}
           {isDesktop && isQueryMode && (hasEditPanel || isFixed) && (
             <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
-              <p>Dimensions panel</p>
+              <Dimensions />
             </Panel>
           )}
           {isFixed && !isQueryMode && (
@@ -188,7 +189,7 @@ export default function Container () {
               )}
               {activePanel === 'EDIT' && !isMobile && !isDesktop && (
                 <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal>
-                  <p>Dimensions panel</p>
+                  <Dimensions />
                 </Panel>
               )}
               {activePanel === 'KEYBOARD' && (
@@ -235,7 +236,7 @@ export default function Container () {
         <div className='fm-o-side'>
           {isMobile && hasEditPanel && (
             <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
-              <p>Dimensions panel</p>
+              <Dimensions />
             </Panel>
           )}
         </div>

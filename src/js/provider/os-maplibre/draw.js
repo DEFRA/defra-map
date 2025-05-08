@@ -69,9 +69,13 @@ export class Draw {
       this.draw = null
     }
 
-    // Draw a new feature and set edit_vertex
+    // Draw a new feature
+    // console.log('Edit', mode, shape)
+
+    // Edit an existing feature
     if (mode === 'vertex') {
       const currentFeature = oFeature?.id === shape ? oFeature : null
+      console.log(currentFeature)
       this.drawFeature(currentFeature || this.getFeatureFromElement(paddingBox, shape))
       this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }

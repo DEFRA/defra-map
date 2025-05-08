@@ -118,6 +118,7 @@ export const EditVertexMode = {
 
     // Move vertex
     if (!e.altKey && ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
+      e.preventDefault()
       e.stopPropagation()
 
       if (state.selectedType === 'midpoint') {

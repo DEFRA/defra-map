@@ -3,15 +3,15 @@ import { useApp } from '../store/use-app.js'
 import { drawModes } from '../store/constants.js'
 
 export default function Dimensions () {
-  const { provider, dispatch, mode, shape } = useApp()
+  const { provider, dispatch, shape } = useApp()
 
   const handlePolygonSelect = (id) => {
     const value = drawModes.find(m => m.id === id).mode
+    provider.draw.addFeature(null, 'polygon')
     provider.draw.edit(value, id)
     dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }
 
-  console.log('Dimensions panel:', mode, shape)
   return (
     <div className='fm-c-dimensions'>
       {shape === 'square' && (

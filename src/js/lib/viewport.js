@@ -110,7 +110,7 @@ const isCirclePolygon = (geometry) => {
     maxEdge = Math.max(maxEdge, edgeDist)
   }
 
-  const WSG84_TOLERANCE = 0.007
+  const WSG84_TOLERANCE = 0.3 // 0.007
   const BNG_TOLERANCE = 0.15
   const tolerance = detectCoordinateType(center) === 'WSG84' ? WSG84_TOLERANCE : BNG_TOLERANCE
 

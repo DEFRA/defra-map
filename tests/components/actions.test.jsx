@@ -61,7 +61,8 @@ describe('actions', () => {
         current: {
           focus: viewPortRefFocus
         }
-      }
+      },
+      drawModes: [{ id: 'square' }]
     })
 
     render(<Actions />)

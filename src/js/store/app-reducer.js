@@ -27,7 +27,7 @@ const parseDrawModes = (mode, modes, defaultModes) => {
   return [drawMode, drawModes]
 }
 
-const getShape = (featureShape, drawMode, drawModes) => {
+const parseShape = (featureShape, drawMode, drawModes) => {
   const polygon = (drawMode === 'polygon' && featureShape === 'square') || (featureShape === 'square' && !drawModes.find(m => m.id === 'square')) ? 'polygon' : null
   return polygon || featureShape || drawMode || 'square'
 }
@@ -41,7 +41,7 @@ export const initialState = (options) => {
 
   const [drawMode, drawModes] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
   const featureShape = getFeatureShape(query)
-  const shape = getShape(featureShape, drawMode, drawModes)
+  const shape = parseShape(featureShape, drawMode, drawModes)
   const mode = drawMode ? defaultDrawModes.find(m => m.id === drawMode).mode : 'default'
   const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 

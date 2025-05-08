@@ -7,23 +7,41 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { map } = provider
+    const { container, map, style } = provider
     Object.assign(this, options)
 
     const { mode, shape, feature } = options
-    const { container } = provider
     this.provider = provider
     this.shape = shape
 
-    // Provider needs ref to draw moudule and draw needs ref to provider
+    // Provider also needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
 
     const initialFeature = feature ? { ...feature, id: shape } : null
     this.oFeature = initialFeature
 
+    // Create draw instance
+    MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
+    MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
+    MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group'
+
+    const modes = MapboxDraw.modes
+    modes.disabled = DisabledMode
+    modes.edit_vertex = EditVertexMode
+
+    const draw = new MapboxDraw({
+      modes,
+      styles: drawStyles(style.name),
+      displayControlsDefault: false,
+      userProperties: true
+    })
+
+    map.addControl(draw)
+    this.draw = draw
+
     // Add existing feature
     if (initialFeature && mode === 'default') {
-      this.drawFeature(initialFeature)
+      this.addFeature(initialFeature)
       return
     }
 
@@ -53,79 +71,65 @@ export class Draw {
 
   // Add or edit
   edit (mode, shape) {
-    const { draw, oFeature } = this
-    const { map, container, paddingBox } = this.provider
+    const { oFeature } = this
+    const { map, container } = this.provider
+    this.shape = shape
 
     // Zoom to extent if we have an existing graphic
-    if (oFeature && this.shape === shape) {
+    if (oFeature) {
       const coords = oFeature.geometry.coordinates
       const bounds = this.getBoundsFromCoordinates(coords[0])
       map.fitBounds(bounds, { animate: false })
     }
 
-    // Remove existing draw control
-    if (map.hasControl(draw)) {
-      map.removeControl(this.draw)
-      this.draw = null
+    // Remove existing drawn features
+    if (mode === 'frame') {
+      this.draw.deleteAll()
     }
 
-    // Draw a new feature
-    // console.log('Edit', mode, shape)
-
     // Edit an existing feature
-    if (mode === 'vertex') {
-      const currentFeature = oFeature?.id === shape ? oFeature : null
-      console.log(currentFeature)
-      this.drawFeature(currentFeature || this.getFeatureFromElement(paddingBox, shape))
+    if (mode === 'vertex' && this.draw.get(shape)) {
       this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }
 
-    this.shape = shape
+    // Start a new polygon
+    if (mode === 'vertex' && !this.draw.get(shape)) {
+      console.log('New polygon')
+    }
   }
 
   // Cancel update
-  cancel (shape) {
+  cancel () {
     const { draw, oFeature } = this
-    const { map } = this.provider
-    const hasDrawControl = map.hasControl(draw)
 
-    // Re-draw original feature and disable interactions
-    if (hasDrawControl && oFeature) {
-      draw.delete([shape])
+    // Remove any drawn features
+    draw.deleteAll()
+
+    // Reinstate original
+    if (oFeature) {
       draw.add(oFeature)
-      draw.changeMode('disabled')
     }
 
-    // Remove draw
-    if (hasDrawControl && !oFeature) {
-      map.removeControl(draw)
-      this.draw = null
-    }
-
-    // Draw original feature
-    if (!hasDrawControl && oFeature) {
-      this.drawFeature(oFeature)
-    }
+    // Set disabled mode
+    draw.changeMode('disabled')
   }
 
   // Confirm or update
   finish (shape) {
-    const { map, paddingBox } = this.provider
-    const hasDrawControl = map.hasControl(this.draw)
+    const { draw } = this
+    const { paddingBox } = this.provider
 
-    // Disable interactions
-    if (hasDrawControl) {
-      this.draw.changeMode('disabled')
-    }
-
-    // Draw feature
-    if (!hasDrawControl) {
+    // Draw feature from padding box and shape
+    if (['square', 'circle'].includes(shape)) {
       const elFeature = this.getFeatureFromElement(paddingBox, shape)
-      this.drawFeature(elFeature)
+      this.addFeature(elFeature)
     }
 
-    // Sert ref to feature
-    this.oFeature = this.draw.get(shape)
+    // Set ref to feature
+    this.oFeature = draw.get(shape)
+
+    // Set disabled mode
+    draw.changeMode('disabled')
 
     return this.oFeature
   }
@@ -133,37 +137,21 @@ export class Draw {
   // Delete feature
   delete () {
     const { draw } = this
-    const { map } = this.provider
-    this.oFeature = null
 
-    // Remove draw
-    map.removeControl(draw)
-    this.draw = null
+    // Remove feature and clear original feature
+    draw.deleteAll()
+    this.oFeature = null
   }
 
-  drawFeature (feature) {
-    const { map, style } = this.provider
+  // Add feature to map
+  addFeature (feature, shape) {
+    const { paddingBox } = this.provider
 
-    MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
-    MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
-    MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group'
+    // Default feature if none provided
+    feature ??= this.getFeatureFromElement(paddingBox, shape)
 
-    const modes = MapboxDraw.modes
-    modes.disabled = DisabledMode
-    modes.edit_vertex = EditVertexMode
-
-    const draw = new MapboxDraw({
-      modes,
-      styles: drawStyles(style.name),
-      displayControlsDefault: false,
-      userProperties: true
-    })
-
-    map.addControl(draw)
-    draw.add(feature)
-    draw.changeMode('disabled')
-
-    this.draw = draw
+    this.draw.add(feature)
+    this.draw.changeMode('disabled')
   }
 
   getBoundsFromCoordinates (coords) {

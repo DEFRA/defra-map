@@ -70,9 +70,8 @@ class Provider extends EventTarget {
       dragRotate: false
     })
 
-    // Set initial padding, bounds and center
-    // // * Can't set global padding in constructor
-    map.showPadding = true
+    // Set initial padding, bounds and center (*No option to set in constructor)
+    // map.showPadding = true
     map.setPadding(getFocusPadding(paddingBox, scale))
     if (bounds) {
       map.fitBounds(bounds, { animate: false })

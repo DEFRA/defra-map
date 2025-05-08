@@ -10,6 +10,7 @@ export const events = {
   SET_SEARCH: 'setsearch',
   SET_INFO: 'setinfo',
   SET_SELECTED: 'setselected',
+  SET_BANNER: 'setbanner',
   SET_INTERFACE_TYPE: 'setinterfacetype',
   MAP_QUERY: 'mapquery',
   MAP_CLICK: 'mapclick',

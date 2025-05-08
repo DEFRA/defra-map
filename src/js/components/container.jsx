@@ -70,6 +70,7 @@ export default function Container () {
   useEffect(() => {
     eventBus.on(parent, events.SET_INFO, data => { dispatch({ type: 'SET_INFO', payload: data }) })
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
+    eventBus.on(parent, events.SET_BANNER, data => { dispatch({ type: 'SET_BANNER', payload: data }) })
 
     // Dark mode media query
     if (options.hasAutoMode) {

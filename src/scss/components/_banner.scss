@@ -4,17 +4,18 @@
 @use '../settings/colours' as *;
 
 .fm-c-banner {
-    padding: 10px;
-    margin: 5px 5px 0;
-    background-color: var(--background-colour);
-    box-shadow: $panel-shadow;
-    border-radius: $panel-radius;
-    @include body-font(16px, 400);
-    pointer-events: auto;
-    color: var(--foreground-colour);
-    display: flex;
-    align-items: baseline;
-    // border: 2px solid var(--foreground-colour);
+    &__inner {
+        padding: 10px;
+        margin: 5px 5px 0;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow;
+        border-radius: $panel-radius;
+        @include body-font(16px, 400);
+        pointer-events: auto;
+        color: var(--foreground-colour);
+        display: flex;
+        align-items: baseline;
+    }
 
     &__icon {
         @include body-font(16px, 700);

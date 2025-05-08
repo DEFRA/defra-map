@@ -38,6 +38,13 @@ const setSelected = (state, payload) => {
   }
 }
 
+const setBanner = (state, payload) => {
+  return {
+    ...state,
+    banner: payload
+  }
+}
+
 const setNextSelected = (state, payload) => {
   let featureId = state.featureId
   const { key, features } = payload
@@ -167,6 +174,7 @@ export const actionsMap = {
   CLOSE: close,
   SET_MODE: setMode,
   SET_SELECTED: setSelected,
+  SET_BANNER: setBanner,
   SET_NEXT_SELECTED: setNextSelected,
   SET_IS_DARK_MODE: setIsDarkMode,
   SET_IS_TARGET_VISIBLE: setIsTargetVisible,

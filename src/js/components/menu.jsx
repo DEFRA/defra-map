@@ -11,6 +11,9 @@ export default function Menu () {
   const startBtnRef = useRef(null)
 
   const handleStartClick = () => {
+    if (!provider.map) {
+      return
+    }
     const mode = drawModes.find(m => m.id === shape)?.mode || 'frame'
     appDispatch({ type: 'SET_MODE', payload: { value: mode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
@@ -21,6 +24,9 @@ export default function Menu () {
   }
 
   const handleDeleteClick = () => {
+    if (!provider.map) {
+      return
+    }
     provider.draw.delete()
     const defaultShape = drawMode || drawModes[0].id
     appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: null, shape: defaultShape } })

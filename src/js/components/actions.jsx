@@ -59,16 +59,16 @@ export default function Actions () {
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(isDefaultMode && { style: { display: 'none' } })}>
+      <button onClick={handleUpdateClick} className='fm-c-btn-primary' {...(isDefaultMode && { style: { display: 'none' } })}>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
-      <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
+      <button onClick={handleCancelClick} className='fm-c-btn-secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
         Cancel
       </button>
-      <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
+      <button onClick={handlePolygonClick} className='fm-c-btn-primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
         {queryArea?.submitLabel}
       </button>
-      <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
+      <button onClick={handlePixelClick} className='fm-c-btn-primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
         Get feature information
       </button>
     </div>

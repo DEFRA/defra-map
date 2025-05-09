@@ -87,7 +87,7 @@ export class Draw {
       this.draw.deleteAll()
     }
 
-    // Edit an existing feature
+    // Edit existing feature
     if (mode === 'vertex' && this.draw.get(shape)) {
       this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }
@@ -96,6 +96,12 @@ export class Draw {
     if (mode === 'vertex' && !this.draw.get(shape)) {
       console.log('New polygon')
     }
+  }
+
+  // Convert paddingBox to sqaure polygon and edit
+  editPolygon () {
+    this.addFeature(null, 'polygon')
+    this.edit('vertex', 'polygon')
   }
 
   // Cancel update

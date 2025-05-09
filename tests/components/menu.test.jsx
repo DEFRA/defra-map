@@ -42,6 +42,7 @@ describe('menu', () => {
         heading: ''
       },
       provider: {
+        map: {},
         draw: {
           edit: mockEdit
         }
@@ -49,10 +50,10 @@ describe('menu', () => {
     })
 
     render(<Menu />)
+    expect(screen.getByText('Add shape')).toBeTruthy()
 
     fireEvent.click(screen.getByText('Add shape'))
 
-    expect(screen.getByText('Add shape')).toBeTruthy()
     expect(mockEdit).toHaveBeenCalled()
     expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', query: undefined } })
     expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
@@ -72,6 +73,7 @@ describe('menu', () => {
         heading: ''
       },
       provider: {
+        map: {},
         draw: {
           edit: mockEdit
         }
@@ -98,6 +100,7 @@ describe('menu', () => {
         heading: ''
       },
       provider: {
+        map: {},
         draw: {
           delete: mockDelete
         }

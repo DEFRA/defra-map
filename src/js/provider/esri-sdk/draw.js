@@ -9,107 +9,17 @@ import { defaults } from './constants'
 export class Draw {
   constructor (provider, options) {
     const { mode, shape, feature } = options
-    this.provider = provider
     Object.assign(this, options)
+    this.provider = provider
+    this.shape = shape
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
-    // Add existing feature
-    if (feature) {
-      const graphic = this.getGraphicFromFeature(feature, shape)
-      this.oGraphic = graphic.clone()
-    }
-
-    // Add graphic
-    if (feature && mode === 'default') {
-      this.addGraphic(this.oGraphic)
-      return
-    }
-
-    // Start new
-    this.edit(mode, shape)
-  }
-
-  edit (mode, shape) {
-    const { provider, oGraphic } = this
-    const { view, graphicsLayer, paddingBox } = provider
-
-    // Zoom to extent if we have an existing graphic
-    if (oGraphic) {
-      // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
-    }
-
-    // Remove graphic if frame mode
-    graphicsLayer.removeAll()
-
-    // Draw existing feature
-    if (mode === 'vertex') {
-      const currentGraphic = oGraphic?.attributes?.id === shape ? oGraphic : null
-      this.editGraphic(currentGraphic || this.getGraphicFromElement(paddingBox))
-    }
-  }
-
-  destroy () {
-    if (this.sketchViewModel) {
-      this.sketchViewModel.cancel()
-      this.sketchViewModel.layer = null
-    }
-  }
-
-  reset () {
-    const { graphicsLayer } = this.provider
-    this.sketchViewModel?.cancel()
-    graphicsLayer.removeAll()
-  }
-
-  delete () {
-    const { graphicsLayer } = this.provider
-    this.oGraphic = null
-    graphicsLayer.removeAll()
-  }
-
-  cancel () {
-    // Destroy sketchViewModel
-    this.destroy()
-    // Re-instate orginal graphic
-    this.addGraphic(this.oGraphic)
-  }
-
-  finish (shape) {
-    const { view, graphicsLayer, paddingBox } = this.provider
-    const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const elGraphic = this.getGraphicFromElement(paddingBox, shape)
-    const graphic = this.finishEdit() || currentGraphic || elGraphic
-    graphic.attributes.id = shape
-
-    // Destroy sketchViewModel
-    this.destroy()
-
-    // Add graphic
-    this.oGraphic = graphic.clone()
-    this.originalZoom = view.zoom
-    this.addGraphic(graphic)
-
-    return this.getFeature(graphic)
-  }
-
-  reColour () {
-    const { graphicsLayer } = this.provider
-    const graphic = graphicsLayer.graphics.items[0]
-    if (!graphic) {
-      return
-    }
-    this.addGraphic(graphic)
-  }
-
-  editGraphic (graphic) {
-    const { view, graphicsLayer } = this.provider
-
+    // Create sketchViewModel instance
     const sketchViewModel = new SketchViewModel({
-      view,
-      layer: graphicsLayer,
+      view: provider.view,
+      layer: provider.graphicsLayer,
       defaultUpdateOptions: {
         tool: 'reshape',
         updateOnGraphicClick: false,
@@ -126,20 +36,123 @@ export class Draw {
     // Add update event handler
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
 
-    // Fix SketchViewModel render bug
+    // Add existing feature
+    if (feature) {
+      this.oGraphic = this.getGraphicFromFeature(feature, shape)
+    }
+
+    // Add graphic
+    if (feature && mode === 'default') {
+      this.addGraphic(this.oGraphic)
+      return
+    }
+
+    // Start new
+    this.edit(mode, shape)
+  }
+
+  edit (mode, shape) {
+    const { provider, oGraphic } = this
+    const { view, graphicsLayer } = provider
+    this.shape = shape
+
+    // Zoom to extent if we have an existing graphic
+    if (oGraphic) {
+      // Additional zoom fix to address goTo graphic not respecting true size?
+      view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
+    }
+
+    // Remove graphic if frame mode
+    if (mode === 'frame') {
+      graphicsLayer.removeAll()
+    }
+
+    // reColour happens first so need a small timeout
     setTimeout(() => {
-      sketchViewModel.update(this.addGraphic(graphic))
+      const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+
+      // Edit existing feature
+      if (mode === 'vertex' && graphic) {
+        this.sketchViewModel.update(graphic)
+      }
+
+      // Create new polygon
+      if (mode === 'vertex' && !graphic) {
+        console.log('New polygon')
+      }
     }, 100)
   }
 
-  finishEdit () {
-    const { provider, sketchViewModel } = this
-    let graphic
-    if (sketchViewModel) {
-      sketchViewModel.complete()
-      graphic = provider.graphicsLayer.graphics.items[0]
+  editPolygon () {
+    this.addGraphic(null, 'polygon')
+    this.edit('vertex', 'polygon')
+  }
+
+  cancel () {
+    const { sketchViewModel } = this
+    const { graphicsLayer } = this.provider
+
+    // Remove any drawn graphics
+    graphicsLayer.removeAll()
+
+    // Reset sketch and disable tool
+    sketchViewModel.reset?.()
+    sketchViewModel?.create('none')
+
+    // Reinstate original
+    if (this.oGraphic) {
+      this.addGraphic(this.oGraphic)
     }
-    return graphic
+  }
+
+  finish (shape) {
+    const { sketchViewModel } = this
+    const { view, graphicsLayer, paddingBox } = this.provider
+
+    // Draw graphic from padding box and shape
+    if (['square', 'circle'].includes(shape)) {
+      const elGraphic = this.getGraphicFromElement(paddingBox, shape)
+      this.addGraphic(elGraphic)
+    }
+
+    // Complete sketch and disable tool
+    sketchViewModel.complete?.()
+    sketchViewModel.create('none')
+
+    const graphic = graphicsLayer.graphics.items[0]
+
+    // Add graphic
+    this.oGraphic = graphic.clone()
+    this.originalZoom = view.zoom
+
+    return this.getFeature(graphic)
+  }
+
+  delete () {
+    const { graphicsLayer } = this.provider
+    this.oGraphic = null
+    graphicsLayer.removeAll()
+  }
+
+  reColour () {
+    const { shape } = this
+    const { graphicsLayer } = this.provider
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    if (!graphic) {
+      return
+    }
+    const clone = graphic.clone()
+    graphicsLayer.remove(graphic)
+    this.addGraphic(clone)
+  }
+
+  addGraphic (graphic, shape) {
+    const { map, graphicsLayer, paddingBox, isDark } = this.provider
+    const clone = graphic ? graphic.clone() : this.getGraphicFromElement(paddingBox, shape)
+    clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+    graphicsLayer.add(clone)
+    const zIndex = 99
+    map.reorder(graphicsLayer, zIndex)
   }
 
   getBounds (el) {
@@ -209,24 +222,6 @@ export class Draw {
         id: shape
       }
     })
-  }
-
-  addGraphic (graphic) {
-    const { map, graphicsLayer, isDark } = this.provider
-    graphicsLayer.removeAll()
-    let clone
-    if (graphic) {
-      const { sketchViewModel } = this
-      clone = graphic.clone()
-      clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
-      graphicsLayer.add(clone)
-      if (sketchViewModel?.activeTool) {
-        sketchViewModel.update(clone)
-      }
-      const zIndex = 99
-      map.reorder(graphicsLayer, zIndex)
-    }
-    return clone
   }
 
   getFeature (graphic) {

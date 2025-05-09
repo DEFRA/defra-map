@@ -7,8 +7,7 @@ export default function Dimensions () {
 
   const handlePolygonSelect = (id) => {
     const value = drawModes.find(m => m.id === id).mode
-    provider.draw.addFeature(null, 'polygon')
-    provider.draw.edit(value, id)
+    provider.draw.editPolygon()
     dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }
 
@@ -16,7 +15,7 @@ export default function Dimensions () {
     <div className='fm-c-dimensions'>
       {shape === 'square' && (
 
-        <button className='fm-c-btn-tertiary' onClick={() => handlePolygonSelect('polygon')}>
+        <button className='fm-c-btn-secondary' onClick={() => handlePolygonSelect('polygon')}>
           <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
             <path d={drawModes.find(m => m.id === 'polygon').path} />
           </svg>

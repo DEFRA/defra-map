@@ -156,12 +156,13 @@
 }
 
 // Draw
-.fm-c-btn--primary,
-.fm-c-btn--secondary {
-    @include body-font(16px, normal);
+.fm-c-btn-primary,
+.fm-c-btn-secondary {
+    @extend %fm-c-btn;
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
     flex-grow: 1;
     position: relative;
     padding: 8px 10px 7px;
@@ -177,6 +178,10 @@
     svg {
         flex-shrink: 0;
         margin-right: 5px;
+    }
+
+    svg + span {
+        margin-left: 0;
     }
 
     &:hover:not([aria-disabled="true"]) {
@@ -203,7 +208,7 @@
     }
 }
 
-.fm-c-btn--primary {
+.fm-c-btn-primary {
     background-color: var(--primary-button-background-colour);
     color: var(--primary-button-text-colour);
     box-shadow: 0 2px 0 var(--primary-button-shadow-colour);

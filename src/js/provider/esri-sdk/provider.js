@@ -97,10 +97,17 @@ class Provider extends EventTarget {
 
     // Movestart
     let isMoving = false
-    reactiveWatch(() => [view.stationary], ([stationary]) => {
-      if (!isMoving && !stationary) {
-        handleMoveStart.bind(this)()
+    reactiveWatch(() => view.extent, (newExtent, oldExtent) => {
+      if (!newExtent || !oldExtent) {
+        return
+      }
+      const diffX = Math.abs(newExtent.center.x - oldExtent.center.x)
+      const diffY = Math.abs(newExtent.center.y - oldExtent.center.y)
+      const TOLERANCE = 0.00001
+      const moved = diffX > TOLERANCE || diffY > TOLERANCE
+      if (moved && !isMoving) {
         isMoving = true
+        handleMoveStart.bind(this)()
       }
     })
 

@@ -18,7 +18,7 @@ export function handleBaseTileLayerLoaded () {
 export async function handleStyleChange () {
   const { draw } = this
   reColourMarkers(this)
-  draw?.reColour()
+  setTimeout(draw?.reColour(), 0)
   this.dispatchEvent(new CustomEvent('style', {
     detail: {
       type: 'style'

@@ -38,7 +38,6 @@ export const initialState = (options) => {
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const query = queryArea?.feature
-
   const [drawMode, drawModes] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
   const featureShape = getFeatureShape(query)
   const shape = parseShape(featureShape, drawMode, drawModes)
@@ -82,6 +81,5 @@ export const reducer = (state, action) => {
     const actionFunction = fn.bind(this, state, payload)
     return actionFunction()
   }
-
   return state
 }

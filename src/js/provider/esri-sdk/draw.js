@@ -35,6 +35,7 @@ export class Draw {
 
     // Add update event handler
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
+    sketchViewModel.on(['create'], this.handleCreate.bind(this))
 
     // Add existing feature
     if (feature) {
@@ -52,7 +53,7 @@ export class Draw {
   }
 
   edit (mode, shape) {
-    const { provider, oGraphic } = this
+    const { provider, oGraphic, sketchViewModel } = this
     const { view, graphicsLayer } = provider
     this.shape = shape
 
@@ -68,19 +69,17 @@ export class Draw {
     }
 
     // reColour happens first so need a small timeout
-    setTimeout(() => {
-      const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
 
-      // Edit existing feature
-      if (mode === 'vertex' && graphic) {
-        this.sketchViewModel.update(graphic)
-      }
+    // Edit existing feature
+    if (mode === 'vertex' && graphic) {
+      sketchViewModel.update(graphic)
+    }
 
-      // Create new polygon
-      if (mode === 'vertex' && !graphic) {
-        console.log('New polygon')
-      }
-    }, 100)
+    // Create new polygon
+    if (mode === 'vertex' && !graphic) {
+      sketchViewModel.create(shape)
+    }
   }
 
   editPolygon () {
@@ -135,9 +134,8 @@ export class Draw {
   }
 
   reColour () {
-    const { shape } = this
     const { graphicsLayer } = this.provider
-    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === this.shape)
     if (!graphic) {
       return
     }
@@ -230,6 +228,14 @@ export class Draw {
       geometry: {
         type: 'polygon',
         coordinates: graphic.geometry.rings
+      }
+    }
+  }
+
+  handleCreate (e) {
+    if (e.state === 'complete') {
+      e.graphic.attributes = {
+        id: this.shape
       }
     }
   }

@@ -11,17 +11,17 @@
             "tileSize": 256,
             "attribution": "© Esri, Maxar, Earthstar Geographics",
             "minzoom": 0,
-            "maxzoom": 16
+            "maxzoom": 17
         },
         "apgb": {
             "type": "raster",
             "tiles": [
-                "https://www.getmapping.com/GmWMTS/0e3d69fc-f537-4490-a8a1-5c58c166fd41/APGB.wmtsx?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=APGB_Latest_UK_125mm&STYLE=Default&FORMAT=image/png&TILEMATRIXSET=OsEPSG27700Scales&TILEMATRIX=13&TILEROW=30697&TILECOL=12350"
+                "/apgb-tile/{z}/{y}/{x}.png"
             ],
             "tileSize": 256,
             "attribution": "© Bluesky etc..",
-            "minzoom": 17,
-            "maxzoom": 22
+            "minzoom": 18,
+            "maxzoom": 20
         },
         "esri": {
             "type": "vector",
@@ -35,6 +35,11 @@
             "id": "esri-imagery",
             "type": "raster",
             "source": "esri-imagery"
+        },
+        {
+            "id": "apgb-imagery",
+            "type": "raster",
+            "source": "apgb"
         },
         {
           "id": "Railroad/casing",

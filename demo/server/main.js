@@ -1,6 +1,7 @@
 const expressStaticGzip = require('express-static-gzip')
 const authESRI = require('./esri-auth')
 const authOS = require('./os-auth')
+const apgbTile = require('./apgb-tile')
 const fs = require('fs')
 const path = require('path')
 
@@ -40,9 +41,9 @@ function setupMiddlewares (middlewares, { app }) {
     '/styles/OS_VTS_27700_Open_Outdoor.json',
     '/styles/OS_VTS_27700_Dark.json',
     '/styles/OS_VTS_27700_Open_Dark.json',
-    '/styles/esri-world-imagery.json',
-    '/styles/esri-apgb-hybrid.json',
-    '/styles/apgb.json'
+    '/styles/esri-world-imagery-hybrid.json',
+    '/styles/esri-apgb-imagery-hybrid.json',
+    '/styles/apgb-imagery-hybrid.json'
   ], async (req, res, next) => {
     fs.readFile(path.resolve(__dirname, req.originalUrl.substring(1).split('?')[0]), (err, result) => {
       if (err) throw err
@@ -66,6 +67,18 @@ function setupMiddlewares (middlewares, { app }) {
       clientSecret: process.env.OS_CLIENT_SECRET
     })
     res.json(response)
+  })
+
+  app.get('/apgb-tile/:z/:y/:x.png', async (req, res) => {
+    try {
+      const { z, x, y } = req.params
+      const imageBuffer = await apgbTile({ z, x, y })
+      res.set('Content-Type', 'image/png')
+      res.send(imageBuffer)
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Tile fetch failed')
+    }
   })
 
   return middlewares

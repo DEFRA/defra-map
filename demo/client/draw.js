@@ -12,7 +12,7 @@ const fm = new FloodMap('map', {
   place: 'Carlisle',
   zoom: 14,
   minZoom: 8,
-  maxZoom: 16,
+  maxZoom: 20,
   // centre: [-2.938769, 54.893806],
   bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   maxBounds: [-5.719993, 49.955638, 1.794689, 55.825973],

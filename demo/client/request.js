@@ -1,6 +1,8 @@
 const osAuth = {}
 const esriAuth = {}
 
+const apgbTileMatrixMap = { 6: '280m', 7: '140m', 8: '70m', 9: '28m', 10: '14m', 11: '7m', 12: '2.8m', 13: '1.4m', 14: '0.7m', 15: '0.28m', 16: '0.14m', 17: '0.07m' }
+
 // Must be syncronous for MapLibre and return request object values
 export const createTileRequest = (getMap) => { // Factory function to pass a reference to the map instance
   return (url, resourceType) => {

@@ -115,7 +115,6 @@ const isCirclePolygon = (geometry) => {
   const BNG_TOLERANCE = 0.3
   const tolerance = detectCoordinateType(center) === 'WSG84' ? WSG84_TOLERANCE : BNG_TOLERANCE
 
-  console.log(Math.abs(maxDist - minDist), Math.abs(maxEdge - minEdge), tolerance)
   return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
 }
 

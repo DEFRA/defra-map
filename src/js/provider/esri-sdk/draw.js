@@ -57,7 +57,7 @@ export class Draw {
 
   edit (mode, shape) {
     const { provider, oGraphic, sketchViewModel, emptyLayer } = this
-    const { view, graphicsLayer } = provider
+    const { view, graphicsLayer, isDark } = provider
     this.shape = shape
 
     // Disabel sketchViewModel
@@ -99,7 +99,7 @@ export class Draw {
       // Another timeout hack
       setTimeout(() => sketchViewModel.create(shape, {
         mode: 'click',
-        polygonSymbol: defaults.POLYGON_QUERY_SYMBOL
+        polygonSymbol: this.createPolygonSymbol(isDark)
       }), 0)
     }
   }
@@ -207,19 +207,30 @@ export class Draw {
   }
 
   createGraphic (id, coordinates, isDark) {
-    const symbol = defaults.POLYGON_QUERY_SYMBOL
-    symbol.outline.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
     return new Graphic({
       geometry: {
         type: 'polygon',
         rings: coordinates,
         spatialReference: 27700
       },
-      symbol,
+      symbol: this.createPolygonSymbol(isDark),
       attributes: {
         id
       }
     })
+  }
+
+  createPolygonSymbol (isDark) {
+    const outlineColor = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+    return {
+      type: 'simple-fill',
+      color: [0, 120, 255, 0.2],
+      outline: {
+        color: outlineColor,
+        width: '2px',
+        cap: 'square'
+      }
+    }
   }
 
   getFeature (graphic) {
@@ -237,7 +248,7 @@ export class Draw {
       e.graphic.attributes = {
         id: this.shape
       }
-      e.graphic.symbol = defaults.POLYGON_QUERY_SYMBOL
+      e.graphic.symbol = this.createPolygonSymbol(this.provider.isDark)
     }
   }
 

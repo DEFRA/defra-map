@@ -28,6 +28,7 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       provider: {
+        map: {},
         draw: {
           finish: drawFinish
         }

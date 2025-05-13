@@ -15,10 +15,12 @@ export function handleBaseTileLayerLoaded () {
   }))
 }
 
-export async function handleStyleChange () {
-  const { draw } = this
-  reColourMarkers(this)
-  setTimeout(draw?.reColour(), 0)
+export async function handleStyleChange (currentStyle, newStyle) {
+  // Re-colour graphics if style changes
+  if (newStyle.name !== currentStyle.name) {
+    reColourMarkers(this)
+    this.draw?.reColour()
+  }
   this.dispatchEvent(new CustomEvent('style', {
     detail: {
       type: 'style'

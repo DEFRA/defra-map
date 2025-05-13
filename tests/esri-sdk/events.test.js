@@ -35,7 +35,7 @@ describe('esri-sdk events', () => {
       dispatchEvent: jest.fn()
     }
 
-    handleStyleChange.bind(provider)()
+    handleStyleChange.bind(provider)({ name: 'current' }, { name: 'new' })
 
     expect(provider.dispatchEvent).toHaveBeenCalled()
     expect(provider.draw.reColour).toHaveBeenCalled()

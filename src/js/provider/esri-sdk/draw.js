@@ -1,5 +1,6 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Circle from '@arcgis/core/geometry/Circle.js'
 import Point from '@arcgis/core/geometry/Point.js'
 import Graphic from '@arcgis/core/Graphic'
@@ -11,15 +12,18 @@ export class Draw {
     const { mode, shape, feature } = options
     Object.assign(this, options)
     this.provider = provider
-    this.shape = shape
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
+    // Empty layer hack to disable sketchViewModel
+    const emptyLayer = new GraphicsLayer({ id: 'empty', visible: false })
+    this.emptyLayer = emptyLayer
+
     // Create sketchViewModel instance
     const sketchViewModel = new SketchViewModel({
       view: provider.view,
-      layer: provider.graphicsLayer,
+      layer: emptyLayer,
       defaultUpdateOptions: {
         tool: 'reshape',
         updateOnGraphicClick: false,
@@ -31,15 +35,14 @@ export class Draw {
       }
     })
 
-    this.sketchViewModel = sketchViewModel
-
     // Add update event handler
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
     sketchViewModel.on(['create'], this.handleCreate.bind(this))
+    this.sketchViewModel = sketchViewModel
 
     // Add existing feature
     if (feature) {
-      this.oGraphic = this.getGraphicFromFeature(feature, shape)
+      this.oGraphic = this.createGraphic(shape, feature.geometry.coordinates)
     }
 
     // Add graphic
@@ -53,9 +56,13 @@ export class Draw {
   }
 
   edit (mode, shape) {
-    const { provider, oGraphic, sketchViewModel } = this
+    const { provider, oGraphic, sketchViewModel, emptyLayer } = this
     const { view, graphicsLayer } = provider
     this.shape = shape
+
+    // Disabel sketchViewModel
+    sketchViewModel.cancel()
+    sketchViewModel.layer = emptyLayer
 
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
@@ -73,12 +80,27 @@ export class Draw {
 
     // Edit existing feature
     if (mode === 'vertex' && graphic) {
-      sketchViewModel.update(graphic)
+      sketchViewModel.layer = graphicsLayer
+
+      // Another timeout hack
+      setTimeout(() => sketchViewModel.update([graphic], {
+        tool: 'reshape',
+        enableRotation: false,
+        enableScaling: false,
+        preserveAspectRatio: false,
+        toggleToolOnClick: false
+      }), 0)
     }
 
     // Create new polygon
     if (mode === 'vertex' && !graphic) {
-      sketchViewModel.create(shape)
+      sketchViewModel.layer = graphicsLayer
+
+      // Another timeout hack
+      setTimeout(() => sketchViewModel.create(shape, {
+        mode: 'click',
+        polygonSymbol: defaults.POLYGON_QUERY_SYMBOL
+      }), 0)
     }
   }
 
@@ -88,7 +110,7 @@ export class Draw {
   }
 
   cancel () {
-    const { sketchViewModel } = this
+    const { sketchViewModel, emptyLayer } = this
     const { graphicsLayer } = this.provider
 
     // Remove any drawn graphics
@@ -96,7 +118,7 @@ export class Draw {
 
     // Reset sketch and disable tool
     sketchViewModel.reset?.()
-    sketchViewModel?.create('none')
+    sketchViewModel.layer = emptyLayer
 
     // Reinstate original
     if (this.oGraphic) {
@@ -105,7 +127,7 @@ export class Draw {
   }
 
   finish (shape) {
-    const { sketchViewModel } = this
+    const { sketchViewModel, emptyLayer } = this
     const { view, graphicsLayer, paddingBox } = this.provider
 
     // Draw graphic from padding box and shape
@@ -114,13 +136,12 @@ export class Draw {
       this.addGraphic(elGraphic)
     }
 
-    // Complete sketch and disable tool
+    // Complete sketch and destroy sketchViewModel
     sketchViewModel.complete?.()
-    sketchViewModel.create('none')
+    sketchViewModel.layer = emptyLayer
 
-    const graphic = graphicsLayer.graphics.items[0]
-
-    // Add graphic
+    // Replace original graphic with new sketch
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom
 
@@ -145,9 +166,8 @@ export class Draw {
   }
 
   addGraphic (graphic, shape) {
-    const { map, graphicsLayer, paddingBox, isDark } = this.provider
+    const { map, graphicsLayer, paddingBox } = this.provider
     const clone = graphic ? graphic.clone() : this.getGraphicFromElement(paddingBox, shape)
-    clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
     graphicsLayer.add(clone)
     const zIndex = 99
     map.reorder(graphicsLayer, zIndex)
@@ -183,41 +203,21 @@ export class Draw {
       rings = [[[bounds[0], bounds[1]], [bounds[2], bounds[1]], [bounds[2], bounds[3]], [bounds[0], bounds[3]], [bounds[0], bounds[1]]]]
     }
 
-    const graphic = new Graphic({
-      geometry: {
-        type: 'polygon',
-        spatialReference: 27700,
-        rings
-      },
-      symbol: {
-        type: 'simple-line',
-        color: defaults.POLYGON_QUERY_STROKE,
-        width: '2px',
-        cap: 'square'
-      },
-      attributes: {
-        id: shape
-      }
-    })
-
-    return graphic
+    return this.createGraphic(shape, rings)
   }
 
-  getGraphicFromFeature (feature, shape) {
+  createGraphic (id, coordinates, isDark) {
+    const symbol = defaults.POLYGON_QUERY_SYMBOL
+    symbol.outline.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
     return new Graphic({
       geometry: {
         type: 'polygon',
-        rings: feature.geometry.coordinates,
+        rings: coordinates,
         spatialReference: 27700
       },
-      symbol: {
-        type: 'simple-line',
-        color: defaults.POLYGON_QUERY_STROKE,
-        width: '2px',
-        cap: 'square'
-      },
+      symbol,
       attributes: {
-        id: shape
+        id
       }
     })
   }
@@ -237,6 +237,7 @@ export class Draw {
       e.graphic.attributes = {
         id: this.shape
       }
+      e.graphic.symbol = defaults.POLYGON_QUERY_SYMBOL
     }
   }
 

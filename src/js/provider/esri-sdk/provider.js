@@ -96,17 +96,15 @@ class Provider extends EventTarget {
     })
 
     // Movestart
-    let isMoving = false
     reactiveWatch(() => view.extent, (newExtent, oldExtent) => {
-      if (!newExtent || !oldExtent) {
+      if (!(newExtent && oldExtent)) {
         return
       }
       const diffX = Math.abs(newExtent.center.x - oldExtent.center.x)
       const diffY = Math.abs(newExtent.center.y - oldExtent.center.y)
       const TOLERANCE = 0.00001
       const moved = diffX > TOLERANCE || diffY > TOLERANCE
-      if (moved && !isMoving) {
-        isMoving = true
+      if (moved) {
         handleMoveStart.bind(this)()
       }
     })
@@ -118,7 +116,6 @@ class Provider extends EventTarget {
 
     // All render/changes/animations complete. Must debounce, min 500ms
     const debounceStationary = debounce(() => {
-      isMoving = false
       handleStationary.bind(this)()
     }, defaults.DELAY)
 
@@ -201,10 +198,11 @@ class Provider extends EventTarget {
     const { view } = this
     view.constraints.maxZoom = maxZoom
     view.constraints.minZoom = minZoom
+    const currentStyle = this.style
     this.style = style
     this.isDark = ['dark', 'aerial'].includes(style.name)
     this.baseTileLayer.loadStyle(style.url).then(() => {
-      handleStyleChange.bind(this)()
+      handleStyleChange.bind(this)(currentStyle, style)
     })
   }
 

@@ -375,13 +375,15 @@ describe('Provider', () => {
 
       const reactiveWatch = modules[9].watch
       const view = provider.view
-      view.stationary = false
+      const oldExtent = { center: { x: 50, y: 50 } }
+      const newExtent = { center: { x: 100, y: 100 } }
+      view.extent = newExtent
 
       // Mock the reactiveWatch callback
       const watchCallback = reactiveWatch.mock.calls[1][1]
 
       // Set reactive watch property
-      watchCallback([view.stationary])
+      watchCallback(newExtent, oldExtent)
 
       expect(handleMoveStart).toHaveBeenCalled()
     })

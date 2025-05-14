@@ -54,6 +54,7 @@ export function handleMove () {
   const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
   const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
   const resolution = view.resolution
+  console.log('move')
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,

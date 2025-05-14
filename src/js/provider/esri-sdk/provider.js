@@ -98,9 +98,7 @@ class Provider extends EventTarget {
     // Movestart / Move
     let isMove = false
     reactiveWhen(() => view.ready, () => {
-      console.log('In here')
       reactiveWatch(() => [view.zoom, view.center.x, view.center.y], ([newZoom, newX, newY], [oldZoom, oldX, oldY]) => {
-        console.log('And here')
         const zoomChanged = newZoom !== oldZoom
         const centerChanged = newX !== oldX || newY !== oldY
         if (!(zoomChanged || centerChanged)) {

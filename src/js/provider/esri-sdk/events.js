@@ -48,11 +48,11 @@ export function handleMoveStart () {
   }))
 }
 
-export function handleMove (zoom) {
+export function handleMove () {
   const { view } = this
   const { maxZoom, minZoom } = view.constraints
-  const isMaxZoom = zoom + defaults.ZOOM_TOLERANCE >= maxZoom
-  const isMinZoom = zoom - defaults.ZOOM_TOLERANCE <= minZoom
+  const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
+  const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
   const resolution = view.resolution
   this.dispatchEvent(new CustomEvent('move', {
     detail: {

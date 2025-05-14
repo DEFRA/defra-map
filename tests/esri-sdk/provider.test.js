@@ -235,7 +235,7 @@ describe('Provider', () => {
           }))
         }
       }, // TileInfo
-      { watch: jest.fn() } // reactiveUtils
+      { when: jest.fn(), watch: jest.fn() } // reactiveUtils
     ]
 
     const testContainer = document.createElement('div')
@@ -291,14 +291,19 @@ describe('Provider', () => {
 
       await provider.addMap(modules, options)
 
+      const reactiveWhen = modules[9].when
       const reactiveWatch = modules[9].watch
+      const view = provider.view
       const baseTileLayer = provider.baseTileLayer
       baseTileLayer.loaded = true
+      view.ready = true
 
-      // Mock the reactiveWatch callback
+      // Mock the reactiveWatch an reactiveWhen callback
+      const whenCallback = reactiveWhen.mock.calls[0][1]
       const watchCallback = reactiveWatch.mock.calls[0][1]
 
-      // Simulate view change to trigger move start
+      // Simulate view ready and then change to trigger move start
+      whenCallback([view.ready])
       watchCallback([baseTileLayer.loaded])
 
       expect(handleBaseTileLayerLoaded).toHaveBeenCalled()
@@ -374,17 +379,30 @@ describe('Provider', () => {
 
       await provider.addMap(modules, options)
 
+      const reactiveWhen = modules[9].when
       const reactiveWatch = modules[9].watch
       const view = provider.view
-      const oldExtent = { center: { x: 50, y: 50 } }
-      const newExtent = { center: { x: 100, y: 100 } }
-      view.extent = newExtent
+      view.ready = true
+      view.center = { x: 0, y: 0 }
+      view.zoom = 6
 
-      // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[1][1]
+      // Mock the reactiveWhen and reactiveWatch callbacks
+      const whenCallback = reactiveWhen.mock.calls[0][1]
+
+      // Set reactive when property
+      whenCallback([view.ready])
+
+      const watchCallback = reactiveWatch.mock.calls[2][1]
+
+      const oldZoom = 6
+      const oldX = 0
+      const oldY = 0
+      const newZoom = 8
+      const newX = 1
+      const newY = 1
 
       // Set reactive watch property
-      watchCallback(newExtent, oldExtent)
+      watchCallback([newZoom, newX, newY], [oldZoom, oldX, oldY])
 
       expect(handleMoveStart).toHaveBeenCalled()
     })
@@ -417,13 +435,15 @@ describe('Provider', () => {
       await provider.addMap(modules, options)
 
       const reactiveWatch = modules[9].watch
+      const view = provider.view
+      view.stationary = true
+      view.updating = false
 
       // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[3][1]
+      const watchCallback = reactiveWatch.mock.calls[1][1]
 
       // Simulate view becoming stationary
-
-      watchCallback([true, false]) // stationary is true
+      watchCallback([view.stationary, view.updating]) // stationary is true
 
       expect(debounce).toHaveBeenCalled()
       expect(handleStationary).toHaveBeenCalled()

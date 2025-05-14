@@ -76,6 +76,7 @@ export function handleMove () {
   const isMaxZoom = map.getZoom() >= map.getMaxZoom()
   const isMinZoom = map.getZoom() <= map.getMinZoom()
   const resolution = getResolution(map)
+  console.log('handleMove')
 
   // Need to include maxBounds check as this can also constrain zoom
   this.dispatchEvent(new CustomEvent('move', {

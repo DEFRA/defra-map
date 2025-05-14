@@ -28,7 +28,7 @@ class Provider extends EventTarget {
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js'),
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/GraphicsLayer.js'),
       import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/support/TileInfo.js'),
-      import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch"] */ '@arcgis/core/core/reactiveUtils.js')
+      import(/* webpackChunkName: "esri-sdk", webpackExports: ["watch", "when"] */ '@arcgis/core/core/reactiveUtils.js')
     ]).then(modules => this.addMap(modules, options))
   }
 
@@ -39,7 +39,7 @@ class Provider extends EventTarget {
   async addMap (modules, options) {
     const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
     const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
-    const { watch: reactiveWatch } = modules[9]
+    const { watch: reactiveWatch, when: reactiveWhen } = modules[9]
 
     // Implementation has full control over esriConfig
     if (this.esriConfigCallback) {
@@ -88,30 +88,30 @@ class Provider extends EventTarget {
     this.esriConfig = esriConfig
     this.modules = { Map, MapView, Extent, Point, VectorTileLayer, GraphicsLayer, FeatureLayer }
     this.framework = { map, view, esriConfig }
-    this.isStationary = !!options.isStationary
+    this.isStationary = !!options.isStationary // Alow for mocking
 
     // Map ready event (first load)
     reactiveWatch(() => baseTileLayer.loaded && view.resolution > 0, () => {
       handleBaseTileLayerLoaded.call(this)
     })
 
-    // Movestart
-    reactiveWatch(() => view.extent, (newExtent, oldExtent) => {
-      if (!(newExtent && oldExtent)) {
-        return
-      }
-      const diffX = Math.abs(newExtent.center.x - oldExtent.center.x)
-      const diffY = Math.abs(newExtent.center.y - oldExtent.center.y)
-      const TOLERANCE = 0.00001
-      const moved = diffX > TOLERANCE || diffY > TOLERANCE
-      if (moved) {
-        handleMoveStart.bind(this)()
-      }
-    })
-
-    // Move (zoom)
-    reactiveWatch(() => [view.zoom], ([newZoom]) => {
-      handleMove.bind(this)(newZoom)
+    // Movestart / Move
+    let isMove = false
+    reactiveWhen(() => view.ready, () => {
+      console.log('In here')
+      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], ([newZoom, newX, newY], [oldZoom, oldX, oldY]) => {
+        console.log('And here')
+        const zoomChanged = newZoom !== oldZoom
+        const centerChanged = newX !== oldX || newY !== oldY
+        if (!(zoomChanged || centerChanged)) {
+          return
+        }
+        if (!isMove) {
+          handleMoveStart.bind(this)()
+          isMove = true
+        }
+        handleMove.bind(this)()
+      })
     })
 
     // All render/changes/animations complete. Must debounce, min 500ms
@@ -125,6 +125,7 @@ class Provider extends EventTarget {
       }
       // Address event firing twice on page load
       if (stationary) {
+        isMove = false
         this.isStationary = true
       }
     })

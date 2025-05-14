@@ -77,7 +77,7 @@ jest.mock('../../src/js/provider/esri-sdk/marker.js', () => ({
   ...jest.requireActual('../../src/js/provider/esri-sdk/marker.js'),
   targetMarkerGraphic: jest.fn((coord, isDark, hasData) => ({
     geometry: { type: 'point', x: coord[0], y: coord[1], spatialReference: 27700 },
-    symbol: { color: isDark ? '#ffffff' : '#0b0c0c', type: 'simple-marker' }
+    symbol: { color: isDark ? '#ffffff' : '#0b0c0c', type: 'simple-marker', outline: { color: isDark ? '#ffffff' : '#0b0c0c', width: 0 } }
   }))
 }))
 
@@ -170,6 +170,7 @@ describe('Provider', () => {
 
     provider.graphicsLayer = {
       add: jest.fn(),
+      addMany: jest.fn(),
       remove: jest.fn(),
       removeAll: jest.fn()
     }
@@ -449,17 +450,19 @@ describe('Provider', () => {
 
     it('should remove target marker', () => {
     // Create a mock marker object
-      const mockMarker = { remove: jest.fn() }
+      const mockHalo = { remove: jest.fn() }
+      const mockFill = { remove: jest.fn() }
 
       // Set up the provider with the mock marker
-      provider.targetMarker = mockMarker
+      provider.targetMarker = [mockHalo, mockFill]
       provider.graphicsLayer = { remove: jest.fn() }
 
       // Call the method
       provider.removeTargetMarker()
 
       // Assert that graphicsLayer.remove was called with the mock marker
-      expect(provider.graphicsLayer.remove).toHaveBeenCalledWith(mockMarker)
+      expect(provider.graphicsLayer.remove).toHaveBeenCalledWith(mockHalo)
+      expect(provider.graphicsLayer.remove).toHaveBeenCalledWith(mockFill)
       expect(provider.targetMarker).toBeNull()
     })
 

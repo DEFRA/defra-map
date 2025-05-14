@@ -1,4 +1,5 @@
 @use '../settings/shadows' as *;
+@use '../settings/colours' as *;
 
 .fm-c-marker {
     position: absolute;
@@ -33,35 +34,65 @@
 // Marker
 .fm-c-marker--target {
     z-index: 2;
-    color: var(--secondary-text-colour);
+    color: var(--foreground-colour);
 
-    circle {
-        stroke-dasharray: 4 2;
+    path:first-child {
+        display: none;
     }
 
-    &.fm-c-marker--has-data {
-        color: var(--foreground-colour);
+    path:last-child {
+        display: block;
+        stroke-width: 3;
+        stroke: $background-colour;
+        fill: $foreground-colour;
+        paint-order: stroke fill;
+    }
 
-        circle {
-            stroke-dasharray: none;
+    // svg {
+    //     filter: drop-shadow(0px 0px 1px rgba(255, 255, 255, 1));
+    // }
+
+    // circle {
+    //     stroke-dasharray: 4 2;
+    // }
+
+    &.fm-c-marker--has-data {
+        path:first-child {
+            display: block;
+            stroke-width: 3;
+            stroke: $background-colour;
+            fill: $foreground-colour;
+            paint-order: stroke fill;
+        }
+
+        path:last-child {
+            display: none;
         }
     }
 }
 
 // Overlay target marker
 .fm-o-viewport > .fm-c-marker--target {
-    width: 69px;
-    height: 69px;
+    width: 38px;
+    height: 38px;
     left: 50%;
     top: 50%;
-    margin-left: -34.5px;
-    margin-top: -34.5px;
+    margin-left: -19px;
+    margin-top: -19px;
     pointer-events: none;
 }
 
 .fm-o-viewport--large > .fm-c-marker--target {
     left: 100%;
     top: 100%;
+}
+
+.fm-o-viewport--dark, .fm-o-viewport--aerial {
+    .fm-c-marker--target path:first-child,
+    .fm-c-marker--target path:last-child {
+        stroke: $foreground-colour;
+        fill: $background-colour;
+    }
 }
 
 // Shortcut marker

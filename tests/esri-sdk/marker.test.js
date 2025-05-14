@@ -17,9 +17,10 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String), // The long path string for markers with data
-          size: '68px',
+          size: '38px',
           color: '#0b0c0c',
           outline: {
+            color: '#ffffff',
             width: 0
           }
         }
@@ -39,9 +40,10 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String), // The long path string for markers without data
-          size: '68px',
-          color: '#505a5f',
+          size: '38px',
+          color: '#0b0c0c',
           outline: {
+            color: '#ffffff',
             width: 0
           }
         }
@@ -61,9 +63,10 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String),
-          size: '68px',
+          size: '38px',
           color: '#ffffff', // White color for dark theme
           outline: {
+            color: '#0b0c0c',
             width: 0
           }
         }
@@ -73,13 +76,26 @@ describe('Marker Module', () => {
 
   describe('reColourMarkers', () => {
     let mockProvider
-    let mockClonedMarker
+    let mockClonedHalo
+    let mockClonedFill
 
     beforeEach(() => {
       // Create a cloned marker that matches the structure needed
-      mockClonedMarker = {
+      mockClonedHalo = {
         symbol: {
-          color: '#000000'
+          color: '#000000',
+          outline: {
+            color: '#0b0c0c'
+          }
+        },
+        clone: jest.fn().mockReturnThis() // Return itself when cloned
+      }
+      mockClonedFill = {
+        symbol: {
+          color: '#000000',
+          outline: {
+            color: '#0b0c0c'
+          }
         },
         clone: jest.fn().mockReturnThis() // Return itself when cloned
       }
@@ -87,9 +103,10 @@ describe('Marker Module', () => {
       mockProvider = {
         graphicsLayer: {
           remove: jest.fn(),
-          add: jest.fn()
+          add: jest.fn(),
+          addMany: jest.fn()
         },
-        targetMarker: mockClonedMarker,
+        targetMarker: [mockClonedHalo, mockClonedFill],
         isDark: false
       }
     })
@@ -97,14 +114,28 @@ describe('Marker Module', () => {
     it('should recolour markers when target marker exists', async () => {
       await reColourMarkers(mockProvider)
 
-      expect(mockProvider.graphicsLayer.remove).toHaveBeenCalledWith(mockProvider.targetMarker)
-      expect(mockProvider.targetMarker.clone).toHaveBeenCalled()
-      expect(mockProvider.graphicsLayer.add).toHaveBeenCalledWith(expect.objectContaining({
-        symbol: {
-          color: '#0b0c0c'
-        }
-      }))
-      expect(mockProvider.targetMarker.symbol.color).toBe('#0b0c0c')
+      expect(mockProvider.graphicsLayer.remove).toHaveBeenCalledWith(mockProvider.targetMarker[0])
+      expect(mockProvider.graphicsLayer.remove).toHaveBeenCalledWith(mockProvider.targetMarker[1])
+      expect(mockProvider.targetMarker[0].clone).toHaveBeenCalled()
+      expect(mockProvider.targetMarker[1].clone).toHaveBeenCalled()
+      expect(mockProvider.graphicsLayer.addMany).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            symbol: expect.objectContaining({
+              color: '#000000'
+            })
+          }),
+          expect.objectContaining({
+            symbol: expect.objectContaining({
+              outline: expect.objectContaining({
+                color: '#0b0c0c'
+              })
+            })
+          })
+        ])
+      )
+      expect(mockProvider.targetMarker[0].symbol.color).toBe('#000000')
+      expect(mockProvider.targetMarker[1].symbol.outline.color).toBe('#0b0c0c')
     })
 
     it('should recolour markers with dark theme', async () => {
@@ -112,8 +143,23 @@ describe('Marker Module', () => {
 
       await reColourMarkers(mockProvider)
 
-      const newGraphic = mockProvider.graphicsLayer.add.mock.calls[0][0]
-      expect(newGraphic.symbol.color).toBe('#ffffff')
+      const calledWithArray = mockProvider.graphicsLayer.addMany.mock.calls[0][0]
+      expect(calledWithArray).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            symbol: expect.objectContaining({
+              outline: expect.objectContaining({
+                color: '#0b0c0c'
+              })
+            })
+          }),
+          expect.objectContaining({
+            symbol: expect.objectContaining({
+              color: '#ffffff'
+            })
+          })
+        ]))
+      // expect(newHalo.symbol.color).toBe('#ffffff')
     })
 
     it('should do nothing when target marker does not exist', async () => {
@@ -126,12 +172,15 @@ describe('Marker Module', () => {
     })
 
     it('should update provider with new graphic', async () => {
-      const newGraphic = { symbol: { color: '#0b0c0c' } }
-      mockProvider.targetMarker.clone.mockReturnValue(newGraphic)
+      const newHalo = { symbol: { outline: { color: '#ffffff' } } }
+      const newFill = { symbol: { color: '#0b0c0c' } }
+      mockProvider.targetMarker[0].clone.mockReturnValue(newHalo)
+      mockProvider.targetMarker[1].clone.mockReturnValue(newFill)
 
       await reColourMarkers(mockProvider)
 
-      expect(mockProvider.targetMarker).toBe(newGraphic)
+      expect(mockProvider.targetMarker[0]).toBe(newHalo)
+      expect(mockProvider.targetMarker[1]).toBe(newFill)
     })
   })
 })

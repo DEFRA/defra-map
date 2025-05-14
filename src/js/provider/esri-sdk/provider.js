@@ -266,9 +266,11 @@ class Provider extends EventTarget {
         // *** Bug with graphics layer order
         const zIndex = 99
         map.reorder(graphicsLayer, zIndex)
-        const graphic = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
-        graphicsLayer.add(graphic)
-        this.targetMarker = graphic
+        const fill = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
+        const halo = new Graphic(targetMarkerGraphic(coord, isDark, hasData))
+        halo.symbol.outline.width = 2
+        graphicsLayer.addMany([halo, fill])
+        this.targetMarker = [halo, fill]
       }
     })
   }
@@ -276,7 +278,8 @@ class Provider extends EventTarget {
   removeTargetMarker () {
     const { graphicsLayer, targetMarker } = this
     if (targetMarker) {
-      graphicsLayer.remove(targetMarker)
+      graphicsLayer.remove(targetMarker[0])
+      graphicsLayer.remove(targetMarker[1])
       this.targetMarker = null
     }
   }

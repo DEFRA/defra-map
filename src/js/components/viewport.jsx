@@ -12,8 +12,8 @@ import PaddingBox from './padding-box.jsx'
 import Target from './target.jsx'
 import { toggleInert } from '../lib/dom.js'
 
-const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
-  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-style' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+const getClassName = (size, styleName, isFocusVisible, isKeyboard, hasShortcuts) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''} fm-o-viewport--${styleName}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
 export default function Viewport () {
@@ -35,8 +35,7 @@ export default function Viewport () {
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(style?.name)
-  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
+  const className = getClassName(size, style?.name, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style?.name)
 

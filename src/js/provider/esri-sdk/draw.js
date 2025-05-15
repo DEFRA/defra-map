@@ -225,12 +225,13 @@ export class Draw {
   }
 
   createPolygonSymbol (isDark) {
-    const outlineColor = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+    const stroke = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+    const fill = isDark ? defaults.POLYGON_QUERY_FILL_DARK : defaults.POLYGON_QUERY_FILL
     return {
       type: 'simple-fill',
-      color: [0, 120, 255, 0.2],
+      color: fill,
       outline: {
-        color: outlineColor,
+        color: stroke,
         width: '2px',
         cap: 'square'
       }

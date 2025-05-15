@@ -48,11 +48,12 @@ export class Draw {
     // Add graphic
     if (feature && mode === 'default') {
       this.addGraphic(this.oGraphic)
-      return
     }
 
     // Start new
-    this.edit(mode, shape)
+    if (!feature) {
+      this.edit(mode, shape)
+    }
   }
 
   edit (mode, shape) {
@@ -105,12 +106,14 @@ export class Draw {
   }
 
   editPolygon () {
-    this.addGraphic(null, 'polygon')
+    const paddingBox = this.provider.paddingBox
+    const elGraphic = this.getGraphicFromElement(paddingBox, 'polygon')
+    this.addGraphic(elGraphic)
     this.edit('vertex', 'polygon')
   }
 
   cancel () {
-    const { sketchViewModel, emptyLayer } = this
+    const { sketchViewModel, emptyLayer, oGraphic } = this
     const { graphicsLayer } = this.provider
 
     // Remove any drawn graphics
@@ -122,7 +125,8 @@ export class Draw {
 
     // Reinstate original
     if (this.oGraphic) {
-      this.addGraphic(this.oGraphic)
+      const revertGraphic = this.createGraphic(oGraphic.id, oGraphic.geometry.rings)
+      this.addGraphic(revertGraphic)
     }
   }
 
@@ -160,15 +164,14 @@ export class Draw {
     if (!graphic) {
       return
     }
-    const clone = graphic.clone()
+    const newGraphic = this.createGraphic(graphic.id, graphic.geometry.rings)
     graphicsLayer.remove(graphic)
-    this.addGraphic(clone)
+    this.addGraphic(newGraphic)
   }
 
-  addGraphic (graphic, shape) {
-    const { map, graphicsLayer, paddingBox } = this.provider
-    const clone = graphic ? graphic.clone() : this.getGraphicFromElement(paddingBox, shape)
-    graphicsLayer.add(clone)
+  addGraphic (graphic) {
+    const { map, graphicsLayer } = this.provider
+    graphicsLayer.add(graphic)
     const zIndex = 99
     map.reorder(graphicsLayer, zIndex)
   }

@@ -97,7 +97,7 @@ export default function Viewport () {
     // Clear selected feature and label
     if (['Escape', 'Esc'].includes(e.key)) {
       // Triggers an update event
-      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
+      labelPixel.current = provider.hideLabel?.()
       viewportDispatch({ type: 'CLEAR' })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }

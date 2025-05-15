@@ -283,7 +283,7 @@ class Provider extends EventTarget {
   }
 
   showNextLabel (pixel, direction) {
-    const labels = getLabels.bind(this)
+    const labels = getLabels.bind(this)()
     const { lng, lat } = this.map.getCenter()
     const center = this.map.project([lng, lat])
     const pixels = labels.map(c => c.pixel)
@@ -301,7 +301,7 @@ class Provider extends EventTarget {
 
   hideLabel () {
     if (this.map) {
-      highlightLabel.bind(this)
+      highlightLabel.bind(this)()
     }
   }
 }

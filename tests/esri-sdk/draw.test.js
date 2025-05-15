@@ -64,36 +64,28 @@ describe('Draw Class', () => {
       editSpy.mockRestore()
     })
 
-    it('should generate a new Graphic from the provided feature', () => {
-      const getGraphicFromFeatureSpy = jest.spyOn(Draw.prototype, 'getGraphicFromFeature')
+    it('should generate a new Graphic from the provided coordinates', () => {
+      const createGraphicSpy = jest.spyOn(Draw.prototype, 'createGraphic')
       const shape = 'square'
-      const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
+      const coordinates = [[[0, 0], [1, 1], [2, 2]]]
+      const feature = { geometry: { coordinates } }
       drawInstance = new Draw(mockProvider, { feature, shape })
-      expect(getGraphicFromFeatureSpy).toHaveBeenCalledWith(feature, shape)
-      getGraphicFromFeatureSpy.mockRestore()
+      expect(createGraphicSpy).toHaveBeenCalledWith(shape, coordinates)
+      createGraphicSpy.mockRestore()
     })
 
     it('should store the cloned graphic in oGraphic', () => {
+      jest.spyOn(Draw.prototype, 'createGraphic').mockReturnValue({ symbol: {} })
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
       drawInstance = new Draw(mockProvider, { feature, shape: 'square' })
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.clone = jest.fn().mockReturnValue({
-        ...mockGraphic,
-        symbol: {}
-      })
-      jest.spyOn(drawInstance, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
+      console.log(drawInstance.oGraphic)
       expect(drawInstance.oGraphic).toBeDefined()
       expect(drawInstance.oGraphic.symbol).toBeDefined()
     })
 
     it('should add the generated graphic using addGraphic()', () => {
+      jest.spyOn(Draw.prototype, 'createGraphic').mockReturnValue({ symbol: {}, clone: jest.fn() })
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
-      const mockGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
-      mockGraphic.clone = jest.fn().mockReturnValue({
-        ...mockGraphic,
-        symbol: {}
-      })
-      jest.spyOn(Draw.prototype, 'getGraphicFromFeature').mockReturnValue(mockGraphic)
       const addGraphicSpy = jest.spyOn(Draw.prototype, 'addGraphic')
       drawInstance = new Draw(mockProvider, { mode: 'default', feature })
       expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))

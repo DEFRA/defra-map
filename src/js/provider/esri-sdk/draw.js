@@ -206,7 +206,8 @@ export class Draw {
     return this.createGraphic(shape, rings)
   }
 
-  createGraphic (id, coordinates, isDark) {
+  createGraphic (id, coordinates) {
+    const { isDark } = this.provider
     return new Graphic({
       geometry: {
         type: 'polygon',

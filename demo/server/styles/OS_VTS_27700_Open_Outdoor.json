@@ -7,7 +7,9 @@
       "type": "vector",
       "url": "open-tile.json",
       "maxzoom": 15,
-      "minzoom": 0
+      "minzoom": 0,
+      "attribution": "&copy; Open data",
+      "copyrightText": "&copy; Open data"
     }
   },
   "layers": [

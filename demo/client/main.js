@@ -35,7 +35,6 @@ const fm = new FloodMap('map', {
     url: process.env.DARK_URL
   },{
     name: 'aerial',
-    attribution: 'Test',
     url: process.env.AERIAL_URL,
     logo: null
   },{

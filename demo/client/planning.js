@@ -161,7 +161,7 @@ const getSymbols = () => {
 
 const symbols = getSymbols()
 
-const attribution = `<a href="">${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789</a>`
+const attribution = `<a href="">${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789</a>. Powered by <a href="https://www.esri.com">ESRI</a>`
 
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
@@ -191,11 +191,11 @@ const fm = new FloodMap('map', {
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
-    attribution
+    // attribution
   }, {
     name: 'dark',
     url: process.env.OS_VTAPI_DARK_URL,
-    attribution
+    attribution: 'Open data, dark style'
   }],
   search: {
     country: 'england',

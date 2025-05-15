@@ -312,6 +312,7 @@
 .fm-tablet .fm-o-attribution,
 .fm-desktop .fm-o-attribution {
     position: absolute;
+    z-index: -2;
     bottom: 0;
     right: 0;
 }

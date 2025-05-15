@@ -2,15 +2,27 @@ import { getDetail } from './query'
 import { reColourMarkers } from './marker'
 import { defaults } from './constants'
 
+export const getAttributions = (layers) => {
+  const baseTileLayer = layers[0]
+  const sources = baseTileLayer.currentStyleInfo.style.sources
+  const activeAttributions = new Set()
+  Object.keys(sources).forEach(source => {
+    activeAttributions.add(sources[source].attribution)
+  })
+  return Array.from(activeAttributions)
+}
+
 export function handleBaseTileLayerLoaded () {
-  const { framework, modules, view } = this
+  const { framework, modules, view, baseTileLayer } = this
   this.isLoaded = true
   const resolution = view.resolution
+  const attributions = getAttributions([baseTileLayer])
   this.dispatchEvent(new CustomEvent('load', {
     detail: {
       modules,
       framework,
-      resolution
+      resolution,
+      attributions
     }
   }))
 }
@@ -29,14 +41,18 @@ export async function handleStyleChange (currentStyle, newStyle) {
 }
 
 export async function handleStationary () {
-  const { paddingBox } = this
+  const { paddingBox, baseTileLayer } = this
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
   const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
   const point = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)]
   this.isUserInitiated = false
+  const attributions = getAttributions([baseTileLayer])
   const detail = await getDetail.bind(this)(point)
   this.dispatchEvent(new CustomEvent('update', {
-    detail
+    detail: {
+      ...detail,
+      attributions
+    }
   }))
 }
 
@@ -49,17 +65,18 @@ export function handleMoveStart () {
 }
 
 export function handleMove () {
-  const { view } = this
+  const { view, baseTileLayer } = this
   const { maxZoom, minZoom } = view.constraints
   const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
   const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
   const resolution = view.resolution
-  console.log('move')
+  const attributions = getAttributions([baseTileLayer])
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,
       isMinZoom,
-      resolution
+      resolution,
+      attributions
     }
   }))
 }

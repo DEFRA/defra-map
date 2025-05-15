@@ -18,7 +18,8 @@ describe('esri-sdk events', () => {
     const provider = {
       isLoaded: false,
       view: { resolution: 15 },
-      dispatchEvent: jest.fn()
+      dispatchEvent: jest.fn(),
+      baseTileLayer: { currentStyleInfo: { style: { sources: {} } } }
     }
 
     handleBaseTileLayerLoaded.bind(provider)()
@@ -56,7 +57,8 @@ describe('esri-sdk events', () => {
         }
       },
       isUserInitiated: true,
-      dispatchEvent: jest.fn()
+      dispatchEvent: jest.fn(),
+      baseTileLayer: { currentStyleInfo: { style: { sources: {} } } }
     }
 
     await handleStationary.bind(provider)()

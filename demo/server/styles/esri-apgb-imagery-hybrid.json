@@ -9,9 +9,7 @@
                 "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             ],
             "tileSize": 256,
-            "attribution": "© Esri, Maxar, Earthstar Geographics",
-            "minzoom": 0,
-            "maxzoom": 17
+            "attribution": "Sources: Esri, Maxar, Earthstar Geographics, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors"
         },
         "apgb": {
             "type": "raster",
@@ -19,9 +17,8 @@
                 "/apgb-tile/{z}/{y}/{x}.png"
             ],
             "tileSize": 256,
-            "attribution": "© Bluesky etc..",
-            "minzoom": 18,
-            "maxzoom": 20
+            "attribution": "Sources: Bluesky International Ltd a Getmapping Plc 2025, Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors",
+            "minzoom": 17
         },
         "esri": {
             "type": "vector",
@@ -34,12 +31,14 @@
         {
             "id": "esri-imagery",
             "type": "raster",
-            "source": "esri-imagery"
+            "source": "esri-imagery",
+            "maxzoom": 17
         },
         {
             "id": "apgb-imagery",
             "type": "raster",
-            "source": "apgb"
+            "source": "apgb",
+            "minzoom": 17
         },
         {
           "id": "Railroad/casing",

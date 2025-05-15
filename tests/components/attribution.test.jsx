@@ -14,7 +14,7 @@ describe('Attribution', () => {
 
   it('renders wrapper div always', () => {
     useApp.mockReturnValue({ isMobile: false })
-    useViewport.mockReturnValue({ style: { attribution: 'Test Attribution' } })
+    useViewport.mockReturnValue({ attributions: ['Test Attribution'] })
 
     const { container } = render(<Attribution />)
     expect(container.querySelector('.fm-o-attribution')).not.toBeNull()
@@ -22,7 +22,7 @@ describe('Attribution', () => {
 
   it('renders attribution when isMobile is false and attribution exists', () => {
     useApp.mockReturnValue({ isMobile: false })
-    useViewport.mockReturnValue({ style: { attribution: 'Test Attribution' } })
+    useViewport.mockReturnValue({ attributions: ['Test Attribution'] })
 
     render(<Attribution />)
     expect(screen.getByText(/Test Attribution/i)).not.toBeNull()
@@ -30,7 +30,7 @@ describe('Attribution', () => {
 
   it('does not render attribution when isMobile is true', () => {
     useApp.mockReturnValue({ isMobile: true })
-    useViewport.mockReturnValue({ style: { attribution: 'Test Attribution' } })
+    useViewport.mockReturnValue({ attributions: ['Test Attribution'] })
 
     const { container } = render(<Attribution />)
     expect(container.querySelector('.fm-c-attribution')).toBeNull()
@@ -38,7 +38,7 @@ describe('Attribution', () => {
 
   it('does not render attribution when attribution is missing', () => {
     useApp.mockReturnValue({ isMobile: false })
-    useViewport.mockReturnValue({ style: { attribution: null } })
+    useViewport.mockReturnValue({ style: { attribution: null }, attributions: [] })
 
     const { container } = render(<Attribution />)
     expect(container.querySelector('.fm-c-attribution')).toBeNull()

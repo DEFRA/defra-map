@@ -3,9 +3,11 @@ import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
 const ready = (state, payload) => {
+  const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   return {
     ...state,
-    ...payload
+    resolution: payload.resolution,
+    attributions
   }
 }
 
@@ -18,6 +20,7 @@ const update = (state, payload) => {
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isBoundsChange
   const status = getStatus(action, isBoundsChange, place, state, payload)
   const newAction = isBoundsChange && action === 'SEARCH' && !isUserInitiated ? 'SEARCH' : null
+  const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -30,7 +33,8 @@ const update = (state, payload) => {
     isUpdate,
     isMoving: false,
     isStatusVisuallyHidden: true,
-    action: newAction
+    action: newAction,
+    attributions
   }
 }
 
@@ -62,9 +66,13 @@ const moveStart = (state, payload) => {
 }
 
 const move = (state, payload) => {
+  const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   return {
     ...state,
-    ...payload
+    isMaxZoom: payload.isMaxZoom,
+    isMinZoom: payload.isMinZoom,
+    resolution: payload.resolution,
+    attributions
   }
 }
 
@@ -129,11 +137,13 @@ const setStyle = (state, payload) => {
   const darkName = colourScheme === 'dark' && style === 'default' && 'dark'
   const styleName = defaultName || darkName || style
   const newStyle = state.styles.find(s => s.name === styleName)
+  const attributions = newStyle.attribution ? [newStyle.attribution] : []
   return {
     ...state,
     action: 'STYLE',
     isUpdate: false,
-    style: newStyle
+    style: newStyle,
+    attributions
   }
 }
 

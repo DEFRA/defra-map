@@ -618,6 +618,7 @@ describe('store/viewport-actions-map - setStyle', () => {
     const payload = { style: 'dark', colourScheme: 'light' }
     expect(actionsMap.SET_STYLE(state, payload)).toEqual({
       styles: [{ name: 'dark' }, { name: 'default' }],
+      attributions: [],
       action: 'STYLE',
       isUpdate: false,
       style: { name: 'default' }
@@ -629,6 +630,7 @@ describe('store/viewport-actions-map - setStyle', () => {
     const payload = { style: 'default', colourScheme: 'dark' }
     expect(actionsMap.SET_STYLE(state, payload)).toEqual({
       styles: [{ name: 'dark' }, { name: 'default' }],
+      attributions: [],
       action: 'STYLE',
       isUpdate: false,
       style: { name: 'dark' }
@@ -640,6 +642,7 @@ describe('store/viewport-actions-map - setStyle', () => {
     const payload = { style: 'deuteranopia', colourScheme: 'dark' }
     expect(actionsMap.SET_STYLE(state, payload)).toEqual({
       styles: [{ name: 'deuteranopia' }, { name: 'tritanopia' }],
+      attributions: [],
       action: 'STYLE',
       isUpdate: false,
       style: { name: 'deuteranopia' }

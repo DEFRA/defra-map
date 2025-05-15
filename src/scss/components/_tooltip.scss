@@ -27,7 +27,7 @@
         content: '';
         position: absolute;
         box-sizing: border-box;
-        z-index: 1;
+        z-index: -1;
         width: 10px;
         height: 10px;
         color: var(--tooltip-background-colour);

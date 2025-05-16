@@ -215,6 +215,8 @@ export class FloodMap extends EventTarget {
 
   async _importComponent () {
     this.button?.setAttribute('style', 'display: none')
+
+    // Flag ensures providers only set once
     const isLoaded = !!this.isLoaded
 
     // Add loading spinner
@@ -231,12 +233,12 @@ export class FloodMap extends EventTarget {
 
     // Load default geocode provider
     if (!isLoaded && !this.props.geocodeProvider) {
-      this.props.geocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/geocode.js')).default
+      this.props.geocodeProvider = (await import(/* webpackChunkName: "flood-map-geocode" */ './js/provider/os-open-names/geocode.js')).default
     }
 
     // Load default reverse geocode provider
     if (!isLoaded && !this.props.reverseGeocodeProvider) {
-      this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-open-names/reverse-geocode.js')).default
+      this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-geocode" */ './js/provider/os-open-names/reverse-geocode.js')).default
     }
 
     // All providers loaded

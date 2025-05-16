@@ -76,10 +76,9 @@ export class Draw {
       graphicsLayer.removeAll()
     }
 
-    // reColour happens first so need a small timeout
     const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
 
-    // Edit existing feature
+    // Edit existing graphic
     if (mode === 'vertex' && graphic) {
       sketchViewModel.layer = graphicsLayer
 
@@ -125,7 +124,8 @@ export class Draw {
 
     // Reinstate original
     if (this.oGraphic) {
-      const revertGraphic = this.createGraphic(oGraphic.id, oGraphic.geometry.rings)
+      const revertGraphic = this.createGraphic(oGraphic.attributes.id, oGraphic.geometry.rings)
+      console.log(revertGraphic)
       this.addGraphic(revertGraphic)
     }
   }
@@ -146,6 +146,7 @@ export class Draw {
 
     // Replace original graphic with new sketch
     const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom
 
@@ -164,7 +165,7 @@ export class Draw {
     if (!graphic) {
       return
     }
-    const newGraphic = this.createGraphic(graphic.id, graphic.geometry.rings)
+    const newGraphic = this.createGraphic(graphic.attributes.id, graphic.geometry.rings)
     graphicsLayer.remove(graphic)
     this.addGraphic(newGraphic)
   }

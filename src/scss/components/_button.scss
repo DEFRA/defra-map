@@ -176,11 +176,10 @@
 
     svg {
         flex-shrink: 0;
-        margin-right: 5px;
     }
 
     svg + span {
-        margin-left: 0;
+        margin-left: 5px;
     }
 
     &:hover:not([aria-disabled="true"]) {

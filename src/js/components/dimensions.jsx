@@ -35,7 +35,7 @@ export default function Dimensions () {
               <div className='fm-c-form-group__input-suffix' aria-hidden='true'>m</div>
             </div>
           </div>
-          {shape === 'square' && (
+          {/* {shape === 'square' && (
             <Tooltip id={`${id}-convert-polygon`} position='left' cssModifier='convert-polygon' text='Convert to polygon'>
               <button className='fm-c-btn-secondary' aria-expanded={false} aria-labelledby={`${id}-convert-polygon`} onClick={() => handlePolygonSelect('polygon')}>
                 <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
@@ -43,7 +43,7 @@ export default function Dimensions () {
                 </svg>
               </button>
             </Tooltip>
-          )}
+          )} */}
         </div>
       )}
       <div className='fm-c-form-row'>

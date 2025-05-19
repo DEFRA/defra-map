@@ -46,4 +46,34 @@ describe('exit', () => {
     expect(container.querySelector('svg').getAttribute('width')).toEqual('14')
     expect(container.querySelector('svg').getAttribute('viewBox')).toEqual('0 0 14 20')
   })
+
+  it('should return null when in query mode', () => {
+    const handleExit = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      handleExit,
+      isDesktop: true,
+      isBack: false,
+      isPage: true,
+      mode: 'frame'
+    })
+
+    const { container } = render(<Exit />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should return null when not in page mode', () => {
+    const handleExit = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      handleExit,
+      isDesktop: true,
+      isBack: false,
+      isPage: false,
+      mode: null
+    })
+
+    const { container } = render(<Exit />)
+    expect(container.firstChild).toBeNull()
+  })
 })

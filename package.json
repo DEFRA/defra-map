@@ -73,7 +73,7 @@
     "magic-comments-loader": "^2.1.4",
     "mini-css-extract-plugin": "^2.9.2",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.3.2",
     "polylabel": "^2.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -103,6 +103,7 @@
     "@turf/helpers": "^7.2.0",
     "maplibre-gl": "^5.4.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@1.15.3",
-    "preact": "^10.26.5"
+    "preact": "^10.26.5",
+    "whatwg-url": "^14.2.0"
   }
 }

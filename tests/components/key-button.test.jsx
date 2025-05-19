@@ -57,14 +57,15 @@ describe('key-button', () => {
 
     expect(keyButton).toHaveStyle('display: none;')
   })
+
   it.each([
     // [options, mode, shouldRender, description]
     [{ legend: undefined }, null, false, 'should not render when legend is undefined'],
     [{ legend: null }, null, false, 'should not render when legend is null'],
     [{ legend: false }, null, false, 'should not render when legend is false'],
-    [{ legend: { display: true } }, null, false, 'should not render when legend display is true'],
+    [{ legend: { display: 'inset' } }, null, false, 'should not render when legend display is inset'],
     [{ legend: { key: {} } }, 'frame', false, 'should not render when mode is frame'],
-    [{ legend: { key: {} } }, 'draw', false, 'should not render when mode is draw'],
+    [{ legend: { key: {} } }, 'vertex', false, 'should not render when mode is vertex'],
     [{ legend: {} }, null, true, 'should render when legend is empty object'],
     [{ legend: { display: false } }, null, true, 'should render when legend display is false']
   ])('component rendering: %s', (options, mode, shouldRender, description) => {

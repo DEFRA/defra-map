@@ -24,7 +24,8 @@ export const defaults = {
   MIN_SEARCH_LENGTH: 3,
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   MAX_BOUNDS_4326: [-7.57216793459, 49.959999905, 1.68153079591, 58.6350001085],
-  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805]
+  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805],
+  LEGEND_TITLE: 'Layers'
 }
 
 export const settings = {
@@ -87,9 +88,19 @@ export const drawModes = [
     mode: 'frame',
     path: 'M9.999 2c4.415 0 8.001 3.585 8.001 8.001s-3.585 7.999-8.001 7.999S2 14.416 2 10 5.583 2 9.999 2zm0 2C6.688 3.999 4 6.689 4 10s2.688 5.999 5.999 5.999S16 13.311 16 10s-2.69-6.001-6.001-6.001z'
   }, {
+    id: 'line',
+    name: 'Line',
+    mode: 'vertex',
+    path: 'M5.979 15.455V18H2.06v-4h2.546l9.414-9.415V2h3.919v4h-2.505l-9.455 9.455z'
+  }, {
     id: 'polygon',
     name: 'Polygon',
     mode: 'vertex',
     path: 'M2.98 6h-.919V2H5.98v1h8.041V2h3.919v4h-.96v7.996h.96v4h-3.919V17H5.98v1H2.061v-4h.919V6zm3-1v1h-1v8h1v1h8.041v-1.004h.959V6h-.959V5H5.98z'
+  }, {
+    id: 'point',
+    name: 'Point',
+    mode: 'frame',
+    path: 'M11.322 4.762l.323-2.282 1.306-1.305 5.874 5.874-1.305 1.306-2.282.323-2.611 2.611.977 3.593-1.306 1.305-8.485-8.485 1.305-1.306 3.593.977 2.611-2.611zm-2.91 8.953L.277 19.723l6.014-8.129 2.121 2.121z'
   }
 ]

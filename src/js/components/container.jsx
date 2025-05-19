@@ -30,7 +30,7 @@ import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import Banner from './banner.jsx'
 import ScaleBar from './scale-bar.jsx'
-import Dimensions from './dimensions.jsx'
+import Inspector from './inspector.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -60,7 +60,7 @@ export default function Container () {
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
   const hasSizeCapability = provider?.capabilities?.hasSize
-  const hasEditPanel = activePanel === 'EDIT' || (activePanel === 'STYLE' && previousPanel === 'EDIT')
+  const hasInspector = activePanel === 'EDIT' || (activePanel === 'STYLE' && previousPanel === 'EDIT')
 
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
@@ -105,9 +105,9 @@ export default function Container () {
       >
         <div className='fm-o-side'>
           {isFixed && (<Exit />)}
-          {isDesktop && isQueryMode && (hasEditPanel || isFixed) && (
+          {isDesktop && isQueryMode && (hasInspector || isFixed) && (
             <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
-              <Dimensions />
+              <Inspector />
             </Panel>
           )}
           {isFixed && !isQueryMode && (
@@ -189,7 +189,7 @@ export default function Container () {
               )}
               {activePanel === 'EDIT' && !isMobile && !isDesktop && (
                 <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal>
-                  <Dimensions />
+                  <Inspector />
                 </Panel>
               )}
               {activePanel === 'KEYBOARD' && (
@@ -228,15 +228,15 @@ export default function Container () {
                   <Layers hasSymbols hasInputs />
                 </Panel>
               )}
-              {isMobile && activePanel !== 'EDIT' && <Actions />}
+              {isMobile && !hasInspector && <Actions />}
             </div>
             <Attribution />
           </div>
         </div>
         <div className='fm-o-side'>
-          {isMobile && hasEditPanel && (
+          {isMobile && hasInspector && (
             <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
-              <Dimensions />
+              <Inspector />
             </Panel>
           )}
         </div>

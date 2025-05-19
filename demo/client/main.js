@@ -261,7 +261,7 @@ const fm = new FloodMap('map', {
   map.on('moveend', () => {
     if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
       bounds = map.getBounds()
-      map.getSource('warning-polygons').setData(process.env.CFF_WARNING_POLYGONS)
+      map.getSource('warning-polygons')?.setData(process.env.CFF_WARNING_POLYGONS)
     }
   })
 })

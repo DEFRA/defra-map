@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { drawModes } from '../store/constants.js'
 import Tooltip from './tooltip.jsx'
 
-export default function Dimensions () {
+export default function Inspector () {
   const { provider, options, dispatch, shape } = useApp()
   const { id } = options
 

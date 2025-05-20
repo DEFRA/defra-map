@@ -1,4 +1,5 @@
 import DirectSelect from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/direct_select'
+import DrawPolygon from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/draw_polygon'
 
 const spatialNavigate = (start, pixels, direction) => {
   const quadrant = pixels.filter((p, i) => {
@@ -84,8 +85,8 @@ export const EditVertexMode = {
     this.map.on('draw.selectionchange', this.selectionChangeHandler)
 
     // Feature or vertex update event
-    this.updateHandler = (e) => this.onUpdate(state, e)
-    this.map.on('draw.update', this.updateHandler)
+    const updateHandler = (e) => this.onUpdate(state, e)
+    this.map.on('draw.update', updateHandler)
 
     // Add midpoint
     if (selectedType === 'midpoint') {
@@ -363,5 +364,35 @@ export const EditVertexMode = {
     this.map.off('draw.selectionchange', this.selectionChangeHandler)
     state.container.removeEventListener('keydown', this.keydownHandler)
     state.container.removeEventListener('keyup', this.keyupHandler)
+  }
+}
+
+export const NewPolygonMode = {
+  ...DrawPolygon,
+
+  onSetup (options) {
+    const state = DrawPolygon.onSetup.call(this, options)
+    const { featureId } = options
+    state.featureId = featureId
+
+    // Feature or vertex update event
+    const createHandler = (e) => this.onCreate(state, e)
+    this.map.on('draw.create', createHandler)
+
+    return state
+  },
+
+  onCreate (state, e) {
+    const polygon = DrawPolygon.onCreate.call(this, options)
+    // Getting error here
+    // console.log(typeof DrawPolygon.onCreate === 'function')
+    // polygon.properties = polygon.properties || {}
+    // polygon.properties.status = 'drawing'
+    // return polygon
+    // const draw = this._ctx.api
+    // const feature = e.features[0]
+    // draw.delete(feature.id)
+    // feature.id = state.featureId
+    // draw.add(feature)
   }
 }

@@ -4,8 +4,10 @@ export const draw = (styleName) => {
   const hColor = styleName === 'dark' ? '#ffffff' : '#0b0c0c'
 
   return [
+    fillActive(fgColor),
     strokeActive(fgColor),
     strokeInactive(fgColor),
+    drawPreviewLine(fgColor),
     midpoint(fgColor),
     vertex(fgColor),
     vertexHalo(bgColor, hColor),
@@ -15,6 +17,16 @@ export const draw = (styleName) => {
     circle(fgColor)
   ]
 }
+
+const fillActive = (fgColor) => ({
+  id: 'fill-active',
+  type: 'fill',
+  filter: ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'true']],
+  paint: {
+    'fill-color': fgColor,
+    'fill-opacity': 0.1
+  }
+})
 
 const strokeActive = (fgColor) => ({
   id: 'stroke-active',
@@ -43,6 +55,22 @@ const strokeInactive = (fgColor) => ({
     'line-color': fgColor,
     'line-width': 2,
     'line-opacity': 0.8
+  }
+})
+
+const drawPreviewLine = (fgColor) => ({
+  id: 'stroke-preview-line',
+  type: 'line',
+  filter: ['all', ['==', '$type', 'LineString'], ['==', 'active', 'true']],
+  layout: {
+    'line-cap': 'round',
+    'line-join': 'round'
+  },
+  paint: {
+    'line-color': fgColor,
+    'line-width': 2,
+    'line-dasharray': [0.2, 2],
+    'line-opacity': 1
   }
 })
 

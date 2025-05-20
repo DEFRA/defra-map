@@ -1,5 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { DisabledMode, EditVertexMode } from './modes'
+import { DisabledMode, EditVertexMode, NewPolygonMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as TurfCircle } from '@turf/circle'
@@ -12,7 +12,6 @@ export class Draw {
 
     const { mode, shape, feature } = options
     this.provider = provider
-    this.shape = shape
 
     // Provider also needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
@@ -28,6 +27,7 @@ export class Draw {
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
     modes.edit_vertex = EditVertexMode
+    modes.new_polygon = NewPolygonMode
 
     const draw = new MapboxDraw({
       modes,
@@ -37,7 +37,6 @@ export class Draw {
     })
 
     map.addControl(draw)
-    this.draw = draw
 
     // Add existing feature
     if (initialFeature && mode === 'default') {
@@ -48,7 +47,7 @@ export class Draw {
     // Disable simple_select mode
     map.on('draw.modechange', e => {
       if (e.mode === 'simple_select') {
-        this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: this.shape })
+        draw.changeMode('edit_vertex', { container: container.parentNode, featureId: this.shape })
       }
     })
 
@@ -65,13 +64,16 @@ export class Draw {
       // console.log(e)
     })
 
+    this.shape = shape
+    this.draw = draw
+
     // Start new
     this.edit(mode, shape)
   }
 
   // Add or edit
   edit (mode, shape) {
-    const { oFeature } = this
+    const { oFeature, draw } = this
     const { map, container } = this.provider
     this.shape = shape
 
@@ -84,17 +86,17 @@ export class Draw {
 
     // Remove existing drawn features
     if (mode === 'frame') {
-      this.draw.deleteAll()
+      draw.deleteAll()
     }
 
     // Edit existing feature
-    if (mode === 'vertex' && this.draw.get(shape)) {
-      this.draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
+    if (mode === 'vertex' && draw.get(shape)) {
+      draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }
 
     // Start a new polygon
-    if (mode === 'vertex' && !this.draw.get(shape)) {
-      console.log('New polygon')
+    if (mode === 'vertex' && !draw.get(shape)) {
+      draw.changeMode('new_polygon', { featureId: shape })
     }
   }
 

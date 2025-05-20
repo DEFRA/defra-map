@@ -14,11 +14,11 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, drawMode, drawModes, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, drawTool, drawTools, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
-    if (!provider.map || drawMode) {
+    if (!provider.map || drawTool) {
       return
     }
     const feature = provider.draw.finish(shape)
@@ -31,11 +31,11 @@ export default function Actions () {
   }
 
   const handleCancelClick = () => {
-    if (drawMode) {
+    if (drawTool) {
       return
     }
     provider.draw.cancel()
-    const shape = getFeatureShape(query) || drawModes[0].id
+    const shape = getFeatureShape(query) || drawTools[0].id
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape } })
     viewportDispatch({ type: 'SWAP_STYLES' })

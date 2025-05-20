@@ -76,7 +76,7 @@ export const margin = {
   LEFT: 70
 }
 
-export const drawModes = [
+export const drawTools = [
   {
     id: 'square',
     name: 'Square',

@@ -383,16 +383,11 @@ export const NewPolygonMode = {
   },
 
   onCreate (state, e) {
-    const polygon = DrawPolygon.onCreate.call(this, options)
     // Getting error here
-    // console.log(typeof DrawPolygon.onCreate === 'function')
-    // polygon.properties = polygon.properties || {}
-    // polygon.properties.status = 'drawing'
-    // return polygon
-    // const draw = this._ctx.api
-    // const feature = e.features[0]
-    // draw.delete(feature.id)
-    // feature.id = state.featureId
-    // draw.add(feature)
+    const draw = this._ctx.api
+    const feature = e.features[0]
+    draw.delete(feature.id)
+    feature.id = state.featureId
+    draw.add(feature)
   }
 }

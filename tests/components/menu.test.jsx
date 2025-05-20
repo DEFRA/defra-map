@@ -36,7 +36,7 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       mode: 'frame',
-      drawModes: ['circle', 'square', 'polygon'],
+      drawTools: ['circle', 'square', 'polygon'],
       shape: 'square',
       queryArea: {
         heading: ''
@@ -66,7 +66,7 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       mode: 'vertex',
-      drawModes: ['circle', 'square', 'polygon'],
+      drawTools: ['circle', 'square', 'polygon'],
       shape: 'polygon',
       query: true,
       queryArea: {
@@ -105,8 +105,8 @@ describe('menu', () => {
           delete: mockDelete
         }
       },
-      drawMode: 'frame',
-      drawModes: ['circle', 'square', 'polygon'],
+      drawTool: 'frame',
+      drawTools: ['circle', 'square', 'polygon'],
       shape: 'square'
     })
 

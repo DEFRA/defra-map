@@ -1,6 +1,6 @@
 import React from 'react'
 import { useApp } from '../store/use-app.js'
-// import { drawModes } from '../store/constants.js'
+// import { drawTools } from '../store/constants.js'
 // import Tooltip from './tooltip.jsx'
 
 export default function Inspector () {
@@ -8,7 +8,7 @@ export default function Inspector () {
   // const { id } = options
 
   // const handlePolygonSelect = (id) => {
-  //   const value = drawModes.find(m => m.id === id).mode
+  //   const value = drawTools.find(m => m.id === id).mode
   //   provider.draw.editPolygon()
   //   dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   // }
@@ -39,7 +39,7 @@ export default function Inspector () {
             <Tooltip id={`${id}-convert-polygon`} position='left' cssModifier='convert-polygon' text='Convert to polygon'>
               <button className='fm-c-btn-secondary' aria-expanded={false} aria-labelledby={`${id}-convert-polygon`} onClick={() => handlePolygonSelect('polygon')}>
                 <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-                  <path d={drawModes.find(m => m.id === 'polygon').path} />
+                  <path d={drawTools.find(m => m.id === 'polygon').path} />
                 </svg>
               </button>
             </Tooltip>

@@ -187,7 +187,7 @@ const fm = new FloodMap('map', {
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
-  drawModes: ['square', 'circle', 'polygon'],
+  drawTools: ['square', 'circle', 'polygon'],
   backgroundColor: 'default: #f5f5f0, dark: #060606',
   styles: [{
     name: 'default',

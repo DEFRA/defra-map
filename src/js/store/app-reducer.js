@@ -1,7 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 import { getStyle, getFeatureShape } from '../lib/viewport'
-import { drawModes as defaultDrawModes } from '../store/constants'
+import { drawTools as defaultDrawModes } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -20,16 +20,16 @@ const getActivePanel = (mode, info, featureId, targetMarker, legend) => {
 }
 
 const parseDrawModes = (mode, modes, defaultModes) => {
-  let drawModes = modes ? defaultModes.filter(d => modes.includes(d.id)) : defaultModes
-  // Sort drawModes on order provide by options
-  drawModes = modes ? drawModes.sort((a, b) => { return modes.indexOf(a.id) - modes.indexOf(b.id) }) : drawModes
-  const drawMode = drawModes.find(m => m.id === mode) ? mode : null
-  return [drawMode, drawModes]
+  let drawTools = modes ? defaultModes.filter(d => modes.includes(d.id)) : defaultModes
+  // Sort drawTools on order provide by options
+  drawTools = modes ? drawTools.sort((a, b) => { return modes.indexOf(a.id) - modes.indexOf(b.id) }) : drawTools
+  const drawTool = drawTools.find(m => m.id === mode) ? mode : null
+  return [drawTool, drawTools]
 }
 
-const parseShape = (featureShape, drawMode, drawModes) => {
-  const polygon = (drawMode === 'polygon' && featureShape === 'square') || (featureShape === 'square' && !drawModes.find(m => m.id === 'square')) ? 'polygon' : null
-  return polygon || featureShape || drawMode || 'square'
+const parseShape = (featureShape, drawTool, drawTools) => {
+  const polygon = (drawTool === 'polygon' && featureShape === 'square') || (featureShape === 'square' && !drawTools.find(m => m.id === 'square')) ? 'polygon' : null
+  return polygon || featureShape || drawTool || 'square'
 }
 
 export const initialState = (options) => {
@@ -38,10 +38,10 @@ export const initialState = (options) => {
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const query = queryArea?.feature
-  const [drawMode, drawModes] = parseDrawModes(options.drawMode, options.drawModes, defaultDrawModes)
+  const [drawTool, drawTools] = parseDrawModes(options.drawTool, options.drawTools, defaultDrawModes)
   const featureShape = getFeatureShape(query)
-  const shape = parseShape(featureShape, drawMode, drawModes)
-  const mode = drawMode ? defaultDrawModes.find(m => m.id === drawMode).mode : 'default'
+  const shape = parseShape(featureShape, drawTool, drawTools)
+  const mode = drawTool ? defaultDrawModes.find(m => m.id === drawTool).mode : 'default'
   const activePanel = getActivePanel(mode, info, featureId, targetMarker, legend)
 
   return {
@@ -64,8 +64,8 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode,
-    drawMode,
-    drawModes,
+    drawTool,
+    drawTools,
     shape,
     isFrameVisible: false,
     isTargetVisible: false,

@@ -1,6 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { drawModes } from '../../src/js/store/constants'
+import { drawTools } from '../../src/js/store/constants'
 import DrawShape from '../../src/js/components/draw-shape'
 import { useApp } from '../../src/js/store/use-app'
 
@@ -17,7 +17,7 @@ describe('draw-edit', () => {
       mockUseApp.mockReturnValue({
         mode,
         shape,
-        drawModes,
+        drawTools,
         dispatch: mockDispatch,
         provider: { draw: { edit: mockDrawShape } },
         options: { id: 'test' }

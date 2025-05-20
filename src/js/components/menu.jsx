@@ -5,7 +5,7 @@ import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
 export default function Menu () {
-  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, shape, drawMode, drawModes, activeRef, viewportRef } = useApp()
+  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, shape, drawTool, drawTools, activeRef, viewportRef } = useApp()
   const { styles, minZoom, maxZoom } = queryArea
   const { dispatch: viewportDispatch, size, style } = useViewport()
   const startBtnRef = useRef(null)
@@ -14,7 +14,7 @@ export default function Menu () {
     if (!provider.map) {
       return
     }
-    const mode = drawModes.find(m => m.id === shape)?.mode || 'frame'
+    const mode = drawTools.find(m => m.id === shape)?.mode || 'frame'
     provider.draw?.edit(mode, shape)
     appDispatch({ type: 'SET_MODE', payload: { value: mode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
@@ -28,7 +28,7 @@ export default function Menu () {
       return
     }
     provider.draw.delete()
-    const defaultShape = drawMode || drawModes[0].id
+    const defaultShape = drawTool || drawTools[0].id
     appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: null, shape: defaultShape } })
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'deletePolygon', query })
     activeRef.current = viewportRef.current

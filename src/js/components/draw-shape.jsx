@@ -4,19 +4,19 @@ import Tooltip from './tooltip.jsx'
 import ActionMenu from './action-menu.jsx'
 
 export default function DrawShape () {
-  const { provider, options, mode, shape, drawModes, dispatch } = useApp()
+  const { provider, options, mode, shape, drawTools, dispatch } = useApp()
   const { id } = options
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   // const hasDrawCapability = provider.capabilities?.hasDraw
   const changeShapeDisplay = 'block'
-  const selectedDrawMode = drawModes.find(m => m.id === shape) || drawModes[0]
+  const selectedDrawMode = drawTools.find(m => m.id === shape) || drawTools[0]
 
   if (!isQueryMode) {
     return null
   }
 
   const handleShapeSelect = (id) => {
-    const value = drawModes.find(m => m.id === id).mode
+    const value = drawTools.find(m => m.id === id).mode
     provider.draw.edit(value, id)
     dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }
@@ -27,7 +27,7 @@ export default function DrawShape () {
 
   return (
     <div className='fm-o-viewport-controls'>
-      <ActionMenu id={id} name='Change shape' display={changeShapeDisplay} items={drawModes} selected={selectedDrawMode} handleSelect={handleShapeSelect} width='164px' />
+      <ActionMenu id={id} name='Change shape' display={changeShapeDisplay} items={drawTools} selected={selectedDrawMode} handleSelect={handleShapeSelect} width='164px' />
       <Tooltip id={`${id}-delete-vertex-label`} position='below' cssModifier='delete-vertex' text='Delete point' display='none'>
         <button onClick={handleDeleteVertexClick} className='fm-c-btn fm-c-btn--edit' aria-labelledby={`${id}-delete-vertex-label`} aria-disabled='true'>
           <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>

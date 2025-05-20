@@ -26,7 +26,7 @@ describe('layer-group', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
       parent: document.body,
-      mode: null,
+      drawMode: null,
       segments: ['li'],
       layers: ['ts', 'tw', 'ta']
     })

@@ -12,7 +12,7 @@ describe('search-button', () => {
       isDesktop: true,
       options: { id: 'test-id' },
       search: {},
-      mode: null
+      drawMode: null
     })
 
     render(<SearchButton />)
@@ -27,7 +27,7 @@ describe('search-button', () => {
       search: {},
       activePanel: null,
       dispatch: dispatchMock,
-      mode: null
+      drawMode: null
     })
 
     render(<SearchButton />)
@@ -43,7 +43,7 @@ describe('search-button', () => {
       options: { id: 'test-id' },
       search: {},
       activePanel: 'SEARCH',
-      mode: null
+      drawMode: null
     })
 
     render(<SearchButton />)
@@ -57,29 +57,29 @@ describe('search-button', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: null,
-      mode: null
+      drawMode: null
     })
 
     const { container } = render(<SearchButton />)
     expect(container.firstChild).toBeNull()
   })
 
-  it('should not render when in frame query mode', () => {
+  it('should not render when in \'frame\' drawMode', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: 'frame'
+      drawMode: 'frame'
     })
 
     const { container } = render(<SearchButton />)
     expect(container.firstChild).toBeNull()
   })
 
-  it('should not render when in draw \'vertex\' mode', () => {
+  it('should not render when in \'vertex\' drawMode', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: 'vertex'
+      drawMode: 'vertex'
     })
 
     const { container } = render(<SearchButton />)
@@ -90,7 +90,7 @@ describe('search-button', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: null
+      drawMode: null
     })
 
     render(<SearchButton tooltip='right' />)
@@ -105,7 +105,7 @@ describe('search-button', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: null
+      drawMode: null
     })
 
     render(<SearchButton searchBtnRef={mockRef} />)

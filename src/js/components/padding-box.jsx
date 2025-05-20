@@ -2,13 +2,13 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
-const getClassName = (isVisible, isActive, mode, shape) => {
-  const frame = mode === 'frame' ? ` fm-c-padding-box--${shape}` : ''
+const getClassName = (isVisible, isActive, drawMode, shape) => {
+  const frame = drawMode === 'frame' ? ` fm-c-padding-box--${shape}` : ''
   return `fm-c-padding-box${frame}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`
 }
 
 export default function PaddingBox ({ children }) {
-  const { provider, options, isContainerReady, mode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+  const { provider, options, isContainerReady, drawMode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate } = useViewport()
 
   // Update provider padding, need to run this before viewport action effect
@@ -32,17 +32,17 @@ export default function PaddingBox ({ children }) {
     }, 0)
   }, [isMobile])
 
-  // Reset padding on entering vertex mode
+  // Reset padding on entering vertex drawMode
   useEffect(() => {
-    if (['frame', 'vertex'].includes(mode)) {
+    if (['frame', 'vertex'].includes(drawMode)) {
       dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
     }
-  }, [mode])
+  }, [drawMode])
 
   // Template properties
   const isVisible = interfaceType === 'keyboard' && (options.queryLocation?.layers || options.queryFeature?.layers)
   const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length || features?.isPixelFeaturesInMap)
-  const className = getClassName(isVisible, isActive, mode, shape)
+  const className = getClassName(isVisible, isActive, drawMode, shape)
 
   return (
     <div className={className} {...padding ? { style: padding } : {}}>

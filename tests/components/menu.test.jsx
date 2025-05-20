@@ -35,7 +35,7 @@ describe('menu', () => {
       dispatch: appDispatch,
       activeRef,
       viewportRef,
-      mode: 'frame',
+      drawMode: 'frame',
       drawTools: ['circle', 'square', 'polygon'],
       shape: 'square',
       queryArea: {
@@ -65,7 +65,7 @@ describe('menu', () => {
       dispatch: appDispatch,
       activeRef,
       viewportRef,
-      mode: 'vertex',
+      drawMode: 'vertex',
       drawTools: ['circle', 'square', 'polygon'],
       shape: 'polygon',
       query: true,

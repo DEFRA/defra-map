@@ -124,16 +124,16 @@ const renderFloodStorage = () => {
 //   return isVisible ? 'visible' : 'none'
 // }
 
-const toggleVisibility = (type, mode, segments, layers) => {
+const toggleVisibility = (type, drawMode, segments, layers) => {
   // Conditionally add/remove layers might offer better for performance
-  const isDrawMode = ['frame', 'vertex'].includes(mode)
+  const isDrawMode = ['frame', 'vertex'].includes(drawMode)
   vtLayers.forEach((l, i) => {
     const id = l.n
     const layer = map.findLayerById(id)
     // const isVisibleLyr = vtLayers[i].q === 'fz' || ['fe', 'md'].some(l => layers.includes(l))
     // const isVisible = !isDrawMode && isVisibleLyr && segments.join('') === vtLayers[i].q
     const isVisible = !isDrawMode && segments.join('') === vtLayers[i].q
-    const isModeChange = type === 'mode'
+    const isModeChange = type === 'drawMode'
     layer.visible = isVisible
     Array(i === 0 ? 2 : 7).fill(0).forEach((_, j) => {
       const paintProperties = layer.getPaintProperties(id + j)
@@ -506,11 +506,11 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   map = fm.map
-  const { mode, style, segments, layers } = e.detail
+  const { drawMode, style, segments, layers } = e.detail
   isDark = style === 'dark'
   isRamp = layers.includes('md')
   addLayers(layers).then(() => {
-    toggleVisibility(null, mode, segments, layers)
+    toggleVisibility(null, drawMode, segments, layers)
   })
 })
 
@@ -519,15 +519,15 @@ fm.addEventListener('action', e => {
   // console.log(e.detail)
 })
 
-// Listen for mode, segments, layers or style changes
+// Listen for drawMode, segments, layers or style changes
 fm.addEventListener('change', e => {
-  const { type, mode, style, segments, layers } = e.detail
+  const { type, drawMode, style, segments, layers } = e.detail
   if (['layer', 'segment'].includes(type)) {
     fm.setInfo(null)
   }
   isDark = style === 'dark'
   isRamp = layers.includes('md')
-  toggleVisibility(type, mode, segments, layers)
+  toggleVisibility(type, drawMode, segments, layers)
 })
 
 // Listen to map queries

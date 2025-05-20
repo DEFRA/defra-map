@@ -106,7 +106,7 @@ const close = (state) => {
 const setMode = (state, payload) => {
   return {
     ...state,
-    mode: payload.value || state.mode,
+    drawMode: payload.value || state.drawMode,
     query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
     shape: Object.hasOwn(payload, 'shape') ? payload.shape : state.shape,
     activePanel: state.activePanel === 'EDIT' ? state.activePanel : null,

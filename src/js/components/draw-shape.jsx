@@ -4,9 +4,9 @@ import Tooltip from './tooltip.jsx'
 import ActionMenu from './action-menu.jsx'
 
 export default function DrawShape () {
-  const { provider, options, mode, shape, drawTools, dispatch } = useApp()
+  const { provider, options, drawMode, shape, drawTools, dispatch } = useApp()
   const { id } = options
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   // const hasDrawCapability = provider.capabilities?.hasDraw
   const changeShapeDisplay = 'block'
   const selectedDrawMode = drawTools.find(m => m.id === shape) || drawTools[0]
@@ -16,7 +16,7 @@ export default function DrawShape () {
   }
 
   const handleShapeSelect = (id) => {
-    const value = drawTools.find(m => m.id === id).mode
+    const value = drawTools.find(m => m.id === id).drawMode
     provider.draw.edit(value, id)
     dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   }

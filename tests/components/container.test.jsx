@@ -401,7 +401,7 @@ describe('Container', () => {
       ...mockUseApp,
       isDesktop: true, // needed for isFixed calculation
       isMobile: false,
-      mode: '', // empty string for isQueryMode to be false
+      drawMode: '', // empty string for isQueryMode to be false
       options: {
         behaviour: 'default',
         legend: {

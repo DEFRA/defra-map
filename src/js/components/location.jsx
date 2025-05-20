@@ -6,11 +6,11 @@ import Tooltip from './tooltip.jsx'
 const { sessionStorage } = window
 
 export default function Location () {
-  const { provider, options, mode } = useApp()
+  const { provider, options, drawMode } = useApp()
   const { id } = options
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
 
   if (!(options.hasGeoLocation && !isQueryMode)) {
     return null

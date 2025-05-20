@@ -39,7 +39,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -64,7 +64,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -85,7 +85,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -112,7 +112,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -143,12 +143,12 @@ describe('PaddingBox', () => {
     jest.useRealTimers()
   })
 
-  it('should reset padding when entering frame or draw mode', async () => {
+  it('should reset padding when entering frame or vertex drawMode', async () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'frame',
+      drawMode: 'frame',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -190,7 +190,7 @@ describe('PaddingBox', () => {
         queryFeature: { layers: ['layer2'] }
       },
       isContainerReady: true,
-      mode: 'frame',
+      drawMode: 'frame',
       shape: 'square',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,

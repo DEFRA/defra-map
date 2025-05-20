@@ -38,7 +38,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -57,7 +57,7 @@ export default function Container () {
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const legendTitle = legend?.title || defaults.LEGEND_TITLE
   const hasLengedHeading = !(legend?.display === 'inset' || (isFixed && isPage))
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
   const hasSizeCapability = provider?.capabilities?.hasSize

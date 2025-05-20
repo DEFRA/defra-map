@@ -2,8 +2,8 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function Exit () {
-  const { options, mode, isPage, isBack, handleExit, isDesktop, activePanel } = useApp()
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const { options, drawMode, isPage, isBack, handleExit, isDesktop, activePanel } = useApp()
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
 
   const isFixed = options?.legend?.display !== 'inset' && isDesktop
   const hasButton = !isQueryMode && isPage

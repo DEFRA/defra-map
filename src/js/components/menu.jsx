@@ -14,11 +14,11 @@ export default function Menu () {
     if (!provider.map) {
       return
     }
-    const mode = drawTools.find(m => m.id === shape)?.mode || 'frame'
-    provider.draw?.edit(mode, shape)
-    appDispatch({ type: 'SET_MODE', payload: { value: mode, query } })
+    const drawMode = drawTools.find(m => m.id === shape)?.drawMode || 'frame'
+    provider.draw?.edit(drawMode, shape)
+    appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode, style, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })
     activeRef.current = viewportRef.current
     activeRef.current?.focus()
   }

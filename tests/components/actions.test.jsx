@@ -108,7 +108,7 @@ describe('actions', () => {
       dispatch,
       query: true,
       queryArea: { submitLabel: 'Submit' },
-      mode: 'default',
+      drawMode: 'default',
       provider: {
         draw: {
           finish: drawFinish

@@ -13,9 +13,9 @@ describe('draw-edit', () => {
     const mockUseApp = jest.mocked(useApp)
 
     // Function to update mock return value dynamically
-    const updateMockUseApp = (shape, mode) => {
+    const updateMockUseApp = (shape, drawMode) => {
       mockUseApp.mockReturnValue({
-        mode,
+        drawMode,
         shape,
         drawTools,
         dispatch: mockDispatch,
@@ -28,14 +28,14 @@ describe('draw-edit', () => {
     updateMockUseApp('circle', 'frame')
 
     const shapes = [
-      { shape: 'circle', label: 'Circle', mode: 'frame' },
-      { shape: 'square', label: 'Square', mode: 'frame' },
-      { shape: 'polygon', label: 'Polygon', mode: 'vertex' }
+      { shape: 'circle', label: 'Circle', drawMode: 'frame' },
+      { shape: 'square', label: 'Square', drawMode: 'frame' },
+      { shape: 'polygon', label: 'Polygon', drawMode: 'vertex' }
     ]
 
-    shapes.forEach(({ shape, label, mode }) => {
+    shapes.forEach(({ shape, label, drawMode }) => {
       // Update mocks before clicking
-      updateMockUseApp(shape, mode)
+      updateMockUseApp(shape, drawMode)
       render(<DrawShape />)
 
       // Open the menu
@@ -48,12 +48,12 @@ describe('draw-edit', () => {
       fireEvent.click(shapeOption)
 
       // Verify drawEdit was called with updated values
-      expect(mockDrawShape).toHaveBeenCalledWith(mode, shape)
+      expect(mockDrawShape).toHaveBeenCalledWith(drawMode, shape)
 
-      // Verify dispatch was called with updated mode and shape
+      // Verify dispatch was called with updated drawMode and shape
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'SET_MODE',
-        payload: { value: mode, shape }
+        payload: { value: drawMode, shape }
       })
 
       // Verify that the correct selection is displayed

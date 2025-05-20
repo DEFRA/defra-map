@@ -10,7 +10,7 @@ export class Draw {
     const { container, map, style } = provider
     Object.assign(this, options)
 
-    const { mode, shape, feature } = options
+    const { drawMode, shape, feature } = options
     this.provider = provider
 
     // Provider also needs ref to draw moudule and draw needs ref to provider
@@ -39,7 +39,7 @@ export class Draw {
     map.addControl(draw)
 
     // Add existing feature
-    if (initialFeature && mode === 'default') {
+    if (initialFeature && drawMode === 'default') {
       this.addFeature(initialFeature)
       return
     }
@@ -68,11 +68,11 @@ export class Draw {
     this.draw = draw
 
     // Start new
-    this.edit(mode, shape)
+    this.edit(drawMode, shape)
   }
 
   // Add or edit
-  edit (mode, shape) {
+  edit (drawMode, shape) {
     const { oFeature, draw } = this
     const { map, container } = this.provider
     this.shape = shape
@@ -85,17 +85,17 @@ export class Draw {
     }
 
     // Remove existing drawn features
-    if (mode === 'frame') {
+    if (drawMode === 'frame') {
       draw.deleteAll()
     }
 
     // Edit existing feature
-    if (mode === 'vertex' && draw.get(shape)) {
+    if (drawMode === 'vertex' && draw.get(shape)) {
       draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
     }
 
     // Start a new polygon
-    if (mode === 'vertex' && !draw.get(shape)) {
+    if (drawMode === 'vertex' && !draw.get(shape)) {
       draw.changeMode('new_polygon', { featureId: shape })
     }
   }

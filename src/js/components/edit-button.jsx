@@ -3,9 +3,9 @@ import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 
 export default function EditButton ({ editBtnRef }) {
-  const { options, dispatch, mode, activePanel, previousPanel } = useApp()
+  const { options, dispatch, drawMode, activePanel, previousPanel } = useApp()
   const { id } = options
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const isVisible = !(activePanel === 'EDIT' || (activePanel === 'STYLE' && previousPanel === 'EDIT'))
 
   if (!isQueryMode) {

@@ -3,8 +3,8 @@ import { useApp } from '../store/use-app'
 import { defaults } from '../store/constants'
 
 export default function LegendButton ({ legendBtnRef }) {
-  const { dispatch, mode, legend, isDesktop, activePanel } = useApp()
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const { dispatch, drawMode, legend, isDesktop, activePanel } = useApp()
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasBtn = legend?.display && ['compact', 'inset'].includes(legend.display)
   const legendTitle = legend?.title || defaults.LEGEND_TITLE
 

@@ -17,7 +17,7 @@ const getClassName = (size, styleName, isFocusVisible, isKeyboard, hasShortcuts)
 }
 
 export default function Viewport () {
-  const { isContainerReady, provider, geocode, options, parent, mode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
+  const { isContainerReady, provider, geocode, options, parent, drawMode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
@@ -61,7 +61,7 @@ export default function Viewport () {
     }
 
     // Select feature or query center (Enter)
-    if (!e.altKey && e.key === 'Enter' && mode === 'default') {
+    if (!e.altKey && e.key === 'Enter' && drawMode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
       } else if (queryLocation?.layers && !isMoving) {
@@ -135,7 +135,7 @@ export default function Viewport () {
       const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
-      } else if (!(mode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
+      } else if (!(drawMode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
         provider.queryPoint(point)
       } else {
         // No action
@@ -151,7 +151,7 @@ export default function Viewport () {
   const handleMapLoad = e => {
     viewportDispatch({ type: 'READY', payload: e.detail })
     eventBus.dispatch(parent, events.APP_READY, {
-      ...e.detail, mode, segments, layers, style: style.name, size
+      ...e.detail, drawMode, segments, layers, style: style.name, size
     })
   }
 
@@ -208,7 +208,7 @@ export default function Viewport () {
 
   // Provider style change
   const handleMapStyle = e => {
-    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, drawMode, segments, layers })
   }
 
   // Initial render
@@ -297,7 +297,7 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('style', handleMapStyle)
     }
-  }, [timestamp, action, mode, style, size])
+  }, [timestamp, action, drawMode, style, size])
 
   // All query params, debounced by provider. Must be min 500ms
   useEffect(() => {
@@ -321,10 +321,10 @@ export default function Viewport () {
 
   // Initialise draw
   useEffect(() => {
-    if (provider.map && !provider.draw && (mode !== 'default' || queryArea?.feature)) {
-      provider.initDraw({ ...queryArea, mode, shape })
+    if (provider.map && !provider.draw && (drawMode !== 'default' || queryArea?.feature)) {
+      provider.initDraw({ ...queryArea, drawMode, shape })
     }
-  }, [provider.map, mode])
+  }, [provider.map, drawMode])
 
   // Update view padding on resize
   useResizeObserver(viewportRef.current, () => {

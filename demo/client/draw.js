@@ -25,7 +25,7 @@ const fm = new FloodMap('map', {
   transformGeocodeRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
   hasAutoMode: true,
-  // drawTool: 'circle',
+  drawTool: 'circle',
   // drawTools: ['square', 'circle', 'polygon'],
   styles: [{
     name: 'default',

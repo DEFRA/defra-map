@@ -9,7 +9,7 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { mode, shape, feature } = options
+    const { drawMode, shape, feature } = options
     Object.assign(this, options)
     this.provider = provider
 
@@ -46,17 +46,17 @@ export class Draw {
     }
 
     // Add graphic
-    if (feature && mode === 'default') {
+    if (feature && drawMode === 'default') {
       this.addGraphic(this.oGraphic)
     }
 
     // Start new
     if (!feature) {
-      this.edit(mode, shape)
+      this.edit(drawMode, shape)
     }
   }
 
-  edit (mode, shape) {
+  edit (drawMode, shape) {
     const { provider, oGraphic, sketchViewModel, emptyLayer } = this
     const { view, graphicsLayer, isDark } = provider
     this.shape = shape
@@ -68,18 +68,18 @@ export class Draw {
     // Zoom to extent if we have an existing graphic
     if (oGraphic) {
       // Additional zoom fix to address goTo graphic not respecting true size?
-      view.goTo({ target: oGraphic, ...(mode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
+      view.goTo({ target: oGraphic, ...(drawMode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
     }
 
-    // Remove graphic if frame mode
-    if (mode === 'frame') {
+    // Remove graphic if frame drawMode
+    if (drawMode === 'frame') {
       graphicsLayer.removeAll()
     }
 
     const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
 
     // Edit existing graphic
-    if (mode === 'vertex' && graphic) {
+    if (drawMode === 'vertex' && graphic) {
       sketchViewModel.layer = graphicsLayer
 
       // Another timeout hack
@@ -93,12 +93,12 @@ export class Draw {
     }
 
     // Create new polygon
-    if (mode === 'vertex' && !graphic) {
+    if (drawMode === 'vertex' && !graphic) {
       sketchViewModel.layer = graphicsLayer
 
       // Another timeout hack
       setTimeout(() => sketchViewModel.create(shape, {
-        mode: 'click',
+        drawMode: 'click',
         polygonSymbol: this.createPolygonSymbol(isDark)
       }), 0)
     }

@@ -11,8 +11,8 @@ const hasData = (isTargetCentre, features, targetMarker) => {
   return isTargetCentre ? features?.isPixelFeaturesAtPixel : targetMarker?.hasData
 }
 
-const isVisible = (interfaceType, isTargetCentre, mode, features, targetCoord, activePanel) => {
-  let isTargetVisible = isTargetCentre && mode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
+const isVisible = (interfaceType, isTargetCentre, drawMode, features, targetCoord, activePanel) => {
+  let isTargetVisible = isTargetCentre && drawMode === 'default' && !!features ? features?.resultType === 'pixel' : !!targetCoord
   // Hide when touch detected and a panel is displayed at the bottom
   if (interfaceType === 'touch') {
     isTargetVisible = isTargetVisible && (!activePanel || activePanel === 'INFO')
@@ -21,7 +21,7 @@ const isVisible = (interfaceType, isTargetCentre, mode, features, targetCoord, a
 }
 
 export default function Target () {
-  const { provider, mode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, interfaceType, isMobile } = useApp()
+  const { provider, drawMode, targetMarker, activePanel, viewportRef, obscurePanelRef, isContainerReady, interfaceType, isMobile } = useApp()
   const appDispatch = useApp().dispatch
   const { dispatch, features } = useViewport()
   const [isObscurred] = usePixelObscurred()
@@ -29,7 +29,7 @@ export default function Target () {
   const isTargetCentre = isCentre(interfaceType, targetMarker, activePanel)
   const hasTargetData = hasData(isTargetCentre, features, targetMarker)
   const targetCoord = !isTargetCentre ? targetMarker?.coord : null
-  const isTargetVisible = isVisible(interfaceType, isTargetCentre, mode, features, targetCoord, activePanel)
+  const isTargetVisible = isVisible(interfaceType, isTargetCentre, drawMode, features, targetCoord, activePanel)
 
   // Update app state
   useEffect(() => {

@@ -23,7 +23,7 @@ describe('segment-group', () => {
     dispatch: appDispatch,
     parent: document.body,
     style: undefined,
-    mode: 'default',
+    drawMode: 'default',
     segments: ['fz'],
     legend: {
       width: '280px',

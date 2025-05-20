@@ -14,7 +14,7 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, drawTool, drawTools, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, drawTool, drawTools, drawMode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
@@ -26,7 +26,7 @@ export default function Actions () {
     appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape: newShape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: feature })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
   }
 
@@ -39,7 +39,7 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
     appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape } })
     viewportDispatch({ type: 'SWAP_STYLES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
   }
 
@@ -52,7 +52,7 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
-  const isDefaultMode = mode === 'default'
+  const isDefaultMode = drawMode === 'default'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible

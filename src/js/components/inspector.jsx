@@ -8,7 +8,7 @@ export default function Inspector () {
   // const { id } = options
 
   // const handlePolygonSelect = (id) => {
-  //   const value = drawTools.find(m => m.id === id).mode
+  //   const value = drawTools.find(m => m.id === id).drawMode
   //   provider.draw.editPolygon()
   //   dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
   // }

@@ -71,7 +71,7 @@ describe('Draw Class', () => {
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should start with \'undefined, undefined\' mode when no feature is provided', () => {
+    it('should call edit with \'undefined, undefined\' when no feature is provided', () => {
       const editSpy = jest.spyOn(Draw.prototype, 'edit')
       drawInstance = new Draw(mockProvider, {})
       expect(editSpy).toHaveBeenCalledWith(undefined, undefined)
@@ -101,7 +101,7 @@ describe('Draw Class', () => {
       jest.spyOn(Draw.prototype, 'createGraphic').mockReturnValue({ symbol: {}, clone: jest.fn() })
       const feature = { geometry: { coordinates: [[[0, 0], [1, 1], [2, 2]]] } }
       const addGraphicSpy = jest.spyOn(Draw.prototype, 'addGraphic')
-      drawInstance = new Draw(mockProvider, { mode: 'default', feature })
+      drawInstance = new Draw(mockProvider, { drawMode: 'default', feature })
       expect(addGraphicSpy).toHaveBeenCalledWith(expect.any(Object))
       addGraphicSpy.mockRestore()
     })
@@ -144,13 +144,13 @@ describe('Draw Class', () => {
       expect(mockProvider.view.goTo).toHaveBeenCalledWith({ target: drawInstance.oGraphic })
     })
 
-    it('should remove all graphics when editing in "frame" mode', () => {
+    it('should remove all graphics when editing in \'frame\' drawMode', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.edit('frame')
       expect(mockProvider.graphicsLayer.removeAll).toHaveBeenCalled()
     })
 
-    it('should initiate sketchViewModal.update() when mode is "vertex" and there is a graphic', () => {
+    it('should initiate sketchViewModal.update() when drawMode is \'vertex\' and there is a graphic', () => {
       jest.useFakeTimers()
       const graphic = { attributes: { id: 'polygon' }, geometry: { rings: [[[0, 0], [1, 1], [2, 2]]] } }
       mockProvider.graphicsLayer.graphics.items = [graphic]
@@ -162,7 +162,7 @@ describe('Draw Class', () => {
       jest.useRealTimers()
     })
 
-    it('should initiate sketchViewModal.create() when mode is "vertex" and no graphic', () => {
+    it('should initiate sketchViewModal.create() when drawMode is \'vertex\' and no graphic', () => {
       jest.useFakeTimers()
       const createPolygonSymbolSpy = jest.spyOn(Draw.prototype, 'createPolygonSymbol')
       mockProvider.isDark = false

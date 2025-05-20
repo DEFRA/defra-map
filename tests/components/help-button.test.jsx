@@ -13,7 +13,7 @@ describe('help-button', () => {
       activePanel: null,
       isDesktop: false,
       options: { id: 'test', queryArea: { helpURL: 'http://test.org' } },
-      mode: 'frame'
+      drawMode: 'frame'
     })
 
     render(<HelpButton />)
@@ -27,7 +27,7 @@ describe('help-button', () => {
       activePanel: 'HELP',
       isDesktop: false,
       options: { id: 'test', queryArea: { helpURL: null } },
-      mode: 'frame'
+      drawMode: 'frame'
     })
 
     render(<HelpButton />)

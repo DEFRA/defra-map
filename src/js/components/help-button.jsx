@@ -3,9 +3,9 @@ import { useApp } from '../store/use-app'
 import Tooltip from './tooltip.jsx'
 
 export default function HelpButton () {
-  const { options, mode } = useApp()
+  const { options, drawMode } = useApp()
   const { id, queryArea } = options
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
 
   if (!(isQueryMode && queryArea?.helpURL)) {
     return null

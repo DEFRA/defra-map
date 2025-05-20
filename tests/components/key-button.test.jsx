@@ -15,7 +15,7 @@ describe('key-button', () => {
     jest.mocked(useApp).mockReturnValue({
       activePanel: null,
       options: { legend: { key: {} } },
-      mode: null,
+      drawMode: null,
       dispatch: jest.fn()
     })
   })
@@ -31,7 +31,7 @@ describe('key-button', () => {
     jest.mocked(useApp).mockReturnValue({
       activePanel: null,
       options: { legend: { key: {} } },
-      mode: null,
+      drawMode: null,
       dispatch: dispatchMock
     })
 
@@ -47,7 +47,7 @@ describe('key-button', () => {
     jest.mocked(useApp).mockReturnValue({
       activePanel: 'KEY',
       options: { legend: { key: {} } },
-      mode: null,
+      drawMode: null,
       dispatch: jest.fn()
     })
 
@@ -59,20 +59,20 @@ describe('key-button', () => {
   })
 
   it.each([
-    // [options, mode, shouldRender, description]
+    // [options, drawMode, shouldRender, description]
     [{ legend: undefined }, null, false, 'should not render when legend is undefined'],
     [{ legend: null }, null, false, 'should not render when legend is null'],
     [{ legend: false }, null, false, 'should not render when legend is false'],
     [{ legend: { display: 'inset' } }, null, false, 'should not render when legend display is inset'],
-    [{ legend: { key: {} } }, 'frame', false, 'should not render when mode is frame'],
-    [{ legend: { key: {} } }, 'vertex', false, 'should not render when mode is vertex'],
+    [{ legend: { key: {} } }, 'frame', false, 'should not render when drawMode is frame'],
+    [{ legend: { key: {} } }, 'vertex', false, 'should not render when drawMode is vertex'],
     [{ legend: {} }, null, true, 'should render when legend is empty object'],
     [{ legend: { display: false } }, null, true, 'should render when legend display is false']
-  ])('component rendering: %s', (options, mode, shouldRender, description) => {
+  ])('component rendering: %s', (options, drawMode, shouldRender, description) => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: mockDispatch,
       options,
-      mode,
+      drawMode,
       activePanel: null
     })
 

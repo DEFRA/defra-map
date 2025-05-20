@@ -29,7 +29,7 @@ const getDisplay = (group, item) => {
 }
 
 export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
-  const { parent, dispatch, mode, layers, segments } = useApp()
+  const { parent, dispatch, drawMode, layers, segments } = useApp()
   const { size, style } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryLyr] = useQueryState('lyr')
@@ -39,7 +39,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const dispatchAppChange = lyr => {
     dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, style, size, segments, layers: lyr })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', drawMode, style, size, segments, layers: lyr })
     // Update query param
     setQueryLyr(lyr.join(','))
   }

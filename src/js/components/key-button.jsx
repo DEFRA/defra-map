@@ -2,8 +2,8 @@ import React from 'react'
 import { useApp } from '../store/use-app'
 
 export default function KeyButton ({ keyBtnRef }) {
-  const { dispatch, activePanel, options, mode } = useApp()
-  const isQueryMode = ['frame', 'vertex'].includes(mode)
+  const { dispatch, activePanel, options, drawMode } = useApp()
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasBtn = options?.legend?.display === 'inset'
 
   if (!(options?.legend && !isQueryMode && !hasBtn)) {

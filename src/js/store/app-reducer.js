@@ -20,17 +20,13 @@ const getActivePanel = (drawMode, info, featureId, targetMarker, legend) => {
 }
 
 const parseDrawTools = (tool, tools, defaultTools) => {
-  tools = tools ? defaultTools.filter(d => tools.includes(d.id)) : defaultTools
-  // Sort tools on order provided by config
-  tools = tools.sort((a, b) => { return tools.indexOf(a.id) - tools.indexOf(b.id) })
+  // Remove invalid tools
+  let validTools = tools ? defaultTools.filter(d => tools.includes(d.id)) : defaultTools
+  // Sort tools on order provided by config if any
+  validTools = validTools.sort((a, b) => { return tools?.indexOf(a.id) - tools?.indexOf(b.id) })
   // Find valid initial tool or return null
-  tool = tools.find(m => m.id === tool) ? tool : null
-  return [tool, tools]
-}
-
-const parseShape = (featureShape, drawTool, drawTools) => {
-  const polygon = (drawTool === 'polygon' && featureShape === 'square') || (featureShape === 'square' && !drawTools.find(m => m.id === 'square')) ? 'polygon' : null
-  return polygon || featureShape || drawTool || 'square'
+  const validTool = validTools.find(m => m.id === tool) ? tool : null
+  return [validTool, validTools]
 }
 
 export const initialState = (options) => {
@@ -41,7 +37,7 @@ export const initialState = (options) => {
   const query = queryArea?.feature
   const [drawTool, drawTools] = parseDrawTools(options.drawTool, options.drawTools, defaultDrawTools)
   const featureShape = getFeatureShape(query)
-  const shape = parseShape(featureShape, drawTool, drawTools)
+  const shape = featureShape || drawTool || drawTools[0]
   const drawMode = drawTool ? defaultDrawTools.find(m => m.id === drawTool).drawMode : 'default'
   const activePanel = getActivePanel(drawMode, info, featureId, targetMarker, legend)
 

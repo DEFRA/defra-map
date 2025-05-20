@@ -12,6 +12,7 @@ export class Draw {
 
     const { drawMode, shape, feature } = options
     this.provider = provider
+    this.shape = shape
 
     // Provider also needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
@@ -37,6 +38,7 @@ export class Draw {
     })
 
     map.addControl(draw)
+    this.draw = draw
 
     // Add existing feature
     if (initialFeature && drawMode === 'default') {
@@ -63,9 +65,6 @@ export class Draw {
     map.on('click', e => {
       // console.log(e)
     })
-
-    this.shape = shape
-    this.draw = draw
 
     // Start new
     this.edit(drawMode, shape)

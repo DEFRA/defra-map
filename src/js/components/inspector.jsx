@@ -19,20 +19,18 @@ export default function Inspector () {
         <div className='fm-c-form-row'>
           <div className='fm-c-form-group'>
             <label className='fm-c-form-group__label' htmlFor='coord'>
-              {shape === 'circle' ? 'Centre' : 'Top left'}
+              {shape === 'circle' ? 'Centre' : 'Top left'} ({provider.srid === 27700 ? 'Easting, Northing' : 'Lat, lon'})
             </label>
             <div className='fm-c-form-group__wrapper'>
-              <input className='fm-c-form-group__input' id='coord' name='coord' type='text' spellCheck='false' placeholder={provider.srid === 27700 ? 'Easting, Northing' : 'Latitude, longitude'} />
-              <div className='fm-c-form-group__input-suffix' aria-hidden='true'>{provider.srid === 27700 ? 'm' : '°'}</div>
+              <input className='fm-c-form-group__input' id='coord' name='coord' type='text' spellCheck='false' />
             </div>
           </div>
           <div className='fm-c-form-group fm-c-form-group--short'>
             <label className='fm-c-form-group__label' htmlFor='distance'>
-              {shape === 'circle' ? 'Radius' : 'Size'}
+              {shape === 'circle' ? 'Radius' : 'Size'} (metres)
             </label>
             <div className='fm-c-form-group__wrapper'>
               <input className='fm-c-form-group__input' id='distance' name='distance' type='text' spellCheck='false' />
-              <div className='fm-c-form-group__input-suffix' aria-hidden='true'>m</div>
             </div>
           </div>
           {/* {shape === 'square' && (

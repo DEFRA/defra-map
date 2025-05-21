@@ -120,11 +120,6 @@
     transform: scale(150%);
 }
 
-.fm-o-viewport--medium .fm-o-map-container .fm-c-marker__inner {
-    transform-origin: center;
-    transform: scale(66.66%);
-}
-
 // Large text
 .fm-o-viewport--large .fm-o-map-container {
     width: 50%;
@@ -140,12 +135,6 @@
     overflow: visible;
     transform-origin: top left;
     transform: scale(200%);
-}
-
-.fm-o-viewport--large .fm-o-map-container .fm-c-marker__inner {
-    transform-origin: center;
-    transform: scale(50%);
-    -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .fm-o-map-container {

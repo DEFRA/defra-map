@@ -3,8 +3,9 @@ import DrawPolygon from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/mod
 import createVertex from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/lib/create_vertex'
 
 const markerSVG = `
-  <svg width='38' height='38' viewBox='0 0 38 38' fill-rule='evenodd' fill='currentColor' style='display:none;position:absolute;top:50%;left:50%;margin:-19px 0 0 -19px' data-fm-vertex-target>
-    <path d='M5.035 20H1v-2h4.035C5.525 11.069 11.069 5.525 18 5.035V1h2v4.035c6.931.49 12.475 6.034 12.965 12.965H37v2h-4.035c-.49 6.931-6.034 12.475-12.965 12.965V37h-2v-4.035C11.069 32.475 5.525 26.931 5.035 20zM19 7A12.01 12.01 0 0 0 7 19a12.01 12.01 0 0 0 12 12 12.01 12.01 0 0 0 12-12A12.01 12.01 0 0 0 19 7zm0 10a2 2 0 1 1 0 4 2 2 0 1 1 0-4z'/>
+  <svg width='38' height='38' viewBox='0 0 38 38' fill-rule='evenodd' fill='currentColor' style='display:none;position:absolute;top:50%;left:50%;margin:-19px 0 0 -19px' class='vertex-target' data-vertex-target>
+    <path d='M5.035 20H1v-2h4.035C5.525 11.069 11.069 5.525 18 5.035V1h2v4.035c6.931.49 12.475 6.034 12.965 12.965H37v2h-4.035c-.49 6.931-6.034 12.475-12.965 12.965V37h-2v-4.035C11.069 32.475 5.525 26.931 5.035 20zM19 7A12.01 12.01 0 0 0 7 19a12.01 12.01 0 0 0 12 12 12.01 12.01 0 0 0 12-12A12.01 12.01 0 0 0 19 7z'/>
+    <circle cx='19' cy='19' r='2'/>
   </svg>
 `
 
@@ -386,7 +387,7 @@ export const DrawVertexMode = {
     state.featureId = featureId
 
     // Add vertex target
-    if (!container.querySelector('[data-fm-vertex-target]')) {
+    if (!container.querySelector('[data-vertex-target]')) {
       container.insertAdjacentHTML('beforeend', markerSVG)
     }
 
@@ -417,7 +418,6 @@ export const DrawVertexMode = {
   },
 
   onCreate (state, e) {
-    console.log('onCreate')
     const draw = this._ctx.api
     const feature = e.features[0]
     draw.delete(feature.id)
@@ -426,30 +426,40 @@ export const DrawVertexMode = {
   },
 
   onKeyDown (state, e) {
+    // Enter keypress
+    if (e.key === 'Escape') {
+      return
+    }
+
     // Update line when switching interfaceType
     if (state.interfaceType === 'keyboard') {
       this.onMove(state, e)
     }
-
-    // Set interfaceType
     state.interfaceType = 'keyboard'
+
+    // Show vertex marker
     state.vertexMarker.style.display = 'block'
   },
 
   onKeyUp (state, e) {
+    // Enter keypress
+    if (e.key === 'Escape') {
+      return
+    }
+
     // Update line when switching interfaceType
     if (state.interfaceType === 'keyboard') {
       this.onMove(state, e)
     }
-
-    // Set interfaceType
     state.interfaceType = 'keyboard'
-    state.vertexMarker.style.display = 'block'
 
     // Enter keypress
     if (e.key === 'Enter') {
       this.doClick(state)
     }
+
+    // Show vertex marker
+    state.vertexMarker.style.display = 'block'
   },
 
   onPointerDown (state, e) {
@@ -486,8 +496,8 @@ export const DrawVertexMode = {
 
   onMove (state, e) {
     // Clear vertex marker
+    console.log('onMove', state.interfaceType)
     if (state.interfaceType === 'keyboard') {
-      state.vertexMarker.style.display = 'block'
       const { map } = this
       const center = map.getCenter()
       const point = map.project(center)
@@ -538,6 +548,6 @@ export const DrawVertexMode = {
     this.map.off('move', this.moveHandler)
 
     // Remove vertex target
-    container.querySelector('[data-fm-vertex-target]')?.remove()
+    container.querySelector('[data-vertex-target]')?.remove()
   }
 }

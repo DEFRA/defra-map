@@ -22,7 +22,6 @@
     left: 50%;
     top: 50%;
 }
-// stylelint-enable declaration-no-important
 
 // Geolocation
 .fm-c-marker--location .fm-c-marker__inner {
@@ -34,7 +33,6 @@
 // Marker
 .fm-c-marker--target {
     z-index: 2;
-    color: var(--foreground-colour);
 
     path:first-child {
         display: none;
@@ -47,14 +45,6 @@
         fill: $foreground-colour;
         paint-order: stroke fill;
     }
-
-    // svg {
-    //     filter: drop-shadow(0px 0px 1px rgba(255, 255, 255, 1));
-    // }
-
-    // circle {
-    //     stroke-dasharray: 4 2;
-    // }
 
     &.fm-c-marker--has-data {
         path:first-child {
@@ -82,9 +72,14 @@
     pointer-events: none;
 }
 
-.fm-o-viewport--large > .fm-c-marker--target {
-    left: 100%;
-    top: 100%;
+.fm-o-viewport--medium .fm-c-padding-box .fm-c-marker__inner,
+.fm-o-viewport--medium .vertex-target {
+    transform: scale(1.5);
+}
+
+.fm-o-viewport--large .fm-c-padding-box .fm-c-marker__inner,
+.fm-o-viewport--large .vertex-target {
+    transform: scale(2);
 }
 
 .fm-o-viewport--dark, .fm-o-viewport--aerial {
@@ -122,4 +117,30 @@
 
 .fm-o-viewport--large .fm-c-marker--shortcut {
     font-size: 1.65rem;
+}
+
+// mapbox-gl-draw vertex marker
+.fm-o-viewport .vertex-target {
+    path {
+        stroke-width: 3;
+        stroke: $background-colour;
+        fill: $foreground-colour;
+        paint-order: stroke fill;
+    }
+
+    circle {
+        fill: $foreground-colour;
+    }
+}
+
+.fm-o-viewport--dark .vertex-target,
+.fm-o-viewport--aerial .vertex-target {
+    path {
+        stroke: $foreground-colour;
+        fill: $background-colour;
+    }
+
+    circle {
+        fill: $background-colour;
+    }
 }

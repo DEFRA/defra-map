@@ -1,5 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { DisabledMode, EditVertexMode, NewPolygonMode } from './modes'
+import { DisabledMode, EditVertexMode, DrawVertexMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as TurfCircle } from '@turf/circle'
@@ -28,7 +28,7 @@ export class Draw {
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
     modes.edit_vertex = EditVertexMode
-    modes.new_polygon = NewPolygonMode
+    modes.draw_vertex = DrawVertexMode
 
     const draw = new MapboxDraw({
       modes,
@@ -86,6 +86,7 @@ export class Draw {
     // Remove existing drawn features
     if (drawMode === 'frame') {
       draw.deleteAll()
+      draw.changeMode('disabled')
     }
 
     // Edit existing feature
@@ -95,7 +96,7 @@ export class Draw {
 
     // Start a new polygon
     if (drawMode === 'vertex' && !draw.get(shape)) {
-      draw.changeMode('new_polygon', { featureId: shape })
+      draw.changeMode('draw_vertex', { container: container.parentNode, featureId: shape })
     }
   }
 

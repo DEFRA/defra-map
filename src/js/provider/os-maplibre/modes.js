@@ -1,5 +1,12 @@
 import DirectSelect from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/direct_select'
 import DrawPolygon from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/draw_polygon'
+import createVertex from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/lib/create_vertex'
+
+const markerSVG = `
+  <svg width='38' height='38' viewBox='0 0 38 38' fill-rule='evenodd' fill='currentColor' style='display:none;position:absolute;top:50%;left:50%;margin:-19px 0 0 -19px' data-fm-vertex-target>
+    <path d='M5.035 20H1v-2h4.035C5.525 11.069 11.069 5.525 18 5.035V1h2v4.035c6.931.49 12.475 6.034 12.965 12.965H37v2h-4.035c-.49 6.931-6.034 12.475-12.965 12.965V37h-2v-4.035C11.069 32.475 5.525 26.931 5.035 20zM19 7A12.01 12.01 0 0 0 7 19a12.01 12.01 0 0 0 12 12 12.01 12.01 0 0 0 12-12A12.01 12.01 0 0 0 19 7zm0 10a2 2 0 1 1 0 4 2 2 0 1 1 0-4z'/>
+  </svg>
+`
 
 const spatialNavigate = (start, pixels, direction) => {
   const quadrant = pixels.filter((p, i) => {
@@ -136,7 +143,7 @@ export const EditVertexMode = {
       this.updateVertex(state, e.key)
     }
 
-    // Clear selecred index and type
+    // Clear selected index and type
     if (e.key === 'Escape') {
       state.isPanEnabled = true
       state.selectedIndex = -1
@@ -367,27 +374,170 @@ export const EditVertexMode = {
   }
 }
 
-export const NewPolygonMode = {
+export const DrawVertexMode = {
   ...DrawPolygon,
 
   onSetup (options) {
+    const { map } = this
     const state = DrawPolygon.onSetup.call(this, options)
-    const { featureId } = options
+    const { interfaceType, container, featureId } = options
+    state.interfaceType = interfaceType
+    state.container = container
     state.featureId = featureId
 
-    // Feature or vertex update event
-    const createHandler = (e) => this.onCreate(state, e)
-    this.map.on('draw.create', createHandler)
+    // Add vertex target
+    if (!container.querySelector('[data-fm-vertex-target]')) {
+      container.insertAdjacentHTML('beforeend', markerSVG)
+    }
+
+    // Set initial visiblity
+    const vertexMarker = container.lastElementChild
+    vertexMarker.style.display = interfaceType === 'keyboard' ? 'block' : 'none'
+    state.vertexMarker = vertexMarker
+
+    // Bind events as default events require map container to have focus
+    this.keydownHandler = (e) => this.onKeyDown(state, e)
+    this.keyupHandler = (e) => this.onKeyUp(state, e)
+    this.pointerdownHandler = (e) => this.onPointerDown(state, e)
+    this.focusHandler = (e) => this.onFocus(state, e)
+    this.blurHandler = (e) => this.onBlur(state, e)
+    this.createHandler = (e) => this.onCreate(state, e)
+    this.moveHandler = (e) => this.onMove(state, e)
+    this.pointermoveHandler = (e) => this.onPointerMove(state, e)
+    container.addEventListener('keydown', this.keydownHandler)
+    container.addEventListener('keyup', this.keyupHandler)
+    container.addEventListener('pointerdown', this.pointerdownHandler)
+    container.addEventListener('focus', this.focusHandler)
+    container.addEventListener('blur', this.blurHandler)
+    container.addEventListener('pointermove', this.pointermoveHandler)
+    map.on('draw.create', this.createHandler)
+    map.on('move', this.moveHandler)
 
     return state
   },
 
   onCreate (state, e) {
-    // Getting error here
+    console.log('onCreate')
     const draw = this._ctx.api
     const feature = e.features[0]
     draw.delete(feature.id)
     feature.id = state.featureId
     draw.add(feature)
+  },
+
+  onKeyDown (state, e) {
+    // Update line when switching interfaceType
+    if (state.interfaceType === 'keyboard') {
+      this.onMove(state, e)
+    }
+
+    // Set interfaceType
+    state.interfaceType = 'keyboard'
+    state.vertexMarker.style.display = 'block'
+  },
+
+  onKeyUp (state, e) {
+    // Update line when switching interfaceType
+    if (state.interfaceType === 'keyboard') {
+      this.onMove(state, e)
+    }
+
+    // Set interfaceType
+    state.interfaceType = 'keyboard'
+    state.vertexMarker.style.display = 'block'
+
+    // Enter keypress
+    if (e.key === 'Enter') {
+      this.doClick(state)
+    }
+  },
+
+  onPointerDown (state, e) {
+    state.interfaceType = 'pointer'
+    state.vertexMarker.style.display = 'none'
+  },
+
+  onFocus (state, e) {
+    const { vertexMarker, interfaceType } = state
+    vertexMarker.style.display = interfaceType === 'keyboard' ? 'block' : 'none'
+  },
+
+  onBlur (state, e) {
+    state.vertexMarker.style.display = 'none'
+  },
+
+  doClick (state) {
+    const { map } = this
+    const center = map.getCenter()
+    const point = map.project(center)
+    const simulatedClickEvent = {
+      lngLat: center,
+      point,
+      originalEvent: new window.MouseEvent('click', {
+        clientX: point.x,
+        clientY: point.y,
+        bubbles: true,
+        cancelable: true
+      })
+    }
+    DrawPolygon.onClick.call(this, state, simulatedClickEvent)
+    this._ctx.store.render()
+  },
+
+  onMove (state, e) {
+    // Clear vertex marker
+    if (state.interfaceType === 'keyboard') {
+      state.vertexMarker.style.display = 'block'
+      const { map } = this
+      const center = map.getCenter()
+      const point = map.project(center)
+      const simulatedMouseMoveEvent = {
+        lngLat: center,
+        point,
+        originalEvent: new window.MouseEvent('mousemove', {
+          clientX: point.x,
+          clientY: point.y,
+          bubbles: true,
+          cancelable: true
+        })
+      }
+      // Show vertex marker
+      DrawPolygon.onMouseMove.call(this, state, simulatedMouseMoveEvent)
+      this._ctx.store.render()
+    }
+  },
+
+  onPointerMove (state, e) {
+    state.vertexMarker.style.display = 'none'
+  },
+
+  toDisplayFeatures (state, geojson, display) {
+    DrawPolygon.toDisplayFeatures.call(this, state, geojson, display)
+
+    if (geojson.geometry.type === 'Polygon') {
+      const ring = geojson.geometry.coordinates[0]
+      // Add extra verticies between first and last
+      for (let i = 1; i < ring.length - 2; i++) {
+        const coordPath = `0.${i}`
+        display(createVertex(geojson.id, ring[i], coordPath))
+      }
+    }
+  },
+
+  onStop (state) {
+    DrawPolygon.onStop.call(this, state)
+
+    const { container } = state
+    container.removeEventListener('keydown', this.keydownHandler)
+    container.removeEventListener('keyup', this.keyupHandler)
+    container.removeEventListener('pointerdown', this.pointerdownHandler)
+    container.removeEventListener('focus', this.focusHandler)
+    container.removeEventListener('blur', this.blurHandler)
+    container.removeEventListener('pointermove', this.pointermoveHandler)
+    this.map.off('draw.create', this.createHandler)
+    this.map.off('move', this.moveHandler)
+
+    // Remove vertex target
+    container.querySelector('[data-fm-vertex-target]')?.remove()
   }
 }

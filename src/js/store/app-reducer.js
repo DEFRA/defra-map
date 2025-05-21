@@ -37,7 +37,7 @@ export const initialState = (options) => {
   const query = queryArea?.feature
   const [drawTool, drawTools] = parseDrawTools(options.drawTool, options.drawTools, defaultDrawTools)
   const featureShape = getFeatureShape(query)
-  const shape = featureShape || drawTool || drawTools[0]
+  const shape = featureShape || drawTool || drawTools[0].id
   const drawMode = drawTool ? defaultDrawTools.find(m => m.id === drawTool).drawMode : 'default'
   const activePanel = getActivePanel(drawMode, info, featureId, targetMarker, legend)
 

@@ -187,7 +187,6 @@ const fm = new FloodMap('map', {
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
-  drawTools: ['circle', 'square', 'polygon'],
   backgroundColor: 'default: #f5f5f0, dark: #060606',
   styles: [{
     name: 'default',
@@ -478,9 +477,10 @@ const fm = new FloodMap('map', {
   //     label: '[dynamic title]',
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryArea: {
+  draw: {
     heading: 'Site boundary',
-    submitLabel: 'Get site report',
+    tools: ['circle', 'square', 'polygon'],
+    queryLabel: 'Get site report',
     helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',
     styles: [{

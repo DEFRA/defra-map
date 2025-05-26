@@ -70,7 +70,12 @@ export class Draw {
     this.edit(drawMode, shape)
   }
 
-  // Add or edit
+  // Add new shape
+  add () {
+
+  }
+
+  // Edit existing shape
   edit (drawMode, shape) {
     const { oFeature, draw } = this
     const { map, container } = this.provider

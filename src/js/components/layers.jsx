@@ -8,13 +8,13 @@ import LayerGroup from './layer-group.jsx'
 
 export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
-  const { id, legend, queryArea } = options
+  const { id, legend, draw } = options
   const { zoom } = useViewport()
 
   // Derived properties
   const moreLabel = legend?.keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
   const maxRow = legend?.display === 'inset' && legend?.keyDisplay === 'min' ? 0 : legend?.key.length
-  const queryLabel = query ? queryArea?.keyLabel : null
+  const queryLabel = query ? draw?.keyLabel : null
   const groups = parseGroups(legend?.key, segments, layers, zoom, hasInputs, queryLabel)
   const isEmptyKey = !hasInputs && !groups.length
   const setIsExpanded = () => dispatch({ type: 'TOGGLE_KEY_EXPANDED', payload: !isKeyExpanded })

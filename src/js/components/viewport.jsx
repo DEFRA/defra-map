@@ -18,7 +18,7 @@ const getClassName = (size, styleName, isFocusVisible, isKeyboard, hasShortcuts)
 
 export default function Viewport () {
   const { isContainerReady, provider, geocode, options, parent, drawMode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
-  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
+  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, draw } = options
   const appDispatch = useApp().dispatch
 
   const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
@@ -321,8 +321,8 @@ export default function Viewport () {
 
   // Initialise draw
   useEffect(() => {
-    if (provider.map && !provider.draw && (drawMode !== 'default' || queryArea?.feature)) {
-      provider.initDraw({ ...queryArea, drawMode, shape })
+    if (provider.map && !provider.draw && (drawMode !== 'default' || draw?.feature)) {
+      provider.initDraw({ ...draw, drawMode, shape })
     }
   }, [provider.map, drawMode])
 

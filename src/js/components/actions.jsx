@@ -14,7 +14,7 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, drawTool, drawTools, drawMode, shape, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, draw, drawTool, drawTools, drawMode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
@@ -66,7 +66,7 @@ export default function Actions () {
         Cancel
       </button>
       <button onClick={handlePolygonClick} className='fm-c-btn-primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
-        {queryArea?.submitLabel}
+        {draw?.queryLabel}
       </button>
       <button onClick={handlePixelClick} className='fm-c-btn-primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
         Get feature information

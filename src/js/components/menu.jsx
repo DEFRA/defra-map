@@ -5,8 +5,8 @@ import { events } from '../store/constants.js'
 import eventBus from '../lib/eventbus.js'
 
 export default function Menu () {
-  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, shape, drawTool, drawTools, activeRef, viewportRef } = useApp()
-  const { styles, minZoom, maxZoom } = queryArea
+  const { provider, parent, draw, segments, layers, dispatch: appDispatch, query, shape, drawTool, drawTools, activeRef, viewportRef } = useApp()
+  const { styles, minZoom, maxZoom } = draw
   const { dispatch: viewportDispatch, size, style } = useViewport()
   const startBtnRef = useRef(null)
 
@@ -38,7 +38,7 @@ export default function Menu () {
   return (
     <div className='fm-c-menu'>
       <div className='fm-c-menu__group'>
-        <h3 className='fm-c-menu__heading'>{queryArea.heading}</h3>
+        <h3 className='fm-c-menu__heading'>{draw.heading}</h3>
         <div className='fm-c-menu__item'>
           <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
             <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>

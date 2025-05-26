@@ -30,12 +30,12 @@ const parseDrawTools = (tool, tools, defaultTools) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, banner, queryArea, hasAutoMode } = options
+  const { styles, legend, search, info, banner, draw, hasAutoMode } = options
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-  const query = queryArea?.feature
-  const [drawTool, drawTools] = parseDrawTools(options.drawTool, options.drawTools, defaultDrawTools)
+  const query = draw?.feature
+  const [drawTool, drawTools] = parseDrawTools(draw?.tool, draw?.tools, defaultDrawTools)
   const featureShape = getFeatureShape(query)
   const shape = featureShape || drawTool || drawTools[0].id
   const drawMode = drawTool ? defaultDrawTools.find(m => m.id === drawTool).drawMode : 'default'
@@ -47,7 +47,7 @@ export const initialState = (options) => {
     legend,
     info,
     banner,
-    queryArea,
+    draw,
     segments: legend && parseSegments(legend.segments),
     layers: legend && parseLayers(legend.key),
     isKeyExpanded: false,

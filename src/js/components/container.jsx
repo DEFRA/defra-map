@@ -38,7 +38,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryArea, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, draw, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -113,7 +113,7 @@ export default function Container () {
           )}
           {isFixed && !isQueryMode && (
             <Panel className='legend' label={legendTitle} width={legend?.width} isHideHeading={!hasLengedHeading}>
-              {queryArea && <Menu />}
+              {draw && <Menu />}
               <Segments />
               <Layers hasSymbols={!!legend?.display} hasInputs />
             </Panel>
@@ -147,7 +147,7 @@ export default function Container () {
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
                   <Panel className='legend' isNotObscure={false} label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                    {queryArea && <Menu />}
+                    {draw && <Menu />}
                     <Segments />
                     <Layers hasSymbols={!!legend?.display} hasInputs />
                   </Panel>
@@ -183,7 +183,7 @@ export default function Container () {
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {queryArea && <Menu />}
+                  {draw && <Menu />}
                   <Segments />
                   <Layers hasSymbols={!!legend?.display} hasInputs />
                 </Panel>
@@ -224,7 +224,7 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {queryArea && <Menu />}
+                  {draw && <Menu />}
                   <Segments />
                   <Layers hasSymbols hasInputs />
                 </Panel>

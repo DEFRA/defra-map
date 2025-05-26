@@ -38,7 +38,7 @@ describe('menu', () => {
       drawMode: 'frame',
       drawTools: ['circle', 'square', 'polygon'],
       shape: 'square',
-      queryArea: {
+      draw: {
         heading: ''
       },
       provider: {
@@ -69,7 +69,7 @@ describe('menu', () => {
       drawTools: ['circle', 'square', 'polygon'],
       shape: 'polygon',
       query: true,
-      queryArea: {
+      draw: {
         heading: ''
       },
       provider: {
@@ -96,7 +96,7 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       query: {},
-      queryArea: {
+      draw: {
         heading: ''
       },
       provider: {

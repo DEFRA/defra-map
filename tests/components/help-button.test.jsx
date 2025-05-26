@@ -12,7 +12,7 @@ describe('help-button', () => {
       dispatch: jest.fn(),
       activePanel: null,
       isDesktop: false,
-      options: { id: 'test', queryArea: { helpURL: 'http://test.org' } },
+      options: { id: 'test', draw: { helpURL: 'http://test.org' } },
       drawMode: 'frame'
     })
 

@@ -51,6 +51,7 @@ export const initialState = (options) => {
     segments: legend && parseSegments(legend.segments),
     layers: legend && parseLayers(legend.key),
     isKeyExpanded: false,
+    isDrawMenuExpanded: draw?.collapse !== 'collapse',
     isDarkMode: getIsDarkMode(style?.name, hasAutoMode),
     hasAutoMode,
     featureId,

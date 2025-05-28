@@ -37,7 +37,7 @@ export default function Actions () {
     provider.draw.cancel()
     const shape = getFeatureShape(query) || drawTools[0].id
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape } })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape, query } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()

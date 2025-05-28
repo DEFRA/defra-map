@@ -1,7 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
-
-import Menu from '../../src/js/components/menu'
+import DrawMenu from '../../src/js/components/draw-menu'
 import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
@@ -13,6 +12,7 @@ jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/lib/viewport')
 
 describe('menu', () => {
+  const mockAdd = jest.fn()
   const mockEdit = jest.fn()
   const mockDelete = jest.fn()
   const appDispatch = jest.fn()
@@ -36,26 +36,32 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       drawMode: 'frame',
-      drawTools: ['circle', 'square', 'polygon'],
       shape: 'square',
-      draw: {
-        heading: ''
+      drawTools: [
+        {
+          id: 'square',
+          name: 'Square'
+        }
+      ],
+      options: {
+        id: 'testId'
       },
+      draw: {},
       provider: {
         map: {},
         draw: {
-          edit: mockEdit
+          add: mockAdd
         }
       }
     })
 
-    render(<Menu />)
-    expect(screen.getByText('Add shape')).toBeTruthy()
+    render(<DrawMenu />)
+    expect(screen.getByText('Add square')).toBeTruthy()
 
-    fireEvent.click(screen.getByText('Add shape'))
+    fireEvent.click(screen.getByText('Add square'))
 
-    expect(mockEdit).toHaveBeenCalled()
-    expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', query: undefined } })
+    expect(mockAdd).toHaveBeenCalled()
+    expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', shape: 'square', query: undefined } })
     expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
@@ -66,12 +72,18 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       drawMode: 'vertex',
-      drawTools: ['circle', 'square', 'polygon'],
       shape: 'polygon',
       query: true,
-      draw: {
-        heading: ''
+      options: {
+        id: 'testId'
       },
+      drawTools: [
+        {
+          id: 'square',
+          name: 'Square'
+        }
+      ],
+      draw: {},
       provider: {
         map: {},
         draw: {
@@ -80,7 +92,7 @@ describe('menu', () => {
       }
     })
 
-    render(<Menu />)
+    render(<DrawMenu />)
 
     fireEvent.click(screen.getByText('Edit shape'))
 
@@ -96,9 +108,16 @@ describe('menu', () => {
       activeRef,
       viewportRef,
       query: {},
-      draw: {
-        heading: ''
+      drawTools: [
+        {
+          id: 'square',
+          name: 'Square'
+        }
+      ],
+      options: {
+        id: 'testId'
       },
+      draw: {},
       provider: {
         map: {},
         draw: {
@@ -106,11 +125,10 @@ describe('menu', () => {
         }
       },
       drawTool: 'frame',
-      drawTools: ['circle', 'square', 'polygon'],
       shape: 'square'
     })
 
-    render(<Menu />)
+    render(<DrawMenu />)
 
     expect(screen.getByText('Delete shape')).toBeTruthy()
     fireEvent.click(screen.getByText('Delete shape'))

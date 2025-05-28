@@ -52,13 +52,30 @@ export class Draw {
 
     // Start new
     if (!feature) {
-      this.edit(drawMode, shape)
+      this.add(drawMode, shape)
+    }
+  }
+
+  add (drawMode, shape) {
+    const { provider, sketchViewModel } = this
+    const { graphicsLayer, isDark } = provider
+    this.shape = shape
+
+    // Create new polygon
+    if (drawMode === 'vertex') {
+      sketchViewModel.layer = graphicsLayer
+
+      // Another timeout hack
+      setTimeout(() => sketchViewModel.create(shape, {
+        drawMode: 'click',
+        polygonSymbol: this.createPolygonSymbol(isDark)
+      }), 0)
     }
   }
 
   edit (drawMode, shape) {
     const { provider, oGraphic, sketchViewModel, emptyLayer } = this
-    const { view, graphicsLayer, isDark } = provider
+    const { view, graphicsLayer } = provider
     this.shape = shape
 
     // Disabel sketchViewModel
@@ -89,17 +106,6 @@ export class Draw {
         enableScaling: false,
         preserveAspectRatio: false,
         toggleToolOnClick: false
-      }), 0)
-    }
-
-    // Create new polygon
-    if (drawMode === 'vertex' && !graphic) {
-      sketchViewModel.layer = graphicsLayer
-
-      // Another timeout hack
-      setTimeout(() => sketchViewModel.create(shape, {
-        drawMode: 'click',
-        polygonSymbol: this.createPolygonSymbol(isDark)
       }), 0)
     }
   }

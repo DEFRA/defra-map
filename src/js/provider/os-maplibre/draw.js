@@ -67,12 +67,25 @@ export class Draw {
     })
 
     // Start new
-    this.edit(drawMode, shape)
+    this.add(drawMode, shape)
   }
 
   // Add new shape
-  add () {
+  add (drawMode, shape) {
+    const { draw } = this
+    const { container } = this.provider
+    this.shape = shape
 
+    // Remove existing drawn features
+    if (drawMode === 'frame') {
+      draw.deleteAll()
+      draw.changeMode('disabled')
+    }
+
+    // Start a new polygon
+    if (drawMode === 'vertex' && !draw.get(shape)) {
+      draw.changeMode('draw_vertex', { container: container.parentNode, featureId: shape })
+    }
   }
 
   // Edit existing shape
@@ -97,11 +110,6 @@ export class Draw {
     // Edit existing feature
     if (drawMode === 'vertex' && draw.get(shape)) {
       draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
-    }
-
-    // Start a new polygon
-    if (drawMode === 'vertex' && !draw.get(shape)) {
-      draw.changeMode('draw_vertex', { container: container.parentNode, featureId: shape })
     }
   }
 

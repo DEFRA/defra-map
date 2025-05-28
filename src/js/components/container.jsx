@@ -11,7 +11,8 @@ import Panel from './panel.jsx'
 import Segments from './segments.jsx'
 import Layers from './layers.jsx'
 import Logo from './logo.jsx'
-import Menu from './menu.jsx'
+import DrawMenu from './draw-menu.jsx'
+import DrawAction from './draw-action.jsx'
 import Styles from './styles.jsx'
 import Keyboard from './keyboard.jsx'
 import LegendButton from './legend-button.jsx'
@@ -23,7 +24,6 @@ import Reset from './reset.jsx'
 import Location from './location.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
-import DrawShape from './draw-shape.jsx'
 import Actions from './actions.jsx'
 import EditButton from './edit-button.jsx'
 import HelpButton from './help-button.jsx'
@@ -38,7 +38,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, draw, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -113,7 +113,7 @@ export default function Container () {
           )}
           {isFixed && !isQueryMode && (
             <Panel className='legend' label={legendTitle} width={legend?.width} isHideHeading={!hasLengedHeading}>
-              {draw && <Menu />}
+              <DrawMenu />
               <Segments />
               <Layers hasSymbols={!!legend?.display} hasInputs />
             </Panel>
@@ -135,6 +135,7 @@ export default function Container () {
                   </>
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
+                <DrawAction />
                 <KeyButton keyBtnRef={keyBtnRef} />
                 {!isFixed && <EditButton editBtnRef={editBtnRef} />}
                 {activePanel === 'KEY' && !isMobile && (
@@ -147,7 +148,7 @@ export default function Container () {
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
                   <Panel className='legend' isNotObscure={false} label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                    {draw && <Menu />}
+                    <DrawMenu />
                     <Segments />
                     <Layers hasSymbols={!!legend?.display} hasInputs />
                   </Panel>
@@ -155,7 +156,6 @@ export default function Container () {
               </div>
               <div className='fm-o-top__column'>
                 <ViewportLabel />
-                <DrawShape />
               </div>
               <div className='fm-o-top__column'>
                 {!isMobile && activePanel === 'STYLE' && (
@@ -183,7 +183,7 @@ export default function Container () {
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {draw && <Menu />}
+                  <DrawMenu />
                   <Segments />
                   <Layers hasSymbols={!!legend?.display} hasInputs />
                 </Panel>
@@ -224,7 +224,7 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                  {draw && <Menu />}
+                  <DrawMenu />
                   <Segments />
                   <Layers hasSymbols hasInputs />
                 </Panel>

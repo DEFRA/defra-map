@@ -106,9 +106,9 @@ const close = (state) => {
 const setMode = (state, payload) => {
   return {
     ...state,
-    drawMode: payload.value || state.drawMode,
-    query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
-    shape: Object.hasOwn(payload, 'shape') ? payload.shape : state.shape,
+    drawMode: payload.value,
+    query: payload.query,
+    shape: payload.shape,
     activePanel: state.activePanel === 'EDIT' ? state.activePanel : null,
     featureId: null,
     targetMarker: null
@@ -157,6 +157,13 @@ const toggleKeyExpanded = (state, payload) => {
   }
 }
 
+const toggleDrawExpanded = (state, payload) => {
+  return {
+    ...state,
+    isDrawMenuExpanded: payload
+  }
+}
+
 const toggleViewportLabel = (state, payload) => {
   const hasViewportLabel = payload.data && (!state.isMobile || !state.activePanel || state.activePanel === 'LEGEND')
   return {
@@ -181,5 +188,6 @@ export const actionsMap = {
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
+  TOGGLE_DRAW_EXPANDED: toggleDrawExpanded,
   TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
 }

@@ -496,7 +496,6 @@ export const DrawVertexMode = {
 
   onMove (state, e) {
     // Clear vertex marker
-    console.log('onMove', state.interfaceType)
     if (state.interfaceType === 'keyboard') {
       const { map } = this
       const center = map.getCenter()

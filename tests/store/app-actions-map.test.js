@@ -443,7 +443,7 @@ describe('store/app-actions-map - setMode', () => {
       featureId: 'feature123',
       targetMarker: 'marker1'
     }
-    const payload = { query: 'newQuery' }
+    const payload = { value: 'default', query: 'newQuery' }
     const result = actionsMap.SET_MODE(state, payload)
 
     expect(result.drawMode).toEqual('default')

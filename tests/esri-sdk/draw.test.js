@@ -71,11 +71,11 @@ describe('Draw Class', () => {
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should call edit with \'undefined, undefined\' when no feature is provided', () => {
-      const editSpy = jest.spyOn(Draw.prototype, 'edit')
+    it('should call add with \'undefined, undefined\' when no feature is provided', () => {
+      const addSpy = jest.spyOn(Draw.prototype, 'add')
       drawInstance = new Draw(mockProvider, {})
-      expect(editSpy).toHaveBeenCalledWith(undefined, undefined)
-      editSpy.mockRestore()
+      expect(addSpy).toHaveBeenCalledWith(undefined, undefined)
+      addSpy.mockRestore()
     })
 
     it('should generate a new Graphic from the provided coordinates', () => {
@@ -136,6 +136,21 @@ describe('Draw Class', () => {
     })
   })
 
+  describe('add()', () => {
+    it('should initiate sketchViewModal.create() when drawMode is \'vertex\' and no graphic', () => {
+      jest.useFakeTimers()
+      const createPolygonSymbolSpy = jest.spyOn(Draw.prototype, 'createPolygonSymbol')
+      mockProvider.isDark = false
+      drawInstance = new Draw(mockProvider, {})
+      drawInstance.add('vertex', 'polygon')
+      expect(sketchViewModelMock.layer).toEqual(mockProvider.graphicsLayer)
+      jest.runAllTimers()
+      expect(sketchViewModelMock.create).toHaveBeenCalledWith('polygon', expect.any(Object))
+      expect(createPolygonSymbolSpy).toHaveBeenCalledWith(false)
+      jest.useRealTimers()
+    })
+  })
+
   describe('edit()', () => {
     it('should zoom to the existing graphic when available', () => {
       drawInstance = new Draw(mockProvider, {})
@@ -159,19 +174,6 @@ describe('Draw Class', () => {
       expect(sketchViewModelMock.layer).toEqual(mockProvider.graphicsLayer)
       jest.runAllTimers()
       expect(sketchViewModelMock.update).toHaveBeenCalledWith([graphic], expect.any(Object))
-      jest.useRealTimers()
-    })
-
-    it('should initiate sketchViewModal.create() when drawMode is \'vertex\' and no graphic', () => {
-      jest.useFakeTimers()
-      const createPolygonSymbolSpy = jest.spyOn(Draw.prototype, 'createPolygonSymbol')
-      mockProvider.isDark = false
-      drawInstance = new Draw(mockProvider, {})
-      drawInstance.edit('vertex', 'polygon')
-      expect(sketchViewModelMock.layer).toEqual(mockProvider.graphicsLayer)
-      jest.runAllTimers()
-      expect(sketchViewModelMock.create).toHaveBeenCalledWith('polygon', expect.any(Object))
-      expect(createPolygonSymbolSpy).toHaveBeenCalledWith(false)
       jest.useRealTimers()
     })
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { drawTools } from '../../src/js/store/constants'
-import DrawShape from '../../src/js/components/draw-shape'
+import DrawAction from '../../src/js/components/draw-action'
 import { useApp } from '../../src/js/store/use-app'
 
 jest.mock('../../src/js/store/use-app')
@@ -9,7 +9,7 @@ jest.mock('../../src/js/store/use-app')
 describe('draw-edit', () => {
   it('should handle shape click and show current selection', () => {
     const mockDispatch = jest.fn()
-    const mockDrawShape = jest.fn()
+    const mockDrawAction = jest.fn()
     const mockUseApp = jest.mocked(useApp)
 
     // Function to update mock return value dynamically
@@ -19,7 +19,7 @@ describe('draw-edit', () => {
         shape,
         drawTools,
         dispatch: mockDispatch,
-        provider: { draw: { edit: mockDrawShape } },
+        provider: { draw: { edit: mockDrawAction } },
         options: { id: 'test' }
       })
     }
@@ -36,10 +36,10 @@ describe('draw-edit', () => {
     shapes.forEach(({ shape, label, drawMode }) => {
       // Update mocks before clicking
       updateMockUseApp(shape, drawMode)
-      render(<DrawShape />)
+      render(<DrawAction />)
 
       // Open the menu
-      fireEvent.click(screen.getByText(`Current selection: ${label}`))
+      fireEvent.click(screen.getByText(label))
       const menu = screen.getByRole('menu')
       expect(screen.getByRole('menu')).toBeTruthy()
 
@@ -48,7 +48,7 @@ describe('draw-edit', () => {
       fireEvent.click(shapeOption)
 
       // Verify drawEdit was called with updated values
-      expect(mockDrawShape).toHaveBeenCalledWith(drawMode, shape)
+      expect(mockDrawAction).toHaveBeenCalledWith(drawMode, shape)
 
       // Verify dispatch was called with updated drawMode and shape
       expect(mockDispatch).toHaveBeenCalledWith({

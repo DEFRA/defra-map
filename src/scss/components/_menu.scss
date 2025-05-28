@@ -1,9 +1,7 @@
 @use '../tools/mixins' as *;
 
 .fm-c-menu {
-    padding-top: 20px;
-    padding-bottom: 15px;
-    line-height: 1rem;
+    padding-top: 15px;
 
     &__heading {
         @include body-font(1.125rem, 400);
@@ -18,10 +16,18 @@
     border-top: 1px solid var(--border-colour);
 }
 
+.fm-c-menu__items {
+    padding-bottom: 15px;
+}
+
 .fm-c-menu__item {
     margin-bottom: 15px;
     
     &:last-child {
         margin-bottom: 2px;
     }
+}
+
+.fm-c-menu .fm-c-details {
+    font-weight: 700;
 }

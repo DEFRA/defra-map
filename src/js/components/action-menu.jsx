@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useOutsideInteract } from '../hooks/use-outside-interact.js'
+import Tooltip from './tooltip.jsx'
 
-export default function ActionMenu ({ id, name, display, items, selected, handleSelect, width }) {
+export default function ActionMenu ({ id, name, display, hasLabel, items, selected, handleSelect }) {
   const label = name.toLowerCase().replace(' ', '-')
   const [isExpanded, setIsExpanded] = useState(false)
   const [index, setIndex] = useState(0)
@@ -9,6 +10,7 @@ export default function ActionMenu ({ id, name, display, items, selected, handle
   const buttonRef = useRef(null)
   const menuRef = useRef(null)
   const instigatorRef = useRef(null)
+  const toolTipId = `${id}-${name.toLowerCase().replace(' ', '-')}`
 
   const handleButtonClick = () => {
     setIsExpanded(!isExpanded)
@@ -67,6 +69,29 @@ export default function ActionMenu ({ id, name, display, items, selected, handle
     handleSelect(items[i].id)
   }
 
+  const button = () => {
+    return (
+      <button
+        ref={buttonRef}
+        id={`${id}-${label}-button-label`}
+        onClick={handleButtonClick}
+        onKeyUp={handleButtonKeyUp}
+        className='fm-c-btn fm-c-btn--action'
+        {...!hasLabel && { 'aria-labelledby': `${id}-${label}-tooltip` }} // ${id}-${label}-description
+        aria-haspopup='true'
+        aria-expanded={isExpanded}
+        aria-controls={`${id}-${label}-menu`}
+      >
+        <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
+          <path d={selected.path} />
+        </svg>
+        {hasLabel && <span id={`${id}-${label}-button-label`}>{name}</span>}
+        <span className='fm-c-btn__chevron' />
+        {/* <span id={`${id}-${label}-description`} className='fm-u-visually-hidden'>Current selection: {selected.name}</span> */}
+      </button>
+    )
+  }
+
   useEffect(() => {
     if (isExpanded) {
       menuRef.current.focus()
@@ -80,25 +105,14 @@ export default function ActionMenu ({ id, name, display, items, selected, handle
   })
 
   return (
-    <div className='fm-c-action-menu' style={{ display, width }} ref={elementRef}>
-      <button
-        ref={buttonRef}
-        id={`${id}-${label}-button-label`}
-        onClick={handleButtonClick}
-        onKeyUp={handleButtonKeyUp}
-        className='fm-c-btn'
-        aria-labelledby={`${id}-${label}-tooltip, ${id}-${label}-description`}
-        aria-haspopup='true'
-        aria-expanded={isExpanded}
-        aria-controls={`${id}-${label}-menu`}
-      >
-        <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-          <path d={selected.path} />
-        </svg>
-        <span id={`${id}-${label}-button-label`}>{name}</span>
-        <span className='fm-c-btn__chevron' />
-        <span id={`${id}-${label}-description`} className='fm-u-visually-hidden'>Current selection: {selected.name}</span>
-      </button>
+    <div className='fm-c-action-menu' style={{ display }} ref={elementRef}>
+      {hasLabel
+        ? button()
+        : (
+          <Tooltip id={toolTipId} position='below' text={name}>
+            {button()}
+          </Tooltip>
+          )}
       <ul ref={menuRef} id={`${id}-${label}-menu`} className='fm-c-action-menu__list' role='menu' tabIndex='-1' aria-labelledby={`${id}-${label}-button-label`} aria-activedescendant={`${id}-${label}-item-${index}`} onKeyDown={handleMenuKeyDown} onBlur={handleMenuBlur} style={{ display: isExpanded ? 'block' : 'none' }}>
         {items.map((item, i) => (
           <li key={item.name} id={`${id}-${label}-item-${i}`} className={`fm-c-action-menu__item${index === i ? ' fm-c-action-menu__item--selected' : ''}`} role='menuitem' onClick={e => handleItemClick(e, i)}>

@@ -478,8 +478,10 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   draw: {
-    heading: 'Site boundary',
-    tools: ['circle', 'square', 'polygon'],
+    heading: 'Get a boundary report',
+    summary: 'Add or edit site boundary',
+    collapse: 'collapse',
+    tools: ['square', 'polygon'],
     queryLabel: 'Get site report',
     helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',

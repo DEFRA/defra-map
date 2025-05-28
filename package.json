@@ -14,7 +14,7 @@
     "unit-test": "jest",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:scss -- --fix",
-    "lint:js": "standard",
+    "lint:js": "standard 'src/**/*.js'",
     "lint:scss": "stylelint \"**/*.scss\"",
     "prepare": "npx husky",
     "storybook": "storybook dev -p 6006",

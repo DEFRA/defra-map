@@ -11,7 +11,7 @@ jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/lib/viewport')
 
-describe('menu', () => {
+describe('draw-menu', () => {
   const mockAdd = jest.fn()
   const mockEdit = jest.fn()
   const mockDelete = jest.fn()

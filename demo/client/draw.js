@@ -55,7 +55,7 @@ const fm = new FloodMap('map', {
     width: '280px',
     // display: 'compact',
     isVisible: true,
-    title: 'Menu',
+    // title: 'Menu',
     keyWidth: '360px',
     // keyDisplay: 'min',
     segments: [

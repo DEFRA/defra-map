@@ -1,0 +1,72 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Map – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+
+    <script>
+      document.body.classList.add('fm-js-hidden')
+    </script>
+
+    <h1 class="govuk-heading-l">A basic map</h1>
+    
+    <div id="map" data-zoom="10" data-center="[-1.318249,50.673456]"></div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+      const fm = new defra.FloodMap('map', {
+        behaviour: 'hybrid', // 'buttonFirst | inline',
+        place: 'Carlisle',
+        zoom: 14,
+        minZoom: 8,
+        maxZoom: 18,
+        center: [-2.938769, 54.893806],
+        // bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+        hasGeoLocation: true,
+        height: '600px',
+        transformRequest: function(url, resourceType) {
+          if (resourceType === 'Style' && url.startsWith('https://api.maptiler.com')) {
+            url = `${url}?key={{ MAPTILER_API_KEY }}`
+          }
+          return { url }
+        },
+        transformGeocodeRequest: function(url) {
+          return new Request(`${url}&key={{ env.OS_CLIENT_ID }}`)
+        },
+        hasAutoMode: true,
+        backgroundColor: 'default: #f5f5f0, dark: #162639',
+        styles: [{
+          name: 'default',
+          attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+          url: '{{ env.DEFAULT_URL }}'
+        }, {
+          name: 'dark',
+          attribution: 'Test',
+          url: '{{ env.DARK_URL }}'
+        },{
+          name: 'aerial',
+          attribution: 'MapTiler attribution',
+          url: '{{ env.AERIAL_URL }}',
+          logo: null
+        },{
+          name: 'deuteranopia',
+          attribution: 'Test',
+          url: '{{ env.DEUTERANOPIA_URL }}'
+        },{
+          name: 'tritanopia',
+          attribution: 'Test',
+          url: '{{ env.TRITANOPIA_URL }}'
+        }],
+        search: {
+          country: 'england',
+          isAutocomplete: true
+        }
+      })
+    </script>
+
+{% endblock %}

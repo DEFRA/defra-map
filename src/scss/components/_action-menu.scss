@@ -13,7 +13,6 @@
         margin: 5px 0 0;
         width: 100%;
         min-width: 160px;
-        left: 0;
         background-color: var(--background-colour);
         box-shadow: $panel-shadow-offset;
         border-radius: $panel-radius;
@@ -55,7 +54,6 @@
     .fm-c-btn {
         padding: 10px;
         box-sizing: border-box;
-        width: 100%;
     }
 
     .fm-c-btn__chevron {
@@ -70,5 +68,11 @@
         border-top: 0.125rem solid;
         border-right: 0.125rem solid;
         margin-left: auto;
+    }
+
+    // Positions
+    &--above-right &__list {
+        right: 0;
+        bottom: calc(100% + 10px);
     }
 }

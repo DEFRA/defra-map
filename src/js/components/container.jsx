@@ -135,7 +135,6 @@ export default function Container () {
                   </>
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
-                <DrawAction />
                 <KeyButton keyBtnRef={keyBtnRef} />
                 {!isFixed && <EditButton editBtnRef={editBtnRef} />}
                 {activePanel === 'KEY' && !isMobile && (
@@ -205,14 +204,13 @@ export default function Container () {
               )}
             </div>
             <div className='fm-o-bottom'>
-              <div className='fm-o-footer'>
-                <div className='fm-o-logo'>
-                  <Logo />
-                </div>
-                {!isMobile && <Actions />}
-                <div className='fm-o-scale'>
-                  <ScaleBar />
-                </div>
+              <div className='fm-o-logo'>
+                <Logo />
+              </div>
+              {!isMobile && <Actions />}
+              <div className='fm-o-tools'>
+                <DrawAction />
+                <ScaleBar />
               </div>
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />

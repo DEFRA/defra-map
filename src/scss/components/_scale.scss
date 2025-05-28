@@ -1,38 +1,39 @@
 @use '../tools/mixins' as *;
 @use '../settings/colours' as *;
+@use '../settings/dimensions' as *;
 
 .fm-c-scale {
     @include body-font(16px, 400);
     position: relative;
-    background-color: $foreground-colour;
-    margin: 0 5px 5px auto;
-    height: 5px;
-    box-shadow:
-        -1px -1px 0 rgba($background-colour, 0.5),
-        1px -1px 0 rgba($background-colour, 0.5),
-        -1px  1px 0 rgba($background-colour, 0.5),
-        1px  1px 0 rgba($background-colour, 0.5);
+    padding-bottom: 5px;
+    margin-left: auto;
+    text-align: right;
 
     &__label {
-        position: absolute;
-        bottom: 100%;
-        right: 0;
         text-shadow:
             -1px -1px 0 rgba($background-colour, 0.8),
             1px -1px 0 rgba($background-colour, 0.8),
             -1px  1px 0 rgba($background-colour, 0.8),
             1px  1px 0 rgba($background-colour, 0.8);
     }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 5px;
+        width: 100%;
+        background-color: $foreground-colour;
+        box-shadow:
+            -1px -1px 0 rgba($background-colour, 0.5),
+            1px -1px 0 rgba($background-colour, 0.5),
+            -1px  1px 0 rgba($background-colour, 0.5),
+            1px  1px 0 rgba($background-colour, 0.5);
+    }
 }
 
 .fm-c-scale--dark, .fm-c-scale--aerial {
-    background-color: $background-colour;
-    box-shadow:
-        -1px -1px 0 rgba($foreground-colour, 0.5),
-        1px -1px 0 rgba($foreground-colour, 0.5),
-        -1px  1px 0 rgba($foreground-colour, 0.5),
-        1px  1px 0 rgba($foreground-colour, 0.5);
-
     .fm-c-scale__label {
         color: $background-colour;
         text-shadow:
@@ -40,5 +41,14 @@
             1px -1px 0 rgba($foreground-colour, 0.8),
             -1px  1px 0 rgba($foreground-colour, 0.8),
             1px  1px 0 rgba($foreground-colour, 0.8);
+    }
+    
+    &::after {
+        background-color: $background-colour;
+        box-shadow:
+            -1px -1px 0 rgba($foreground-colour, 0.5),
+            1px -1px 0 rgba($foreground-colour, 0.5),
+            -1px  1px 0 rgba($foreground-colour, 0.5),
+            1px  1px 0 rgba($foreground-colour, 0.5);
     }
 }

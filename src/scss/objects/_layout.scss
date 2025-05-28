@@ -275,24 +275,37 @@
     margin-top: auto;
     pointer-events: none;
     display: flex;
-    flex-direction: column;
-    justify-content: end;
+    flex-wrap: wrap;
+    align-content: end;
     min-height: 0;
     flex-grow: 1;
     z-index: 4;
 }
 
-.fm-o-footer {
-    display: flex;
-    position: relative;
-    flex-direction: row;
-    flex-grow: 1;
-    align-items: end;
-    justify-content: space-between;
-    padding: 0 calc($margin - 5px) calc($margin - 5px);
-    width: 100%;
-    -webkit-align-items: flex-end;
-    z-index: 2;
+.fm-tablet .fm-o-bottom,
+.fm-desktop .fm-o-bottom {
+    z-index: -1;
+}
+
+.fm-o-tools,
+.fm-o-actions,
+.fm-o-bottom .fm-c-panel {
+    flex: 0 0 100%;
+}
+
+.fm-o-logo {
+    flex: 0 0 auto;
+    width: 120px;
+    align-self: flex-end;
+    margin: 0 auto $margin $margin;
+}
+
+.fm-o-tools {
+    flex: 0 0 auto;
+    width: 120px;
+    align-self: flex-end;
+    margin: 0 $margin $margin auto;
+    text-align: right;
 }
 
 .fm-o-attribution {
@@ -305,21 +318,6 @@
     z-index: -2;
     bottom: 0;
     right: 0;
-}
-
-.fm-o-logo {
-    flex-grow: 1;
-    flex-basis: 0;
-}
-
-.fm-o-scale {
-    flex-grow: 1;
-    flex-basis: 0;
-}
-
-.fm-tablet .fm-o-scale,
-.fm-desktop .fm-o-scale {
-    margin-bottom: 20px;
 }
 
 .fm-o-actions {
@@ -336,28 +334,31 @@
     }
 }
 
-.fm-tablet .fm-o-actions,
-.fm-desktop .fm-o-actions {
-    margin: calc($margin / 2);
-}
+.fm-tablet, .fm-desktop {
+    .fm-o-tools {
+        margin-bottom: 35px;
+    }
 
-.fm-tablet .fm-o-footer,
-.fm-desktop .fm-o-footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-.fm-tablet .fm-o-bottom,
-.fm-desktop .fm-o-bottom {
-    z-index: -1;
+    .fm-o-actions {
+        flex: 0 1 auto;
+        margin-bottom: $margin;
+        align-self: flex-end;
+    }
 }
 
 .fm-o-top__column:first-child > .fm-c-tooltip,
 .fm-o-top__column:first-child > .fm-c-action-menu {
     display: inline-block;
     margin-right: 10px;
+}
+
+// Action menu
+.fm-o-tools .fm-c-action-menu {
+    margin-bottom: 20px;
+    
+    .fm-c-btn {
+        box-shadow: $button-shadow;
+    }
 }
 
 // Panels

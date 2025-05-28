@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useOutsideInteract } from '../hooks/use-outside-interact.js'
 import Tooltip from './tooltip.jsx'
 
-export default function ActionMenu ({ id, name, display, hasLabel, items, selected, handleSelect }) {
+export default function ActionMenu ({ id, path, name, display, hasLabel = true, items, menuPosition, tooltipPosition, handleSelect }) {
   const label = name.toLowerCase().replace(' ', '-')
   const [isExpanded, setIsExpanded] = useState(false)
   const [index, setIndex] = useState(0)
@@ -59,10 +59,6 @@ export default function ActionMenu ({ id, name, display, hasLabel, items, select
     }
   }
 
-  const handleMenuBlur = () => {
-    setIsExpanded(false)
-  }
-
   const handleItemClick = (_, i) => {
     instigatorRef.current = buttonRef.current
     setIsExpanded(false)
@@ -83,10 +79,10 @@ export default function ActionMenu ({ id, name, display, hasLabel, items, select
         aria-controls={`${id}-${label}-menu`}
       >
         <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-          <path d={selected.path} />
+          <path d={path} />
         </svg>
         {hasLabel && <span id={`${id}-${label}-button-label`}>{name}</span>}
-        <span className='fm-c-btn__chevron' />
+        {/* <span className='fm-c-btn__chevron' /> */}
         {/* <span id={`${id}-${label}-description`} className='fm-u-visually-hidden'>Current selection: {selected.name}</span> */}
       </button>
     )
@@ -105,15 +101,15 @@ export default function ActionMenu ({ id, name, display, hasLabel, items, select
   })
 
   return (
-    <div className='fm-c-action-menu' style={{ display }} ref={elementRef}>
+    <div className={`fm-c-action-menu fm-c-action-menu--${menuPosition}`} style={{ display }} ref={elementRef}>
       {hasLabel
         ? button()
         : (
-          <Tooltip id={toolTipId} position='below' text={name}>
+          <Tooltip id={toolTipId} position={tooltipPosition} text={name}>
             {button()}
           </Tooltip>
           )}
-      <ul ref={menuRef} id={`${id}-${label}-menu`} className='fm-c-action-menu__list' role='menu' tabIndex='-1' aria-labelledby={`${id}-${label}-button-label`} aria-activedescendant={`${id}-${label}-item-${index}`} onKeyDown={handleMenuKeyDown} onBlur={handleMenuBlur} style={{ display: isExpanded ? 'block' : 'none' }}>
+      <ul ref={menuRef} id={`${id}-${label}-menu`} className='fm-c-action-menu__list' role='menu' tabIndex='-1' aria-labelledby={`${id}-${label}-button-label`} aria-activedescendant={`${id}-${label}-item-${index}`} onKeyDown={handleMenuKeyDown} style={{ display: isExpanded ? 'block' : 'none' }}>
         {items.map((item, i) => (
           <li key={item.name} id={`${id}-${label}-item-${i}`} className={`fm-c-action-menu__item${index === i ? ' fm-c-action-menu__item--selected' : ''}`} role='menuitem' onClick={e => handleItemClick(e, i)}>
             {item.path && (

@@ -1,3 +1,4 @@
+import { screen } from '@testing-library/react'
 import { FloodMap } from '../src/flood-map'
 import eventBus from '../src/js/lib/eventbus'
 import { events } from '../src/js/store/constants'
@@ -452,43 +453,29 @@ describe('FloodMap', () => {
   })
 
   it('should add focus-visible class when keyboard interface is used', () => {
-    // Create a div element with the ID 'test-div'
-    const div = document.createElement('div')
-    div.id = 'test-div'
-    div.setAttribute('tabindex', '0')
-    document.body.appendChild(div)
-
     // Create FloodMap instance
-    floodMap = new FloodMap('test-id', {})
+    floodMap = new FloodMap('test-id', { behaviour: 'buttonFirst'})
 
     // First trigger keyboard interaction with Tab key
     const keydownEvent = new Event('keydown')
     Object.defineProperty(keydownEvent, 'key', { value: 'Tab' })
     window.dispatchEvent(keydownEvent)
+    const button = screen.getByRole('button')
 
     // Verify keyboard interface is set
     expect(floodMap.interfaceType).toBe('keyboard')
-
-    // Mock document.activeElement
-    Object.defineProperty(document, 'activeElement', {
-      get: () => div,
-      configurable: true
-    })
 
     // Now trigger the focus event
     const focusInEvent = new Event('focusin', {
       bubbles: true,
       cancelable: true
     })
-
-    window.dispatchEvent(focusInEvent)
+    button.dispatchEvent(focusInEvent)
 
     // Verify the correct class was added
-    expect(div.classList.contains('fm-u-focus-visible')).toBe(true)
-
-    // Cleanup
-    document.body.removeChild(div)
+    expect(button.classList.contains('fm-u-focus-visible')).toBe(true)
   })
+
   it('should handle responsive changes correctly', () => {
     // Create spies for _removeComponent and _importComponent
     const removeComponentSpy = jest.spyOn(FloodMap.prototype, '_removeComponent')

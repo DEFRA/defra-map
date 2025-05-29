@@ -17,7 +17,8 @@ export class FloodMap extends EventTarget {
 
   constructor (id, props, callBack) {
     super()
-    this.el = document.getElementById(id)
+    const el = document.getElementById(id)
+    this.el = el
 
     // Check capabilities
     props.framework ??= 'default'
@@ -57,6 +58,18 @@ export class FloodMap extends EventTarget {
       this._importComponent()
     }
 
+    // Polyfil :focus-visible set
+    this.handleFocusIn = e => {
+      if (this.interfaceType === 'keyboard') {
+        e.target.classList.add(cssFocusVisible)
+      }
+    }
+    el.addEventListener('focusin', this.handleFocusIn)
+
+    // Polyfil :focus-visible remove
+    this.handleFocusOut = e => { e.target.classList.remove(cssFocusVisible) }
+    el.addEventListener('focusout', this.handleFocusOut)
+
     // Add button
     if (['buttonFirst', 'hybrid'].includes(props?.behaviour)) {
       this._insertButtonHTML()
@@ -90,18 +103,6 @@ export class FloodMap extends EventTarget {
     // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
     window.addEventListener('wheel', this._handlePointerdown.bind(this))
-
-    // Polyfil :focus-visible set
-    const handleFocusIn = () => {
-      if (this.interfaceType === 'keyboard') {
-        document.activeElement.classList.add(cssFocusVisible)
-      }
-    }
-    window.addEventListener('focusin', handleFocusIn)
-
-    // Polyfil :focus-visible remove
-    const handleFocusOut = e => { e.target.classList.remove(cssFocusVisible) }
-    window.addEventListener('focusout', handleFocusOut)
 
     // Component ready
     eventBus.on(parent, events.APP_READY, data => {
@@ -155,6 +156,8 @@ export class FloodMap extends EventTarget {
     `)
     const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
+    button.addEventListener('focusin', this.handleFocusIn)
+    button.addEventListener('focusout', this.handleFocusOut)
     this.button = button
   }
 

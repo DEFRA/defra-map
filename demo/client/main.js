@@ -10,11 +10,10 @@ let map, bounds
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
   // place: 'Carlisle',
-  // zoom: 14,
+  zoom: 14,
   // minZoom: 6,
   // maxZoom: 18,
-  // center: [-2.938769, 54.893806],
-  bounds: [-3.4192941188812256, 54.69773483276367, -2.9610612392425537, 54.95425033569336],
+  center: [-2.938769, 54.893806],
   // bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   maxBounds: [-5.719993, 49.955638, 1.794689, 55.825973],
   // hasReset: true,

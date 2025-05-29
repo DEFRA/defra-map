@@ -46,7 +46,9 @@ describe('draw-menu', () => {
       options: {
         id: 'testId'
       },
-      draw: {},
+      draw: {
+        heading: 'Test heading'
+      },
       provider: {
         map: {},
         draw: {
@@ -83,7 +85,9 @@ describe('draw-menu', () => {
           name: 'Square'
         }
       ],
-      draw: {},
+      draw: {
+        heading: 'Test heading'
+      },
       provider: {
         map: {},
         draw: {
@@ -117,7 +121,9 @@ describe('draw-menu', () => {
       options: {
         id: 'testId'
       },
-      draw: {},
+      draw: {
+        heading: 'Test heading'
+      },
       provider: {
         map: {},
         draw: {

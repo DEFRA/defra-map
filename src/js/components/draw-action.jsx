@@ -4,9 +4,14 @@ import { tools as defaultTools } from '../store/constants.js'
 import ActionMenu from './action-menu.jsx'
 
 export default function DrawShape () {
-  const { options, shape, drawTools } = useApp()
+  const { options, draw, shape, drawTools } = useApp()
   const { id } = options
   const selectedDrawMode = drawTools.find(m => m.id === shape) || drawTools[0]
+
+  // Tools displayed in the legend instead
+  if (!draw || draw?.heading) {
+    return null
+  }
 
   const handleShapeSelect = (id) => {
     console.log(id)

@@ -9,7 +9,8 @@ export default function DrawMenu () {
   const isDetails = ['expanded', 'collapse'].includes(draw?.collapse)
   const { handleAddClick, handleEditClick, handleDeleteClick } = useDrawHandlers()
 
-  if (!draw) {
+  // Tools displayed in draw action menu instead
+  if (!draw?.heading) {
     return null
   }
 

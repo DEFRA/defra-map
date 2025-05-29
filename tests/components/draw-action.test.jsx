@@ -18,6 +18,7 @@ describe('draw-action', () => {
       shape,
       drawTools,
       dispatch: mockDispatch,
+      draw: {},
       provider: { draw: { edit: mockDrawAction } },
       options: { id: 'test' }
     })

@@ -51,7 +51,7 @@ const fm = new FloodMap('map', {
     isAutocomplete: true
   },
   legend: {
-    title: 'Menu',
+    title: 'Legend',
     width: '360px',
     display: 'inset',
     isVisible: true,

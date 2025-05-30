@@ -306,11 +306,6 @@
     }
 }
 
-// Segments without panel heading overide
-.fm-c-panel__header--collapse + .fm-c-panel__body .fm-c-segments:first-child {
-    margin-top: 20px;
-}
-
 // Collapsible sections
 .fm-c-segments .fm-c-details {
     font-weight: 700;

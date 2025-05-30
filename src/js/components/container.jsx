@@ -56,7 +56,7 @@ export default function Container () {
   const isLegendInset = legend?.display === 'inset'
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const legendTitle = legend?.title || defaults.LEGEND_TITLE
-  const hasLengedHeading = !(legend?.display === 'inset' || (isFixed && isPage))
+  const hasLengedHeading = !(legend?.display === 'inset' && legend.segments?.[0]?.display === 'timeline')
   const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid

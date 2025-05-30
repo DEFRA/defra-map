@@ -51,13 +51,6 @@
     z-index: 3;
 }
 
-.fm-c-btn--close-panel {
-    position: absolute;
-    z-index: 1;
-    right: 3px;
-    top: 3px;
-}
-
 .fm-c-panel__heading {
     @include body-font(19px, 700);
     color: var(--foreground-colour);
@@ -105,11 +98,6 @@
     padding: 10px;
 }
 
-// Overides
-.fm-mobile .fm-c-btn--close-panel.fm-u-focus-visible::after {
-    @include focus($offset: 0);
-}
-
 .fm-c-panel--legend .fm-c-panel__heading {
     margin: 0;
     padding-left: 15px;
@@ -117,10 +105,10 @@
     border-bottom: 1px solid var(--border-colour);
 }
 
-.fm-o-panel .fm-c-panel__heading {
-    padding-right: 15px;
+.fm-c-panel--legend.fm-c-panel--inset .fm-c-panel__heading {
+    border-bottom: 0;
 }
 
-.fm-c-layers--style .fm-c-layers__heading {
-    padding-bottom: 0;
+.fm-o-panel .fm-c-panel__heading {
+    padding-right: 15px;
 }

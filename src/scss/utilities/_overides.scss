@@ -1,0 +1,47 @@
+@use '../tools/mixins' as *;
+
+// Panel
+.fm-mobile .fm-c-btn--close-panel.fm-u-focus-visible::after {
+    @include focus($offset: 0);
+}
+
+// Layers
+.fm-c-panel--key .fm-c-layers__group {
+    border-top: 0;
+
+    &:first-child .fm-c-layers__heading {
+        padding: 5px 0 0;
+    }
+}
+
+.fm-c-panel--inset:not(.fm-c-panel--key) {
+    .fm-c-segments + .fm-c-layers .fm-c-layers__group--column:first-child .fm-c-layers__heading {
+        padding-top: 15px;
+    }
+
+    .fm-c-layers__group--column:first-child .fm-c-layers__heading {
+        padding-top: 0;
+    }
+}
+
+.fm-c-panel:not(.fm-c-panel--inset) .fm-c-layers__heading,
+.fm-c-panel:not(.fm-c-panel--inset) .fm-c-segments__heading,
+.fm-c-panel:not(.fm-c-panel--inset) .fm-c-layers__header button {
+    font-weight: 700;
+}
+
+.fm-c-layers--style .fm-c-layers__heading {
+    padding-bottom: 0;
+}
+
+// Segments
+.fm-c-panel__header--collapse + .fm-c-panel__body .fm-c-segments:first-child {
+    margin-top: 20px;
+}
+
+.fm-c-menu,
+.fm-c-segments:not(.fm-c-segments--timeline):not(.fm-c-segments--segmented) {
+    + .fm-c-layers .fm-c-layers__group:first-child {
+        border-top: 1px solid var(--border-colour);
+    }
+}

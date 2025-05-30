@@ -154,6 +154,14 @@
     }
 }
 
+// Close panel
+.fm-c-btn--close-panel {
+    position: absolute;
+    z-index: 1;
+    right: 3px;
+    top: 3px;
+}
+
 // Draw
 .fm-c-btn-primary,
 .fm-c-btn-secondary {

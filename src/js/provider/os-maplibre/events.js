@@ -53,6 +53,7 @@ export async function handleLoad () {
     detail: {
       framework: { map },
       resolution,
+      zoom: map.getZoom(),
       attributions
     }
   }))

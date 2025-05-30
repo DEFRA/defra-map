@@ -22,6 +22,7 @@ export function handleBaseTileLayerLoaded () {
       modules,
       framework,
       resolution,
+      zoom: view.zoom,
       attributions
     }
   }))

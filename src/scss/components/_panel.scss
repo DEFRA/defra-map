@@ -16,9 +16,16 @@
     max-height: 100%;
     max-width: 100%;
     z-index: 5;
+    opacity: 1;
+    transition: opacity 100ms ease;
 
     &.fm-u-focus-visible::after {
         @include focus($offset: 3px);
+    }
+
+    &--hidden {
+        opacity: 0;
+        visibility: hidden;
     }
 }
 
@@ -42,9 +49,6 @@
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 8;
 }
-
-// Inset panel
-
 
 // Panel contents
 .fm-c-panel__header {

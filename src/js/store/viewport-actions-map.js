@@ -6,6 +6,7 @@ const ready = (state, payload) => {
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   return {
     ...state,
+    zoom: payload.zoom,
     resolution: payload.resolution,
     attributions
   }

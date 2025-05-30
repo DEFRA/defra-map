@@ -3,8 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Panel from '../../src/js/components/panel'
 import { useApp } from '../../src/js/store/use-app'
+import { useViewport } from '../../src/js/store/use-viewport'
 
 jest.mock('../../src/js/store/use-app')
+jest.mock('../../src/js/store/use-viewport')
 jest.mock('../../src/js/hooks/use-outside-interact', () => ({
   useOutsideInteract: jest.fn()
 }))
@@ -26,6 +28,9 @@ describe('Panel', () => {
       obscurePanelRef: mockObscurePanelRef,
       activeRef: mockActiveRef,
       activePanelHasFocus: false
+    })
+    useViewport.mockReturnValue({
+      zoom: 12
     })
   })
 

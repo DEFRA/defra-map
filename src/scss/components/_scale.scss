@@ -8,6 +8,8 @@
     padding-bottom: 5px;
     margin-left: auto;
     text-align: right;
+    opacity: 1;
+    transition: opacity 100ms ease;
 
     &__label {
         text-shadow:

@@ -1,5 +1,7 @@
 .fm-c-logo {
     margin: 0;
+    opacity: 1;
+    transition: opacity 100ms ease;
     
     svg {
         display: block;

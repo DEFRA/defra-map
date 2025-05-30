@@ -50,3 +50,8 @@
 .fm-u-visually-hidden {
     @extend %fm-u-visually-hidden;
 }
+
+.fm-u-hidden {
+    opacity: 0;
+    visibility: hidden;
+}

@@ -6,7 +6,7 @@ import { constrainFocus, toggleInert } from '../lib/dom'
 
 const getClassNames = (className, isInset, zoom) => {
   // Panel content may be dependent on zoom level
-  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${!zoom ? ' fm-c-panel--hidden' : ''}`
+  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${!zoom ? ' fm-u-hidden' : ''}`
 }
 
 const getRole = (instigatorRef) => {

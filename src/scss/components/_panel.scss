@@ -22,11 +22,6 @@
     &.fm-u-focus-visible::after {
         @include focus($offset: 3px);
     }
-
-    &--hidden {
-        opacity: 0;
-        visibility: hidden;
-    }
 }
 
 .fm-c-panel--inset.fm-u-focus-visible::after {

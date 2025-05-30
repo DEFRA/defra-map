@@ -57,7 +57,6 @@ export default function Container () {
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const legendTitle = legend?.title || defaults.LEGEND_TITLE
   const hasLengedHeading = !(legend?.display === 'inset' && legend.segments?.[0]?.display === 'timeline')
-  console.log(hasLengedHeading, legend?.display, legend.segments?.[0]?.display)
   const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid

@@ -156,7 +156,6 @@ const fm = new FloodMap('map', {
         layout: 'column',
         parentIds: [queryMap.live],
         minZoom: 12,
-        isHidden: true,
         items: [
           {
             id: queryMap.severe,
@@ -188,7 +187,6 @@ const fm = new FloodMap('map', {
         layout: 'column',
         parentIds: [queryMap.live],
         maxZoom: 12,
-        isHidden: true,
         items: [
           {
             id: queryMap.severe,
@@ -217,6 +215,7 @@ const fm = new FloodMap('map', {
         heading: 'Water level measuring stations',
         layout: 'column',
         parentIds: [queryMap.live],
+        isHidden: true,
         items: [
           {
             id: queryMap.river,

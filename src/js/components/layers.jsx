@@ -24,7 +24,8 @@ export default function Layers ({ hasSymbols, hasInputs }) {
     }
     const lastRef = activeRef.current
     const nextTabStop = findTabStop(lastRef, 'next')
-    nextTabStop?.focus()
+    const isLayer = document.getElementById(`${id}-key`).contains(nextTabStop)
+    isLayer ? nextTabStop?.focus() : lastRef?.focus()
   }, [isKeyExpanded])
 
   if (!legend?.key) {

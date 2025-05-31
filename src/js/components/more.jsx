@@ -3,7 +3,6 @@ import { useApp } from '../store/use-app'
 import { findTabStop } from '../lib/dom.js'
 
 export default function More ({ id, label, isExpanded, setIsExpanded, isRemove }) {
-  const { activeRef } = useApp()
   const btnRef = useRef(null)
 
   const handleClick = () => {
@@ -12,7 +11,7 @@ export default function More ({ id, label, isExpanded, setIsExpanded, isRemove }
       return
     }
     const previousTabStop = findTabStop(document.activeElement, 'prev')
-    activeRef.current = previousTabStop
+    previousTabStop.focus()
   }
 
   return (

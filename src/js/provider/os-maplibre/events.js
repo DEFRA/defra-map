@@ -48,12 +48,13 @@ export async function handleLoad () {
   await loadSymbols.bind(this)()
   this.isLoaded = true
   const resolution = getResolution(map)
+  const zoom = map.getZoom()
   const attributions = getAttributions(map)
   this.dispatchEvent(new CustomEvent('load', {
     detail: {
       framework: { map },
       resolution,
-      zoom: map.getZoom(),
+      zoom,
       attributions
     }
   }))
@@ -110,6 +111,7 @@ export function handleMove () {
   const { map } = this
   const isMaxZoom = map.getZoom() >= map.getMaxZoom()
   const isMinZoom = map.getZoom() <= map.getMinZoom()
+  const zoom = map.getZoom()
   const resolution = getResolution(map)
   const attributions = getAttributions(map)
 
@@ -118,6 +120,7 @@ export function handleMove () {
     detail: {
       isMaxZoom,
       isMinZoom,
+      zoom,
       resolution,
       attributions
     }

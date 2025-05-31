@@ -9,13 +9,12 @@ import LayerGroup from './layer-group.jsx'
 export default function Layers ({ hasSymbols, hasInputs }) {
   const { dispatch, query, segments, options, activeRef, layers, isKeyExpanded } = useApp()
   const { id, legend, draw } = options
-  const { zoom } = useViewport()
+  const { currentZoom } = useViewport()
 
   // Derived properties
-  const moreLabel = legend?.keyDisplay === 'min' && isKeyExpanded ? 'Fewer layers' : 'All layers'
-  const maxRow = legend?.display === 'inset' && legend?.keyDisplay === 'min' ? 0 : legend?.key.length
+  const hasHiddenGroups = legend?.key.some(item => item.isHidden)
   const queryLabel = query ? draw?.keyLabel : null
-  const groups = parseGroups(legend?.key, segments, layers, zoom, hasInputs, queryLabel)
+  const groups = parseGroups(legend?.key, segments, layers, currentZoom, hasInputs, queryLabel)
   const isEmptyKey = !hasInputs && !groups.length
   const setIsExpanded = () => dispatch({ type: 'TOGGLE_KEY_EXPANDED', payload: !isKeyExpanded })
 
@@ -36,14 +35,14 @@ export default function Layers ({ hasSymbols, hasInputs }) {
     <div id={`${id}-key`} className='fm-c-layers'>
       {groups.map((g, i) => (
         <Fragment key={`fl${i}`}>
-          {(isKeyExpanded || (!isKeyExpanded && i <= maxRow)) && (
+          {(isKeyExpanded || !g.isHidden) && (
             <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={legend?.display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
           )}
         </Fragment>
       ))}
-      {(maxRow < (groups.length - 1)) && (
+      {!isKeyExpanded && hasHiddenGroups && (
         <div className='fm-c-layers__more fm-c-layers__more--center'>
-          <More id={`${id}-key`} label={moreLabel} isExpanded={isKeyExpanded} setIsExpanded={setIsExpanded} isRemove />
+          <More id={`${id}-key`} label='All layers' isExpanded={isKeyExpanded} setIsExpanded={setIsExpanded} isRemove />
         </div>
       )}
       {isEmptyKey && (

@@ -18,6 +18,7 @@ describe('layers', () => {
 
   jest.mocked(useViewport).mockReturnValue({
     zoom: 9.49131,
+    currentZoom: 9.49131,
     size: 'smaill',
     style: {
       attribution: 'Contains OS data © Crown copyright and database rights 2025',
@@ -126,7 +127,7 @@ describe('layers', () => {
     expect(screen.getByText('Removed')).toBeTruthy()
   })
 
-  it('should render more button if there are multiple groups', () => {
+  it('should render more button if there are one or more groups with isHidden', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         text: () => Promise.resolve(['<svg viewBox="0 0 40 40"><path d="M33.565" style="fill:#0b0c0c;"/></svg>'])
@@ -179,6 +180,7 @@ describe('layers', () => {
               layout: 'column',
               maxZoom: 12,
               parentIds: ['li'],
+              isHidden: true,
               items: [
                 {
                   icon: '/assets/images/symbols/alert.svg',
@@ -201,6 +203,7 @@ describe('layers', () => {
 
     expect(container.querySelector('.fm-c-layers__more')).toBeTruthy()
   })
+
   it('should handle findTabStop returning undefined gracefully', async () => {
     const appDispatch = jest.fn()
 
@@ -214,7 +217,6 @@ describe('layers', () => {
         id: 'test',
         legend: {
           display: 'inset',
-          keyDisplay: 'min',
           key: [{
             heading: 'Flood warnings and alerts',
             layout: 'column',
@@ -262,7 +264,6 @@ describe('layers', () => {
           id: 'test',
           legend: {
             display: 'inset',
-            keyDisplay: 'min',
             key: [{
               heading: 'Flood warnings and alerts',
               layout: 'column',

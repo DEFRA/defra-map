@@ -7,7 +7,7 @@ import eventBus from '../lib/eventbus.js'
 import { parseSegments, parseLayers } from '../lib/query.js'
 
 export default function SegmentGroup ({ id, group }) {
-  const { parent, style, drawMode, segments, legend, dispatch } = useApp()
+  const { parent, style, drawMode, segments, legend, dispatch, activeRef } = useApp()
   const { size } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQuerySeg] = useQueryState('seg')
@@ -19,6 +19,7 @@ export default function SegmentGroup ({ id, group }) {
     seg.push(e.currentTarget.value)
     seg = parseSegments(legend?.segments, seg)
     const lyr = parseLayers(legend?.key)
+    activeRef.current = e.currentTarget
     dispatch({ type: 'TOGGLE_SEGMENTS', payload: { segments: seg, layers: lyr } })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'segment', drawMode, style, size, segments: seg, layers: lyr })

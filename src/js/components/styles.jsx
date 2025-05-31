@@ -23,12 +23,10 @@ export default function Styles () {
   const MIN_COLS = 3
 
   const handleStyleClick = e => {
-    // activeRef.current = null
     viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
-    // activeRef.current = null
     viewportDispatch({ type: 'SET_SIZE', payload: e.currentTarget.value })
   }
 

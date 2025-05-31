@@ -1,5 +1,5 @@
 import React from 'react'
-import { act, fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
 import SegmentGroup from '../../src/js/components/segment-group'
@@ -25,6 +25,7 @@ describe('segment-group', () => {
     style: undefined,
     drawMode: 'default',
     segments: ['fz'],
+    activeRef: { current: null },
     legend: {
       width: '280px',
       keyWidth: '360px',
@@ -136,6 +137,7 @@ describe('segment-group', () => {
       expect(viewportDispatch).toHaveBeenCalled()
     })
   })
+
   it('should render with a display modifier class when display prop is provided', () => {
     const { container } = render(
       <SegmentGroup

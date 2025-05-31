@@ -55,7 +55,7 @@ const fm = new FloodMap('map', {
     width: '360px',
     display: 'inset',
     isVisible: true,
-    keyDisplay: 'min', // 'all'
+    // keyDisplay: 'min', // 'all'
     isPersistInUrl: true,
     segments: [
       {
@@ -156,6 +156,7 @@ const fm = new FloodMap('map', {
         layout: 'column',
         parentIds: [queryMap.live],
         minZoom: 12,
+        isHidden: true,
         items: [
           {
             id: queryMap.severe,
@@ -187,6 +188,7 @@ const fm = new FloodMap('map', {
         layout: 'column',
         parentIds: [queryMap.live],
         maxZoom: 12,
+        isHidden: true,
         items: [
           {
             id: queryMap.severe,

@@ -67,19 +67,17 @@
     padding: 0 15px 15px;
     overflow: auto;
     touch-action: pan-y;
-
-    p {
-        @include body-font(16px, 400);
-    }
-}
-
-.fm-c-panel__body[tabindex="0"] {
     outline: 0;
 
     &:focus.fm-u-focus-visible::after {
         @include focus($offset: 3px);
         top: 34px;
     }
+    
+    p {
+        @include body-font(16px, 400);
+    }
+
 }
 
 .fm-c-panel__footer {

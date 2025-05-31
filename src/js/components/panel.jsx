@@ -65,21 +65,20 @@ export default function Panel ({ className, label, isInset, isNotObscure, isHide
   useEffect(() => {
     // We need to know when/if a panel has been added before rendering map to calculate padding
     dispatch({ type: 'CONTAINER_READY' })
+
     // Ref to the obscurring panel so that it can be used calculate offsets
     obscurePanelRef.current = isNotObscure ? elementRef.current : null
+    
+    // Conditionally set activeRef to panel
+    if (instigatorRef?.current && activePanelHasFocus) {
+      activeRef.current = elementRef.current
+    }
   }, [])
 
   // Toggle inert elements
   useEffect(() => {
     toggleInert()
   }, [isModal])
-
-  // Conditionally set activeRef to panel
-  useEffect(() => {
-    if (instigatorRef?.current && activePanelHasFocus) {
-      activeRef.current = elementRef.current
-    }
-  })
 
   // Set tabindex on scrollable body
   useEffect(() => {

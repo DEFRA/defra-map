@@ -4,9 +4,11 @@ import { margin } from './constants'
 
 const ready = (state, payload) => {
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
+  const zoom = payload.zoom
   return {
     ...state,
-    zoom: payload.zoom,
+    zoom,
+    currentZoom: zoom,
     resolution: payload.resolution,
     attributions
   }
@@ -67,12 +69,15 @@ const moveStart = (state, payload) => {
 }
 
 const move = (state, payload) => {
+  const { isMaxZoom, isMinZoom, zoom, resolution } = payload
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
+  const currentZoom = zoom
   return {
     ...state,
-    isMaxZoom: payload.isMaxZoom,
-    isMinZoom: payload.isMinZoom,
-    resolution: payload.resolution,
+    isMaxZoom,
+    isMinZoom,
+    currentZoom,
+    resolution,
     attributions
   }
 }

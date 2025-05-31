@@ -70,12 +70,14 @@ export function handleMove () {
   const { maxZoom, minZoom } = view.constraints
   const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
   const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
+  const zoom = view.zoom
   const resolution = view.resolution
   const attributions = getAttributions([baseTileLayer])
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,
       isMinZoom,
+      zoom,
       resolution,
       attributions
     }

@@ -508,7 +508,10 @@
 .fm-o-viewport.fm-u-focus-visible ~ .fm-o-overlay {
     .fm-o-viewport-controls,
     .fm-o-top__column:first-child,
-    .fm-o-top__column:last-child {
+    .fm-o-top__column:last-child,
+    .fm-o-bottom .fm-c-panel--legend,
+    .fm-o-bottom .fm-c-panel--info
+    {
         opacity: 0;
         height: 0;
         overflow: hidden;

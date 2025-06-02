@@ -69,7 +69,7 @@ export default function Actions () {
         {draw?.queryLabel}
       </button>
       <button onClick={handlePixelClick} className='fm-c-btn-primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
-        Get feature information
+        Get info
       </button>
     </div>
   )

@@ -30,6 +30,9 @@ node_modules/
 demo/dist/
 coverage
 
+# Storybook
+storybook-static
+
 # Webpack bundle analyser
 stats.json
 

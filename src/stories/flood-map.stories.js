@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import { FloodMap } from './flood-map'
-import './flood-map.scss'
+import { FloodMap } from '../flood-map'
+import '../flood-map.scss'
 
 // Inline React Wrapper inside the story file
 const FloodMapStoryWrapper = (options) => {
@@ -30,15 +30,15 @@ const FloodMapStoryWrapper = (options) => {
 }
 
 export default {
-  title: 'FloodMap/MapLibre',
+  title: 'Behaviour',
   component: FloodMapStoryWrapper,
   argTypes: {
     behaviour: { control: 'text' },
     place: { control: 'text' },
-    zoom: { control: 'number' },
-    center: { control: 'object' },
-    minZoom: { control: 'number' },
-    maxZoom: { control: 'number' },
+    // zoom: { control: 'number' },
+    // center: { control: 'object' },
+    // minZoom: { control: 'number' },
+    // maxZoom: { control: 'number' },
     backgroundColor: { control: 'text' },
     styles: { control: 'object' }
   }
@@ -48,13 +48,15 @@ const Template = (args) => <FloodMapStoryWrapper {...args} />
 
 export const Default = Template.bind({})
 
+Default.storyName = 'buttonFirst'
+
 Default.args = {
-  behaviour: 'hybrid',
+  behaviour: 'buttonFirst',
   place: 'Carlisle',
-  zoom: 14,
-  center: [-2.938769, 54.893806],
-  minZoom: 10,
-  maxZoom: 20,
+  // zoom: 14,
+  // center: [-2.938769, 54.893806],
+  // minZoom: 10,
+  // maxZoom: 20,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: [{
     name: 'default',

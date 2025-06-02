@@ -15,7 +15,7 @@ export class FloodMap extends EventTarget {
   _selected
   _banner
 
-  constructor (id, props, callBack) {
+  constructor (id, props = { behaviour: 'buttonFirst' }, callBack) {
     super()
     const el = document.getElementById(id)
     this.el = el
@@ -71,7 +71,7 @@ export class FloodMap extends EventTarget {
     el.addEventListener('focusout', this.handleFocusOut)
 
     // Add button
-    if (['buttonFirst', 'hybrid'].includes(props?.behaviour)) {
+    if (['buttonFirst', 'hybrid'].includes(props.behaviour)) {
       this._insertButtonHTML()
       // Remove hidden class
       if (!this.isVisible) {
@@ -130,7 +130,7 @@ export class FloodMap extends EventTarget {
 
   _testDevice (props) {
     const device = framework => capabilities[framework].getDevice()
-    const { isSupported, error } = device(props.framework)
+    const { isSupported, error } = device(props?.framework)
     const isImplementationSupported = props?.deviceTestCallback ? props.deviceTestCallback() : true
     return {
       isSupported: isSupported && isImplementationSupported,

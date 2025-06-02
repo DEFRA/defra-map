@@ -52,11 +52,11 @@ export default function Container () {
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
   const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
   const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour]?.HEIGHT
-  const isCombined = ['compact', 'inset'].includes(legend.display)
+  const isCombined = ['compact', 'inset'].includes(legend?.display)
   const isFixed = legend && isDesktop && !isCombined
   const isLegendInset = legend?.display === 'inset'
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
-  const hasLengedHeading = !(legend?.display === 'inset' && legend.segments?.[0]?.display === 'timeline')
+  const hasLengedHeading = !(legend?.display === 'inset' && legend?.segments?.[0]?.display === 'timeline')
   const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid

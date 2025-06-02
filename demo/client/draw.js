@@ -24,6 +24,7 @@ const fm = new FloodMap('map', {
   transformRequest: createTileRequest(() => map),
   transformGeocodeRequest: getRequest,
   // geocodeProvider: 'esri-world-geocoder',
+  scaleBar: 'metric',
   hasAutoMode: true,
   styles: [{
     name: 'default',

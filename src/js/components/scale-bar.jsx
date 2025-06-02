@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
 export default function ScaleBar () {
   const { resolution, style, zoom } = useViewport()
+  const { options } = useApp()
+  const hasScaleBar = ['imperial', 'metric'].includes(options?.scaleBar)
+
   const elRef = useRef(null)
   const [scale, setScale] = useState({ width: 0, label: '' })
 
-  const UNIT_SYSTEM = 'imperial'
   const MAX_WIDTH = 120
   const CSS_SCALE = 1
 
@@ -81,17 +84,21 @@ export default function ScaleBar () {
   }
 
   useEffect(() => {
-    if (resolution) {
+    if (hasScaleBar && resolution) {
       const metersPerPx = resolution / CSS_SCALE
-      const best = getBestScale(metersPerPx, MAX_WIDTH, UNIT_SYSTEM)
+      const best = getBestScale(metersPerPx, MAX_WIDTH, options.scaleBar)
       setScale(best)
     }
   }, [resolution])
 
+  if (!hasScaleBar) {
+    return
+  }
+
   return (
     <>
       {isVisible && (
-        <div className={`fm-c-scale${!zoom ? ' fm-u-hidden' : ''} fm-c-scale--${style.name}`} ref={elRef} style={{ width: `${scale.width}px` }}>
+        <div className={`fm-c-scale${!zoom ? ' fm-u-hidden' : ''} fm-c-scale--${style?.name}`} ref={elRef} style={{ width: `${scale.width}px` }}>
           <span className='fm-c-scale__label'>
             <span className='fm-u-visually-hidden'>Scale bar: </span>
             {scale.label}

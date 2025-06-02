@@ -35,7 +35,7 @@ export default {
   argTypes: {
     behaviour: { control: 'text' },
     place: { control: 'text' },
-    backgroundColor: { control: 'text' },
+    backgroundColor: { control: 'text' }
     // styles: { control: 'object' }
   }
 }
@@ -45,7 +45,7 @@ export const ButtonFirst = { // Changed from 'Default' to 'ButtonFirst'
   tags: ['visual-test'],
   args: {
     behaviour: 'buttonFirst',
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    backgroundColor: 'default: #f5f5f0, dark: #162639'
     // styles: [{
     //   name: 'default',
     //   attribution: 'Attribution',
@@ -59,7 +59,7 @@ export const Hybrid = { // Changed from 'Default' to 'ButtonFirst'
   tags: ['visual-test'],
   args: {
     behaviour: 'hybrid',
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    backgroundColor: 'default: #f5f5f0, dark: #162639'
     // styles: [{
     //   name: 'default',
     //   attribution: 'Attribution',

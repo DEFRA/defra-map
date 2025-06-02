@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { ViewportProvider } from '../store/viewport-provider.jsx'
 import { useApp } from '../store/use-app'
-import { defaults, events, settings } from '../store/constants'
+import { defaults, labels, events, settings } from '../store/constants'
 import { updateTitle, toggleInert } from '../lib/dom'
 import eventBus from '../lib/eventbus'
 import Viewport from './viewport.jsx'
@@ -39,6 +39,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 export default function Container () {
   // Derived from state and props
   const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const legend = options.legend
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -51,17 +52,20 @@ export default function Container () {
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
   const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
   const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour]?.HEIGHT
-  const legend = options.legend
-  const isFixed = legend && isDesktop && !['compact', 'inset'].includes(legend.display)
+  const isCombined = ['compact', 'inset'].includes(legend.display)
+  const isFixed = legend && isDesktop && !isCombined
   const isLegendInset = legend?.display === 'inset'
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
-  const legendTitle = legend?.title || defaults.LEGEND_TITLE
   const hasLengedHeading = !(legend?.display === 'inset' && legend.segments?.[0]?.display === 'timeline')
   const isQueryMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
   const hasSizeCapability = provider?.capabilities?.hasSize
   const hasInspector = activePanel === 'EDIT' || (activePanel === 'STYLE' && previousPanel === 'EDIT')
+  const combindedTitle = isCombined && (legend?.title ? `<span class="fm-u-visually-hidden">${labels.legend.TITLE}:</span> ${legend?.title}` : labels.legend.TITLE)
+  const seperateTitle = options.draw?.heading ? labels.menu.TITLE : labels.layers.TITLE
+  const legendTitle = combindedTitle || seperateTitle
+
 
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
@@ -138,7 +142,7 @@ export default function Container () {
                 <KeyButton keyBtnRef={keyBtnRef} />
                 {!isFixed && <EditButton editBtnRef={editBtnRef} />}
                 {activePanel === 'KEY' && !isMobile && (
-                  <Panel isNotObscure={false} className='key' label='Key' width={legend?.keyWidth || legend?.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
+                  <Panel isNotObscure={false} className='key' label={labels.legend.TITLE} width={legend?.keyWidth || legend?.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
                   </Panel>
                 )}
@@ -216,7 +220,7 @@ export default function Container () {
                 <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
               )}
               {activePanel === 'KEY' && isMobile && (
-                <Panel className='key' label='Key' instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset isNotObscure>
+                <Panel className='key' label={labels.legend.TITLE} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset isNotObscure>
                   <Layers hasInputs={false} hasSymbols />
                 </Panel>
               )}

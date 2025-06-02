@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Container from '../../src/js/components/container'
 import { useApp } from '../../src/js/store/use-app'
-import { settings, events } from '../../src/js/store/constants'
+import { labels, settings, events } from '../../src/js/store/constants'
 import eventBus from '../../src/js/lib/eventbus'
 
 jest.mock('../../src/js/store/viewport-provider.jsx', () => ({
@@ -30,6 +30,20 @@ jest.mock('../../src/js/store/constants', () => ({
         HEIGHT: '80%',
         attribution: 'Custom Attribution'
       }
+    }
+  },
+  labels: {
+    legend: {
+      TITLE: 'Legend',
+      PATH: 'M9.125 5V3h9v2h-9zm0 6V9h9v2h-9zm0 6v-2h9v2h-9zm-3-9v4h-4V8h4zm0-6v4h-4V2h4zm0 12v4h-4v-4h4z'
+    },
+    layers: {
+      TITLE: 'Layers',
+      PATH: 'M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z'
+    },
+    menu: {
+      TITLE: 'Menu',
+      PATH: 'M10 .75c5.105 0 9.25 4.145 9.25 9.25s-4.145 9.25-9.25 9.25S.75 15.105.75 10 4.895.75 10 .75zm0 1.5c-4.277 0-7.75 3.473-7.75 7.75s3.473 7.75 7.75 7.75 7.75-3.473 7.75-7.75S14.277 2.25 10 2.25zm3.356 5.565L14.77 9.23 10 14 5.23 9.23l1.414-1.415L10 11.172l3.356-3.357z'
     }
   }
 }))
@@ -87,6 +101,10 @@ describe('Container', () => {
       default: { CLASS: 'default-class', HEIGHT: '100%', attribution: 'Default Attribution' },
       custom: { CLASS: 'custom-class', HEIGHT: '80%', attribution: 'Custom Attribution' }
     }
+    labels.layers= {
+      TITLE: 'Layers',
+      PATH: 'M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z'
+    }
     useApp.mockReset()
     mockUseApp = {
       activePanel: 'LEGEND',
@@ -134,7 +152,7 @@ describe('Container', () => {
     // Set mock values to satisfy rendering conditions
     mockUseApp.activePanel = 'LEGEND'
     mockUseApp.isLegendInset = false
-    mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
+    mockUseApp.legend = { width: '300px', display: true }
     mockUseApp.queryArea = { helpLabel: 'Help', html: '<p>Help content</p>' }
 
     // Mock the hook to return these values
@@ -143,7 +161,7 @@ describe('Container', () => {
     render(<Container />)
 
     // Validate that "Legend Title" is rendered
-    expect(screen.getByText('Legend Title')).toBeInTheDocument()
+    expect(screen.getByText('Layers')).toBeInTheDocument()
   })
 
   it('renders the Help panel when activePanel is EDIT', () => {
@@ -168,7 +186,7 @@ describe('Container', () => {
   it('renders the Key panel when activePanel is KEYBOARD', () => {
     mockUseApp.activePanel = 'KEY'
     render(<Container />)
-    expect(screen.getByText('Key')).toBeInTheDocument()
+    expect(screen.getByText('Legend')).toBeInTheDocument()
   })
 
   it('renders the Error panel when activePanel is ERROR', () => {
@@ -405,7 +423,6 @@ describe('Container', () => {
       options: {
         behaviour: 'default',
         legend: {
-          title: 'Test Legend',
           width: '250px',
           display: 'fixed' // 'fixed' instead of true to ensure !isLegendInset
         },
@@ -424,7 +441,7 @@ describe('Container', () => {
     const { container } = render(<Container />)
     const panel = container.querySelector('.mock-panel')
     expect(panel).toBeInTheDocument()
-    expect(panel.querySelector('div')).toHaveTextContent('Test Legend')
+    expect(panel.querySelector('div')).toHaveTextContent('Layers')
   })
 
   it('handles case when legend display is false', () => {
@@ -449,7 +466,6 @@ describe('Container', () => {
       options: {
         behaviour: 'default',
         legend: {
-          title: 'Legend Title',
           display: 'fixed'
         }
       },
@@ -465,9 +481,6 @@ describe('Container', () => {
     // Look for mock-panel instead of .key
     const panel = container.querySelector('.mock-panel')
     expect(panel).toBeInTheDocument()
-
-    // Check for the Key label
-    expect(panel.querySelector('div')).toHaveTextContent('Key')
 
     // Check that Layers component is rendered
     expect(screen.getByText('Layers Mock')).toBeInTheDocument()

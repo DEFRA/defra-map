@@ -24,8 +24,22 @@ export const defaults = {
   MIN_SEARCH_LENGTH: 3,
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   MAX_BOUNDS_4326: [-7.57216793459, 49.959999905, 1.68153079591, 58.6350001085],
-  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805],
-  LEGEND_TITLE: 'Layers'
+  MAX_BOUNDS_27700: [167161, 13123, 670003, 663805]
+}
+
+export const labels = {
+  legend: {
+    TITLE: 'Legend',
+    PATH: 'M9.125 5V3h9v2h-9zm0 6V9h9v2h-9zm0 6v-2h9v2h-9zm-3-9v4h-4V8h4zm0-6v4h-4V2h4zm0 12v4h-4v-4h4z'
+  },
+  layers: {
+    TITLE: 'Layers',
+    PATH: 'M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z'
+  },
+  menu: {
+    TITLE: 'Menu',
+    PATH: 'M10 .75c5.105 0 9.25 4.145 9.25 9.25s-4.145 9.25-9.25 9.25S.75 15.105.75 10 4.895.75 10 .75zm0 1.5c-4.277 0-7.75 3.473-7.75 7.75s3.473 7.75 7.75 7.75 7.75-3.473 7.75-7.75S14.277 2.25 10 2.25zm3.356 5.565L14.77 9.23 10 14 5.23 9.23l1.414-1.415L10 11.172l3.356-3.357z'
+  }
 }
 
 export const settings = {

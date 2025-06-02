@@ -33,21 +33,60 @@ describe('legend-button', () => {
     expect(dispatch).toHaveBeenCalled()
   })
 
-  it('should show legend title', () => {
+  it('should have \'Layers\' as label if no draw heading and default display', () => {
     const dispatch = jest.fn()
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       isDesktop: false,
       isEditMode: false,
-      options: null,
-      drawMode: null,
-      legend: { title: 'legend title' }
+      legend: {},
+      drawMode: null
     })
 
     const { container } = render(<LegendButton legendBtnRef={null} />)
 
-    expect(container.querySelector('span').textContent).toEqual('legend title')
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Layers')
+  })
+
+  it('should have \'legend\' as label if legend display is inset', () => {
+    const dispatch = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      isDesktop: false,
+      isEditMode: false,
+      legend: {
+        display: 'inset'
+      },
+      drawMode: null
+    })
+
+    const { container } = render(<LegendButton legendBtnRef={null} />)
+
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Legend')
+  })
+
+  it('should have \'Menu\' as label if draw option includes a heading', () => {
+    const dispatch = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      isDesktop: false,
+      isEditMode: false,
+      legend: {},
+      draw: {
+        heading: 'Test'
+      },
+      drawMode: null
+    })
+
+    const { container } = render(<LegendButton legendBtnRef={null} />)
+
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Menu')
   })
 
   it('should not display legend button', () => {

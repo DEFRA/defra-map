@@ -35,32 +35,35 @@ export default {
   argTypes: {
     behaviour: { control: 'text' },
     place: { control: 'text' },
-    // zoom: { control: 'number' },
-    // center: { control: 'object' },
-    // minZoom: { control: 'number' },
-    // maxZoom: { control: 'number' },
     backgroundColor: { control: 'text' },
-    styles: { control: 'object' }
+    // styles: { control: 'object' }
   }
 }
 
-const Template = (args) => <FloodMapStoryWrapper {...args} />
+export const ButtonFirst = { // Changed from 'Default' to 'ButtonFirst'
+  name: 'buttonFirst',
+  tags: ['visual-test'],
+  args: {
+    behaviour: 'buttonFirst',
+    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    // styles: [{
+    //   name: 'default',
+    //   attribution: 'Attribution',
+    //   url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
+    // }]
+  }
+}
 
-export const Default = Template.bind({})
-
-Default.storyName = 'buttonFirst'
-
-Default.args = {
-  behaviour: 'buttonFirst',
-  place: 'Carlisle',
-  // zoom: 14,
-  // center: [-2.938769, 54.893806],
-  // minZoom: 10,
-  // maxZoom: 20,
-  backgroundColor: 'default: #f5f5f0, dark: #162639',
-  styles: [{
-    name: 'default',
-    attribution: 'Attribution',
-    url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
-  }]
+export const Hybrid = { // Changed from 'Default' to 'ButtonFirst'
+  name: 'hybrid',
+  tags: ['visual-test'],
+  args: {
+    behaviour: 'hybrid',
+    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    // styles: [{
+    //   name: 'default',
+    //   attribution: 'Attribution',
+    //   url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
+    // }]
+  }
 }

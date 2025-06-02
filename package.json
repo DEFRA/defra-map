@@ -20,9 +20,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "test:visual": "start-server-and-test storybook http://localhost:6006 cypress:run",
-    "test:visual:update": "start-server-and-test storybook http://localhost:6006 'cypress run --env type=base'",
+    "test:visual:update": "start-server-and-test storybook http://localhost:6006 'cypress run --env visualRegressionType=base'",
     "test:visual:ci": "cypress run --headless"
   },
   "standard": {

@@ -9,11 +9,10 @@ module.exports = defineConfig({
       type: 'actual',
       threshold: 0.01,
       thresholdType: 'percent',
-      visualRegressionType: 'regression',
-      UPDATE_SNAPSHOTS: 'true'
+      visualRegressionType: 'regression'
     },
     screenshotsFolder: './cypress/snapshots/actual',
-    // trashAssetsBeforeRuns: true,
+    trashAssetsBeforeRuns: true,
     setupNodeEvents(on, config) {
       configureVisualRegression(on)
     }

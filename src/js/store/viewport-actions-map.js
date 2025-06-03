@@ -10,7 +10,8 @@ const ready = (state, payload) => {
     zoom,
     currentZoom: zoom,
     resolution: payload.resolution,
-    attributions
+    attributions,
+    isReady: !state.style?.url || zoom
   }
 }
 

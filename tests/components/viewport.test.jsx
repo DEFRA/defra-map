@@ -70,8 +70,8 @@ describe('viewport', () => {
     options = {}, mockAppState = { id: 'map', isContainerReady: true }, mockViewportState = { bounds: [-2.989707, 54.864555, -2.878635, 54.937635] }) => {
     const mockOptions = {
       id: 'map',
-      styles: [{ name: 'default' }],
-      style: { name: 'default' },
+      styles: [{ name: 'default', url: 'Test url' }],
+      style: { name: 'default', url: 'Test url' },
       bounds: null,
       place: 'Carlisle',
       center: null,

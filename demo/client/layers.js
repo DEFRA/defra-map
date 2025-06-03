@@ -322,42 +322,45 @@ export const addLayers = (map, basemap) => {
 }
 
 export const toggleVisibility = (map, detail) => {
-  // Set zoom constraints
-  map.setMaxZoom(18)
-  map.setMinZoom(detail.segments.includes(queryMap.outlook) || detail.segments.includes(queryMap.live) ? 6 : 12)
-  map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 18)
   // Toggle layers
-  map.setLayoutProperty('warning-fill', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  map.setLayoutProperty('warning-symbol', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  map.setLayoutProperty('stations', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  map.setLayoutProperty('stations-small', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  map.setLayoutProperty('five-day-forecast', 'visibility', detail.segments.includes('ou') ? 'visible' : 'none')
-  map.setLayoutProperty('river-sea-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
-  map.setLayoutProperty('surface-water-30-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
-  map.setLayoutProperty('surface-water-100-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
-  map.setLayoutProperty('surface-water-1000-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
-  // Geoserver
-  // map.setLayoutProperty('rainfall', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  // map.setLayoutProperty('rainfall-small', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
-  // Filter features
+  map.setLayoutProperty('warning-fill', 'visibility', 'visible')
+  map.setLayoutProperty('warning-symbol', 'visibility', 'visible')
+  map.setLayoutProperty('stations', 'visibility', 'visible')
+  map.setLayoutProperty('stations-small', 'visibility', 'visible')
   const layers = (Object.keys(queryMap).filter(k => detail.layers?.includes(queryMap[k])))
   map.setFilter('warning-fill', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
   map.setFilter('warning-symbol', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
   map.setFilter('stations', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
   map.setFilter('stations-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
-  const day = detail.segments.filter(s => ['d1', 'd2', 'd3', 'd4', 'd5'].includes(s)).map(s => s.charAt(1))[0] || ''
-  map.setFilter('five-day-forecast', ['any', ['in', day, ['get', 'days']]])
-  // Geoserver only
-  // map.setFilter('rainfall', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
-  // map.setFilter('rainfall-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
 }
 
-export const toggleSelected = (map, id = '') => {
-  map.setFilter('warning-fill-selected', ['==', 'id', id])
-  map.setFilter('warning-symbol-selected', ['==', 'id', id])
-  map.setFilter('stations-selected', ['==', 'id', id])
-  map.setFilter('stations-small-selected', ['==', 'id', id])
-  // Geoserver only
-  map.setFilter('rainfall-selected', ['==', 'id', id])
-  map.setFilter('rainfall-small-selected', ['==', 'id', id])
-}
+// export const toggleVisibility = (map, detail) => {
+//   // Set zoom constraints
+//   map.setMaxZoom(18)
+//   map.setMinZoom(detail.segments.includes(queryMap.outlook) || detail.segments.includes(queryMap.live) ? 6 : 12)
+//   map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 18)
+//   // Toggle layers
+//   map.setLayoutProperty('warning-fill', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   map.setLayoutProperty('warning-symbol', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   map.setLayoutProperty('stations', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   map.setLayoutProperty('stations-small', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   map.setLayoutProperty('five-day-forecast', 'visibility', detail.segments.includes('ou') ? 'visible' : 'none')
+//   map.setLayoutProperty('river-sea-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
+//   map.setLayoutProperty('surface-water-30-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
+//   map.setLayoutProperty('surface-water-100-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
+//   map.setLayoutProperty('surface-water-1000-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
+//   // Geoserver
+//   // map.setLayoutProperty('rainfall', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   // map.setLayoutProperty('rainfall-small', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+//   // Filter features
+//   const layers = (Object.keys(queryMap).filter(k => detail.layers?.includes(queryMap[k])))
+//   map.setFilter('warning-fill', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
+//   map.setFilter('warning-symbol', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
+//   map.setFilter('stations', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+//   map.setFilter('stations-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+//   const day = detail.segments.filter(s => ['d1', 'd2', 'd3', 'd4', 'd5'].includes(s)).map(s => s.charAt(1))[0] || ''
+//   map.setFilter('five-day-forecast', ['any', ['in', day, ['get', 'days']]])
+//   // Geoserver only
+//   // map.setFilter('rainfall', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+//   // map.setFilter('rainfall-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+// }

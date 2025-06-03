@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
 export default function ScaleBar () {
-  const { resolution, style, zoom } = useViewport()
+  const { resolution, style, isReady } = useViewport()
   const { options } = useApp()
   const hasScaleBar = ['imperial', 'metric'].includes(options?.scaleBar)
 
@@ -98,7 +98,7 @@ export default function ScaleBar () {
   return (
     <>
       {isVisible && (
-        <div className={`fm-c-scale${!zoom ? ' fm-u-hidden' : ''} fm-c-scale--${style?.name}`} ref={elRef} style={{ width: `${scale.width}px` }}>
+        <div className={`fm-c-scale${!isReady ? ' fm-u-hidden' : ''} fm-c-scale--${style?.name}`} ref={elRef} style={{ width: `${scale.width}px` }}>
           <span className='fm-c-scale__label'>
             <span className='fm-u-visually-hidden'>Scale bar: </span>
             {scale.label}

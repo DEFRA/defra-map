@@ -66,7 +66,6 @@ export default function Container () {
   const seperateTitle = options.draw?.heading ? labels.menu.TITLE : labels.layers.TITLE
   const legendTitle = combindedTitle || seperateTitle
 
-
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
     payload: { colourScheme: window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }

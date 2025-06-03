@@ -58,6 +58,7 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
     isFeaturesChange: false,
     isPanZoomChange: false,
     isUserInitiated: false,
+    isReady: false,
     hasShortcuts: true,
     padding: null,
     timestamp: Date.now()

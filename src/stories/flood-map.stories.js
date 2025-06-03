@@ -33,14 +33,17 @@ export default {
   title: 'Behaviour',
   component: FloodMapStoryWrapper,
   argTypes: {
-    behaviour: { control: 'text' },
+    behaviour: {
+      control: 'select',
+      options: ['buttonFirst', 'hybrid', 'inline']
+    },
     place: { control: 'text' },
     backgroundColor: { control: 'text' }
     // styles: { control: 'object' }
   }
 }
 
-export const ButtonFirst = { // Changed from 'Default' to 'ButtonFirst'
+export const buttonFirst = { // Changed from 'Default' to 'ButtonFirst'
   name: 'buttonFirst',
   tags: ['visual-test'],
   args: {
@@ -54,7 +57,7 @@ export const ButtonFirst = { // Changed from 'Default' to 'ButtonFirst'
   }
 }
 
-export const Hybrid = { // Changed from 'Default' to 'ButtonFirst'
+export const hybrid = { // Changed from 'Default' to 'ButtonFirst'
   name: 'hybrid',
   tags: ['visual-test'],
   args: {

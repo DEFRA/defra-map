@@ -240,6 +240,11 @@ export default function Viewport () {
       activeRef.current = viewportRef.current
     }
 
+    // Dispatch viewport ready if no style url provided
+    if (!style?.url) {
+      viewportDispatch({ type: 'READY', payload: {} })
+    }
+
     return () => {
       provider.removeEventListener('load', handleMapLoad)
       provider.removeEventListener('update', handleUpdate)

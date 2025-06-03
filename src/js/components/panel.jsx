@@ -4,9 +4,9 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport.js'
 import { constrainFocus, toggleInert } from '../lib/dom'
 
-const getClassNames = (className, isInset, zoom) => {
+const getClassNames = (className, isInset, isReady) => {
   // Panel content may be dependent on zoom level
-  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${!zoom ? ' fm-u-hidden' : ''}`
+  return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}${!isReady ? ' fm-u-hidden' : ''}`
 }
 
 const getRole = (instigatorRef) => {
@@ -22,7 +22,7 @@ const getProps = (id, className, isMobile, isInset, instigatorRef, width) => {
 
 export default function Panel ({ className, label, isInset, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
-  const { zoom } = useViewport()
+  const { isReady } = useViewport()
   const { id } = options
 
   // Ref to element
@@ -93,7 +93,7 @@ export default function Panel ({ className, label, isInset, isNotObscure, isHide
     <>
       <div
         id={panelId}
-        className={getClassNames(className, isInset, zoom)}
+        className={getClassNames(className, isInset, isReady)}
         aria-labelledby={`${panelId}-label`}
         role={getRole(instigatorRef)}
         ref={elementRef}

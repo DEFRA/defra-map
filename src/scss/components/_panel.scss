@@ -85,15 +85,33 @@
 }
 
 // Viewport keyboard shortcuts label
-.fm-c-panel--viewport-label {
+.fm-c-panel--viewport-label,
+.fm-c-panel--draw-constraint {
     @include body-font(16px, 400);
-    display: none;
     position: relative;
     margin: 0 auto 5px;
     width: auto;
     border-radius: $button-radius;
     text-align: center;
     padding: 10px;
+}
+
+.fm-c-panel--viewport-label {
+    display: none;
+}
+
+.fm-c-panel--draw-constraint {
+    flex-direction: row;
+    margin-bottom: 10px;
+    align-items: center;
+
+    svg {
+        margin-right: 5px;
+    }
+}
+
+.fm-mobile .fm-c-panel--draw-constraint {
+    margin: $margin $margin 0;
 }
 
 .fm-c-panel--legend .fm-c-panel__heading {

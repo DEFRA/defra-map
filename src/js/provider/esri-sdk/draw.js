@@ -1,5 +1,6 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
+import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
+import * as lengthOperator from '@arcgis/core/geometry/operators/lengthOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Circle from '@arcgis/core/geometry/Circle.js'
 import Point from '@arcgis/core/geometry/Point.js'
@@ -60,6 +61,7 @@ export class Draw {
     const { provider, sketchViewModel } = this
     const { graphicsLayer, isDark } = provider
     this.shape = shape
+    this.drawMode = drawMode
 
     // Create new polygon
     if (drawMode === 'vertex') {
@@ -77,6 +79,7 @@ export class Draw {
     const { provider, oGraphic, sketchViewModel, emptyLayer } = this
     const { view, graphicsLayer } = provider
     this.shape = shape
+    this.drawMode = drawMode
 
     // Disabel sketchViewModel
     sketchViewModel.cancel()
@@ -125,13 +128,13 @@ export class Draw {
     graphicsLayer.removeAll()
 
     // Reset sketch and disable tool
-    sketchViewModel.reset?.()
+    sketchViewModel.cancel?.()
     sketchViewModel.layer = emptyLayer
+    this.drawMode = null
 
     // Reinstate original
     if (this.oGraphic) {
       const revertGraphic = this.createGraphic(oGraphic.attributes.id, oGraphic.geometry.rings)
-      console.log(revertGraphic)
       this.addGraphic(revertGraphic)
     }
   }
@@ -149,6 +152,7 @@ export class Draw {
     // Complete sketch and destroy sketchViewModel
     sketchViewModel.complete?.()
     sketchViewModel.layer = emptyLayer
+    this.drawMode = null
 
     // Replace original graphic with new sketch
     const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
@@ -192,6 +196,18 @@ export class Draw {
     const nw = view.toMap({ x: left, y: top })
     const se = view.toMap({ x: left + eRect.width, y: top + eRect.height })
     return [nw.x, nw.y, se.x, se.y]
+  }
+
+  getDimensions () {
+    const { paddingBox, shape } = this.provider
+    const graphic = this.getGraphicFromElement(paddingBox, shape)
+    const geometry = graphic.geometry
+    const dimensions = {}
+    if (this.drawMode === 'frame' && geometry?.type === 'polygon') {
+      dimensions.area = areaOperator.execute(geometry)
+      dimensions.length = lengthOperator.execute(geometry)
+    }
+    return dimensions
   }
 
   getGraphicFromElement (el, shape) {
@@ -270,7 +286,8 @@ export class Draw {
 
     // Undo draw if polygon has a zero area
     if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
-      const area = geometryEngine.planarArea(graphic.geometry, 'square-meters')
+      const area = areaOperator.execute(graphic.geometry)
+      console.log(toolInfoType, area, graphic.geometry.rings)
       if (area <= 0) {
         this.undo()
       }

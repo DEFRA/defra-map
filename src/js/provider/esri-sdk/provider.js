@@ -1,6 +1,7 @@
 import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleMove, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
+import { throttle } from '../../lib/throttle'
 import { getFocusPadding } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
@@ -95,6 +96,11 @@ class Provider extends EventTarget {
       handleBaseTileLayerLoaded.call(this)
     })
 
+    // Throttle move 100ms
+    const throttleMove = throttle(() => {
+      handleMove.bind(this)()
+    }, 100)
+
     // Movestart / Move
     let isMove = false
     reactiveWhen(() => view.ready, () => {
@@ -108,11 +114,11 @@ class Provider extends EventTarget {
           handleMoveStart.bind(this)()
           isMove = true
         }
-        handleMove.bind(this)()
+        throttleMove()
       })
     })
 
-    // All render/changes/animations complete. Must debounce, min 500ms
+    // Debounce update 500ms
     const debounceStationary = debounce(() => {
       handleStationary.bind(this)()
     }, defaults.DELAY)

@@ -109,7 +109,7 @@ const setMode = (state, payload) => {
     drawMode: payload.value,
     query: payload.query,
     shape: payload.shape,
-    activePanel: state.activePanel === 'EDIT' ? state.activePanel : null,
+    activePanel: state.activePanel === 'INSPECTOR' ? state.activePanel : null,
     featureId: null,
     targetMarker: null
   }

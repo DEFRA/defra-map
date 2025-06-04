@@ -27,6 +27,7 @@ $link-hover-colour: #003078;
     --tooltip-foreground-colour: #ffffff;
     --tooltip-background-colour: #373737;
     --query-polygon-stroke-colour: #d4351c;
+    --error-colour: #d4351c;
 }
 
 :root .fm-o-container--dark {
@@ -42,6 +43,7 @@ $link-hover-colour: #003078;
     --focus-colour: #1d70b8; // #837102;
     --tooltip-background-colour: #505a5f;
     --query-polygon-stroke-colour: #ffffff;
+    --error-colour: #ffffff;
 }
 
 

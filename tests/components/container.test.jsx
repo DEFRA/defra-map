@@ -81,6 +81,7 @@ jest.mock('../../src/js/components/draw-action.jsx', () => () => <div>DrawShape 
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
+jest.mock('../../src/js/components/inspector.jsx', () => () => <div>Inspector Mock</div>)
 jest.mock('../../src/js/components/scale-bar.jsx', () => () => <div>Scale bar Mock</div>)
 
 jest.mock('../../src/js/components/panel.jsx', () => ({ label, children }) => (
@@ -164,8 +165,8 @@ describe('Container', () => {
     expect(screen.getByText('Layers')).toBeInTheDocument()
   })
 
-  it('renders the Help panel when activePanel is EDIT', () => {
-    mockUseApp.activePanel = 'EDIT'
+  it('renders the Inspector panel when activePanel is INSPECTOR', () => {
+    mockUseApp.activePanel = 'INSPECTOR'
     mockUseApp.isMobile = true
     render(<Container />)
     expect(screen.getByText('Dimensions')).toBeInTheDocument()

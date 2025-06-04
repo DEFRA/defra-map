@@ -1,4 +1,5 @@
 @use '../tools/mixins' as *;
+@use '../settings/shadows' as *;
 
 // Panel
 .fm-mobile .fm-c-btn--close-panel.fm-u-focus-visible::after {
@@ -44,4 +45,9 @@
     + .fm-c-layers .fm-c-layers__group:first-child {
         border-top: 1px solid var(--border-colour);
     }
+}
+
+// Tools
+.fm-o-tools .fm-c-btn {
+    box-shadow: $button-shadow;
 }

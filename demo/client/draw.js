@@ -328,8 +328,8 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   draw: {  
-    // heading: 'Get boundary report',
-    // summary: 'Add or edit a boundary',
+    heading: 'Get boundary report',
+    summary: 'Add or edit a boundary',
     collapse: 'collapse',
     maxFeatureSize: 1000, // Metres
     // tool: 'square',

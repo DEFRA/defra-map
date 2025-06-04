@@ -1,4 +1,4 @@
-import { getDetail } from './query'
+import { getDetail, getDimensions } from './query'
 import { reColourMarkers } from './marker'
 import { defaults } from './constants'
 
@@ -49,10 +49,12 @@ export async function handleStationary () {
   this.isUserInitiated = false
   const attributions = getAttributions([baseTileLayer])
   const detail = await getDetail.bind(this)(point)
+  const dimensions = getDimensions.bind(this)()
   this.dispatchEvent(new CustomEvent('update', {
     detail: {
       ...detail,
-      attributions
+      attributions,
+      dimensions
     }
   }))
 }
@@ -73,13 +75,15 @@ export function handleMove () {
   const zoom = view.zoom
   const resolution = view.resolution
   const attributions = getAttributions([baseTileLayer])
+  const dimensions = getDimensions?.bind(this)()
   this.dispatchEvent(new CustomEvent('move', {
     detail: {
       isMaxZoom,
       isMinZoom,
       zoom,
       resolution,
-      attributions
+      attributions,
+      dimensions
     }
   }))
 }

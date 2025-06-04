@@ -223,6 +223,7 @@
 .fm-draw .fm-o-top__column:nth-child(2) {
     padding-left: 10px;
     padding-right: 10px;
+    text-align: center;
 }
 
 .fm-draw .fm-o-overlay .fm-o-focus-box {
@@ -351,15 +352,6 @@
     margin-right: 10px;
 }
 
-// Action menu
-.fm-o-tools .fm-c-action-menu {
-    margin-bottom: 20px;
-    
-    .fm-c-btn {
-        box-shadow: $button-shadow;
-    }
-}
-
 // Panels
 .fm-o-main > .fm-c-panel {
     position: absolute;
@@ -431,7 +423,7 @@
 }
 
 // Panel fixed width
-.fm-o-top .fm-c-panel:not(.fm-c-panel--viewport-label) {
+.fm-o-top .fm-c-panel:not(.fm-c-panel--viewport-label):not(.fm-c-panel--error) {
     width: $panel-width;
 }
 
@@ -478,8 +470,7 @@
 }
 
 // Keyboard panel
-.fm-c-panel.fm-c-panel--keyboard,
-.fm-c-panel.fm-c-panel--error {
+.fm-c-panel.fm-c-panel--keyboard {
     max-width: calc(100% - ($margin * 2));
 }
 
@@ -522,7 +513,7 @@
     }
 
     .fm-c-panel--viewport-label {
-        display: block;
+        display: inline-block;
     }
 }
 

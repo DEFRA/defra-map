@@ -1,8 +1,9 @@
 import { Draw } from '../../src/js/provider/esri-sdk/draw'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
+import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
+import Polygon from '@arcgis/core/geometry/Polygon'
 
 jest.mock('@arcgis/core/Graphic', () => {
   return jest.fn().mockImplementation(() => ({
@@ -215,7 +216,7 @@ describe('Draw Class', () => {
     it('should reset sketchViewModel if active and set its layer to emptyLayer', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.cancel()
-      expect(drawInstance.sketchViewModel.reset).toHaveBeenCalled()
+      expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
       expect(drawInstance.sketchViewModel.layer).toEqual(mockProvider.emptyLayer)
     })
 
@@ -264,7 +265,7 @@ describe('Draw Class', () => {
     it('should reset sketchViewModel if active and set its layer to emptyLayer', () => {
       drawInstance = new Draw(mockProvider, {})
       drawInstance.cancel()
-      expect(drawInstance.sketchViewModel.reset).toHaveBeenCalled()
+      expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
       expect(drawInstance.sketchViewModel.layer).toEqual(mockProvider.emptyLayer)
     })
 
@@ -576,34 +577,31 @@ describe('Draw Class', () => {
     })
 
     it('should call undo() if toolEventInfo.type is "reshape-stop" and area <= 0', () => {
-      const fakeGeometry = {}
+      const fakeGeometry = new Polygon({rings: [[[530000, 180000], [530000, 180000], [530000, 180000], [530000, 180000]]], spatialReference: 27700})
       const event = {
         toolEventInfo: { type: 'reshape-stop' },
         graphics: [{ geometry: fakeGeometry }]
       }
-      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(0)
       drawInstance.handleUpdateDelete(event)
       expect(drawInstance.undo).toHaveBeenCalled()
     })
 
     it('should call undo() if toolEventInfo.type is "vertex-remove" and area <= 0', () => {
-      const fakeGeometry = {}
+      const fakeGeometry = new Polygon({rings: [[[530000, 180000], [531000, 181000], [530000, 181000], [531000, 180000], [530000, 180000]]], spatialReference: 27700})
       const event = {
         toolEventInfo: { type: 'vertex-remove' },
         graphics: [{ geometry: fakeGeometry }]
       }
-      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(-1)
       drawInstance.handleUpdateDelete(event)
       expect(drawInstance.undo).toHaveBeenCalled()
     })
 
     it('should not call undo() if toolEventInfo.type is "reshape-stop" and area > 0', () => {
-      const fakeGeometry = {}
+      const fakeGeometry = new Polygon({rings: [[[530000, 180000], [530000, 181000], [531000, 181000], [531000, 180000], [530000, 180000]]], spatialReference: 27700})
       const event = {
         toolEventInfo: { type: 'reshape-stop' },
         graphics: [{ geometry: fakeGeometry }]
       }
-      jest.spyOn(geometryEngine, 'planarArea').mockReturnValue(5)
       drawInstance.handleUpdateDelete(event)
       expect(drawInstance.undo).not.toHaveBeenCalled()
     })

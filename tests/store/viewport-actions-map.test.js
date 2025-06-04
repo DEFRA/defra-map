@@ -661,7 +661,8 @@ describe('store/viewport-actions-map - swapStyles', () => {
       minZoom: 1,
       maxZoom: 10,
       styles: payload.styles,
-      style: { name: 'dark' }
+      style: { name: 'dark' },
+      dimensions: {}
     })
   })
 
@@ -675,7 +676,8 @@ describe('store/viewport-actions-map - swapStyles', () => {
       minZoom: 1,
       maxZoom: 10,
       styles: payload.styles,
-      style: { name: 'dark' }
+      style: { name: 'dark' },
+      dimensions: {}
     })
   })
 
@@ -688,7 +690,8 @@ describe('store/viewport-actions-map - swapStyles', () => {
       minZoom: 1,
       maxZoom: 10,
       styles: state.originalStyles,
-      style: { name: 'default' }
+      style: { name: 'default' },
+      dimensions: {}
     })
   })
 })

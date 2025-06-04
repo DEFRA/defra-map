@@ -19,7 +19,9 @@ describe('actions', () => {
   jest.mocked(useViewport).mockReturnValue({
     dispatch: viewportDispatch,
     size: null,
-    basemap: null
+    basemap: null,
+    isDrawValid: true,
+    dimensions: { area: 10 }
   })
 
   jest.mocked(eventBus)

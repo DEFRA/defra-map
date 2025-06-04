@@ -1,4 +1,4 @@
-import { getDescription, getStatus, getPlace } from '../lib/viewport'
+import { getDescription, getStatus, getPlace, parseDimensions } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
@@ -25,6 +25,9 @@ const update = (state, payload) => {
   const status = getStatus(action, isBoundsChange, place, state, payload)
   const newAction = isBoundsChange && action === 'SEARCH' && !isUserInitiated ? 'SEARCH' : null
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
+  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
+  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
+
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -38,7 +41,9 @@ const update = (state, payload) => {
     isMoving: false,
     isStatusVisuallyHidden: true,
     action: newAction,
-    attributions
+    attributions,
+    dimensions,
+    isDrawValid
   }
 }
 
@@ -73,13 +78,18 @@ const move = (state, payload) => {
   const { isMaxZoom, isMinZoom, zoom, resolution } = payload
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   const currentZoom = zoom
+  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
+  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
+
   return {
     ...state,
     isMaxZoom,
     isMinZoom,
     currentZoom,
     resolution,
-    attributions
+    attributions,
+    dimensions,
+    isDrawValid
   }
 }
 
@@ -170,7 +180,8 @@ const swapStyles = (state, payload = {}) => {
     minZoom: minZoom || state.originalMinZoom,
     maxZoom: maxZoom || state.originalMaxZoom,
     styles: styles || state.originalStyles,
-    style
+    style,
+    dimensions: {}
   }
 }
 

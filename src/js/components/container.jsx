@@ -29,11 +29,12 @@ import EditButton from './edit-button.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import Banner from './banner.jsx'
+import DrawConstraint from './draw-constraint.jsx'
 import ScaleBar from './scale-bar.jsx'
 import Inspector from './inspector.jsx'
 
-const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
-  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
+const getClassNames = (isDarkMode, device, behaviour, isDrawMode) => {
+  return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isDrawMode ? ' fm-draw' : ''}`
 }
 
 export default function Container () {
@@ -57,11 +58,11 @@ export default function Container () {
   const isLegendInset = legend?.display === 'inset'
   const isLegendModal = !isFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const hasLengedHeading = !(legend?.display === 'inset' && legend?.segments?.[0]?.display === 'timeline')
-  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
+  const isDrawMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
   const hasSizeCapability = provider?.capabilities?.hasSize
-  const hasInspector = activePanel === 'EDIT' || (activePanel === 'STYLE' && previousPanel === 'EDIT')
+  const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
   const combindedTitle = isCombined && (legend?.title ? `<span class="fm-u-visually-hidden">${labels.legend.TITLE}:</span> ${legend?.title}` : labels.legend.TITLE)
   const seperateTitle = options.draw?.heading ? labels.menu.TITLE : labels.layers.TITLE
   const legendTitle = combindedTitle || seperateTitle
@@ -102,19 +103,19 @@ export default function Container () {
   return (
     <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
       <div
-        className={getClassNames(isDarkMode, device, behaviour, isQueryMode)}
+        className={getClassNames(isDarkMode, device, behaviour, isDrawMode)}
         style={{ height }}
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
         <div className='fm-o-side'>
           {isFixed && (<Exit />)}
-          {isDesktop && isQueryMode && (hasInspector || isFixed) && (
+          {isDesktop && isDrawMode && (hasInspector || isFixed) && (
             <Panel className='edit' label='Dimensions' {...!isFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
               <Inspector />
             </Panel>
           )}
-          {isFixed && !isQueryMode && (
+          {isFixed && !isDrawMode && (
             <Panel className='legend' label={legendTitle} width={legend?.width} isHideHeading={!hasLengedHeading}>
               <DrawMenu />
               <Segments />
@@ -127,6 +128,7 @@ export default function Container () {
           <div className={`fm-o-overlay${isLegendInset ? ' fm-o-overlay--inset' : ''}`}>
             <div className='fm-o-banner'>
               <Banner />
+              {isMobile && isDrawMode && <DrawConstraint />}
             </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
@@ -139,7 +141,6 @@ export default function Container () {
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
                 <KeyButton keyBtnRef={keyBtnRef} />
-                {!isFixed && <EditButton editBtnRef={editBtnRef} />}
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label={labels.legend.TITLE} width={legend?.keyWidth || legend?.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
@@ -157,6 +158,7 @@ export default function Container () {
                 )}
               </div>
               <div className='fm-o-top__column'>
+                {!isMobile && isDrawMode && <DrawConstraint />}
                 <ViewportLabel />
               </div>
               <div className='fm-o-top__column'>
@@ -190,8 +192,8 @@ export default function Container () {
                   <Layers hasSymbols={!!legend?.display} hasInputs />
                 </Panel>
               )}
-              {activePanel === 'EDIT' && !isMobile && !isDesktop && (
-                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isInset={!isMobile} isModal>
+              {activePanel === 'INSPECTOR' && !isMobile && !isDesktop && (
+                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isModal>
                   <Inspector />
                 </Panel>
               )}
@@ -212,6 +214,7 @@ export default function Container () {
               </div>
               {!isMobile && <Actions />}
               <div className='fm-o-tools'>
+                <EditButton editBtnRef={editBtnRef} />
                 <DrawAction />
                 <ScaleBar />
               </div>

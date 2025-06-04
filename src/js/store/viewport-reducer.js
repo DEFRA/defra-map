@@ -21,7 +21,7 @@ const getZoom = (cz, zoom, minZoom, maxZoom) => {
   return initZoom
 }
 
-export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, zoom, maxZoom, minZoom, place, features, styles }) => {
+export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, zoom, maxZoom, minZoom, place, features, styles, draw }) => {
   const queryParams = new URLSearchParams(window.location.search)
   const style = getStyle(styles)
   const cz = queryParams.get('cz')
@@ -45,6 +45,7 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
     styles,
     style,
     attributions: [],
+    dimensions: {},
     place: !cz ? place : null,
     originalZoom: zoom,
     size: getSize(hasSizeCapability),
@@ -61,6 +62,8 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
     isReady: false,
     hasShortcuts: true,
     padding: null,
+    drawMaxArea: draw?.maxArea,
+    isDrawValid: !draw?.maxArea,
     timestamp: Date.now()
   }
 }

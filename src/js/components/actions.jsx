@@ -15,10 +15,10 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 
 export default function Actions () {
   const { provider, style, parent, draw, drawTool, drawTools, drawMode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
-  const { dispatch: viewportDispatch, size } = useViewport()
+  const { dispatch: viewportDispatch, size, isDrawValid } = useViewport()
 
   const handleUpdateClick = () => {
-    if (!provider.map || drawTool) {
+    if (!(provider.map || drawTool) || !isDrawValid) {
       return
     }
     const feature = provider.draw.finish(shape)
@@ -59,7 +59,7 @@ export default function Actions () {
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      <button onClick={handleUpdateClick} className='fm-c-btn-primary' {...(isDefaultMode && { style: { display: 'none' } })}>
+      <button onClick={handleUpdateClick} className='fm-c-btn-primary' {...(isDefaultMode && { style: { display: 'none' } })} {...(!isDrawValid && { 'aria-disabled': true })}>
         {`${query ? 'Update' : 'Confirm'}`} area
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn-secondary' {...(isDefaultMode && { style: { display: 'none' } })}>

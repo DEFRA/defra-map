@@ -63,9 +63,13 @@
 .fm-c-padding-box--square, .fm-c-padding-box--circle {
     .fm-c-padding-box__frame {
         opacity: 1;
-        border-style: solid;
+        border-style: dashed;
         border-color: var(--foreground-colour);
     }
+}
+
+.fm-c-padding-box--draw-valid .fm-c-padding-box__frame {
+    border-style: solid;
 }
 
 // Circle frame

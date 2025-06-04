@@ -38,8 +38,8 @@ export default {
       options: ['buttonFirst', 'hybrid', 'inline']
     },
     place: { control: 'text' },
-    backgroundColor: { control: 'text' }
-    // styles: { control: 'object' }
+    backgroundColor: { control: 'text' },
+    styles: { control: 'object' }
   }
 }
 
@@ -48,12 +48,12 @@ export const buttonFirst = { // Changed from 'Default' to 'ButtonFirst'
   tags: ['visual-test'],
   args: {
     behaviour: 'buttonFirst',
-    backgroundColor: 'default: #f5f5f0, dark: #162639'
-    // styles: [{
-    //   name: 'default',
-    //   attribution: 'Attribution',
-    //   url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
-    // }]
+    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    styles: [{
+      name: 'default',
+      attribution: 'Attribution',
+      url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
+    }]
   }
 }
 
@@ -62,11 +62,11 @@ export const hybrid = { // Changed from 'Default' to 'ButtonFirst'
   tags: ['visual-test'],
   args: {
     behaviour: 'hybrid',
-    backgroundColor: 'default: #f5f5f0, dark: #162639'
-    // styles: [{
-    //   name: 'default',
-    //   attribution: 'Attribution',
-    //   url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
-    // }]
+    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    styles: [{
+      name: 'default',
+      attribution: 'Attribution',
+      url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
+    }]
   }
 }

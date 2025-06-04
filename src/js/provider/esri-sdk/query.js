@@ -62,3 +62,10 @@ export async function getFeatures (point) {
     lngLat
   }
 }
+
+export function getDimensions () {
+  const { draw } = this
+  if (draw?.drawMode) {
+    return draw.getDimensions()
+  }
+}

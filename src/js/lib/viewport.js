@@ -118,6 +118,39 @@ const isCirclePolygon = (geometry) => {
   return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
 }
 
+const metresToImperial = (metres) => {
+  const MILE = 1609.344
+  const YARD = 0.9144
+  const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+  if (metres >= MILE) {
+    const miles = Math.floor(metres / MILE)
+    const remainder = metres % MILE
+    const yards = Math.floor(remainder / YARD)
+    return `${pluralize(miles, 'mile', 'miles')}, ${pluralize(yards, 'yard', 'yards')}`
+  } else {
+    const yards = Math.floor(metres / YARD)
+    return `${pluralize(yards, 'yard', 'yards')}`
+  }
+}
+
+const squareMetresToKm = (metres) => {
+  const SQ_KM = 1_000_000
+  if (metres >= SQ_KM) {
+    let km2 = (metres / SQ_KM).toFixed(2)
+    km2 = Number(km2).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    return `${km2} km²`
+  } else {
+    return `${Math.ceil(metres).toLocaleString()} m²`
+  }
+}
+
+export const parseDimensions = (dimensions) => {
+  const { area, length } = dimensions
+  const areaDisplay = area ? squareMetresToKm(area) : null
+  const lengthDisplay = length ? metresToImperial(length) : null
+  return { ...dimensions, areaDisplay, lengthDisplay }
+}
+
 export const detectCoordinateType = (coords) => {
   if (coords.length === 3) {
     return 'BNG' // If a third value exists (zone), it's UTM

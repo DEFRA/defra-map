@@ -164,7 +164,7 @@ const setStyle = (state, payload) => {
   }
 }
 
-const swapStyles = (state, payload = {}) => {
+const toggleConstraints = (state, payload = {}) => {
   const { styles, minZoom, maxZoom } = payload
   const styleName = state.style.name
   let style
@@ -181,7 +181,8 @@ const swapStyles = (state, payload = {}) => {
     maxZoom: maxZoom || state.originalMaxZoom,
     styles: styles || state.originalStyles,
     style,
-    dimensions: {}
+    dimensions: {},
+    isDrawValid: !state.drawMaxArea
   }
 }
 
@@ -265,7 +266,7 @@ export const actionsMap = {
   ZOOM_IN: zoomIn,
   ZOOM_OUT: zoomOut,
   SET_STYLE: setStyle,
-  SWAP_STYLES: swapStyles,
+  TOGGLE_CONSTRAINTS: toggleConstraints,
   SET_SIZE: setSize,
   CLEAR: clear,
   CLEAR_STATUS: clearStatus,

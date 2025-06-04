@@ -198,7 +198,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'KEYBOARD' && (
-                <Panel className='keyboard' width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isModal isInset>
+                <Panel className='keyboard' width='560px' maxWidth='560px' label='Keyboard' instigatorRef={viewportRef} isModal isInset>
                   <Keyboard />
                 </Panel>
               )}

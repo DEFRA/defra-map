@@ -64,7 +64,7 @@ describe('draw-menu', () => {
 
     expect(mockAdd).toHaveBeenCalled()
     expect(appDispatch).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { value: 'frame', shape: 'square', query: undefined } })
-    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
+    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'TOGGLE_CONSTRAINTS', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 
@@ -102,7 +102,7 @@ describe('draw-menu', () => {
 
     expect(screen.getByText('Edit shape')).toBeTruthy()
     expect(mockEdit).toHaveBeenCalled()
-    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'SWAP_STYLES', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
+    expect(viewportDispatch).toHaveBeenCalledWith({ type: 'TOGGLE_CONSTRAINTS', payload: { styles: undefined, minZoom: undefined, maxZoom: undefined } })
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 

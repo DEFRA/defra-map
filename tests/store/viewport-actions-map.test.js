@@ -654,7 +654,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
   it('should swap to matching style from provided styles', () => {
     const state = { style: { name: 'dark' }, originalStyles: [{ name: 'dark' }, { name: 'default' }], originalMinZoom: 1, originalMaxZoom: 10 }
     const payload = { styles: [{ name: 'dark' }, { name: 'default' }] }
-    expect(actionsMap.SWAP_STYLES(state, payload)).toEqual({
+    expect(actionsMap.TOGGLE_CONSTRAINTS(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
       isUpdate: false,
@@ -662,14 +662,15 @@ describe('store/viewport-actions-map - swapStyles', () => {
       maxZoom: 10,
       styles: payload.styles,
       style: { name: 'dark' },
-      dimensions: {}
+      dimensions: {},
+      isDrawValid: true
     })
   })
 
   it('should fall back to first provided style if no match', () => {
     const state = { style: { name: 'nonexistent' }, originalStyles: [{ name: 'dark' }, { name: 'default' }], originalMinZoom: 1, originalMaxZoom: 10 }
     const payload = { styles: [{ name: 'dark' }, { name: 'default' }] }
-    expect(actionsMap.SWAP_STYLES(state, payload)).toEqual({
+    expect(actionsMap.TOGGLE_CONSTRAINTS(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
       isUpdate: false,
@@ -677,13 +678,14 @@ describe('store/viewport-actions-map - swapStyles', () => {
       maxZoom: 10,
       styles: payload.styles,
       style: { name: 'dark' },
-      dimensions: {}
+      dimensions: {},
+      isDrawValid: true
     })
   })
 
   it('should use originalStyles if no styles provided in payload', () => {
     const state = { style: { name: 'default' }, originalStyles: [{ name: 'dark' }, { name: 'default' }], originalMinZoom: 1, originalMaxZoom: 10 }
-    expect(actionsMap.SWAP_STYLES(state, {})).toEqual({
+    expect(actionsMap.TOGGLE_CONSTRAINTS(state, {})).toEqual({
       ...state,
       action: 'STYLE',
       isUpdate: false,
@@ -691,7 +693,8 @@ describe('store/viewport-actions-map - swapStyles', () => {
       maxZoom: 10,
       styles: state.originalStyles,
       style: { name: 'default' },
-      dimensions: {}
+      dimensions: {},
+      isDrawValid: true
     })
   })
 })

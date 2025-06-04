@@ -4,6 +4,7 @@ import { locationMarkerHTML, targetMarkerHTML } from './marker'
 import { highlightLabel } from './symbols'
 import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
 import { debounce } from '../../lib/debounce'
+import { throttle } from '../../lib/throttle'
 import { defaults, css } from './constants'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
@@ -118,7 +119,8 @@ class Provider extends EventTarget {
     map.on('movestart', handleMoveStart.bind(this))
 
     // Detect max/min zoom on move
-    map.on('move', handleMove.bind(this))
+    const throttleHandleMove = throttle(() => { handleMove.bind(this)() }, 100)
+    map.on('move', throttleHandleMove)
 
     // Detect map layer addition
     map.on('styledata', handleStyleData.bind(this))

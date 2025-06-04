@@ -24,8 +24,12 @@ export default function Keyboard () {
         <dd><kbd>+</kbd> or <kbd>=</kbd> and <kbd>-</kbd> or <kbd>_</kbd></dd>
       </div>
       <div className='fm-c-keyboard-list__item'>
-        <dt>Select a feature</dt>
+        <dt>Select feature (when 9 or fewer)</dt>
         <dd><kbd>Page Up</kbd> and <kbd>Page Down</kbd></dd>
+      </div>
+      <div className='fm-c-keyboard-list__item'>
+        <dt>Feature shortcut (when 9 or fewer)</dt>
+        <dd><kbd>Alt</kbd> + <kbd>1</kbd> to <kbd>9</kbd></dd>
       </div>
       <div className='fm-c-keyboard-list__item'>
         <dt>Get feature information</dt>

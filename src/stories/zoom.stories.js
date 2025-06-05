@@ -30,39 +30,30 @@ const FloodMapStoryWrapper = (options) => {
 }
 
 export default {
-  title: 'Behaviour',
+  title: 'Zoom',
   component: FloodMapStoryWrapper,
   argTypes: {
     behaviour: {
       control: 'select',
       options: ['buttonFirst', 'hybrid', 'inline']
     },
-    place: { control: 'text' },
-    backgroundColor: { control: 'text' },
+    maxZoom: { control: 'number' },
+    minZoom: { control: 'number' },
+    zoom: { control: 'number' },
+    center: { control: 'object' },
     styles: { control: 'object' }
   }
 }
 
-export const buttonFirst = { // Changed from 'Default' to 'ButtonFirst'
-  name: 'buttonFirst',
+export const index = {
+  name: 'index',
   tags: ['visual-test'],
   args: {
-    behaviour: 'buttonFirst',
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
-    styles: [{
-      name: 'default',
-      attribution: 'Attribution',
-      url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
-    }]
-  }
-}
-
-export const hybrid = { // Changed from 'Default' to 'ButtonFirst'
-  name: 'hybrid',
-  tags: ['visual-test'],
-  args: {
-    behaviour: 'hybrid',
-    backgroundColor: 'default: #f5f5f0, dark: #162639',
+    behaviour: 'inline',
+    maxZoom: 11,
+    minZoom: 9,
+    zoom: 10,
+    center: [-2.938769, 54.893806],
     styles: [{
       name: 'default',
       attribution: 'Attribution',

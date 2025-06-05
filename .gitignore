@@ -33,6 +33,9 @@ coverage
 # Storybook
 storybook-static
 
+# Cypress
+cypress/snapshots/actual/
+
 # Webpack bundle analyser
 stats.json
 

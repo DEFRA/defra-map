@@ -147,7 +147,7 @@ export default function Container () {
                   </Panel>
                 )}
                 {activePanel === 'INFO' && info && !isMobile && (
-                  <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
+                  <Panel className='info' link={info.link} label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
                   <Panel className='legend' isNotObscure={false} label={legendTitle} width={legend?.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
@@ -219,7 +219,7 @@ export default function Container () {
                 <ScaleBar />
               </div>
               {info && activePanel === 'INFO' && isMobile && (
-                <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
+                <Panel className='info' link={info.link} label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
               )}
               {activePanel === 'KEY' && isMobile && (
                 <Panel className='key' label={labels.legend.TITLE} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset isNotObscure>

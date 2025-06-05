@@ -241,14 +241,15 @@ const fm = new FloodMap('map', {
       }
     ]
   },
-  // info: {
-  //   featureId: '011WAFLE',
-  //   // coord: [-2.934171,54.901112],
-  //   // hasData: true,
-  //   width: '360px',
-  //   label: '[dynamic title]',
-  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
-  // },
+  info: {
+    featureId: '011WAFLE',
+    link: 'http://google.co.uk',
+    // coord: [-2.934171,54.901112],
+    // hasData: true,
+    width: '360px',
+    label: 'Dynamic title',
+    html: '<p class="govuk-body-s">dynamic body</p>'
+  },
   queryLocation: {
     layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
   },
@@ -271,14 +272,6 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   map = fm.map
-
-  // fm.setInfo({
-  //   featureId: 's5081',
-  //   width: '360px',
-  //   label: '[dynamic title]',
-  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
-  // })
-
   addSources(map)
   addLayers(map, e.detail.style)
   toggleVisibility(map, e.detail)

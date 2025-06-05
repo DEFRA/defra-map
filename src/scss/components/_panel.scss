@@ -48,14 +48,18 @@
 // Panel contents
 .fm-c-panel__header {
     position: relative;
+    color: var(--foreground-colour);
+    padding: 10px $margin;
     z-index: 3;
 }
 
 .fm-c-panel__heading {
     @include body-font(19px, 700);
     color: var(--foreground-colour);
-    margin: 0 15px;
-    padding: 11px 30px 10px 0;
+    text-decoration: inherit;
+    margin: 0;
+    display: inline-block;
+    padding: 0;
 }
 
 .fm-c-panel__more {
@@ -114,17 +118,11 @@
     margin: $margin $margin 0;
 }
 
-.fm-c-panel--legend .fm-c-panel__heading {
-    margin: 0;
-    padding-left: 15px;
-    padding-right: 45px; 
+// Header overides
+.fm-c-panel--legend:not(.fm-c-panel--inset) .fm-c-panel__header {
     border-bottom: 1px solid var(--border-colour);
 }
 
-.fm-c-panel--legend.fm-c-panel--inset .fm-c-panel__heading {
-    border-bottom: 0;
-}
-
-.fm-o-panel .fm-c-panel__heading {
-    padding-right: 15px;
+.fm-c-panel__header.fm-c-panel__header--collapse {
+    padding: 0;
 }

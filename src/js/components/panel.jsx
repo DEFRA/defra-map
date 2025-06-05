@@ -20,7 +20,7 @@ const getProps = (id, className, isMobile, isInset, instigatorRef, width) => {
   return { panelId, hasCloseBtn, hasWidth }
 }
 
-export default function Panel ({ className, label, isInset, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
+export default function Panel ({ className, label, link, isInset, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { isReady } = useViewport()
   const { id } = options
@@ -89,6 +89,12 @@ export default function Panel ({ className, label, isInset, isNotObscure, isHide
     bodyRef.current.tabIndex = tabIndex
   })
 
+  const heading = () => {
+    return (
+      <h2 id={`${panelId}-label`} className={isHideHeading ? 'fm-u-visually-hidden' : 'fm-c-panel__heading'} dangerouslySetInnerHTML={{ __html: label }} />
+    )
+  }
+
   return (
     <>
       <div
@@ -110,7 +116,11 @@ export default function Panel ({ className, label, isInset, isNotObscure, isHide
         }}
       >
         <div className={`fm-c-panel__header${isHideHeading ? ' fm-c-panel__header--collapse' : ''}`}>
-          <h2 id={`${panelId}-label`} className={isHideHeading ? 'fm-u-visually-hidden' : 'fm-c-panel__heading'} dangerouslySetInnerHTML={{ __html: label }} />
+          {link ? (
+            <a href={link} className='fm-c-link'>
+              {heading()}
+            </a>
+          ) : heading()}
           {hasCloseBtn && (
             <button onClick={handleClose} className='fm-c-btn fm-c-btn--close-panel' aria-label='Close panel'>
               <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20'><path d='M10,8.6L15.6,3L17,4.4L11.4,10L17,15.6L15.6,17L10,11.4L4.4,17L3,15.6L8.6,10L3,4.4L4.4,3L10,8.6Z' style={{ fill: 'currentColor', stroke: 'currentColor', strokeWidth: 0.1 }} /></svg>

@@ -35,6 +35,7 @@ storybook-static
 
 # Cypress
 cypress/snapshots/actual/
+cypress/snapshots/diff/
 
 # Webpack bundle analyser
 stats.json

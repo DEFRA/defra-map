@@ -49,12 +49,13 @@
 .fm-c-panel__header {
     position: relative;
     color: var(--foreground-colour);
-    padding: 10px $margin;
+    padding: 10px 45px 10px $margin;
     z-index: 3;
 }
 
 .fm-c-panel__heading {
     @include body-font(19px, 700);
+    line-height: 1.3em;
     color: var(--foreground-colour);
     text-decoration: inherit;
     margin: 0;
@@ -125,4 +126,8 @@
 
 .fm-c-panel__header.fm-c-panel__header--collapse {
     padding: 0;
+}
+
+.fm-c-panel:not([role="dialog"]) .fm-c-panel__header {
+    padding-right: $margin;
 }

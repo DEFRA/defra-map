@@ -13,6 +13,8 @@ const setSearch = (state, payload) => {
 }
 
 const setInfo = (state, payload) => {
+  // Conditioanlly set featureId
+  const featureId = payload?.hasOwnProperty('featureId') ? payload.featureId : state.featureId
   // Restore previous panel only if it was the key
   let previousPanel = (state.activePanel !== 'INFO' && state.activePanel) || state.previousPanel
   previousPanel = previousPanel === 'KEY' && 'KEY'
@@ -20,6 +22,7 @@ const setInfo = (state, payload) => {
   activePanel = payload ? 'INFO' : activePanel
   return {
     ...state,
+    featureId,
     info: payload,
     previousPanel,
     activePanel,

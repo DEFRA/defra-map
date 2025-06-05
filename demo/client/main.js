@@ -272,6 +272,13 @@ const fm = new FloodMap('map', {
 fm.addEventListener('ready', e => {
   map = fm.map
 
+  // fm.setInfo({
+  //   featureId: 's5081',
+  //   width: '360px',
+  //   label: '[dynamic title]',
+  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
+  // })
+
   addSources(map)
   addLayers(map, e.detail.style)
   toggleVisibility(map, e.detail)

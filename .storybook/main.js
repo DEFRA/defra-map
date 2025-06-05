@@ -1,7 +1,5 @@
 /** @type { import('@storybook/preact-webpack5').StorybookConfig } */
 
-const customWebpack = require('../cypress/webpack.cypress.js')
-
 const config = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [

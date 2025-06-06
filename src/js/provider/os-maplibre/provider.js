@@ -28,12 +28,12 @@ class Provider extends EventTarget {
 
   init (options) {
     if (this.capabilities.isLatest) {
-      import(/* webpackChunkName: "maplibre", webpackExports: ["Map", "Marker"] */ 'maplibre-gl').then(module => {
+      import(/* webpackChunkName: "maplibre", webpackExports: ["Map", "Marker", "LngLatBounds"] */ 'maplibre-gl').then(module => {
         this.addMap(module, options)
       })
     } else {
       Promise.all([
-        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker"] */ 'maplibre-gl-legacy'),
+        import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["Map", "Marker", "LngLatBounds"] */ 'maplibre-gl-legacy'),
         import(/* webpackChunkName: "maplibre-legacy", webpackExports: ["install"] */ 'resize-observer'),
         import(/* webpackChunkName: "maplibre-legacy" */ 'array-flat-polyfill')
       ]).then(promises => {
@@ -52,7 +52,7 @@ class Provider extends EventTarget {
 
   addMap (module, options) {
     const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, style, size, featureLayers, locationLayers, callBack } = options
-    const { Map: MaplibreMap, Marker } = module.default
+    const { Map: MaplibreMap, Marker, LngLatBounds } = module.default
     const scale = getScale(size)
 
     const map = new MaplibreMap({
@@ -71,7 +71,8 @@ class Provider extends EventTarget {
     })
 
     // Set initial padding, bounds and center (*No option to set in constructor)
-    // map.showPadding = true
+    map.showPadding = true
+
     map.setPadding(getFocusPadding(paddingBox, scale))
     if (bounds) {
       map.fitBounds(bounds, { animate: false })
@@ -109,7 +110,7 @@ class Provider extends EventTarget {
     this.shortcutMarkers = []
 
     // Return ref to dynamically loaded modules and framework functions
-    this.modules = { MaplibreMap, Marker }
+    this.modules = { MaplibreMap, Marker, LngLatBounds }
     this.framework = { map }
 
     // Map ready event (first load)

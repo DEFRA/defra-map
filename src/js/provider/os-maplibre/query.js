@@ -26,7 +26,9 @@ function getPaddedBounds () {
   const paddedNE = map.unproject(ne)
 
   // Create new bounds
-  return [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
+  const paddedBounds = [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
+
+  return paddedBounds.flat(1)
 }
 
 function addFeatureProperties (features) {
@@ -92,8 +94,8 @@ function combineFeatures (features) {
 
 function getViewport () {
   const { map } = this
-  let bounds = getPaddedBounds.bind(this)()
-  bounds = bounds.flat(1).map(n => parseFloat(n.toFixed(defaults.PRECISION)))
+  const bounds = map.getBounds().toArray().flat(1)
+  const paddedBounds = getPaddedBounds.bind(this)()
   let center = map.getCenter()
   let zoom = map.getZoom()
   center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
@@ -103,6 +105,7 @@ function getViewport () {
 
   return {
     bounds,
+    paddedBounds,
     center,
     zoom,
     isMaxZoom,
@@ -163,19 +166,26 @@ export function getFeatures (pixel) {
   }))
 
   // Get all 'featureLayer' features in the viewport
-  const renderedFeaturesInViewport = map.queryRenderedFeatures(bounds, { layers: featureLayers })
+  const renderedFeaturesInViewport = map.queryRenderedFeatures({ layers: featureLayers })
 
   // Get total 'featureLayer' features in viewport (May be more than 9)
   const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.properties.id || f.id))).length
 
+  // Get all 'featureLayer' features in the padded bounds
+  const renderedFeaturesInPadding = map.queryRenderedFeatures(bounds, { layers: featureLayers })
+
+  // Get total 'featureLayer' features in padding bounds (May be more than 9)
+  const featuresFocusTotal = Array.from(new Set(renderedFeaturesInPadding.map(f => f.properties.id || f.id))).length
+
   // Get geometry that intersects bounds
-  const intersectingFeatures = intersectFeatures(getPaddedBounds.bind(this)().flat(1), renderedFeaturesInViewport)
+  const intersectingFocusFeatures = intersectFeatures(getPaddedBounds.bind(this)(), renderedFeaturesInPadding)
 
   // Split multi polygons and combine duplicate features
-  const polygonFeatures = featuresTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFeatures) : []
+  const focusPolygonFeatures = featuresFocusTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFocusFeatures) : []
 
   // Add props and sort features
-  const featuresInViewport = addFeatureProperties.bind(this)(polygonFeatures).sort((a, b) => a.distance - b.distance)
+  const featuresInViewport = renderedFeaturesInViewport <= defaults.MAX_FEATURES ? addFeatureProperties.bind(this)(renderedFeaturesInViewport) : []
+  const featuresInFocus = addFeatureProperties.bind(this)(focusPolygonFeatures).sort((a, b) => a.distance - b.distance)
 
   // Get long lat of query
   let lngLat
@@ -188,15 +198,29 @@ export function getFeatures (pixel) {
   // Set 'features' result type
   const feature = featuresAtPixel.length ? featuresAtPixel[0] : null
   const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (locationLayers?.includes(feature?.layer) && 'pixel')
+  const hasFeatureLayers = layers?.some(l => featureLayers?.includes(l))
   const hasPixelLayers = layers?.some(l => locationLayers?.includes(l))
   const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
 
+  console.log({
+    resultType,
+    items: featuresAtPixel,
+    featuresTotal,
+    featuresInViewport,
+    featuresFocusTotal,
+    featuresInFocus,
+    isFeaturesInMap: hasFeatureLayers,
+    isPixelFeaturesAtPixel: locationLayers?.includes(feature?.layer),
+    isPixelFeaturesInMap: hasPixelLayers
+  })
   return {
     resultType,
     items: featuresAtPixel,
     featuresTotal,
     featuresInViewport,
-    isFeaturesInMap: !!layers?.length,
+    featuresFocusTotal,
+    featuresInFocus,
+    isFeaturesInMap: hasFeatureLayers,
     isPixelFeaturesAtPixel: locationLayers?.includes(feature?.layer),
     isPixelFeaturesInMap: hasPixelLayers,
     coord: lngLat

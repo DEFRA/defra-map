@@ -2,15 +2,22 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
-const getClassName = (isVisible, isActive, drawMode, shape, isDrawValid) => {
-  const frame = drawMode === 'frame' ? ` fm-c-padding-box--${shape}` : ''
-  const drawValid = drawMode === 'frame' && isDrawValid ? ' fm-c-padding-box--draw-valid' : ''
-  return `fm-c-padding-box${frame}${drawValid}${isVisible ? ' fm-c-padding-box--visible' : ''}${isActive ? ' fm-c-padding-box--active' : ''}`
+const getClassName = (isVisible, isActive, drawShape) => {
+  const visible = isVisible ? ' fm-c-padding-box--visible' : ''
+  const active = isActive ? ' fm-c-padding-box--active' : ''
+  const shape = drawShape ? ` fm-c-padding-box--${drawShape}` : ''
+  return `fm-c-padding-box${visible}${active}${shape}`
 }
 
 export default function PaddingBox ({ children }) {
-  const { provider, options, isContainerReady, drawMode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+  const { provider, isContainerReady, drawMode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate, isDrawValid } = useViewport()
+
+  // Template properties
+  const isVisible = (interfaceType === 'keyboard' && features?.isFeaturesInMap) || drawMode === 'frame'
+  const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length) || (drawMode === 'frame' && isDrawValid)
+  const drawShape = drawMode === 'frame' ? shape : null
+  const className = getClassName(isVisible, isActive, drawShape)
 
   // Update provider padding, need to run this before viewport action effect
   useEffect(() => {
@@ -39,11 +46,6 @@ export default function PaddingBox ({ children }) {
       dispatch({ type: 'SET_PADDING', payload: { viewport: viewportRef.current, isMobile, isAnimate: false } })
     }
   }, [drawMode])
-
-  // Template properties
-  const isVisible = interfaceType === 'keyboard' && (options.queryLocation?.layers || options.queryFeature?.layers)
-  const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length || features?.isPixelFeaturesInMap)
-  const className = getClassName(isVisible, isActive, drawMode, shape, isDrawValid)
 
   return (
     <div className={className} {...padding ? { style: padding } : {}}>

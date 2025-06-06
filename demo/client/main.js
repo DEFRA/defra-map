@@ -9,10 +9,10 @@ let map, bounds
 
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
-  // place: 'Carlisle',
+  place: 'Carlisle',
   // zoom: 14,
-  // minZoom: 6,
-  // maxZoom: 18,
+  minZoom: 6,
+  maxZoom: 18,
   // center: [-2.938769, 54.893806],
   bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   maxBounds: [-5.719993, 49.955638, 1.794689, 55.825973],
@@ -57,104 +57,104 @@ const fm = new FloodMap('map', {
     display: 'inset',
     isVisible: true,
     isPersistInUrl: true,
-    // segments: [
-    //   {
-    //     display: 'timeline',
-    //     items: [
-    //       {
-    //         id: queryMap.live,
-    //         label: 'LIVE'
-    //       },
-    //       {
-    //         id: queryMap.outlook,
-    //         label: '5 days'
-    //       },
-    //       {
-    //         id: queryMap.yearly,
-    //         label: 'Yearly'
-    //       },
-    //       {
-    //         id: queryMap.climate,
-    //         label: '2050'
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     parentIds: [queryMap.outlook],
-    //     display: 'segmented',
-    //     items: [
-    //       {
-    //         id: queryMap.day1,
-    //         label: '<strong>Today</strong>8th'
-    //       },
-    //       {
-    //         id: queryMap.day2,
-    //         label: '<strong>Wed</strong>9th'
-    //       },
-    //       {
-    //         id: queryMap.day3,
-    //         label: '<strong>Thu</strong>10th'
-    //       },
-    //       {
-    //         id: queryMap.day4,
-    //         label: '<strong>Fri</strong>11th'
-    //       },
-    //       {
-    //         id: queryMap.day5,
-    //         label: '<strong>Sat</strong>12th'
-    //       }
-    //     ]
-    //   }
-    // ],
+    segments: [
+      {
+        display: 'timeline',
+        items: [
+          {
+            id: queryMap.live,
+            label: 'LIVE'
+          },
+          {
+            id: queryMap.outlook,
+            label: '5 days'
+          },
+          {
+            id: queryMap.yearly,
+            label: 'Yearly'
+          },
+          {
+            id: queryMap.climate,
+            label: '2050'
+          }
+        ]
+      },
+      {
+        parentIds: [queryMap.outlook],
+        display: 'segmented',
+        items: [
+          {
+            id: queryMap.day1,
+            label: '<strong>Today</strong>8th'
+          },
+          {
+            id: queryMap.day2,
+            label: '<strong>Wed</strong>9th'
+          },
+          {
+            id: queryMap.day3,
+            label: '<strong>Thu</strong>10th'
+          },
+          {
+            id: queryMap.day4,
+            label: '<strong>Fri</strong>11th'
+          },
+          {
+            id: queryMap.day5,
+            label: '<strong>Sat</strong>12th'
+          }
+        ]
+      }
+    ],
     key: [
-      // {
-      //   heading: 'Forecast flood risk',
-      //   layout: 'column',
-      //   // parentIds: [queryMap.outlook],
-      //   display: 'ramp',
-      //   items: [
-      //     {
-      //       label: 'Very low',
-      //       fill: '#00703c'
-      //     },
-      //     {
-      //       label: 'Low',
-      //       fill: '#ffdd00'
-      //     },
-      //     {
-      //       label: 'Medium',
-      //       fill: '#f47738'
-      //     },
-      //     {
-      //       label: 'High',
-      //       fill: '#d4351c'
-      //     }
-      //   ]
-      // },
-      // {
-      //   heading: 'Annual likelyhood of flooding',
-      //   layout: 'column',
-      //   parentIds: [queryMap.yearly],
-      //   display: 'ramp',
-      //   items: [
-      //     {
-      //       label: '> 3.3%',
-      //       fill: 'default: #75D0E9, dark: #4779C4, deuteranopia: #79604A, tritanopia: #CF2A2B, aerial: #4779C4'
-      //     },
-      //     {
-      //       label: '> 1%',
-      //       fill: 'default: #B1E2EE, dark: #3C649F, deuteranopia: #297BE1, tritanopia: #008791, aerial: #3C649F'
-      //     },
-      //     {
-      //       label: '> 0.1%',
-      //       fill: 'default: #D5EBF2, dark: #2C456B, deuteranopia: #FFB72C, tritanopia: #FFADB9, aerial: #2C456B'
-      //     }
-      //   ]
-      // },
+      {
+        heading: 'Forecast flood risk',
+        layout: 'column',
+        parentIds: [queryMap.outlook],
+        display: 'ramp',
+        items: [
+          {
+            label: 'Very low',
+            fill: '#00703c'
+          },
+          {
+            label: 'Low',
+            fill: '#ffdd00'
+          },
+          {
+            label: 'Medium',
+            fill: '#f47738'
+          },
+          {
+            label: 'High',
+            fill: '#d4351c'
+          }
+        ]
+      },
+      {
+        heading: 'Annual likelyhood of flooding',
+        layout: 'column',
+        parentIds: [queryMap.yearly],
+        display: 'ramp',
+        items: [
+          {
+            label: '> 3.3%',
+            fill: 'default: #75D0E9, dark: #4779C4, deuteranopia: #79604A, tritanopia: #CF2A2B, aerial: #4779C4'
+          },
+          {
+            label: '> 1%',
+            fill: 'default: #B1E2EE, dark: #3C649F, deuteranopia: #297BE1, tritanopia: #008791, aerial: #3C649F'
+          },
+          {
+            label: '> 0.1%',
+            fill: 'default: #D5EBF2, dark: #2C456B, deuteranopia: #FFB72C, tritanopia: #FFADB9, aerial: #2C456B'
+          }
+        ]
+      },
       {
         heading: 'Flood warnings and alerts',
         layout: 'column',
-        // parentIds: [queryMap.live],
+        parentIds: [queryMap.live],
         minZoom: 12,
         items: [
           {
@@ -185,7 +185,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Flood warnings and alerts',
         layout: 'column',
-        // parentIds: [queryMap.live],
+        parentIds: [queryMap.live],
         maxZoom: 12,
         items: [
           {
@@ -214,7 +214,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Water level measuring stations',
         layout: 'column',
-        // parentIds: [queryMap.live],
+        parentIds: [queryMap.live],
         isHidden: true,
         items: [
           {
@@ -241,15 +241,15 @@ const fm = new FloodMap('map', {
       }
     ]
   },
-  info: {
-    featureId: '011WAFLE',
-    link: 'http://google.co.uk',
-    // coord: [-2.934171,54.901112],
-    // hasData: true,
-    width: '360px',
-    label: 'Dynamic title',
-    html: '<p class="govuk-body-s">dynamic body</p>'
-  },
+  // info: {
+  //   featureId: '011WAFLE',
+  //   link: 'http://google.co.uk',
+  //   // coord: [-2.934171,54.901112],
+  //   // hasData: true,
+  //   width: '360px',
+  //   label: 'Dynamic title',
+  //   html: '<p class="govuk-body-s">dynamic body</p>'
+  // },
   queryLocation: {
     layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
   },

@@ -11,6 +11,7 @@
     text-align: right;
     opacity: 1;
     transition: opacity 100ms ease;
+    color: $foreground-colour;
 
     &__label {
         text-shadow:

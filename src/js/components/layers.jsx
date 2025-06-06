@@ -41,7 +41,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
           )}
         </Fragment>
       ))}
-      {!isKeyExpanded && hasHiddenGroups && (
+      {!isKeyExpanded && groups.length > 1 && hasHiddenGroups && (
         <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-key`} label='All layers' isExpanded={isKeyExpanded} setIsExpanded={setIsExpanded} isRemove />
         </div>

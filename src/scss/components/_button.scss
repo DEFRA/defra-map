@@ -66,20 +66,20 @@
 .fm-c-btn-tertiary {
     @extend %fm-c-btn;
     @include body-font(16px, 400);
-    border: 1px solid $foreground-colour;
-    background-color: $background-colour;
+    border: 1px solid var(--border-colour);
+    background-color: var(--background-colour);
     padding: 7px 10px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $link-colour;
+    color: var(--link-colour);
 
     &:visited {
-        color: $link-colour;
+        color: var(--link-colour);
     }
 
     &:hover:not(.fm-u-focus-visible) {
-        color: $link-hover-colour;
+        color: var(--link-hover-colour);
     }
 
     &:focus:not(.fm-u-focus-visible) {

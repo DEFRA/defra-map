@@ -19,7 +19,6 @@ export function useStatus () {
     const isBoundsChange = !isSame(prevStateRef.current?.bounds, bounds)
     const isFocusArea = interfaceType === 'keyboard' && features?.isFeaturesInMap
     const { zoom: prevZoom, center: prevCenter } = prevStateRef.current ?? {}
-    console.log('***', prevCenter, state.center)
     const status = getStatus({ ...state, isBoundsChange, prevZoom, prevCenter, isFocusArea, featureId })
     setMessage(status)
     prevStateRef.current = state

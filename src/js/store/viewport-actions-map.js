@@ -18,7 +18,6 @@ const ready = (state, payload) => {
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, focusBounds, center, zoom, features, label } = payload
-  console.log(center, bounds)
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isBoundsChange = !isSame(state.bounds, bounds)

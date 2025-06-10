@@ -118,37 +118,52 @@ const isCirclePolygon = (geometry) => {
   return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
 }
 
-const metresToImperial = (metres) => {
-  const MILE = 1609.344
-  const YARD = 0.9144
-  const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
-  if (metres >= MILE) {
-    const miles = Math.floor(metres / MILE)
-    const remainder = metres % MILE
-    const yards = Math.floor(remainder / YARD)
-    return `${pluralize(miles, 'mile', 'miles')}, ${pluralize(yards, 'yard', 'yards')}`
+// const metresToImperial = (metres) => {
+//   const MILE = 1609.344
+//   const YARD = 0.9144
+//   const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+//   if (metres >= MILE) {
+//     const miles = Math.floor(metres / MILE)
+//     const remainder = metres % MILE
+//     const yards = Math.floor(remainder / YARD)
+//     return `${pluralize(miles, 'mile', 'miles')}, ${pluralize(yards, 'yard', 'yards')}`
+//   } else {
+//     const yards = Math.floor(metres / YARD)
+//     return `${pluralize(yards, 'yard', 'yards')}`
+//   }
+// }
+
+const metresToKilometres = (metres) => {
+  const KILOMETRE = 1000
+  // const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+  if (metres >= KILOMETRE) {
+    const kilometres = metres / KILOMETRE
+    const roundedKm = Math.round(kilometres * 100) / 100
+    return `${roundedKm}km`
   } else {
-    const yards = Math.floor(metres / YARD)
-    return `${pluralize(yards, 'yard', 'yards')}`
+    // return `${pluralize(Math.round(metres), 'metre', 'metres')}`
+    return `${Math.round(metres)}m`
   }
 }
 
-const squareMetresToKm = (metres) => {
+export const squareMetresToKm = (metres) => {
   const SQ_KM = 1_000_000
   if (metres >= SQ_KM) {
     let km2 = (metres / SQ_KM).toFixed(2)
     km2 = Number(km2).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-    return `${km2} km²`
+    return `${km2}km²`
   } else {
-    return `${Math.ceil(metres).toLocaleString()} m²`
+    return `${Math.ceil(metres).toLocaleString()}m²`
   }
 }
 
 export const parseDimensions = (dimensions) => {
-  const { area, length } = dimensions
+  const { area, center, width, radius } = dimensions
   const areaDisplay = area ? squareMetresToKm(area) : null
-  const lengthDisplay = length ? metresToImperial(length) : null
-  return { ...dimensions, areaDisplay, lengthDisplay }
+  const centerDisplay = center ? center.map(c => Math.round(c)).join(', ') : null
+  const widthDisplay = width ? metresToKilometres(width) : null
+  const radiusDisplay = radius ? metresToKilometres(radius) : null
+  return { ...dimensions, areaDisplay, centerDisplay, widthDisplay, radiusDisplay }
 }
 
 export const detectCoordinateType = (coords) => {

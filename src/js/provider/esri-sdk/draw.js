@@ -1,6 +1,6 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
-import * as lengthOperator from '@arcgis/core/geometry/operators/lengthOperator.js'
+import * as centroidOperator from '@arcgis/core/geometry/operators/centroidOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Circle from '@arcgis/core/geometry/Circle.js'
 import Point from '@arcgis/core/geometry/Point.js'
@@ -199,13 +199,21 @@ export class Draw {
   }
 
   getDimensions () {
-    const { paddingBox, shape } = this.provider
-    const graphic = this.getGraphicFromElement(paddingBox, shape)
+    const { shape, drawMode } = this
+    const { paddingBox, graphicsLayer } = this.provider
+    const currentGraphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = currentGraphic || (drawMode === 'frame' && this.getGraphicFromElement(paddingBox, shape))
     const geometry = graphic.geometry
     const dimensions = {}
-    if (this.drawMode === 'frame' && geometry?.type === 'polygon') {
-      dimensions.area = areaOperator.execute(geometry)
-      dimensions.length = lengthOperator.execute(geometry)
+    if (geometry?.type === 'polygon') {
+      const center = centroidOperator.execute(geometry)
+      const area = areaOperator.execute(geometry)
+      const width = geometry.extent.width
+      const radius = width / 2
+      dimensions.center = [center.x, center.y]
+      dimensions.area = area
+      dimensions.width = width
+      dimensions.radius = radius
     }
     return dimensions
   }
@@ -272,11 +280,23 @@ export class Draw {
   }
 
   handleCreate (e) {
+    const graphic = e.graphic
     if (e.state === 'complete') {
-      e.graphic.attributes = {
+      const area = areaOperator.execute(graphic.geometry)
+
+      // Prevent zero area or self intersecting geometries
+      if (area <= 0 || graphic?.geometry.isSelfIntersecting || graphic?.geometry.rings.length > 1) {
+        this.sketchViewModel.layer.remove(graphic)
+        this.sketchViewModel.create('polygon')
+        return
+      }
+
+      graphic.attributes = {
         id: this.shape
       }
-      e.graphic.symbol = this.createPolygonSymbol(this.provider.isDark)
+      graphic.symbol = this.createPolygonSymbol(this.provider.isDark)
+
+      // Dispatch dimensions update
     }
   }
 
@@ -284,13 +304,17 @@ export class Draw {
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
 
-    // Undo draw if polygon has a zero area
+    // Area events
     if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
       const area = areaOperator.execute(graphic.geometry)
-      console.log(toolInfoType, area, graphic.geometry.rings)
+
+      // Undo if polygon has a zero area
       if (area <= 0) {
         this.undo()
+        return
       }
+
+      // Dispatch dimensions update
     }
 
     // Undo draw if attemtped self-intersect

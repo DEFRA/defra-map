@@ -12,7 +12,7 @@ export default function App (options) {
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
-  const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
+  const [interfaceType, setInterfaceType] = useState(options.interfaceType)
 
   // Create a map provider instance
   const Provider = options.provider

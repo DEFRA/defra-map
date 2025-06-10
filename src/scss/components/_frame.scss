@@ -50,26 +50,22 @@
         opacity: 1;
     }
 
-    .fm-c-padding-box--active .fm-c-padding-box__frame {
-        border-style: solid;
-    }
-
     &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
         border-color: $background-colour;
     }
+}
+
+// Active padding box
+.fm-c-padding-box--active .fm-c-padding-box__frame {
+    border-style: solid;
 }
 
 // Frame mode
 .fm-c-padding-box--square, .fm-c-padding-box--circle {
     .fm-c-padding-box__frame {
         opacity: 1;
-        border-style: dashed;
         border-color: var(--foreground-colour);
     }
-}
-
-.fm-c-padding-box--draw-valid .fm-c-padding-box__frame {
-    border-style: solid;
 }
 
 // Circle frame

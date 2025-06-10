@@ -71,7 +71,7 @@ class Provider extends EventTarget {
     })
 
     // Set initial padding, bounds and center (*No option to set in constructor)
-    map.showPadding = true
+    // map.showPadding = true
 
     map.setPadding(getFocusPadding(paddingBox, scale))
     if (bounds) {
@@ -120,7 +120,7 @@ class Provider extends EventTarget {
     map.on('movestart', handleMoveStart.bind(this))
 
     // Detect max/min zoom on move
-    const throttleHandleMove = throttle(() => { handleMove.bind(this)() }, 100)
+    const throttleHandleMove = throttle(() => { handleMove.bind(this)() }, defaults.THROTTLE)
     map.on('move', throttleHandleMove)
 
     // Detect map layer addition

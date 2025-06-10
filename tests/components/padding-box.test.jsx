@@ -175,7 +175,7 @@ describe('PaddingBox', () => {
     jest.mocked(useViewport).mockReturnValue({
       dispatch: mockViewportDispatch,
       features: {
-        featuresInViewport: ['feature1'], // Make sure this matches your component's check
+        featuresInFocus: ['feature1'], // Make sure this matches your component's check
         isPixelFeaturesInMap: true
       },
       padding: { top: 10, right: 10, bottom: 10, left: 10 },
@@ -204,16 +204,11 @@ describe('PaddingBox', () => {
       isActive: true // Add this if your component checks for it
     })
 
-    const { container } = render(<PaddingBox />)
+    const { container } = render(<PaddingBox isFocusArea={true} />)
 
     expect(container.firstChild).toHaveClass('fm-c-padding-box')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--square')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--visible')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--active')
-
-    // You can also test the complete className string
-    expect(container.firstChild).toHaveClass(
-      'fm-c-padding-box fm-c-padding-box--square fm-c-padding-box--visible fm-c-padding-box--active'
-    )
   })
 })

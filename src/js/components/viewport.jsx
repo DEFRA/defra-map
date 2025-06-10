@@ -9,6 +9,7 @@ import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport
 import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
+import ViewportStatus from './viewport-status.jsx'
 import Target from './target.jsx'
 import { toggleInert } from '../lib/dom.js'
 
@@ -21,7 +22,7 @@ export default function Viewport () {
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, draw } = options
   const appDispatch = useApp().dispatch
 
-  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate, isUrlUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -38,6 +39,10 @@ export default function Viewport () {
   const className = getClassName(size, style?.name, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style?.name)
+
+  // Determin focus area
+  const isFocusArea = interfaceType === 'keyboard' && features?.isFeaturesInMap || drawMode === 'frame'
+  const activeFeatures = isFocusArea ? features?.featuresInFocus : features?.featuresInViewport
 
   const handleFocus = () => {
     toggleInert(viewportRef.current)
@@ -76,7 +81,7 @@ export default function Viewport () {
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
+      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: activeFeatures } })
       activeRef.current = viewportRef.current
     }
   }
@@ -84,7 +89,6 @@ export default function Viewport () {
   const handleKeyUp = e => {
     // Get map details (Alt + i)
     if (e.altKey && e.code.slice(-1) === 'I') {
-      viewportDispatch({ type: 'CLEAR_STATUS' })
       // Debounce place update
       debounceUpdatePlace(center)
     }
@@ -94,17 +98,17 @@ export default function Viewport () {
       appDispatch({ type: 'OPEN', payload: 'KEYBOARD' })
     }
 
-    // Clear selected feature and label
+    // Clear selected alternate feature or label
     if (['Escape', 'Esc'].includes(e.key)) {
       // Triggers an update event
       labelPixel.current = provider.hideLabel?.()
-      viewportDispatch({ type: 'CLEAR' })
+      viewportDispatch({ type: 'CLEAR_ALT_FEATURE' })
       appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }
 
     // Feature shortcut keys (Alt + 1 - 9)
     if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
-      const fId = getShortcutKey(e, features?.featuresInViewport)
+      const fId = getShortcutKey(e, activeFeatures)
       provider.queryFeature(fId)
     }
 
@@ -186,14 +190,9 @@ export default function Viewport () {
     viewportDispatch({ type: 'MOVE', payload: { ...e.detail } })
   }
 
-  // Get new bounds after map has moved
-  const debounceUpdate = useCallback(debounce(async (e) => {
-    viewportDispatch({ type: 'UPDATE', payload: e.detail })
-  }, STATUS_DELAY), [])
-
+  // Primary update event
   const handleUpdate = e => {
-    viewportDispatch({ type: 'CLEAR_STATUS' })
-    debounceUpdate(e)
+    viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
 
   // Map query
@@ -306,10 +305,10 @@ export default function Viewport () {
 
   // All query params, debounced by provider. Must be min 500ms
   useEffect(() => {
-    if (isUpdate) {
+    if (isUrlUpdate) {
       setQueryCz(`${center.toString()},${zoom}`)
     }
-  }, [isUpdate])
+  }, [isUrlUpdate])
 
   // Swap style on light/dark mode change
   useEffect(() => {
@@ -342,7 +341,7 @@ export default function Viewport () {
       className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
-      {...isUpdate ? { 'aria-describedby': `${id}-viewport-description` } : {}}
+      {...isUrlUpdate ? { 'aria-describedby': `${id}-viewport-description` } : {}}
       onClick={handleClick}
       onFocus={handleFocus}
       onKeyDown={handleKeyDown}
@@ -358,18 +357,19 @@ export default function Viewport () {
       data-fm-viewport
     >
       <div id={`${id}-map-container`} className='fm-o-map-container' ref={mapContainerRef} />
-      <PaddingBox>
+      <PaddingBox isFocusArea={isFocusArea}>
         <Target />
       </PaddingBox>
       <ul id={`${id}-viewport-features`} className='fm-u-visually-hidden' role='listbox' aria-labelledby={`${id}-viewport-label`}>
-        {features?.featuresInViewport.map(feature => {
+        {activeFeatures?.map(feature => {
           const uid = `${id}${feature.id}`
           return (
             <li key={uid} id={`${id}-feature-${feature.id}`} role='option' aria-selected={featureId === (feature.id)} aria-setsize='-1' tabIndex='-1'>{feature.name}</li>
           )
         })}
       </ul>
-      {useMemo(() => {
+      <ViewportStatus />
+      {/* {useMemo(() => {
         return (
           <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live={isUpdate ? 'polite' : 'assertive'}>
             <div id={`${id}-viewport-description`} className='fm-c-status__inner' aria-atomic>
@@ -377,7 +377,7 @@ export default function Viewport () {
             </div>
           </div>
         )
-      }, [status])}
+      }, [status])} */}
     </div>
   )
 }

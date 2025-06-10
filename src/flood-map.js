@@ -95,7 +95,8 @@ export class FloodMap extends EventTarget {
     window.addEventListener('focus', () => { setInitialFocus() })
 
     // Set keyboard interfaceType
-    window.addEventListener('keydown', this._handleKeydown.bind(this), true)
+    window.addEventListener('keydown', this._handleKeyboard.bind(this), true)
+    window.addEventListener('keyup', this._handleKeyboard.bind(this), true)
 
     // Set touch interfaceType
     window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
@@ -198,7 +199,7 @@ export class FloodMap extends EventTarget {
     }
   }
 
-  _handleKeydown (event) {
+  _handleKeyboard (event) {
     if (event.key === 'Tab') {
       this.interfaceType = 'keyboard'
       eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')

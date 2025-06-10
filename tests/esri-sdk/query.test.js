@@ -78,13 +78,14 @@ describe('Query Module', () => {
       const point = [10, 10]
       const detail = await getDetail.bind(mockProvider)(point, false)
 
-      expect(detail.bounds).toEqual([0, 0, 1000, 1000])
+      expect(detail.bounds).toEqual([500, 500, 500, 500])
       expect(detail.features.resultType).toBe('pixel')
     })
   })
 
   describe('getViewport()', () => {
     it('should retrieve bounds, center, and zoom from the view', async () => {
+      mockProvider.view.toMap.mockReturnValue({ x: 500, y: 500 })
       mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport.bind(mockProvider)()
 
@@ -94,6 +95,7 @@ describe('Query Module', () => {
     })
 
     it('should format center coordinates correctly', async () => {
+      mockProvider.view.toMap.mockReturnValue({ x: 500, y: 500 })
       mockProvider.view.center = { x: 123.456789, y: 987.654321 }
       mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport.bind(mockProvider)()
@@ -102,6 +104,7 @@ describe('Query Module', () => {
     })
 
     it('should format zoom level using defaults precision', async () => {
+      mockProvider.view.toMap.mockReturnValue({ x: 500, y: 500 })
       mockProvider.view.zoom = 12.3456789
       mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport.bind(mockProvider)()
@@ -110,11 +113,12 @@ describe('Query Module', () => {
     })
 
     it('should extract extent bounds correctly', async () => {
+      mockProvider.view.toMap.mockReturnValue({ x: 500, y: 500 })
       mockProvider.view.extent = { xmin: 10, ymin: 20, xmax: 30, ymax: 40 }
       mockProvider.view.constraints = { maxZoom: 18, minZoom: 8 }
       const viewport = await getViewport.bind(mockProvider)()
 
-      expect(viewport.bounds).toEqual([10, 20, 30, 40])
+      expect(viewport.bounds).toEqual([500, 500, 500, 500])
     })
   })
 

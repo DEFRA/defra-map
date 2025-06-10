@@ -57,12 +57,12 @@ const getBoundsChange = (oCentre, originalZoom, isMaxZoom, isMinZoom, center, zo
   let change = ''
   if (isMove) {
     if (!isSameCentre && !isSameZoom) {
-      change = `New area${maxZoom}${minZoom}: `
+      change = `New area${maxZoom}${minZoom}. `
     } else if (!isSameCentre) {
-      change = `Map move: ${getDirection(oCentre, center)}, `
+      change = `Map move: ${getDirection(oCentre, center)}. `
     } else {
       const direction = zoom > originalZoom ? 'in' : 'out'
-      change = `Zoomed ${direction}${maxZoom}${minZoom}: `
+      change = `Zoomed ${direction}${maxZoom}${minZoom}. `
     }
   }
   return change
@@ -229,12 +229,13 @@ export const getMapPixel = (el, scale) => {
   return point
 }
 
-export const getDescription = (place, bounds, features) => {
-  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
+export const getDescription = (place, bounds, focusBounds, features, isFocusArea) => {
+  const { featuresTotal, featuresFocusTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
+  const activeFeaturesTotal = isFocusArea ? featuresFocusTotal : featuresTotal
+  const activeBounds = isFocusArea ? focusBounds : bounds
   let text = ''
-
-  if (featuresTotal) {
-    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area. `
+  if (activeFeaturesTotal) {
+    text = `${activeFeaturesTotal} feature${activeFeaturesTotal === 1 ? '' : 's'} in this area. `
   } else if (isPixelFeaturesAtPixel) {
     text = 'Data visible at the center coordinate. '
   } else if (isPixelFeaturesInMap) {
@@ -245,27 +246,29 @@ export const getDescription = (place, bounds, features) => {
     // Null
   }
 
-  const focusPlace = place ? `approximate centre ${place}, ` : ''
-  const focusArea = `covering ${getArea(bounds)}`
+  const display = isFocusArea ? 'Focus area ' : ''
+  const newPlace = place ? `Approximate centre ${place}. ` : ''
+  const newArea = `Covering ${getArea(activeBounds)}. `
   const findPlace = place ? '' : 'Use ALT plus I to find closest place'
 
-  return `${focusPlace}${focusArea}. ${text}${findPlace}`
+  return `${display}${newPlace}${newArea}${text}${findPlace}`
 }
 
-export const getStatus = (action, isBoundsChange, place, state, current) => {
-  const { center, bounds, zoom, isMaxZoom, isMinZoom, features, label, selectedId } = current
+export const getStatus = ({ action, isBoundsChange, place, isFocusArea, prevZoom, prevCenter, center, bounds, focusBounds, zoom, isMaxZoom, isMinZoom, features, label, featureId }) => {
   let status = null
   if (label) {
     status = label
-  } else if (selectedId) {
-    const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
+  } else if (featureId) {
+    const selected = getSelectedStatus(features?.featuresInViewport, featureId)
     status = selected
+  } else if (action === 'GEOCODE') {
+    status = getDescription(place, bounds, focusBounds, features, isFocusArea)
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
   } else if (isBoundsChange) {
-    const direction = getBoundsChange(state.center, state.zoom, isMaxZoom, isMinZoom, center, zoom)
-    const description = getDescription(place, bounds, features)
-    status = `${direction}${direction ? 'f' : 'F'}ocus area ${description}`
+    const direction = getBoundsChange(prevCenter, prevZoom, isMaxZoom, isMinZoom, center, zoom)
+    const description = getDescription(place, bounds, focusBounds, features, isFocusArea)
+    status = `${direction}${description}`
   } else {
     status = ''
   }

@@ -6,5 +6,6 @@ export const defaults = {
   POLYGON_QUERY_FILL: [0, 120, 255, 0.2],
   POLYGON_QUERY_FILL_DARK: [0, 120, 255, 0.2],
   DELAY: 500,
+  THROTTLE: 100,
   ZOOM_TOLERANCE: 0.01
 }

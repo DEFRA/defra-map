@@ -4,13 +4,13 @@ import { tools as defaultTools } from '../store/constants.js'
 import { useDrawHandlers } from '../hooks/use-draw-handlers'
 
 export default function DrawMenu () {
-  const { dispatch, options, draw, isDrawMenuExpanded, query, shape, drawTools } = useApp()
+  const { dispatch, options, legend, draw, isDrawMenuExpanded, query, shape, drawTools } = useApp()
   const { id } = options
   const isDetails = ['expanded', 'collapse'].includes(draw?.collapse)
   const { handleAddClick, handleEditClick, handleDeleteClick } = useDrawHandlers()
 
   // Tools displayed in draw action menu instead
-  if (!draw?.heading) {
+  if (!(legend && draw?.heading)) {
     return null
   }
 

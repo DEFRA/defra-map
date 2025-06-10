@@ -49,6 +49,7 @@ describe('draw-menu', () => {
       draw: {
         heading: 'Test heading'
       },
+      legend: {},
       provider: {
         map: {},
         draw: {
@@ -88,6 +89,7 @@ describe('draw-menu', () => {
       draw: {
         heading: 'Test heading'
       },
+      legend: {},
       provider: {
         map: {},
         draw: {
@@ -124,6 +126,7 @@ describe('draw-menu', () => {
       draw: {
         heading: 'Test heading'
       },
+      legend: {},
       provider: {
         map: {},
         draw: {

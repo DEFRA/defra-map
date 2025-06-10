@@ -39,7 +39,7 @@ const getClassNames = (isDarkMode, device, behaviour, isDrawMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, interfaceType, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
   const legend = options.legend
 
   // Refs to elements
@@ -101,7 +101,7 @@ export default function Container () {
   }, [isPage, activePanel, hash])
 
   return (
-    <ViewportProvider options={{ ...options, srid, hasSizeCapability }}>
+    <ViewportProvider options={{ ...options, srid, hasSizeCapability}}>
       <div
         className={getClassNames(isDarkMode, device, behaviour, isDrawMode)}
         style={{ height }}

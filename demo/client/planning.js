@@ -481,8 +481,8 @@ const fm = new FloodMap('map', {
   draw: {
     heading: 'Get a boundary report',
     summary: 'Add or edit site boundary',
-    collapse: 'collapse',
-    tools: ['circle', 'square', 'polygon'],
+    // collapse: 'collapse',
+    tools: ['square', 'polygon'],
     queryLabel: 'Get summary report',
     helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',

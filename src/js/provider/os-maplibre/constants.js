@@ -4,7 +4,8 @@ export const defaults = {
     duration: 500,
     curve: 0
   },
-  DELAY: 300,
+  DELAY: 500,
+  THROTTLE: 100,
   MAX_FEATURES: 9,
   SHORTCUT_LABEL_OFFSET: -30
 }

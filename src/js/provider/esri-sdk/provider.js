@@ -99,7 +99,7 @@ class Provider extends EventTarget {
     // Throttle move 100ms
     const throttleMove = throttle(() => {
       handleMove.bind(this)()
-    }, 100)
+    }, defaults.THROTTLE)
 
     // Movestart / Move
     let isMove = false

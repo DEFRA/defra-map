@@ -22,6 +22,7 @@ export const defaults = {
   CONTAINER_TYPE: 'buttonFirst',
   PANEL_POSITION: 'overlayRight',
   MIN_SEARCH_LENGTH: 3,
+  ZOOM: 12,
   STYLES: ['default', 'dark', 'aerial', 'deuteranopia', 'tritanopia'],
   MAX_BOUNDS_4326: [-7.57216793459, 49.959999905, 1.68153079591, 58.6350001085],
   MAX_BOUNDS_27700: [167161, 13123, 670003, 663805]

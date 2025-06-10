@@ -1,4 +1,4 @@
-import { getDescription, getStatus, getPlace, parseDimensions } from '../lib/viewport'
+import { getPlace, parseDimensions } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
@@ -17,13 +17,12 @@ const ready = (state, payload) => {
 
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
-  const { bounds, center, zoom, features } = payload
+  const { bounds, focusBounds, center, zoom, features, label } = payload
+  console.log(center, bounds)
   const place = getPlace(isUserInitiated, action, oPlace, state.place)
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isBoundsChange = !isSame(state.bounds, bounds)
-  const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isBoundsChange
-  const status = getStatus(action, isBoundsChange, place, state, payload)
-  const newAction = isBoundsChange && action === 'SEARCH' && !isUserInitiated ? 'SEARCH' : null
+  const isUrlUpdate = ['GEOLOC', 'DATA'].includes(action) || isBoundsChange
   const attributions = state.style?.attribution ? [state.style.attribution] : payload.attributions
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
   const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
@@ -33,29 +32,27 @@ const update = (state, payload) => {
     ...(['INIT', 'GEOLOC'].includes(action) && original),
     place,
     bounds,
+    focusBounds,
     center,
     zoom,
     features,
-    status,
-    isUpdate,
+    isNewStatus: true,
+    isUrlUpdate,
     isMoving: false,
     isStatusVisuallyHidden: true,
-    action: newAction,
     attributions,
     dimensions,
-    isDrawValid
+    isDrawValid,
+    label
   }
 }
 
 const updatePlace = (state, payload) => {
-  const { bounds, features } = state
-  let status = getDescription(payload, bounds, features)
-  status = status ? String(status[0]).toUpperCase() + String(status).slice(1) : status
-
   return {
     ...state,
+    action: 'GEOCODE',
     place: payload,
-    status,
+    isNewStatus: true,
     isUserInitiated: false,
     isStatusVisuallyHidden: true
   }
@@ -64,13 +61,12 @@ const updatePlace = (state, payload) => {
 const moveStart = (state, payload) => {
   return {
     ...state,
-    status: '',
     isMoving: true,
-    isUpdate: false,
+    isUrlUpdate: false,
     isUserInitiated: payload,
     isStatusVisuallyHidden: true,
     hasShortcuts: true,
-    action: null
+    action: state.action || 'MOVE'
   }
 }
 
@@ -98,7 +94,7 @@ const reset = (state) => {
     ...state,
     place: state.oPlace,
     action: 'RESET',
-    isUpdate: false
+    isUrlUpdate: false
   }
 }
 
@@ -111,7 +107,7 @@ const search = (state, payload) => {
     place: payload.place,
     action: 'SEARCH',
     isStatusVisuallyHidden: true,
-    isUpdate: false,
+    isUrlUpdate: false,
     padding: null,
     timestamp: Date.now()
   }
@@ -123,10 +119,9 @@ const geoloc = (state, payload) => {
     place: payload.place,
     center: payload.center,
     bounds: null,
-    status: '',
     isStatusVisuallyHidden: true,
     action: 'GEOLOC',
-    isUpdate: false
+    isUrlUpdate: false
   }
 }
 
@@ -135,7 +130,7 @@ const zoomIn = (state) => {
     ...state,
     action: 'ZOOM_IN',
     isUserInitiated: true,
-    isUpdate: false
+    isUrlUpdate: false
   }
 }
 
@@ -144,7 +139,7 @@ const zoomOut = (state) => {
     ...state,
     action: 'ZOOM_OUT',
     isUserInitiated: true,
-    isUpdate: false
+    isUrlUpdate: false
   }
 }
 
@@ -158,7 +153,7 @@ const setStyle = (state, payload) => {
   return {
     ...state,
     action: 'STYLE',
-    isUpdate: false,
+    isUrlUpdate: false,
     style: newStyle,
     attributions
   }
@@ -176,7 +171,7 @@ const toggleConstraints = (state, payload = {}) => {
   return {
     ...state,
     action: 'STYLE',
-    isUpdate: false,
+    isUrlUpdate: false,
     minZoom: minZoom || state.originalMinZoom,
     maxZoom: maxZoom || state.originalMaxZoom,
     styles: styles || state.originalStyles,
@@ -190,27 +185,16 @@ const setSize = (state, payload) => {
   return {
     ...state,
     action: 'SIZE',
-    isUpdate: false,
+    isUrlUpdate: false,
     padding: null,
     size: payload
   }
 }
 
-const clearStatus = (state) => {
-  return {
-    ...state,
-    status: '',
-    isStatusVisuallyHidden: false
-  }
-}
-
 const clearFeatures = (state) => {
-  const status = state.action === 'SEARCH' ? state.status : null
-
   return {
     ...state,
     features: null,
-    status,
     action: 'DATA'
   }
 }
@@ -246,7 +230,15 @@ const toggleShortcuts = (state, payload) => {
   }
 }
 
-const clear = (state) => {
+const resetStatus = (state) => {
+  return {
+    ...state,
+    isNewStatus: false,
+    action: null
+  }
+}
+
+const clearAltFeature = (state) => {
   return {
     ...state,
     hasShortcuts: false,
@@ -268,9 +260,9 @@ export const actionsMap = {
   SET_STYLE: setStyle,
   TOGGLE_CONSTRAINTS: toggleConstraints,
   SET_SIZE: setSize,
-  CLEAR: clear,
-  CLEAR_STATUS: clearStatus,
+  CLEAR_ALT_FEATURE: clearAltFeature,
   CLEAR_FEATURES: clearFeatures,
   SET_PADDING: setPadding,
-  TOGGLE_SHORTCUTS: toggleShortcuts
+  TOGGLE_SHORTCUTS: toggleShortcuts,
+  RESET_STATUS: resetStatus
 }

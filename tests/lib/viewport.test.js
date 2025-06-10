@@ -58,75 +58,85 @@ describe('lib/viewport - getMapPixel', () => {
 
 describe('lib/viewport - getDescription', () => {
   it('should return correct description for featuresTotal', () => {
-    const description = getDescription('Test Place', [1, 1, 1, 1], { featuresTotal: 5 })
+    const description = getDescription('Test Place', [1, 1, 1, 1], [1, 1, 1, 1], { featuresFocusTotal: 5 }, true)
     expect(description).toContain('5 features in this area')
   })
 
   it('should return correct description for isPixelFeaturesAtPixel', () => {
-    const description = getDescription(null, [1, 1, 1, 1], { isPixelFeaturesAtPixel: true })
+    const description = getDescription(null, [1, 1, 1, 1], [1, 1, 1, 1], { isPixelFeaturesAtPixel: true }, true)
     expect(description).toContain('Data visible at the center coordinate')
   })
 
   it('should return correct description for isPixelFeaturesInMap', () => {
-    const description = getDescription(null, [1, 1, 1, 1], { isPixelFeaturesInMap: true })
+    const description = getDescription(null, [1, 1, 1, 1], [1, 1, 1, 1], { isPixelFeaturesInMap: true }, true)
     expect(description).toContain('No data visible at the center coordinate')
   })
 
   it('should return correct description for isFeaturesInMap', () => {
-    const description = getDescription(null, [1, 1, 1, 1], { isFeaturesInMap: true })
+    const description = getDescription(null, [1, 1, 1, 1], [1, 1, 1, 1], { isFeaturesInMap: true }, true)
     expect(description).toContain('No feature data in this area')
   })
 
   it('should format coordinate correctly for lat long', () => {
-    const description = getDescription(null, [-2.989707, 54.864555, -2.878635, 54.937635], {})
-    expect(description).toContain('covering 4 miles by 5 miles. Use ALT plus I to find closest place')
+    const description = getDescription(null, [-2.989707, 54.864555, -2.878635, 54.937635], [-2.989707, 54.864555, -2.878635, 54.937635], {}, true)
+    expect(description).toContain('Focus area Covering 4 miles by 5 miles. Use ALT plus I to find closest place')
   })
 
   it('should format format coordinate correctly for eastings and northings', () => {
-    const description = getDescription(null, [338388, 554644, 340881, 557137], {})
-    expect(description).toContain('covering 1.5 miles by 1.5 miles. Use ALT plus I to find closest place')
+    const description = getDescription(null, [338388, 554644, 340881, 557137], [338388, 554644, 340881, 557137], {}, true)
+    expect(description).toContain('Focus area Covering 1.5 miles by 1.5 miles. Use ALT plus I to find closest place')
   })
 })
 
 describe('lib/viewport - getStatus', () => {
-  let current
-  let state
+  let mockState
 
   beforeEach(() => {
-    current = {
-      center: [0, 0],
+    mockState = {
+      prevCenter: [0, 0],
+      prevZoom: 10,
       bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
-      zoom: 10,
+      focusBounds: [-2.989707, 54.864555, -2.878635, 54.937635],
       features: { featuresInViewport: [] },
+      action: 'ANY',
+      isBoundsChange: false,
+      place: null,
+      isFocusArea: false,
+      zoom: 9,
+      isMaxZoom: null,
+      isMinZoom: null,
       label: null,
-      selectedId: null
+      featureId: null
     }
-    state = { center: [1, 1], zoom: 9 }
   })
 
   it('should return label if present', () => {
-    current.label = 'Test Label'
-    expect(getStatus('ANY', false, null, state, current)).toBe('Test Label')
+    mockState.label = 'Test Label'
+    expect(getStatus(mockState)).toBe('Test Label')
   })
 
   it('should return selected status if selectedId is present', () => {
-    current.selectedId = '123'
-    expect(getStatus('ANY', false, null, state, current)).not.toBeNull()
+    mockState.selectedId = '123'
+    expect(getStatus(mockState)).not.toBeNull()
   })
 
   it('should return \'Map change\' message when action is \'DATA\'', () => {
-    expect(getStatus('DATA', false, null, state, current)).toBe(
+    mockState.action = 'DATA'
+    expect(getStatus(mockState)).toBe(
       'Map change: new data. Use ALT plus I to get new details'
     )
   })
 
   it('should return description when isPanZoom is true or action is \'GEOLOC\'', () => {
-    expect(getStatus('ANY', true, 'Place', state, current)).not.toBeNull()
-    expect(getStatus('GEOLOC', false, null, state, current)).not.toBeNull()
+    mockState.action = 'ANY'
+    expect(getStatus(mockState)).not.toBeNull()
+    mockState.action = 'GEOLOC'
+    expect(getStatus(mockState)).not.toBeNull()
   })
 
   it('returns an empty string for other cases', () => {
-    expect(getStatus('OTHER', false, null, state, current)).toBe('')
+    mockState.action = 'OTHER'
+    expect(getStatus(mockState)).toBe('')
   })
 })
 

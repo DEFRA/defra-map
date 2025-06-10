@@ -2,24 +2,23 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
-const getClassName = (isVisible, isActive, drawShape) => {
-  const visible = isVisible ? ' fm-c-padding-box--visible' : ''
+const getClassName = (isFocusArea, isActive, drawShape) => {
+  const visible = isFocusArea ? ' fm-c-padding-box--visible' : ''
   const active = isActive ? ' fm-c-padding-box--active' : ''
   const shape = drawShape ? ` fm-c-padding-box--${drawShape}` : ''
   return `fm-c-padding-box${visible}${active}${shape}`
 }
 
-export default function PaddingBox ({ children }) {
-  const { provider, isContainerReady, drawMode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, interfaceType, isMobile } = useApp()
+export default function PaddingBox ({ isFocusArea, children }) {
+  const { provider, isContainerReady, drawMode, shape, viewportRef, obscurePanelRef, targetMarker, frameRef, isMobile } = useApp()
   const { dispatch, features, padding, isAnimate, isDrawValid } = useViewport()
 
   // Template properties
-  const isVisible = (interfaceType === 'keyboard' && features?.isFeaturesInMap) || drawMode === 'frame'
-  const isActive = interfaceType === 'keyboard' && (features?.featuresInViewport.length) || (drawMode === 'frame' && isDrawValid)
+  const isActive = isFocusArea && (features?.featuresInFocus?.length) || isDrawValid
   const drawShape = drawMode === 'frame' ? shape : null
-  const className = getClassName(isVisible, isActive, drawShape)
+  const className = getClassName(isFocusArea, isActive, drawShape)
 
-  // Update provider padding, need to run this before viewport action effect
+  // Update provider padding (uses current padding box), need to run this before viewport action effect
   useEffect(() => {
     if (provider.map) {
       provider.setPadding(targetMarker?.coord, isAnimate)

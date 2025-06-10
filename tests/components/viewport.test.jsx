@@ -195,16 +195,16 @@ describe('viewport', () => {
   it('should handle provider \'update\' event with a new center', async () => {
     jest.useFakeTimers()
     const { container } = renderComponent({
-      center: [-2.934171, 54.901112],
+      center: [-2.902396, 54.901112],
       zoom: 11.111696,
       place: null
     })
     const statusElement = container.querySelector('.fm-c-status__inner')
     expect(statusElement).toHaveTextContent('')
-    const updateEvent = new CustomEvent('update', { detail: { bounds: [-2.965945, 54.864555, -2.838848, 54.937635], center: [-2.902397, 54.901112], zoom: 11.111696, features: { featuresTotal: null, featuresInViewport: [] } } })
+    const updateEvent = new CustomEvent('update', { detail: { bounds: [-2.9734126, 54.837299, -2.767830, 54.964823], center: [-2.870621, 54.901112], zoom: 11.111696 } })
     act(() => { providerMock.dispatchEvent(updateEvent) })
     act(() => { jest.runAllTimers() })
-    expect(screen.getByText('Map move: east 1.3 miles, focus area covering 5 miles by 5 miles. Use ALT plus I to find closest place')).toBeInTheDocument()
+    expect(screen.getByText('Covering 4 miles by 5 miles. Use ALT plus I to find closest place')).toBeInTheDocument()
     jest.useRealTimers()
   })
 
@@ -380,7 +380,7 @@ describe('viewport', () => {
     const viewportElement = screen.getByRole('application')
     expect(viewportElement).toBeTruthy()
     act(() => { fireEvent.keyUp(viewportElement, { key: 'Escape' }) })
-    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'CLEAR' })
+    expect(viewportDispatchMock).toHaveBeenCalledWith({ type: 'CLEAR_ALT_FEATURE' })
     expect(appDispatchMock).toHaveBeenCalledWith({ type: 'SET_SELECTED', payload: { featureId: null } })
   })
 

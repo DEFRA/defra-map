@@ -1,5 +1,6 @@
 import { parseCentre, parseZoom, getStyle } from '../lib/viewport'
 import { actionsMap } from './viewport-actions-map'
+import { defaults } from '../store/constants'
 
 const getSize = (hasSizeCapability) => {
   return (hasSizeCapability && window.localStorage.getItem('size')) || 'small'
@@ -27,10 +28,11 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
   const cz = queryParams.get('cz')
   bounds = getBounds(cz, center, (bounds || extent), srid)
   center = !bounds ? getCentre(cz, center, srid) : undefined
-  zoom = getZoom(cz, zoom, minZoom, maxZoom)
+  zoom = getZoom(cz, zoom, minZoom, maxZoom) || defaults.ZOOM
 
   return {
     bounds,
+    focusBounds: null,
     center,
     zoom,
     currentZoom: zoom,
@@ -50,12 +52,12 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
     originalZoom: zoom,
     size: getSize(hasSizeCapability),
     features,
-    status: '',
+    isNewStatus: false,
     isStatusVisuallyHidden: true,
     error: null,
     action: 'INIT',
     isMoving: false,
-    isUpdate: false,
+    isUrlUpdate: false,
     isFeaturesChange: false,
     isPanZoomChange: false,
     isUserInitiated: false,
@@ -64,6 +66,8 @@ export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, 
     padding: null,
     drawMaxArea: draw?.maxArea,
     isDrawValid: !draw?.maxArea,
+    label: null,
+    status: null,
     timestamp: Date.now()
   }
 }

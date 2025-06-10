@@ -88,7 +88,7 @@ export async function handleIdle () {
     const pixel = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)].map(c => c / scale)
     const detail = await getDetail.bind(this)(selectedId ? null : pixel)
     const attributions = getAttributions(map)
-    addShortcutMarkers.bind(this)(detail?.features?.featuresInViewport)
+    addShortcutMarkers.bind(this)(detail?.features?.featuresInFocus)
     this.dispatchEvent(new CustomEvent('update', {
       detail: {
         ...detail,

@@ -1,5 +1,11 @@
 import { defaults } from './constants'
 
+async function getUnpaddedExtent (view) {
+  const topLeft = await view.toMap({ x: 0, y: 0 })
+  const bottomRight = await view.toMap({ x: view.width, y: view.height })
+  return [topLeft.x, bottomRight.y, bottomRight.x, topLeft.y]
+}
+
 export async function getDetail (point) {
   const viewport = await getViewport.bind(this)()
   const features = await getFeatures.bind(this)(point)
@@ -17,14 +23,26 @@ export async function getViewport () {
   const { view } = this
   const { maxZoom, minZoom } = view.constraints
   const { xmin, ymin, xmax, ymax } = view.extent
-  const bounds = [xmin, ymin, xmax, ymax]
-  const { x, y } = view.center
+  const focusBounds = [xmin, ymin, xmax, ymax]
+
   // Easting and northings rounded (10cm) precision
+  const { x, y } = view.center
   const center = [x, y].map(n => Math.round(n * 10) / 10)
   const zoom = parseFloat(view.zoom.toFixed(defaults.PRECISION))
   const isMaxZoom = view.zoom + defaults.ZOOM_TOLERANCE >= maxZoom
   const isMinZoom = view.zoom - defaults.ZOOM_TOLERANCE <= minZoom
-  return { bounds, center, zoom, isMaxZoom, isMinZoom }
+
+  // Unpadded extent
+  const bounds = await getUnpaddedExtent(view)
+
+  return {
+    bounds,
+    focusBounds,
+    center,
+    zoom,
+    isMaxZoom,
+    isMinZoom
+  }
 }
 
 export async function getFeatures (point) {

@@ -4,7 +4,7 @@ import { initialState, reducer } from './viewport-reducer'
 export const ViewportContext = createContext()
 
 export const ViewportProvider = ({ options, children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState(options))
+  const [state, dispatch] = useReducer(reducer, initialState({...options}))
 
   const store = useMemo(() => ({
     ...state,

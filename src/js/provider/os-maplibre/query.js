@@ -95,7 +95,7 @@ function combineFeatures (features) {
 function getViewport () {
   const { map } = this
   const bounds = map.getBounds().toArray().flat(1)
-  const paddedBounds = getPaddedBounds.bind(this)()
+  const focusBounds = getPaddedBounds.bind(this)()
   let center = map.getCenter()
   let zoom = map.getZoom()
   center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
@@ -105,7 +105,7 @@ function getViewport () {
 
   return {
     bounds,
-    paddedBounds,
+    focusBounds,
     center,
     zoom,
     isMaxZoom,
@@ -181,10 +181,11 @@ export function getFeatures (pixel) {
   const intersectingFocusFeatures = intersectFeatures(getPaddedBounds.bind(this)(), renderedFeaturesInPadding)
 
   // Split multi polygons and combine duplicate features
+  const viewportPolygonFeatures = featuresFocusTotal <= defaults.MAX_FEATURES ? combineFeatures(renderedFeaturesInViewport) : []
   const focusPolygonFeatures = featuresFocusTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFocusFeatures) : []
 
   // Add props and sort features
-  const featuresInViewport = renderedFeaturesInViewport <= defaults.MAX_FEATURES ? addFeatureProperties.bind(this)(renderedFeaturesInViewport) : []
+  const featuresInViewport = renderedFeaturesInViewport.length <= defaults.MAX_FEATURES ? addFeatureProperties.bind(this)(viewportPolygonFeatures) : []
   const featuresInFocus = addFeatureProperties.bind(this)(focusPolygonFeatures).sort((a, b) => a.distance - b.distance)
 
   // Get long lat of query
@@ -202,17 +203,6 @@ export function getFeatures (pixel) {
   const hasPixelLayers = layers?.some(l => locationLayers?.includes(l))
   const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
 
-  console.log({
-    resultType,
-    items: featuresAtPixel,
-    featuresTotal,
-    featuresInViewport,
-    featuresFocusTotal,
-    featuresInFocus,
-    isFeaturesInMap: hasFeatureLayers,
-    isPixelFeaturesAtPixel: locationLayers?.includes(feature?.layer),
-    isPixelFeaturesInMap: hasPixelLayers
-  })
   return {
     resultType,
     items: featuresAtPixel,

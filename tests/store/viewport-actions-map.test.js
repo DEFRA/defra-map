@@ -39,7 +39,7 @@ describe('store/viewport-actions-map - update', () => {
       zoom: payload.zoom,
       features: payload.features,
       isMoving: false,
-      action: null
+      action: 'INIT'
     })
 
     // Check that original values are copied over for INIT action
@@ -48,8 +48,8 @@ describe('store/viewport-actions-map - update', () => {
     expect(result).toHaveProperty('rZoom', payload.zoom)
     expect(result).toHaveProperty('originalZoom', state.originalZoom)
 
-    // Check that isUpdate is true when action is INIT
-    expect(result.isUpdate).toBeTruthy()
+    // Check that isUrlUpdate is true when action is INIT
+    expect(result.isUrlUpdate).toBeTruthy()
   })
 
   it('should handle GEOLOC action correctly', () => {
@@ -78,7 +78,7 @@ describe('store/viewport-actions-map - update', () => {
       zoom: payload.zoom,
       features: payload.features,
       isMoving: false,
-      action: null
+      action: 'GEOLOC'
     })
 
     // Check that original values are copied over for GEOLOC action
@@ -87,8 +87,8 @@ describe('store/viewport-actions-map - update', () => {
     expect(result).toHaveProperty('rZoom', payload.zoom)
     expect(result).toHaveProperty('originalZoom', state.originalZoom)
 
-    // Check that isUpdate is true when action is GEOLOC
-    expect(result.isUpdate).toBeTruthy()
+    // Check that isUrlUpdate is true when action is GEOLOC
+    expect(result.isUrlUpdate).toBeTruthy()
   })
 
   it('should handle DATA action correctly', () => {
@@ -117,7 +117,7 @@ describe('store/viewport-actions-map - update', () => {
       zoom: payload.zoom,
       features: payload.features,
       isMoving: false,
-      action: null
+      action: 'DATA'
     })
 
     // Check that original values are NOT copied over for DATA action (without pan/zoom)
@@ -125,8 +125,8 @@ describe('store/viewport-actions-map - update', () => {
     expect(result).not.toHaveProperty('oCentre')
     expect(result).not.toHaveProperty('rZoom')
 
-    // Check that isUpdate is true when action is DATA
-    expect(result.isUpdate).toBeTruthy()
+    // Check that isUrlUpdate is true when action is DATA
+    expect(result.isUrlUpdate).toBeTruthy()
   })
 
   it('should handle pan/zoom actions with changes correctly', () => {
@@ -155,7 +155,7 @@ describe('store/viewport-actions-map - update', () => {
       zoom: payload.zoom,
       features: payload.features,
       isMoving: false,
-      action: null
+      action: 'PAN'
     })
 
     // Check that original values are NOT copied over for PAN action
@@ -163,8 +163,8 @@ describe('store/viewport-actions-map - update', () => {
     expect(result).not.toHaveProperty('oCentre')
     expect(result).not.toHaveProperty('rZoom')
 
-    // Check that isUpdate is true when center/zoom has changed
-    expect(result.isUpdate).toBeTruthy()
+    // Check that isUrlUpdate is true when center/zoom has changed
+    expect(result.isUrlUpdate).toBeTruthy()
   })
 
   it('should handle actions with no changes correctly', () => {
@@ -195,11 +195,11 @@ describe('store/viewport-actions-map - update', () => {
       zoom: payload.zoom,
       features: payload.features,
       isMoving: false,
-      action: null
+      action: 'OTHER'
     })
 
-    // Check that isUpdate is false when no pan/zoom and not DATA/GEOLOC/INIT
-    expect(result.isUpdate).toBeFalsy()
+    // Check that iisUrlUpdate is false when no pan/zoom and not DATA/GEOLOC/INIT
+    expect(result.isUrlUpdate).toBeFalsy()
   })
 
   it('should preserve other existing state properties', () => {
@@ -251,13 +251,13 @@ describe('store/viewport-actions-map - update', () => {
 
     const result = actionsMap.UPDATE(state, payload)
 
-    // Verify isUpdate is true when only center changes
-    expect(result.isUpdate).toBeTruthy()
+    // Verify isUrlUpdate is true when only center changes
+    expect(result.isUrlUpdate).toBeTruthy()
   })
 })
 
 describe('store/viewport-actions-map - updatePlace', () => {
-  it('should return a new state with updated place and status when valid payload is provided', () => {
+  it('should return a new state with updated place when valid payload is provided', () => {
     const state = {
       center: { lat: 0, lng: 0 },
       bounds: { sw: { lat: -1, lng: -1 }, ne: { lat: 1, lng: 1 } },
@@ -265,18 +265,16 @@ describe('store/viewport-actions-map - updatePlace', () => {
     }
     const payload = { id: 1, name: 'Place 1' }
 
-    getDescription.mockReturnValue('Description for Place 1')
-
     const result = actionsMap.UPDATE_PLACE(state, payload)
 
     expect(result).toEqual({
       ...state,
+      action: 'GEOCODE',
       place: payload,
-      status: 'Description for Place 1',
       isUserInitiated: false,
-      isStatusVisuallyHidden: true
+      isStatusVisuallyHidden: true,
+      isNewStatus: true
     })
-    expect(getDescription).toHaveBeenCalledWith(payload, state.bounds, state.features)
   })
 
   it('should handle null and empty object payloads correctly', () => {
@@ -289,19 +287,16 @@ describe('store/viewport-actions-map - updatePlace', () => {
     const payloads = [null, {}]
 
     payloads.forEach(payload => {
-      getDescription.mockReturnValue('No Description')
-
       const result = actionsMap.UPDATE_PLACE(state, payload)
 
       expect(result).toEqual({
         ...state,
+        action: 'GEOCODE',
         place: payload,
-        status: 'No Description',
         isUserInitiated: false,
-        isStatusVisuallyHidden: true
+        isStatusVisuallyHidden: true,
+        isNewStatus: true
       })
-
-      expect(getDescription).toHaveBeenCalledWith(payload, state.bounds, state.features)
     })
   })
 
@@ -320,9 +315,10 @@ describe('store/viewport-actions-map - updatePlace', () => {
     expect(result).toEqual({
       ...state,
       place: payload,
-      status: undefined,
       isUserInitiated: false,
-      isStatusVisuallyHidden: true
+      isStatusVisuallyHidden: true,
+      action: 'GEOCODE',
+      isNewStatus: true,
     })
   })
 })
@@ -330,9 +326,8 @@ describe('store/viewport-actions-map - updatePlace', () => {
 describe('store/viewport-actions-map - moveStart', () => {
   it('should return a new state with updated values based on the payload', () => {
     const state = {
-      status: 'Idle',
       isMoving: false,
-      isUpdate: true,
+      isUrlUpdate: true,
       isUserInitiated: false,
       isStatusVisuallyHidden: false,
       hasShortcuts: false
@@ -345,13 +340,12 @@ describe('store/viewport-actions-map - moveStart', () => {
 
       expect(result).toEqual({
         ...state,
-        status: '',
         isMoving: true,
-        isUpdate: false,
+        isUrlUpdate: false,
         isUserInitiated: payload,
         isStatusVisuallyHidden: true,
         hasShortcuts: true,
-        action: null
+        action: 'MOVE'
       })
     })
   })
@@ -361,12 +355,12 @@ describe('store/viewport-actions-map - reset', () => {
   it('should reset state correctly', () => {
     const testCases = [
       {
-        initial: { oPlace: 'Original place', place: 'New place', action: 'MOVE', isUpdate: true, extra: 'data' },
-        expected: { oPlace: 'Original place', place: 'Original place', action: 'RESET', isUpdate: false, extra: 'data' }
+        initial: { oPlace: 'Original place', place: 'New place', action: 'MOVE', isUrlUpdate: true, extra: 'data' },
+        expected: { oPlace: 'Original place', place: 'Original place', action: 'RESET', isUrlUpdate: false, extra: 'data' }
       },
       {
-        initial: { oPlace: null, place: 'New place', action: 'TEST', isUpdate: true, id: 123 },
-        expected: { oPlace: null, place: null, action: 'RESET', isUpdate: false, id: 123 }
+        initial: { oPlace: null, place: 'New place', action: 'TEST', isUrlUpdate: true, id: 123 },
+        expected: { oPlace: null, place: null, action: 'RESET', isUrlUpdate: false, id: 123 }
       }
     ]
 
@@ -381,7 +375,7 @@ describe('store/viewport-actions-map - reset', () => {
       oPlace: 'original',
       place: 'current',
       action: 'TEST',
-      isUpdate: true,
+      isUrlUpdate: true,
       items: [1, 2, 3]
     }
 
@@ -390,7 +384,7 @@ describe('store/viewport-actions-map - reset', () => {
     // Check specific reset properties
     expect(result.place).toEqual('original')
     expect(result.action).toEqual('RESET')
-    expect(result.isUpdate).toBe(false)
+    expect(result.isUrlUpdate).toBe(false)
 
     // Check that other properties remain unchanged
     expect(result.items).toEqual(state.items)
@@ -418,7 +412,7 @@ describe('store/viewport-actions-map - search', () => {
           zoom: 5,
           place: 'Place',
           isStatusVisuallyHidden: false,
-          isUpdate: true,
+          isUrlUpdate: true,
           padding: [10, 10, 10, 10],
           timestamp: 123456789
         },
@@ -464,13 +458,13 @@ describe('store/viewport-actions-map - search', () => {
       // Check fixed properties
       expect(result.action).toEqual('SEARCH')
       expect(result.isStatusVisuallyHidden).toEqual(true)
-      expect(result.isUpdate).toEqual(false)
+      expect(result.isUrlUpdate).toEqual(false)
       expect(result.padding).toEqual(null)
       expect(result.timestamp).toEqual(1646410000000)
 
       // Check existing properties are preserved
       for (const key in state) {
-        if (!['bounds', 'center', 'zoom', 'place', 'action', 'isStatusVisuallyHidden', 'isUpdate', 'padding', 'timestamp'].includes(key)) {
+        if (!['bounds', 'center', 'zoom', 'place', 'action', 'isStatusVisuallyHidden', 'isUrlUpdate', 'padding', 'timestamp'].includes(key)) {
           expect(result[key]).toEqual(state[key])
         }
       }
@@ -505,10 +499,9 @@ describe('store/viewport-actions-map - geoloc', () => {
           place: 'old-place',
           bounds: [-2.965945, 54.864555, -2.838848, 54.937635],
           center: [-2.838848, 54.9376352],
-          status: 'Old status',
           isStatusVisuallyHidden: false,
           action: 'ACTION',
-          isUpdate: true
+          isUrlUpdate: true
         },
         payload: {
           place: 'Current Location',
@@ -524,8 +517,7 @@ describe('store/viewport-actions-map - geoloc', () => {
       },
       {
         state: {
-          place: 'Some place',
-          status: 'Test status'
+          place: 'Some place'
         },
         payload: {
           place: null,
@@ -543,14 +535,13 @@ describe('store/viewport-actions-map - geoloc', () => {
 
       // Check fixed properties
       expect(result.bounds).toEqual(null)
-      expect(result.status).toEqual('')
       expect(result.isStatusVisuallyHidden).toEqual(true)
       expect(result.action).toEqual('GEOLOC')
-      expect(result.isUpdate).toEqual(false)
+      expect(result.isUrlUpdate).toEqual(false)
 
       // Check that other properties are preserved
       for (const key in state) {
-        if (!['place', 'center', 'bounds', 'status', 'isStatusVisuallyHidden', 'action', 'isUpdate'].includes(key)) {
+        if (!['place', 'center', 'bounds', 'isStatusVisuallyHidden', 'action', 'isUrlUpdate'].includes(key)) {
           expect(result[key]).toEqual(state[key])
         }
       }
@@ -586,29 +577,29 @@ describe('store/viewport-actions-map - geoloc', () => {
 
 describe('store/viewport-actions-map - zoomIn', () => {
   it('should add ZOOM_IN action to empty state', () => {
-    expect(actionsMap.ZOOM_IN({})).toEqual({ action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
+    expect(actionsMap.ZOOM_IN({})).toEqual({ action: 'ZOOM_IN', isUrlUpdate: false, isUserInitiated: true })
   })
 
   it('should add ZOOM_IN action while preserving existing properties', () => {
-    expect(actionsMap.ZOOM_IN({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
+    expect(actionsMap.ZOOM_IN({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_IN', isUrlUpdate: false, isUserInitiated: true })
   })
 
-  it('should override existing action and isUpdate values', () => {
-    expect(actionsMap.ZOOM_IN({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_IN', isUpdate: false, isUserInitiated: true })
+  it('should override existing action and isUrlUpdate values', () => {
+    expect(actionsMap.ZOOM_IN({ action: 'OLD_ACTION', isUrlUpdate: true })).toEqual({ action: 'ZOOM_IN', isUrlUpdate: false, isUserInitiated: true })
   })
 })
 
 describe('store/viewport-actions-map - zoomOut', () => {
   it('should add ZOOM_OUT action to empty state', () => {
-    expect(actionsMap.ZOOM_OUT({})).toEqual({ action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
+    expect(actionsMap.ZOOM_OUT({})).toEqual({ action: 'ZOOM_OUT', isUrlUpdate: false, isUserInitiated: true })
   })
 
   it('should add ZOOM_OUT action while preserving existing properties', () => {
-    expect(actionsMap.ZOOM_OUT({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
+    expect(actionsMap.ZOOM_OUT({ key: 'value' })).toEqual({ key: 'value', action: 'ZOOM_OUT', isUrlUpdate: false, isUserInitiated: true })
   })
 
-  it('should override existing action and isUpdate values', () => {
-    expect(actionsMap.ZOOM_OUT({ action: 'OLD_ACTION', isUpdate: true })).toEqual({ action: 'ZOOM_OUT', isUpdate: false, isUserInitiated: true })
+  it('should override existing action and isUrlUpdate values', () => {
+    expect(actionsMap.ZOOM_OUT({ action: 'OLD_ACTION', isUrlUpdate: true })).toEqual({ action: 'ZOOM_OUT', isUrlUpdate: false, isUserInitiated: true })
   })
 })
 
@@ -620,7 +611,7 @@ describe('store/viewport-actions-map - setStyle', () => {
       styles: [{ name: 'dark' }, { name: 'default' }],
       attributions: [],
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       style: { name: 'default' }
     })
   })
@@ -632,7 +623,7 @@ describe('store/viewport-actions-map - setStyle', () => {
       styles: [{ name: 'dark' }, { name: 'default' }],
       attributions: [],
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       style: { name: 'dark' }
     })
   })
@@ -644,7 +635,7 @@ describe('store/viewport-actions-map - setStyle', () => {
       styles: [{ name: 'deuteranopia' }, { name: 'tritanopia' }],
       attributions: [],
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       style: { name: 'deuteranopia' }
     })
   })
@@ -657,7 +648,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.TOGGLE_CONSTRAINTS(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       minZoom: 1,
       maxZoom: 10,
       styles: payload.styles,
@@ -673,7 +664,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.TOGGLE_CONSTRAINTS(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       minZoom: 1,
       maxZoom: 10,
       styles: payload.styles,
@@ -688,7 +679,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.TOGGLE_CONSTRAINTS(state, {})).toEqual({
       ...state,
       action: 'STYLE',
-      isUpdate: false,
+      isUrlUpdate: false,
       minZoom: 1,
       maxZoom: 10,
       styles: state.originalStyles,
@@ -706,30 +697,29 @@ describe('store/viewport-actions-map - setSize', () => {
     expect(actionsMap.SET_SIZE(state, payload)).toEqual({
       someKey: 'value',
       action: 'SIZE',
-      isUpdate: false,
+      isUrlUpdate: false,
       padding: null,
       size: payload
     })
   })
 })
 
-describe('store/viewport-actions-map - clearStatus', () => {
-  it('should clear status and reset isStatusVisuallyHidden', () => {
-    const state = { status: 'error', isStatusVisuallyHidden: true, someKey: 'value' }
-    expect(actionsMap.CLEAR_STATUS(state)).toEqual({
+describe('store/viewport-actions-map - resetStatus', () => {
+  it('should reset isNewStatus, isStatusVisuallyHidden and clear action', () => {
+    const state = { someKey: 'value' }
+    expect(actionsMap.RESET_STATUS(state)).toEqual({
       someKey: 'value',
-      status: '',
-      isStatusVisuallyHidden: false
+      isNewStatus: false,
+      action: null
     })
   })
 })
 
 describe('store/viewport-actions-map - clearFeatures', () => {
-  it('should clear features, resets status, and sets action to DATA', () => {
-    const state = { features: [{ id: 1 }], status: 'Test status', action: 'OTHER' }
+  it('should clear features and sets action to DATA', () => {
+    const state = { features: [{ id: 1 }], action: 'OTHER' }
     expect(actionsMap.CLEAR_FEATURES(state)).toEqual({
       features: null,
-      status: null,
       action: 'DATA'
     })
   })

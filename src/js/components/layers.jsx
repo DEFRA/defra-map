@@ -37,7 +37,7 @@ export default function Layers ({ hasSymbols, hasInputs }) {
       {groups.map((g, i) => (
         <Fragment key={`fl${i}`}>
           {(isKeyExpanded || !g.isHidden) && (
-            <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} display={legend?.display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
+            <LayerGroup key={`lg${i}`} group={g} id={`l${i}`} legendDisplay={legend?.display} hasSymbols={hasSymbols} hasInputs={hasInputs} />
           )}
         </Fragment>
       ))}

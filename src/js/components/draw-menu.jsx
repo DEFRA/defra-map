@@ -62,9 +62,7 @@ export default function DrawMenu () {
                   }
                 }}
               >
-                <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-                  <path d={tool.path} />
-                </svg>
+                <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor' dangerouslySetInnerHTML={{__html: tool.svg}}/>
                 <span className='fm-c-btn__label'>
                   {drawTools.includes(tool) ? `Add ${tool.id}` : `${tool.name} shape`}
                 </span>

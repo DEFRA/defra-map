@@ -39,7 +39,7 @@ export default function SegmentGroup ({ id, group }) {
     <div className={`fm-c-segments${display ? ' fm-c-segments--' + display : ''}${isDetails && !isExpanded ? ' fm-c-segments--hidden' : ''}`} {...isHidden ? { style: { display: 'none' } } : {}}>
       {isDetails
         ? (
-          <h3 className='fm-c-segments__heading'>
+          <h3 className='fm-c-segments__heading fm-c-segments__heading--details'>
             <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
               <span className='fm-c-details__label'>
                 <span className='fm-c-details__label-focus'>{heading}</span>

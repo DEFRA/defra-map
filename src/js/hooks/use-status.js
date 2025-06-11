@@ -5,7 +5,7 @@ import { isSame } from '../lib/utils'
 import { getStatus } from '../lib/viewport'
 
 export function useStatus () {
-  const { interfaceType, featureId } = useApp()
+  const { interfaceType, featureId, drawMode } = useApp()
   const state = useViewport()
   const [message, setMessage] = useState('')
   const prevStateRef = useRef(null)
@@ -17,7 +17,7 @@ export function useStatus () {
 
     const { dispatch, bounds, features } = state
     const isBoundsChange = !isSame(prevStateRef.current?.bounds, bounds)
-    const isFocusArea = interfaceType === 'keyboard' && features?.isFeaturesInMap
+    const isFocusArea = (interfaceType === 'keyboard' && features?.isFeaturesInMap) || drawMode === 'frame'
     const { zoom: prevZoom, center: prevCenter } = prevStateRef.current ?? {}
     const status = getStatus({ ...state, isBoundsChange, prevZoom, prevCenter, isFocusArea, featureId })
     setMessage(status)

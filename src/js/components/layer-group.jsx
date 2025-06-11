@@ -28,7 +28,7 @@ const getDisplay = (group, item) => {
   return group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
 }
 
-export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
+export default function LayerGroup ({ id, group, legendDisplay, hasSymbols, hasInputs }) {
   const { parent, dispatch, drawMode, layers, segments } = useApp()
   const { size, style } = useViewport()
   const viewportDispatch = useViewport().dispatch
@@ -44,14 +44,22 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     setQueryLyr(lyr.join(','))
   }
 
-  const handleItemClick = e => {
+  const handleButtonClick = (e) => {
     const lyr = layers
     const index = lyr.indexOf(e.currentTarget.value)
-    e.currentTarget.getAttribute('aria-checked') === 'false' ? lyr.push(e.currentTarget.value) : lyr.splice(index, 1)
+    const isPressed = e.currentTarget.getAttribute('aria-pressed')
+    isPressed === 'true' ? lyr.splice(index, 1) : lyr.push(e.currentTarget.value)
     dispatchAppChange(lyr)
   }
 
-  const handleItemChange = e => {
+  const handleCheckboxChange = (e) => {
+    const lyr = layers
+    const index = lyr.indexOf(e.target.value)
+    e.target.checked ? lyr.push(e.target.value) : lyr.splice(index, 1)
+    dispatchAppChange(lyr)
+  }
+
+  const handleRadioChange = e => {
     const lyr = layers
     if (checkedRadioId) {
       lyr.splice(lyr.indexOf(checkedRadioId), 1)
@@ -105,23 +113,37 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const itemInner = ({ item, index, display, isChecked }) => {
     if (hasInputs && group.type === 'radio') {
       return (
+        // Radio
         <>
-          <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
+          <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleRadioChange} />
           <label className='fm-c-layers__label' htmlFor={item.id}>
             {hasSymbols && keySymbol({ display, item })}
             <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
           </label>
         </>
       )
-    } else if (hasInputs && item.id) {
+    } else if (hasInputs && item.id && legendDisplay === 'inset') {
       return (
-        <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
+        // Toggle button
+        <button className='fm-c-layers__button' aria-pressed={isChecked} value={item.id} onClick={handleButtonClick}>
           {hasSymbols && keySymbol({ display, item })}
           <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
         </button>
       )
+    } else if (hasInputs && item.id) {
+      return (
+        // Checkbox
+        <>
+          <input className='fm-c-layers__checkbox' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='checkbox' value={item.id} onChange={handleCheckboxChange} />
+          <label className='fm-c-layers__label' htmlFor={item.id}>
+            {hasSymbols && keySymbol({ display, item })}
+            <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
+          </label>
+        </>
+      )
     } else {
       return (
+        // Symbol only
         <>
           {hasSymbols && keySymbol({ display, item })}
           <span className={group.numLabels && index % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
@@ -151,7 +173,7 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
     <div className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
       {isDetails
         ? (
-          <h3 className='fm-c-layers__heading'>
+          <h3 className='fm-c-layers__heading fm-c-layers__heading--details'>
             <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
               <span className='fm-c-details__label'>
                 <span className='fm-c-details__label-focus'>{heading}</span>

@@ -21,10 +21,15 @@
 
     &__heading {
         @include body-font(16px, 400);
-        padding: 15px 0 0;
+        padding: 15px 0;
         color: var(--foreground-colour);
         margin-bottom: 0;
     }
+
+    &__heading--details {
+        padding-bottom: 10px;
+    }
+
 
     &__button {
         @include body-font(16px, 400);
@@ -84,8 +89,8 @@
 
 // Default row style
 .fm-c-layers__rows {
-    margin-top: -5px;
-    padding-bottom: 15px;
+    margin-top: -15px;
+    padding-bottom: 10px;
 
     .fm-c-layers__item {
         display: flex;
@@ -93,17 +98,33 @@
         align-items: start;
         position: relative;
         margin-bottom: 0;
-        padding-left: 28px;
         min-height: 44px;
     }
 
-    .fm-c-layers__button {
-        margin-left: -28px;
-        width: calc(100% + 28px);
-        padding-left: 28px;
+    .fm-c-layers__item:first-child {
+        margin-top: 10px;
     }
 
-    .fm-c-layers__button::before {
+    // Checkboxes
+    .fm-c-layers__checkbox {
+        position: relative;
+        margin: 0 0 0 -10px;
+        height: 44px;
+        width: 44px;
+        text-indent: -5000px;
+        flex-shrink: 0;
+        opacity: 0;
+    }
+
+    .fm-c-layers__checkbox + .fm-c-layers__label {
+        align-self: start;
+        margin-bottom: 0;
+        padding: 10px 15px 9px 0;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .fm-c-layers__checkbox + .fm-c-layers__label::before {
         position: absolute;
         content: '';
         top: 10px;
@@ -115,24 +136,24 @@
         border: 2px solid var(--foreground-colour);
     }
 
-    .fm-c-layers__button:hover::before {
+    .fm-c-layers__checkbox + .fm-c-layers__label:hover::before {
         outline: 3px dashed transparent;
         outline-offset: 1px;
         box-shadow: 0 0 0 10px var(--button-border-colour);
     }
 
-    .fm-c-layers__button:focus::before {
+    .fm-c-layers__checkbox:focus + .fm-c-layers__label::before {
         border-width: 4px;
         outline: 3px solid transparent;
         outline-offset: 1px;
         box-shadow: 0 0 0 3px var(--focus-colour);
     }
 
-    .fm-c-layers__button:hover:focus::before {
+    .fm-c-layers__checkbox:hover:focus + .fm-c-layers__label::before {
         box-shadow: 0 0 0 3px var(--focus-colour), 0 0 0 10px var(--button-border-colour);
     }
 
-    .fm-c-layers__button[aria-checked="true"]::after {
+    .fm-c-layers__checkbox[checked] + .fm-c-layers__label::after {
         content: '';
         box-sizing: border-box;
         position: absolute;
@@ -147,37 +168,37 @@
         border-width: 0 0 3px 3px;
     }
 
-    .fm-c-layers__image {
-        margin-right: 5px;
-    }
+    // .fm-c-layers__image {
+    //     margin-right: 5px;
+    // }
 
-    .fm-c-layers__image--fill,
-    .fm-c-layers__image--icon {
-        transform: scale(0.73);
-    }
+    // .fm-c-layers__image--fill,
+    // .fm-c-layers__image--icon {
+    //     transform: scale(0.73);
+    // }
 
-    .fm-c-layers__label {
-        display: flex;
-        flex-direction: row;
-        align-items: start;
-        cursor: pointer;
-        touch-action: manipulation;
-    }
+    // .fm-c-layers__label {
+    //     display: flex;
+    //     flex-direction: row;
+    //     align-items: start;
+    //     cursor: pointer;
+    //     touch-action: manipulation;
+    // }
 
-    .fm-c-layers__text {
-        flex-grow: 1;
-        text-align: left;
-        padding-top: 12px;
-        margin-left: 8px;
-    }
+    // .fm-c-layers__text {
+    //     flex-grow: 1;
+    //     text-align: left;
+    //     padding-top: 12px;
+    //     margin-left: 8px;
+    // }
 
-    .fm-c-layers__image + .fm-c-layers__text {
-        margin-left: 0;
-    }
+    // .fm-c-layers__image + .fm-c-layers__text {
+    //     margin-left: 0;
+    // }
 
-    .fm-c-layers__image svg {
-        margin: 2px 0;
-    }
+    // .fm-c-layers__image svg {
+    //     margin: 2px 0;
+    // }
     
     // Radios
     .fm-c-layers__radio {
@@ -190,7 +211,7 @@
         opacity: 0;
     }
 
-    .fm-c-layers__label::before {
+    .fm-c-layers__radio + .fm-c-layers__label::before {
         content: '';
         box-sizing: border-box;
         position: absolute;
@@ -203,7 +224,7 @@
         background: transparent;
     }
 
-    .fm-c-layers__label::after {
+    .fm-c-layers__radio + .fm-c-layers__label::after {
         content: '';
         position: absolute;
         top: 17px;
@@ -218,12 +239,6 @@
 
     .fm-c-layers__radio[checked] + .fm-c-layers__label::after {
         opacity: 1;
-    }
-
-    .fm-c-layers__item:hover .fm-c-layers__label::before {
-        outline: 4px dashed transparent;
-        outline-offset: 1px;
-        box-shadow: 0 0 0 10px  var(--button-border-colour);
     }
 
     .fm-c-layers__radio:focus + .fm-c-layers__label::before {
@@ -295,11 +310,11 @@
         border: 2px solid transparent;
     }
 
-    .fm-c-layers__button:hover:not([aria-checked="true"]) .fm-c-layers__image--fill::before {
+    .fm-c-layers__button:hover:not([aria-pressed="true"]) .fm-c-layers__image--fill::before {
         border-color: var(--border-colour);
     }
 
-    .fm-c-layers__button[aria-checked="true"] .fm-c-layers__image--fill::before {
+    .fm-c-layers__button[aria-pressed="true"] .fm-c-layers__image--fill::before {
         border-color: var(--foreground-colour);
     }
 }
@@ -347,19 +362,14 @@
     stroke-linecap: square;
 }
 
-// Overide header with switch
-.fm-c-layers__header .fm-c-switch {
-    position: relative;
-    margin: 3px 0;
-    z-index: 1;
+// Overide column header
+.fm-c-layers__group--column .fm-c-layers__heading {
+    padding-bottom: 5px;
 }
 
+// Overide more button
 .fm-c-layers__more + .fm-c-layers__group {
     margin-top: 10px;
-}
-
-.fm-c-layers__heading + .fm-c-switch {
-    margin-top: -5px;
 }
 
 // Custom labels

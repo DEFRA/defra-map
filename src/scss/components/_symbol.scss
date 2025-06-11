@@ -29,19 +29,19 @@
     fill: var(--background-colour) !important;
 }
 
-.fm-c-layers__columns button[aria-checked="true"] .fm-c-symbol__ol-stroke {
+.fm-c-layers__columns button[aria-pressed="true"] .fm-c-symbol__ol-stroke {
     stroke: var(--foreground-colour) !important;
 }
 
-.fm-c-layers__columns button[aria-checked="true"] .fm-c-symbol__ol-fill {
+.fm-c-layers__columns button[aria-pressed="true"] .fm-c-symbol__ol-fill {
     fill: var(--foreground-colour) !important;
 }
 
-.fm-c-layers__columns button:not([aria-checked="true"]):hover .fm-c-symbol__ol-stroke {
+.fm-c-layers__columns button:not([aria-pressed="true"]):hover .fm-c-symbol__ol-stroke {
     stroke: var(--border-colour) !important;
 }
 
-.fm-c-layers__columns button:not([aria-checked="true"]):hover .fm-c-symbol__ol-fill {
+.fm-c-layers__columns button:not([aria-pressed="true"]):hover .fm-c-symbol__ol-fill {
     fill: var(--border-colour) !important;
 }
 

@@ -112,10 +112,8 @@ export default function ActionMenu ({ id, path, name, display, hasLabel = true, 
       <ul ref={menuRef} id={`${id}-${label}-menu`} className='fm-c-action-menu__list' role='menu' tabIndex='-1' aria-labelledby={`${id}-${label}-button-label`} aria-activedescendant={`${id}-${label}-item-${index}`} onKeyDown={handleMenuKeyDown} style={{ display: isExpanded ? 'block' : 'none' }}>
         {items.map((item, i) => (
           <li key={item.name} id={`${id}-${label}-item-${i}`} className={`fm-c-action-menu__item${index === i ? ' fm-c-action-menu__item--selected' : ''}`} role='menuitem' onClick={e => handleItemClick(e, i)}>
-            {item.path && (
-              <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-                <path d={item.path} />
-              </svg>
+            {item.svg && (
+              <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor' dangerouslySetInnerHTML={{__html: item.svg}}/>
             )}
             {item.name}
           </li>

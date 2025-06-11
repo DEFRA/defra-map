@@ -80,6 +80,7 @@ describe('layers', () => {
       options: {
         id: 'test',
         legend: {
+          display: 'inset',
           key: [{
             heading: 'Flood warnings and alerts',
             layout: 'column',
@@ -120,6 +121,7 @@ describe('layers', () => {
       container = render(<Layers hasSymbols hasInputs />).container
     })
 
+    screen.debug()
     expect(container.querySelectorAll('.fm-c-layers__button')).toHaveLength(4)
     expect(screen.getByText('Severe')).toBeTruthy()
     expect(screen.getByText('Warning')).toBeTruthy()

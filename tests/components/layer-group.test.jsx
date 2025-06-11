@@ -133,6 +133,7 @@ describe('layer-group', () => {
       <LayerGroup
         hasInputs
         id='l0'
+        legendDisplay='inset'
         group={{
           heading: 'Flood warnings and alerts',
           layout: 'column',

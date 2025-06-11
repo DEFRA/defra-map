@@ -26,7 +26,7 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        height: 5px;
+        height: 4px;
         width: 100%;
         background-color: $foreground-colour;
         box-shadow:
@@ -34,6 +34,10 @@
             1px -1px 0 rgba($background-colour, 0.5),
             -1px  1px 0 rgba($background-colour, 0.5),
             1px  1px 0 rgba($background-colour, 0.5);
+        
+        @media (forced-colors: active) {
+            background-color: Canvas;
+        }
     }
 }
 
@@ -54,5 +58,9 @@
             1px -1px 0 rgba($foreground-colour, 0.5),
             -1px  1px 0 rgba($foreground-colour, 0.5),
             1px  1px 0 rgba($foreground-colour, 0.5);
+
+        @media (forced-colors: active) {
+            background-color: ButtonText;
+        }
     }
 }

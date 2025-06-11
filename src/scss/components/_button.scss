@@ -470,6 +470,7 @@
 
     &[aria-disabled="true"] {
         color: var(--button-border-colour);
+        outline-style: dashed;
         cursor: default;
 
         .fm-c-btn__label, &:hover .fm-c-btn__label {

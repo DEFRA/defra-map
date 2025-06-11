@@ -13,7 +13,6 @@ export default function More ({ id, label, isExpanded, setIsExpanded, isRemove }
     }
     const previousTabStop = findTabStop(document.activeElement, 'prev')
     activeRef.current = previousTabStop
-    console.log('More', activeRef.current)
   }
 
   return (

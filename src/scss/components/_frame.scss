@@ -29,11 +29,15 @@
     left: 50%;
     pointer-events: none;
     z-index: 2;
-    border: 2px dashed $secondary-text-colour;
+    border: 2px dashed $foreground-colour;
     width: 240px;
     height: 240px;
     margin-top: -120px;
     margin-left: -120px;
+
+    @media (forced-colors: active) {
+        border-color: Canvas;
+    }
 }
 
 .fm-tablet .fm-c-padding-box__frame,
@@ -44,15 +48,25 @@
     margin-left: -200px;
 }
 
+// Dark basemaps
+.fm-o-viewport--dark .fm-c-padding-box__frame,
+.fm-o-viewport--aerial .fm-c-padding-box__frame {
+    border-color: $background-colour;
+
+    @media (forced-colors: active) {
+        border-color: ButtonText;
+    }
+}
+
 // Viewport padding box style and colours
 .fm-o-viewport.fm-u-focus-visible {
     .fm-c-padding-box--visible .fm-c-padding-box__frame {
         opacity: 1;
     }
 
-    &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
-        border-color: $background-colour;
-    }
+    // &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
+    //     border-color: $background-colour;
+    // }
 }
 
 // Active padding box
@@ -64,7 +78,7 @@
 .fm-c-padding-box--square, .fm-c-padding-box--circle {
     .fm-c-padding-box__frame {
         opacity: 1;
-        border-color: var(--foreground-colour);
+        // border-color: var(--foreground-colour);
     }
 }
 

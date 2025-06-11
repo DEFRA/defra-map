@@ -14,7 +14,7 @@ export default function PaddingBox ({ isFocusArea, children }) {
   const { dispatch, features, padding, isAnimate, isDrawValid } = useViewport()
 
   // Template properties
-  const isActive = isFocusArea && (features?.featuresInFocus?.length) || isDrawValid
+  const isActive = (isFocusArea && features?.featuresInFocus?.length) || (drawMode === 'frame' && isDrawValid)
   const drawShape = drawMode === 'frame' ? shape : null
   const className = getClassName(isFocusArea, isActive, drawShape)
 

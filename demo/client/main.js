@@ -60,6 +60,7 @@ const fm = new FloodMap('map', {
     segments: [
       {
         display: 'timeline',
+        heading: 'Timeline',
         items: [
           {
             id: queryMap.live,
@@ -82,6 +83,7 @@ const fm = new FloodMap('map', {
       {
         parentIds: [queryMap.outlook],
         display: 'segmented',
+        heading: 'Days',
         items: [
           {
             id: queryMap.day1,

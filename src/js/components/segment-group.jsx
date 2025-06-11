@@ -13,6 +13,7 @@ export default function SegmentGroup ({ id, group }) {
   const [, setQuerySeg] = useQueryState('seg')
   const { display, heading, isHidden, isDetails } = group
   const [isExpanded, setIsExpanded] = useState(group.isExpanded)
+  const isCustom = ['segmented', 'timeline'].includes(display)
 
   const handleItemClickOrChange = e => {
     let seg = segments?.filter(s => !items.map(i => i.id).includes(s))
@@ -35,31 +36,37 @@ export default function SegmentGroup ({ id, group }) {
   const items = group.items.map(i => { return { ...i, isChecked: segments.includes(i.id) } })
   const selected = items.find(i => i.isChecked).label
 
-  return (
-    <div className={`fm-c-segments${display ? ' fm-c-segments--' + display : ''}${isDetails && !isExpanded ? ' fm-c-segments--hidden' : ''}`} {...isHidden ? { style: { display: 'none' } } : {}}>
-      {isDetails
-        ? (
-          <h3 className='fm-c-segments__heading fm-c-segments__heading--details'>
-            <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
-              <span className='fm-c-details__label'>
-                <span className='fm-c-details__label-focus'>{heading}</span>
-              </span>
-              <span className='fm-c-details__summary'>
-                <span className='fm-c-details__summary-focus'>{selected}</span>
-              </span>
-              <span className='fm-c-details__toggle'>
-                <span className='fm-c-details__toggle-focus'>
-                  <span className='fm-c-details__chevron' />
-                  {isExpanded ? 'Hide' : 'Show'}
+  const segmentHeader = () => {
+    return (
+      <>
+        {isDetails
+          ? (
+            <h3 className='fm-c-segments__heading fm-c-segments__heading--details'>
+              <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+                <span className='fm-c-details__label'>
+                  <span id={`segment-${id}`} className='fm-c-details__label-focus'>{heading}</span>
                 </span>
-              </span>
-            </button>
-          </h3>
-          )
-        : heading && (
-          <h3 className='fm-c-layers__heading' aria-hidden='true'>{heading}</h3>
-        )}
-      <div id={`content-${id}`} className='fm-c-segments__inner' role='group' {...heading ? { 'aria-labelledby': `segment-${id}` } : { 'aria-label': 'Segments' }}>
+                <span className='fm-c-details__summary'>
+                  <span className='fm-c-details__summary-focus'>{selected}</span>
+                </span>
+                <span className='fm-c-details__toggle'>
+                  <span className='fm-c-details__toggle-focus'>
+                    <span className='fm-c-details__chevron' />
+                    {isExpanded ? 'Hide' : 'Show'}
+                  </span>
+                </span>
+              </button>
+            </h3>
+          ) : (
+            <h3 id={`segment-${id}`} className={isCustom ? 'fm-u-visually-hidden' : 'fm-c-layers__heading'}>{heading}</h3>
+          )}
+      </>
+    )
+  }
+
+  const segmentBody = ({ isCustom }) => {
+    return (
+      <div id={`content-${id}`} className='fm-c-segments__inner' {...isCustom ? { role: 'group', 'aria-labelledby': `segment-${id}` } : {}}>
         {items.map(item => (
           <Fragment key={item.label.toLowerCase()}>
             {['timeline', 'segmented'].includes(display)
@@ -80,6 +87,28 @@ export default function SegmentGroup ({ id, group }) {
           </Fragment>
         ))}
       </div>
-    </div>
+    )
+  }
+  
+  const baseAttributes = {
+    className: `fm-c-segments${display ? ' fm-c-segments--' + display : ''}${isDetails && !isExpanded ? ' fm-c-segments--hidden' : ''}`, ...(isHidden && { style: { display: 'none' } })
+  }
+  
+  return (
+    <>
+      {isCustom ? (
+        <div {...baseAttributes} role='group' aria-labelledby={`segment-${id}`}>
+          {segmentHeader()}
+          {segmentBody(isCustom)}
+        </div>
+      ) : (
+        <fieldset {...baseAttributes}>
+          <legend className='fm-c-segments__legend'>
+            {segmentHeader()}
+          </legend>
+          {segmentBody(isCustom)}
+        </fieldset>
+      )}
+    </>
   )
 }

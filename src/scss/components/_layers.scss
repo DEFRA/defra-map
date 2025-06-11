@@ -3,8 +3,22 @@
 
 // All layers styles
 .fm-c-layers {
-    &__group:not(:first-child) {
+    &__group {
+        border: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__group:not(:first-child) &__legend,
+    &__group:not(:first-child) &__header {
         border-top: 1px solid var(--border-colour);
+    }
+
+    &__legend {
+        display: block;
+        width: 100%;
+        padding: 0;
+        box-sizing: border-box
     }
 
     &__item {

@@ -20,13 +20,13 @@ export default function DrawMenu () {
 
   return (
     <div className='fm-c-menu'>
-      <div className={`fm-c-menu__group ${isDrawMenuExpanded ? ' fm-c-menu__group--expanded' : ''}`}>
+      <div className={`fm-c-menu__group ${isDrawMenuExpanded ? ' fm-c-menu__group--expanded' : ''}`} role='group' aria-labelledby={`${id}-tools-menu`}>
         {isDetails
           ? (
             <h3 className='fm-c-menu__heading'>
               <button className='fm-c-details' aria-expanded={isDrawMenuExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
                 <span className='fm-c-details__label'>
-                  <span className='fm-c-details__label-focus'>{draw?.heading}</span>
+                  <span id={`${id}-tools-menu`} className='fm-c-details__label-focus'>{draw?.heading}</span>
                 </span>
                 <span className='fm-c-details__summary'>
                   <span className='fm-c-details__summary-focus'>{draw?.summary}</span>
@@ -41,7 +41,7 @@ export default function DrawMenu () {
             </h3>
             )
           : (
-            <h3 className='fm-c-menu__heading'>{draw?.heading}</h3>
+            <h3  id={`${id}-tools-menu`} className='fm-c-menu__heading'>{draw?.heading}</h3>
             )}
 
         <div className='fm-c-menu__items' {...!isDrawMenuExpanded ? { style: { display: 'none' } } : {}}>

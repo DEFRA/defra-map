@@ -49,7 +49,7 @@ export default function Styles () {
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
-      <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
+      <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-panel-style-label`}>
         <div className='fm-c-layers__columns'>
           {styles?.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
             <div key={item.name} className='fm-c-layers__item'>
@@ -71,8 +71,8 @@ export default function Styles () {
       </div>
       {provider.capabilities.hasSize && isExpanded && (
         <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
-          <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
-            <h3 className='fm-c-layers__heading'>Text size</h3>
+          <div className='fm-c-layers__header'>
+            <h3 id={`${id}-text-sizes`} className='fm-c-layers__heading'>Text size</h3>
           </div>
           <div className='fm-c-layers__columns'>
             {['small', 'medium', 'large'].map((name, i) => (

@@ -1,8 +1,21 @@
 @use '../tools/mixins' as *;
 @use '../settings/dimensions' as *;
 
-.fm-c-segments:not(:first-child) {
+.fm-c-segments {
+    border: 0;
+    padding: 0;
+    margin: 0
+}
+
+.fm-c-segments:not(:first-child) .fm-c-segments__legend {
     border-top: 1px solid var(--border-colour);
+}
+
+.fm-c-segments__legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box
 }
 
 .fm-c-segments__inner {
@@ -17,6 +30,9 @@
     padding: 15px 0;
 }
 
+.fm-c-segments__heading--details {
+    padding-bottom: 10px;
+}
 
 .fm-c-segments__item {
     @include body-font(16px, 400);

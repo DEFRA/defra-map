@@ -152,31 +152,15 @@ export default function LayerGroup ({ id, group, legendDisplay, hasSymbols, hasI
     }
   }
 
-  useEffect(() => {
-    // Cross browser flatten array
-    let items = group.items.map(item => item.items || item)
-    items = [].concat(...items).filter(item => item.icon)
-    Promise.all(items.map(item => fetch(item.icon))).then(responses =>
-      Promise.all(responses.map(res => res.text()))
-    ).then(texts => {
-      const icons = {}
-      texts.forEach((text, i) => {
-        const item = items[i]
-        const fill = getColor(item?.fill, style.name)
-        icons[item.icon] = { __html: parseSVG(item.icon, fill, text, isDarkBasemap) }
-      })
-      setSvg(icons)
-    })
-  }, [group])
-
-  return (
-    <div className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
+  const layersHeader = () => {
+    return (
+      <>
       {isDetails
         ? (
           <h3 className='fm-c-layers__heading fm-c-layers__heading--details'>
             <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
               <span className='fm-c-details__label'>
-                <span className='fm-c-details__label-focus'>{heading}</span>
+                <span id={`layers-${id}`} className='fm-c-details__label-focus'>{heading}</span>
               </span>
               <span className='fm-c-details__summary'>
                 <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
@@ -191,13 +175,15 @@ export default function LayerGroup ({ id, group, legendDisplay, hasSymbols, hasI
           </h3>
           )
         : heading && (
-          <h3 className='fm-c-layers__heading' aria-hidden='true'>{heading}</h3>
+          <h3 id={`layers-${id}`} className='fm-c-layers__heading'>{heading}</h3>
         )}
-      <div
-        id={`content-${id}`}
-        className={`fm-c-layers__${layout || 'row'}s`}
-        {...styleAttr}
-      >
+      </>
+    )
+  }
+
+  const layersBody = (layout) => {
+    return (
+      <div id={`content-${id}`} className={`fm-c-layers__${layout || 'row'}s`} {...styleAttr}>
         {group.items.map((item, i) => {
           let display = getDisplay(group, item)
           const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
@@ -220,6 +206,43 @@ export default function LayerGroup ({ id, group, legendDisplay, hasSymbols, hasI
           )
         })}
       </div>
-    </div>
+    )
+  }
+
+  useEffect(() => {
+    // Cross browser flatten array
+    let items = group.items.map(item => item.items || item)
+    items = [].concat(...items).filter(item => item.icon)
+    Promise.all(items.map(item => fetch(item.icon))).then(responses =>
+      Promise.all(responses.map(res => res.text()))
+    ).then(texts => {
+      const icons = {}
+      texts.forEach((text, i) => {
+        const item = items[i]
+        const fill = getColor(item?.fill, style.name)
+        icons[item.icon] = { __html: parseSVG(item.icon, fill, text, isDarkBasemap) }
+      })
+      setSvg(icons)
+    })
+  }, [group])
+
+  return (
+    <>
+      {layout === 'column' ? (
+        <div className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-labelledby={`layers-${id}`}>
+          <div className='fm-c-layers__header'>
+            {layersHeader()}
+          </div>
+          {layersBody(layout)}
+        </div>
+      ) : (
+        <fieldset className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`}>
+          <legend className='fm-c-layers__legend'>
+            {layersHeader()}
+          </legend>
+          {layersBody(layout)}
+        </fieldset>
+      )}
+    </>
   )
 }

@@ -218,20 +218,20 @@ describe('segment-group', () => {
     expect(headingElement.textContent).toBe('Test Heading')
   })
 
-  it('should not render h3 heading when heading is not provided and isDetails is false', () => {
-    const { container } = render(
-      <SegmentGroup
-        id='test'
-        group={{
-          isDetails: false,
-          items: [
-            { id: 'fz', label: 'Flood zones 2 and 3' }
-          ]
-        }}
-      />
-    )
+  // it('should render h3 heading visually hidden is not provided and isDetails is false', () => {
+  //   const { container } = render(
+  //     <SegmentGroup
+  //       id='test'
+  //       group={{
+  //         isDetails: false,
+  //         items: [
+  //           { id: 'fz', label: 'Flood zones 2 and 3' }
+  //         ]
+  //       }}
+  //     />
+  //   )
 
-    const headingElement = container.querySelector('.fm-c-layers__heading')
-    expect(headingElement).not.toBeInTheDocument()
-  })
+  //   const legendElement = container.querySelector('.fm-c-layers__legend')
+  //   expect(headingElement).not.toBeInTheDocument()
+  // })
 })

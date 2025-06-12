@@ -60,7 +60,7 @@ Determines whether a view map button or the map itself should be displayed initi
 
 If `buttonFirst` a view map button is displayed. Selecting the button opens the map and it is displayed fullscreen on all devices. An entry is added to the browser history and a back button is displayed within the map interface.
 
-If `hybrid`, behaviour as per buttonFirst on a mobile device. On tablet and desktop devices there is no view map button. The map is always displayed inline on the page.
+If `hybrid`, behaviour as per buttonFirst on a mobile device. On tablet and desktop devices there is no view map button. The map is displayed inline on the page.
 
 If `inline` there is no view map button. The map is displayed inline on all devices.
 
@@ -84,8 +84,22 @@ The button or anchor text used for the view map button. Defaults to 'View map'.
 
 ```js
 // Example: Custom button text
-buttonText: 'View map of custom features'
+buttonText: 'View map of restaurants'
 ```
+
+### `deviceTestCallback` (**function () => boolean**)
+
+A function that is run immediately before a demand for the map. A response of `true` will load the map and a response of `false` will show the device compatibility error message. This is useful if you a need to use a modern feature that an older device doesn't support. By default the FloodMap checks device capabiities. It will serve a legacy version if the device has limited capabilities. It will fallback to the device compatibility error message if device does not meet the minimum requirements.
+
+```js
+// Example: Testing for popover support
+deviceTestCallback: () => {
+    const hasPopoverSupport = HTMLElement.prototype.hasOwnProperty('popover')
+    return hasPopoverSupport
+}
+```
+
+### _`draw`_ (**[draw](./api/draw.md)**)
 
 ### `framework`  (**string**)
 
@@ -93,6 +107,8 @@ The name of the framework used if not MapLibre. This allows the component to che
 
 > [!NOTE]
 > Only applicable if using a an alternative framework. Currently the only value supported is `esri`.
+
+### _`provider`_  (**function (provider: Provider) => void**)
 
 ### `hasAutoMode`  (**boolean**)
 
@@ -117,11 +133,13 @@ hasAutoMode: true
 
 ### `place` (**string**)
 
-### `queryArea` (**[QueryArea](./api/query-area.md)**)
+### _`provider`_ (**async function**)
 
 ### `queryLocation` (**[QueryLocation](./api/query-location.md)**)
 
 ### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
+
+### _`scaleBar`_ (**string**)
 
 ### `search` (**[Search](./api/search.md)**)
 
@@ -131,17 +149,17 @@ hasAutoMode: true
 
 ### `target` (**string**)
 
-### _`tokenCallback`_
+### _`transformGeocodeRequest`_
+
+### _`transformRequest`_
+
+> [!NOTE]
+> MapLibre specific
+
+### _`esriConfigCallback`_
 
 > [!NOTE]
 > ESRI specific
-
-### _`interceptorsCallback`_
-
-> [!NOTE]
-> ESRI specific
-
-### `transformSearchRequest` (**function**)
 
 ## Events
 

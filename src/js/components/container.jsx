@@ -108,6 +108,11 @@ export default function Container () {
         {...(isPage ? { 'data-fm-page': options.pageTitle || 'Map view' } : {})}
         data-fm-container=''
       >
+        <p className='fm-u-visually-hidden'>
+          This page contains a map. To interact with the map, press Tab until it recieves focus.
+          Once focused, you can use the keyboard command Alt + K to display all available commands.
+          Ensure the map has focus before using the keyboard commands.
+        </p>
         <div className='fm-o-side'>
           {isFixed && (<Exit />)}
           {isDesktop && isDrawMode && (hasInspector || isFixed) && (

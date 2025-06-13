@@ -108,7 +108,7 @@ The name of the framework used if not MapLibre. This allows the component to che
 > [!NOTE]
 > Only applicable if using a an alternative framework. Currently the only value supported is `esri`.
 
-### _`provider`_  (**function (provider: Provider) => void**)
+### _`geocodeProvider`_ (**async function**)
 
 ### `hasAutoMode`  (**boolean**)
 
@@ -131,13 +131,15 @@ hasAutoMode: true
 
 ### `legend` (**[Legend](./api/legend.md)**)
 
-### `place` (**string**)
+### _`mapProvider`_ (**async function**)
 
-### _`provider`_ (**async function**)
+### `place` (**string**)
 
 ### `queryLocation` (**[QueryLocation](./api/query-location.md)**)
 
 ### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
+
+### _`reverseGeocodeProvider`_ (**async function**)
 
 ### _`scaleBar`_ (**string**)
 

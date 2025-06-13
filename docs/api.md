@@ -87,7 +87,7 @@ The button or anchor text used for the view map button. Defaults to 'View map'.
 buttonText: 'View map of main rivers'
 ```
 
-### `deviceTestCallback` (**function () => boolean**)
+### `checkMapSupport` (**function () => boolean**)
 
 A function that is run immediately before a demand for the map. A response of `true` will load the map and a response of `false` will show the device compatibility error message. This is useful if you a need to use a modern feature that an older device doesn't support. By default the FloodMap checks device capabiities. It will serve a legacy version if the device has limited capabilities. It will fallback to the device compatibility error message if device does not meet the minimum requirements.
 

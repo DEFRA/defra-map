@@ -158,7 +158,7 @@ hasAutoMode: true
 > [!NOTE]
 > MapLibre specific
 
-### _`esriConfigCallback`_
+### _`setupEsriConfig`_
 
 > [!NOTE]
 > ESRI specific

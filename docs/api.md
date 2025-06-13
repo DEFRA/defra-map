@@ -84,7 +84,7 @@ The button or anchor text used for the view map button. Defaults to 'View map'.
 
 ```js
 // Example: Custom button text
-buttonText: 'View map of restaurants'
+buttonText: 'View map of main rivers'
 ```
 
 ### `deviceTestCallback` (**function () => boolean**)

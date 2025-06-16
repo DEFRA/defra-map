@@ -39,7 +39,7 @@ const getClassNames = (isDarkMode, device, behaviour, isDrawMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, interfaceType, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, drawMode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
   const legend = options.legend
 
   // Refs to elements
@@ -61,7 +61,7 @@ export default function Container () {
   const isDrawMode = ['frame', 'vertex'].includes(drawMode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
   const srid = provider?.srid
-  const hasSizeCapability = provider?.capabilities?.hasSize
+  const hasSizeCapability = provider.capabilities?.hasSize
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
   const combindedTitle = isCombined && (legend?.title ? `<span class="fm-u-visually-hidden">${labels.legend.TITLE}:</span> ${legend?.title}` : labels.legend.TITLE)
   const seperateTitle = options.draw?.heading ? labels.menu.TITLE : labels.layers.TITLE

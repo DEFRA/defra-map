@@ -1,19 +1,20 @@
+import webpack from 'webpack'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import e from 'path'
+import path from 'path'
 
-const t = e.dirname(new URL(import.meta.url).pathname)
+const dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default {
   entry: {
     'flood-map': [
-      e.join(t, 'src/flood-map.js'),
-      e.join(t, 'src/flood-map.scss')
+      path.join(dirname, 'src/flood-map.js'),
+      path.join(dirname, 'src/flood-map.scss')
     ]
   },
   devtool: 'source-map',
   mode: 'production',
   output: {
-    path: e.resolve(t, 'dist/es5'),
+    path: path.resolve(dirname, 'dist/es5'),
     filename: '[name].js',
     library: {
       type: 'module'
@@ -22,7 +23,6 @@ export default {
   experiments: {
     outputModule: true // Enable support for module output
   },
-  // externals: [e()],
   target: ['web', 'es5'],
   optimization: {
     splitChunks: {
@@ -39,7 +39,11 @@ export default {
   plugins: [
     new MiniCssExtractPlugin({
       filename: '../css/[name].css'
-    })
+    }),
+    new webpack.NormalModuleReplacementPlugin(
+      /esri\/provider\.js$/,
+      path.resolve(dirname, 'src/js/provider/esri/provider.stub.js')
+    )
   ],
   module: {
     rules: [
@@ -63,7 +67,8 @@ export default {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime'
+      'react/jsx-runtime': 'preact/jsx-runtime',
+      'esri/provider.js': path.join(dirname, 'src/js/provider/esri/provider.stub.js')
     }
   }
 }

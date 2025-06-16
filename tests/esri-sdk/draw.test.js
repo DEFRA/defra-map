@@ -1,5 +1,5 @@
-import { Draw } from '../../src/js/provider/esri-sdk/draw'
-import { defaults } from '../../src/js/provider/esri-sdk/constants'
+import { Draw } from '../../src/js/provider/esri/draw'
+import { defaults } from '../../src/js/provider/esri/constants'
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
 import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
@@ -499,7 +499,7 @@ describe('Draw Class', () => {
         return FakeGraphic
       })
       // Re-import with the new mock
-      Draw = require('../../src/js/provider/esri-sdk/draw').Draw
+      Draw = require('../../src/js/provider/esri/draw').Draw
       Graphic = require('@arcgis/core/Graphic')
     })
 

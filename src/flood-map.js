@@ -1,5 +1,5 @@
 import { events, settings } from './js/store/constants.js'
-import { capabilities } from './js/lib/capabilities.js'
+import { getMapProvider, getGeocodeProvider, getReverseGeocodeProvider } from './js/provider/registry.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
@@ -15,15 +15,20 @@ export class FloodMap extends EventTarget {
   _selected
   _banner
 
-  constructor (id, props = { behaviour: 'buttonFirst' }, callBack) {
+  constructor (id, props, callBack) {
     super()
     const el = document.getElementById(id)
     this.el = el
 
-    // Check capabilities
-    props.framework ??= 'default'
-    const device = this._testDevice(props)
+    // Check if map provider is supported on device
+    const mapProvider = getMapProvider(props.mapProvider)
+    const device = {
+      ...mapProvider.checkSupport(),
+      ...props.checkMapSupport ? { isSupported: props.checkMapSupport() } : {}
+    }
+    this.mapProvider = mapProvider
 
+    // Device not supported
     if (!device.isSupported) {
       this._renderError('Your device is not supported. A map is available with a more up-to-date browser or device.')
       // Remove hidden class
@@ -129,16 +134,6 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_ACTION, data => { eventBus.dispatch(this, events.ACTION, data) })
   }
 
-  _testDevice (props) {
-    const device = framework => capabilities[framework].getDevice()
-    const { isSupported, error } = device(props?.framework)
-    const isImplementationSupported = props?.deviceTestCallback ? props.deviceTestCallback() : true
-    return {
-      isSupported: isSupported && isImplementationSupported,
-      error
-    }
-  }
-
   _renderError (text) {
     this.el.insertAdjacentHTML('beforebegin', `
       <div class="fm-error">
@@ -211,7 +206,10 @@ export class FloodMap extends EventTarget {
     eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
   }
 
-  _handlePointerdown () {
+  _handlePointerdown (e) {
+    if (e.pointerType === 'touch') {
+      return
+    }
     eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, null)
     document.activeElement.classList.remove(cssFocusVisible)
     this.interfaceType = null
@@ -225,24 +223,11 @@ export class FloodMap extends EventTarget {
 
     // Add loading spinner
 
-    // Load custom map provider
-    if (!isLoaded && this.props.provider) {
-      this.props.provider = await this.props.provider()
-    }
-
-    // Load default map provider
-    if (!isLoaded && !this.props.provider) {
-      this.props.provider = (await import(/* webpackChunkName: "flood-map-provider" */ './js/provider/os-maplibre/provider.js')).default
-    }
-
-    // Load default geocode provider
-    if (!isLoaded && !this.props.geocodeProvider) {
-      this.props.geocodeProvider = (await import(/* webpackChunkName: "flood-map-geocode" */ './js/provider/os-open-names/geocode.js')).default
-    }
-
-    // Load default reverse geocode provider
-    if (!isLoaded && !this.props.reverseGeocodeProvider) {
-      this.props.reverseGeocodeProvider = (await import(/* webpackChunkName: "flood-map-geocode" */ './js/provider/os-open-names/reverse-geocode.js')).default
+    // Load providers, but instantiate inside react
+    if (!isLoaded) {
+      this.props.mapProvider = await this.mapProvider.load()
+      this.props.geocodeProvider = await getGeocodeProvider(this.props.geocodeProvider).load()
+      this.props.reverseGeocodeProvider = await getReverseGeocodeProvider(this.props.reverseGeocodeProvider).load()
     }
 
     // All providers loaded
@@ -263,7 +248,8 @@ export class FloodMap extends EventTarget {
     if (this.root) {
       return
     }
-    this.root = root(this.el, { ...this.props, callBack: this.callBack, interfaceType: this.interfaceType })
+    const { capabilities } = this.mapProvider
+    this.root = root(this.el, { ...this.props, capabilities, callBack: this.callBack, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {

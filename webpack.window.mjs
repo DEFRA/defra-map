@@ -1,6 +1,7 @@
-import path from 'path'
+import webpack from 'webpack'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
+import path from 'path'
 
 const dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -43,7 +44,11 @@ export default {
           to: path.resolve(dirname, 'dist/templates')
         }
       ]
-    })
+    }),
+    new webpack.NormalModuleReplacementPlugin(
+      /esri\/provider\.js$/,
+      path.resolve(dirname, 'src/js/provider/esri/provider.stub.js')
+    )
   ],
   module: {
     rules: [
@@ -70,7 +75,8 @@ export default {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime'
+      'react/jsx-runtime': 'preact/jsx-runtime',
+      'esri/provider.js': path.join(dirname, 'src/js/provider/esri/provider.stub.js')
     }
   },
   performance: {

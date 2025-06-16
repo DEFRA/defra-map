@@ -27,8 +27,8 @@ export default mergeWithCustomize({
   },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(
-      /js\/provider\/os-maplibre\/provider\.js/,
-      './js/provider/esri-sdk/provider.js'
+      /js\/provider\/maplibre\/provider\.js/,
+      './js/provider/esri/provider.js'
     )
   ]
 })

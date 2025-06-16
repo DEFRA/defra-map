@@ -1,19 +1,18 @@
-import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleMove, handleStationary } from './events'
-import { getDetail } from './query'
-import { debounce } from '../../lib/debounce'
-import { throttle } from '../../lib/throttle'
+import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleMove, handleStationary } from './events.js'
+import { getDetail } from './query.js'
+import { debounce } from '../../lib/debounce.js'
+import { throttle } from '../../lib/throttle.js'
 import { getFocusPadding } from '../../lib/viewport.js'
-import { capabilities } from '../../lib/capabilities.js'
-import { defaults } from './constants'
-import { targetMarkerGraphic } from './marker'
+import { defaults } from './constants.js'
+import { targetMarkerGraphic } from './marker.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ esriConfigCallback }) {
+  constructor ({ capabilities, setupEsriConfig }) {
     super()
     this.srid = 27700
-    this.capabilities = capabilities.esri
-    this.esriConfigCallback = esriConfigCallback
+    this.capabilities = capabilities
+    this.setupEsriConfig = setupEsriConfig
     this.isUserInitiated = false
     this.isLoaded = false
   }
@@ -43,8 +42,8 @@ class Provider extends EventTarget {
     const { watch: reactiveWatch, when: reactiveWhen } = modules[9]
 
     // Implementation has full control over esriConfig
-    if (this.esriConfigCallback) {
-      await this.esriConfigCallback(esriConfig)
+    if (this.setupEsriConfig) {
+      await this.setupEsriConfig(esriConfig)
     }
 
     // Define layers

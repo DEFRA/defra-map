@@ -2,12 +2,19 @@ import { screen } from '@testing-library/react'
 import { FloodMap } from '../src/flood-map'
 import eventBus from '../src/js/lib/eventbus'
 import { events } from '../src/js/store/constants'
+import { getMapProvider } from '../src/js/provider/registry'
 import * as dom from '../src/js/lib/dom'
 
 jest.mock('../src/js/lib/dom', () => ({
   updateTitle: jest.fn(),
   toggleInert: jest.fn(),
   setInitialFocus: jest.fn()
+}))
+
+jest.mock('../src/js/provider/registry.js', () => ({
+  getMapProvider: jest.fn(),
+  getGeocodeProvider: () => { return { load: jest.fn() }},
+  getReverseGeocodeProvider: () => { return { load: jest.fn() }}
 }))
 
 describe('FloodMap', () => {
@@ -32,6 +39,13 @@ describe('FloodMap', () => {
       }),
       back: backSpy // Direct assignment of the spy
     }
+
+    getMapProvider.mockReturnValue({
+      checkSupport: jest.fn(() => ({
+        isSupported: true
+      })),
+      load: jest.fn()
+    })
 
     // Define state property
     Object.defineProperty(mockHistory, 'state', {
@@ -82,7 +96,6 @@ describe('FloodMap', () => {
         this.el.removeAttribute('data-open')
       }
     })
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
 
     // Mock dispatchEvent
     mockElement.dispatchEvent = jest.fn()
@@ -185,7 +198,14 @@ describe('FloodMap', () => {
 
   it('should insert not supported message if device is not supported', () => {
     const props = {}
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: false })
+
+    getMapProvider.mockReturnValue({
+      checkSupport: jest.fn(() => ({
+        isSupported: false,
+        error: ''
+      })),
+      load: jest.fn()
+    })
 
     floodMap = new FloodMap('test-id', props)
 
@@ -514,6 +534,7 @@ describe('FloodMap', () => {
     changeHandler(mobileMQ)
     expect(importComponentSpy).toHaveBeenCalled()
   })
+
   it('should handle APP_READY event correctly', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -557,6 +578,7 @@ describe('FloodMap', () => {
       { type: 'ready', ...mockData }
     )
   })
+
   it('should dispatch SET_INFO and SET_SELECTED events when handling APP_READY if values exist', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -642,6 +664,7 @@ describe('FloodMap', () => {
       expect.any(Object)
     )
   })
+
   it('should handle touchstart event by setting interface type to touch', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -659,6 +682,7 @@ describe('FloodMap', () => {
       'touch'
     )
   })
+
   it('should handle pointerdown event by removing focus and setting interface type to null', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -680,7 +704,7 @@ describe('FloodMap', () => {
     floodMap.interfaceType = 'keyboard'
 
     // Call the pointerdown handler
-    floodMap._handlePointerdown()
+    floodMap._handlePointerdown({ pointerType: 'mouse' })
 
     // Verify interfaceType was set to null
     expect(floodMap.interfaceType).toBeNull()
@@ -1261,7 +1285,6 @@ describe('_importComponent implementation', () => {
         this.el.removeAttribute('data-open')
       }
     })
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
 
     // Restore the original _importComponent implementation
     jest.spyOn(FloodMap.prototype, '_importComponent').mockRestore()

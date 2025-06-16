@@ -90,7 +90,7 @@ const getOsToken = async () => {
   return osAuth
 }
 
-export const setEsriConfig = async (esriConfig) => {
+export const setupEsriConfig = async (esriConfig) => {
   const auth = await getEsriToken()
   esriConfig.apiKey = auth.token
   const interceptors = getInterceptors()

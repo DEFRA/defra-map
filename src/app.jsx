@@ -15,8 +15,7 @@ export default function App (options) {
   const [interfaceType, setInterfaceType] = useState(options.interfaceType)
 
   // Create a map provider instance
-  const Provider = options.provider
-  const provider = useRef(new Provider(options))
+  const provider = useRef(new options.mapProvider(options))
 
   // Create the geocode functions
   const GeocodeProvider = options.geocodeProvider

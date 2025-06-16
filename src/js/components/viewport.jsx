@@ -326,7 +326,7 @@ export default function Viewport () {
   // Initialise draw
   useEffect(() => {
     if (provider.map && !provider.draw && (drawMode !== 'default' || draw?.feature)) {
-      provider.initDraw({ ...draw, drawMode, shape })
+      provider.initDraw({ ...draw, drawMode, shape, interfaceType })
     }
   }, [provider.map, drawMode])
 

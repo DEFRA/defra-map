@@ -1,5 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { setEsriConfig, getRequest } from './request.js'
+import { setupEsriConfig, getRequest } from './request.js'
 
 let map, isDark, isRamp
 
@@ -167,8 +167,7 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   behaviour: 'inline',
-  framework: 'esri',
-  provider: async () => (await import(/* webpackChunkName: "custom-provider" */ '../../src/js/provider/esri-sdk/provider.js')).default,
+  mapProvider: 'esri',
   place: 'Ambleside',
   // banner: '<p>Rivers and sea supporting data may show inconsistent results. <a href="">Find out more</a></p>',
   zoom: 16,
@@ -182,7 +181,7 @@ const fm = new FloodMap('map', {
   hasGeoLocation: true,
   symbols,
   transformGeocodeRequest: getRequest,
-  esriConfigCallback: setEsriConfig,
+  setupEsriConfig: setupEsriConfig,
   // tokenCallback: getEsriToken,
   // interceptorsCallback: getInterceptors,
   // hasAutoMode: true,

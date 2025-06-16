@@ -1,9 +1,8 @@
-import Provider from '../../src/js/provider/esri-sdk/provider.js'
-import { capabilities } from '../../src/js/lib/capabilities.js'
-import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../src/js/provider/esri-sdk/events'
+import Provider from '../../src/js/provider/esri/provider.js'
+import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../src/js/provider/esri/events'
 import { debounce } from '../../src/js/lib/debounce.js'
 import { getFocusPadding } from '../../src/js/lib/viewport.js'
-import { getDetail } from '../../src/js/provider/esri-sdk/query.js'
+import { getDetail } from '../../src/js/provider/esri/query.js'
 
 // Constants for testing
 const TEST_COORDINATES = [50, 50]
@@ -15,7 +14,7 @@ const TEST_MAX_ZOOM = 15
 const TEST_PADDING = { top: 10, left: 10, right: 10, bottom: 10 }
 const TEST_POINT = { x: 100, y: 200 }
 
-jest.mock('../../src/js/provider/esri-sdk/events', () => ({
+jest.mock('../../src/js/provider/esri/events', () => ({
   handleBaseTileLayerLoaded: jest.fn(),
   handleStyleChange: jest.fn(),
   handleMoveStart: jest.fn(),
@@ -23,7 +22,7 @@ jest.mock('../../src/js/provider/esri-sdk/events', () => ({
   handleStationary: jest.fn()
 }))
 
-jest.mock('../../src/js/provider/esri-sdk/query.js', () => ({
+jest.mock('../../src/js/provider/esri/query.js', () => ({
   getDetail: jest.fn().mockResolvedValue({
     bounds: TEST_BOUNDS,
     TEST_CENTER,
@@ -46,7 +45,7 @@ jest.mock('@arcgis/core/geometry/Point.js', () => ({
   }
 }))
 
-jest.mock('../../src/js/provider/esri-sdk/draw.js', () => ({
+jest.mock('../../src/js/provider/esri/draw.js', () => ({
   __esModule: true,
   default: jest.fn()
 }))
@@ -60,12 +59,6 @@ jest.mock('../../src/js/lib/viewport.js', () => ({
   getFocusPadding: jest.fn(() => (TEST_PADDING))
 }))
 
-jest.mock('../../src/js/lib/capabilities.js', () => ({
-  capabilities: {
-    esri: {}
-  }
-}))
-
 jest.mock('@arcgis/core/layers/VectorTileLayer', () => {
   return jest.fn().mockImplementation(() => ({
     watch: jest.fn(),
@@ -73,8 +66,8 @@ jest.mock('@arcgis/core/layers/VectorTileLayer', () => {
   }))
 })
 
-jest.mock('../../src/js/provider/esri-sdk/marker.js', () => ({
-  ...jest.requireActual('../../src/js/provider/esri-sdk/marker.js'),
+jest.mock('../../src/js/provider/esri/marker.js', () => ({
+  ...jest.requireActual('../../src/js/provider/esri/marker.js'),
   targetMarkerGraphic: jest.fn((coord, isDark, hasData) => ({
     geometry: { type: 'point', x: coord[0], y: coord[1], spatialReference: 27700 },
     symbol: { color: isDark ? '#ffffff' : '#0b0c0c', type: 'simple-marker', outline: { color: isDark ? '#ffffff' : '#0b0c0c', width: 0 } }
@@ -94,7 +87,7 @@ jest.mock('@arcgis/core/views/MapView', () => {
 
 describe('Provider', () => {
   let provider
-  let mockEsriConfigCallback
+  let mockSetupEsriConfig
   let modules
   let mockDraw
 
@@ -134,7 +127,7 @@ describe('Provider', () => {
 
     mockDraw.mockClear()
 
-    jest.mock('../../src/js/provider/esri-sdk/draw.js', () => ({
+    jest.mock('../../src/js/provider/esri/draw.js', () => ({
       __esModule: true,
       default: mockDraw
     }), { virtual: true })
@@ -155,13 +148,13 @@ describe('Provider', () => {
       getCurrentPosition: jest.fn()
     }
 
-    mockEsriConfigCallback = jest.fn()
+    mockSetupEsriConfig = jest.fn()
     global.document = {
       createElement: jest.fn(() => ({ classList: { add: jest.fn() } }))
     }
     provider = new Provider({
       transformGeocodeRequest: jest.fn(),
-      esriConfigCallback: mockEsriConfigCallback
+      setupEsriConfig: mockSetupEsriConfig
     })
 
     provider.map = {
@@ -267,7 +260,6 @@ describe('Provider', () => {
   describe('Initialization', () => {
     it('should initialize with default properties', () => {
       expect(provider.srid).toBe(27700)
-      expect(provider.capabilities).toBe(capabilities.esri)
       expect(provider.isUserInitiated).toBe(false)
       expect(provider.isLoaded).toBe(false)
     })
@@ -313,7 +305,7 @@ describe('Provider', () => {
       expect(provider.graphicsLayer).toBeDefined()
     })
 
-    it('should properly set up esriConfigCallback during initialization', async () => {
+    it('should call setupEsriConfig during initialization', async () => {
       const container = document.getElementById('test-container')
 
       const options = {
@@ -332,8 +324,8 @@ describe('Provider', () => {
 
       await provider.init(options)
 
-      expect(provider.esriConfigCallback).toBeDefined()
-      expect(provider.esriConfigCallback).toBe(mockEsriConfigCallback)
+      expect(provider.setupEsriConfig).toBeDefined()
+      expect(provider.setupEsriConfig).toBe(mockSetupEsriConfig)
       expect(container.querySelector('.esri-view-surface')).not.toBeNull()
     })
   })

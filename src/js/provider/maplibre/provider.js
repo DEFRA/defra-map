@@ -1,23 +1,18 @@
-import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events'
-import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query'
-import { locationMarkerHTML, targetMarkerHTML } from './marker'
-import { highlightLabel } from './symbols'
-import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport'
-import { debounce } from '../../lib/debounce'
-import { throttle } from '../../lib/throttle'
-import { defaults, css } from './constants'
-import { capabilities } from '../../lib/capabilities.js'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events.js'
+import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query.js'
+import { locationMarkerHTML, targetMarkerHTML } from './marker.js'
+import { highlightLabel } from './symbols.js'
+import { getFocusPadding, spatialNavigate, getScale } from '../../lib/viewport.js'
+import { debounce } from '../../lib/debounce.js'
+import { throttle } from '../../lib/throttle.js'
+import { defaults, css } from './constants.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
 class Provider extends EventTarget {
-  constructor ({ transformRequest, symbols }) {
+  constructor ({ capabilities, transformRequest, symbols }) {
     super()
     this.srid = 4326
-    this.capabilities = {
-      ...capabilities.default,
-      hasDraw: true,
-      hasSize: !!window.globalThis
-    }
+    this.capabilities = capabilities
     this.transformRequest = transformRequest
     this.symbols = symbols
     this.baseLayers = []

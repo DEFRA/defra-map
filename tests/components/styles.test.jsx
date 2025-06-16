@@ -70,7 +70,7 @@ describe('styles', () => {
   it('should render 3 available styles', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
-      provider: { capabilities: {} },
+      provider: { capabilities: { hasSize: false } },
       options: {
         id: 'map',
         hasAutoMode: true
@@ -89,10 +89,10 @@ describe('styles', () => {
   it('should render all styles and text sizes on clicking "More styles"', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
-      provider: { capabilities: { hasSize: true } },
       activeRef: {
         current: document.body
       },
+      provider: { capabilities: { hasSize: true } },
       options: {
         id: 'map',
         hasAutoMode: true
@@ -115,10 +115,10 @@ describe('styles', () => {
   it('should fire dispatch event on style click', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
-      provider: { capabilities: { hasSize: true } },
       activeRef: {
         current: document.body
       },
+      provider: { capabilities: { hasSize: true } },
       options: {
         id: 'map',
         hasAutoMode: true

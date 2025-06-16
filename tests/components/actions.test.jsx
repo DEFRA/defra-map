@@ -44,7 +44,7 @@ describe('actions', () => {
 
     render(<Actions cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Confirm area'))
+    fireEvent.click(screen.getByText('Done'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
@@ -96,9 +96,9 @@ describe('actions', () => {
 
     render(<Actions />)
 
-    fireEvent.click(screen.getByText('Update area'))
+    fireEvent.click(screen.getByText('Done'))
 
-    expect(screen.getByText('Update area')).toBeTruthy()
+    expect(screen.getByText('Done')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()

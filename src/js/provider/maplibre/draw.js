@@ -10,12 +10,15 @@ export class Draw {
     const { container, map, style } = provider
     Object.assign(this, options)
 
-    const { drawMode, shape, feature } = options
+    const { drawMode, shape, feature, interfaceType } = options
     this.provider = provider
     this.shape = shape
 
     // Provider also needs ref to draw moudule and draw needs ref to provider
     provider.draw = this
+
+    // Get reference to edit vertex button for use with touch interface
+    this.editVertexButton = container.parentNode.nextSibling.querySelector('[data-edit-vertex-button]')
 
     const initialFeature = feature ? { ...feature, id: shape } : null
     this.oFeature = initialFeature
@@ -49,7 +52,12 @@ export class Draw {
     // Disable simple_select mode
     map.on('draw.modechange', e => {
       if (e.mode === 'simple_select') {
-        draw.changeMode('edit_vertex', { container: container.parentNode, featureId: this.shape })
+        draw.changeMode('edit_vertex', {
+          container: container.parentNode,
+          featureId: this.shape,
+          editVertexButton: this.editVertexButton,
+          interfaceType
+        })
       }
     })
 
@@ -62,16 +70,12 @@ export class Draw {
       }))
     })
 
-    map.on('click', e => {
-      // console.log(e)
-    })
-
     // Start new
-    this.add(drawMode, shape)
+    this.add(drawMode, shape, interfaceType)
   }
 
   // Add new shape
-  add (drawMode, shape) {
+  add (drawMode, shape, interfaceType) {
     const { draw } = this
     const { container } = this.provider
     this.shape = shape
@@ -84,7 +88,12 @@ export class Draw {
 
     // Start a new polygon
     if (drawMode === 'vertex' && !draw.get(shape)) {
-      draw.changeMode('draw_vertex', { container: container.parentNode, featureId: shape })
+      draw.changeMode('draw_vertex', {
+        container: container.parentNode,
+        featureId: shape,
+        editVertexButton: this.editVertexButton,
+        interfaceType
+      })
     }
   }
 
@@ -109,7 +118,11 @@ export class Draw {
 
     // Edit existing feature
     if (drawMode === 'vertex' && draw.get(shape)) {
-      draw.changeMode('edit_vertex', { container: container.parentNode, featureId: shape })
+      draw.changeMode('edit_vertex', {
+        container: container.parentNode,
+        featureId: shape,
+        editVertexButton: this.editVertexButton
+      })
     }
   }
 

@@ -1,3 +1,6 @@
+import booleanValid from '@turf/boolean-valid'
+import area from '@turf/area'
+import { polygon } from '@turf/helpers'
 import DirectSelect from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/direct_select'
 import DrawPolygon from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/modes/draw_polygon'
 import createVertex from '../../../../node_modules/@mapbox/mapbox-gl-draw/src/lib/create_vertex'
@@ -8,6 +11,74 @@ const markerSVG = `
     <circle cx='19' cy='19' r='2'/>
   </svg>
 `
+
+const NUDGE = 1
+const STEP = 5
+const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+
+const haversine = ([lon1, lat1], [lon2, lat2]) => {
+  const toRad = deg => deg * Math.PI / 180
+  const R = 6371000 // meters
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+const isNewCoordinate = (coords, tolerance = 0.01) => {
+  // First coord
+  if (coords[0].length <= 1) {
+    return true
+  }
+  // Subsequent coordsmust be different
+  if (coords[0].length <= 3) {
+    for (let i = 0; i < coords[0].length; i++) {
+      for (let j = i + 1; j < coords[0].length; j++) {
+        if (haversine(coords[0][i], coords[0][j]) < tolerance) {
+          return false
+        }
+      }
+    }
+  }
+  return true
+}
+
+const isValidClick = (coords) => {
+  // Less than 4 and new coordinates
+  if (coords[0].length <= 1 || isNewCoordinate(coords)) {
+    return true
+  }
+
+  // Basic checks
+  if (!Array.isArray(coords) || coords.length < 4) {
+    return false
+  }
+
+  // Check if ring is closed
+  const first = coords[0]
+  const last = coords[coords.length - 1]
+  const isClosed = first[0] === last[0] && first[1] === last[1]
+  if (!isClosed) {
+    return false
+  }
+
+  // Create a turf polygon
+  const turfPoly = polygon([coords])
+
+  // Check if geometry is valid (non-self-intersecting)
+  const valid = booleanValid(turfPoly)
+  if (!valid) {
+    return false
+  }
+
+  // Check if area is positive
+  const polyArea = area(turfPoly)
+  if (polyArea <= 0) {
+    return false
+  }
+
+  return true
+}
 
 const spatialNavigate = (start, pixels, direction) => {
   const quadrant = pixels.filter((p, i) => {
@@ -38,12 +109,6 @@ const spatialNavigate = (start, pixels, direction) => {
   return pixels.findIndex(i => JSON.stringify(i) === JSON.stringify(closest))
 }
 
-const NUDGE = 1
-
-const STEP = 5
-
-const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
-
 export const DisabledMode = {
   onSetup () {
     return {} // Return empty state
@@ -73,8 +138,9 @@ export const EditVertexMode = {
 
   onSetup (options) {
     const state = DirectSelect.onSetup.call(this, options)
-    const { container, featureId, selectedIndex, selectedType, isPanEnabled } = options
+    const { container, featureId, selectedIndex, selectedType, isPanEnabled, editButton } = options
     state.container = container
+    state.editButton = editButton
     state.isPanEnabled = isPanEnabled
     state.featureId = featureId
     state.vertecies = this.getVerticies(featureId) // Store vertecies
@@ -82,9 +148,15 @@ export const EditVertexMode = {
     state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
 
-    // Bind events as default events require map container to have focus
-    this.keydownHandler = (e) => this.onKeyDown(state, e)
-    this.keyupHandler = (e) => this.onKeyUp(state, e)
+    // Bind touch events
+    this.touchstartHandler = (e) => this.onTouchstart(state, e)
+    this.touchendHandler = (e) => this.onTouchend(state, e)
+    container.addEventListener('touchstart', this.touchstartHandler)
+    container.addEventListener('touchend', this.touchendHandler)
+
+    // Bind keyboard events as default events require map container to have focus
+    this.keydownHandler = (e) => this.onKeydown(state, e)
+    this.keyupHandler = (e) => this.onKeyup(state, e)
     container.addEventListener('keydown', this.keydownHandler)
     container.addEventListener('keyup', this.keyupHandler)
 
@@ -118,7 +190,11 @@ export const EditVertexMode = {
     state.selectedIndex = !isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
   },
 
-  onKeyDown (state, e) {
+  onTouchstart (state, e) {
+    console.log('onTouchstart')
+  },
+
+  onKeydown (state, e) {
     // Set selected index and type
     if (e.key === ' ' && state.selectedIndex < 0) {
       state.isPanEnabled = false
@@ -155,7 +231,11 @@ export const EditVertexMode = {
     }
   },
 
-  onKeyUp (state, e) {
+  onTouchend (state, e) {
+    console.log('onTouchend')
+  },
+
+  onKeyup (state, e) {
     // Arrow keys propogating to container
     if (ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
       e.stopPropagation()
@@ -381,7 +461,8 @@ export const DrawVertexMode = {
   onSetup (options) {
     const { map } = this
     const state = DrawPolygon.onSetup.call(this, options)
-    const { interfaceType, container, featureId } = options
+    const { interfaceType, container, featureId, editVertexButton } = options
+    state.editVertexButton = editVertexButton
     state.interfaceType = interfaceType
     state.container = container
     state.featureId = featureId
@@ -393,28 +474,39 @@ export const DrawVertexMode = {
 
     // Set initial visiblity
     const vertexMarker = container.lastElementChild
-    vertexMarker.style.display = interfaceType === 'keyboard' ? 'block' : 'none'
+    vertexMarker.style.display = ['touch', 'keyboard'].includes(interfaceType) ? 'block' : 'none'
     state.vertexMarker = vertexMarker
 
     // Bind events as default events require map container to have focus
-    this.keydownHandler = (e) => this.onKeyDown(state, e)
-    this.keyupHandler = (e) => this.onKeyUp(state, e)
-    this.pointerdownHandler = (e) => this.onPointerDown(state, e)
+    this.touchstartHandler = (e) => this.onTouchstart(state, e)
+    this.touchendHandler = (e) => this.onTouchend(state, e)
+    this.keydownHandler = (e) => this.onKeydown(state, e)
+    this.keyupHandler = (e) => this.onKeyup(state, e)
+    this.pointerdownHandler = (e) => this.onPointerdown(state, e)
     this.focusHandler = (e) => this.onFocus(state, e)
     this.blurHandler = (e) => this.onBlur(state, e)
     this.createHandler = (e) => this.onCreate(state, e)
     this.moveHandler = (e) => this.onMove(state, e)
-    this.pointermoveHandler = (e) => this.onPointerMove(state, e)
+    this.pointermoveHandler = (e) => this.onPointermove(state, e)
+    this.editClickHandler = (e) => this.onEditClick(state, e)
+    editVertexButton.addEventListener('click', this.editClickHandler)
     container.addEventListener('keydown', this.keydownHandler)
     container.addEventListener('keyup', this.keyupHandler)
-    container.addEventListener('pointerdown', this.pointerdownHandler)
     container.addEventListener('focus', this.focusHandler)
     container.addEventListener('blur', this.blurHandler)
-    container.addEventListener('pointermove', this.pointermoveHandler)
+    map.on('touchstart', this.touchstartHandler)
+    map.on('touchend', this.touchendHandler)
+    map.on('pointerdown', this.pointerdownHandler)
+    map.on('pointermove', this.pointermoveHandler)
+    map.on('pointermove', this.pointermoveHandler)
     map.on('draw.create', this.createHandler)
     map.on('move', this.moveHandler)
 
     return state
+  },
+
+  onTap (state, e) {
+    console.log('onTap', state)
   },
 
   onCreate (state, e) {
@@ -425,9 +517,40 @@ export const DrawVertexMode = {
     draw.add(feature)
   },
 
-  onKeyDown (state, e) {
-    // Enter keypress
+  onUpdate (state, e) {
+    console.log('onUpdate')
+  },
+
+  onEditClick (state, e) {
+    console.log('click')
+  },
+
+  onTouchstart (state, e) {
+    // Update line when switching interfaceType
+    if (state.interfaceType === 'touch') {
+      this.onMove(state, e)
+    }
+    state.interfaceType = 'touch'
+
+    // Show vertex marker
+    state.vertexMarker.style.display = 'block'
+  },
+
+  onTouchend (state, e) {
+    // Update line when switching interfaceType
+    if (state.interfaceType === 'touch') {
+      this.onMove(state, e)
+    }
+    state.interfaceType = 'touch'
+
+    // Show vertex marker
+    state.vertexMarker.style.display = 'block'
+  },
+
+  onKeydown (state, e) {
+    // Enter keypress or invalid vertex
     if (e.key === 'Escape') {
+      e.preventDefault()
       return
     }
 
@@ -441,8 +564,8 @@ export const DrawVertexMode = {
     state.vertexMarker.style.display = 'block'
   },
 
-  onKeyUp (state, e) {
-    // Enter keypress
+  onKeyup (state, e) {
+    // Escape keypress or invalid vertex
     if (e.key === 'Escape') {
       return
     }
@@ -451,35 +574,47 @@ export const DrawVertexMode = {
     if (state.interfaceType === 'keyboard') {
       this.onMove(state, e)
     }
-    state.interfaceType = 'keyboard'
 
-    // Enter keypress
-    if (e.key === 'Enter') {
+    // Enter keypress and valid vertex
+    if (state.interfaceType === 'keyboard' && e.key === 'Enter') {
       this.doClick(state)
     }
+    state.interfaceType = 'keyboard'
 
     // Show vertex marker
     state.vertexMarker.style.display = 'block'
   },
 
-  onPointerDown (state, e) {
-    state.interfaceType = 'pointer'
-    state.vertexMarker.style.display = 'none'
+  onPointerdown (state, e) {
+    if (e.pointerType !== 'touch') {
+      state.interfaceType = 'pointer'
+      state.vertexMarker.style.display = 'none'
+    }
   },
 
   onFocus (state, e) {
     const { vertexMarker, interfaceType } = state
-    vertexMarker.style.display = interfaceType === 'keyboard' ? 'block' : 'none'
+    vertexMarker.style.display = ['touch', 'keyboard'].includes(interfaceType) ? 'block' : 'none'
   },
 
   onBlur (state, e) {
-    state.vertexMarker.style.display = 'none'
+    if (e.target !== state.container) {
+      state.vertexMarker.style.display = 'none'
+    }
   },
 
   doClick (state) {
+    const coords = state.polygon.coordinates
+
+    // Not a valid vertex
+    if (!isValidClick(coords)) {
+      return
+    }
+
     const { map } = this
     const center = map.getCenter()
     const point = map.project(center)
+
     const simulatedClickEvent = {
       lngLat: center,
       point,
@@ -496,7 +631,7 @@ export const DrawVertexMode = {
 
   onMove (state, e) {
     // Clear vertex marker
-    if (state.interfaceType === 'keyboard') {
+    if (['touch', 'keyboard'].includes(state.interfaceType)) {
       const { map } = this
       const center = map.getCenter()
       const point = map.project(center)
@@ -516,8 +651,10 @@ export const DrawVertexMode = {
     }
   },
 
-  onPointerMove (state, e) {
-    state.vertexMarker.style.display = 'none'
+  onPointermove (state, e) {
+    if (e.pointerType !== 'touch') {
+      state.vertexMarker.style.display = 'none'
+    }
   },
 
   toDisplayFeatures (state, geojson, display) {
@@ -537,12 +674,18 @@ export const DrawVertexMode = {
     DrawPolygon.onStop.call(this, state)
 
     const { container } = state
+    // container.removeEventListener('keydown', this.keydownHandler)
+    // container.removeEventListener('keyup', this.keyupHandler)
+    // container.removeEventListener('pointerdown', this.pointerdownHandler)
+    // container.removeEventListener('focus', this.focusHandler)
+    // container.removeEventListener('blur', this.blurHandler)
+    // container.removeEventListener('pointermove', this.pointermoveHandler)
     container.removeEventListener('keydown', this.keydownHandler)
     container.removeEventListener('keyup', this.keyupHandler)
-    container.removeEventListener('pointerdown', this.pointerdownHandler)
     container.removeEventListener('focus', this.focusHandler)
     container.removeEventListener('blur', this.blurHandler)
-    container.removeEventListener('pointermove', this.pointermoveHandler)
+    this.map.off('pointerdown', this.pointerdownHandler)
+    this.map.off('pointermove', this.pointermoveHandler)
     this.map.off('draw.create', this.createHandler)
     this.map.off('move', this.moveHandler)
 

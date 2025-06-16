@@ -53,14 +53,19 @@ export default function Actions () {
   }
 
   const isDefaultMode = drawMode === 'default'
+  const isVertexTouch = drawMode === 'vertex' && interfaceType === 'touch'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
+      <button className='fm-c-btn-primary' {...(!isVertexTouch && { style: { display: 'none' } })} data-edit-vertex-button={true}>
+        {`${query ? 'Delete point' : 'Add point'}`}
+      </button>
       <button onClick={handleUpdateClick} className='fm-c-btn-primary' {...(isDefaultMode && { style: { display: 'none' } })} {...(!isDrawValid && { 'aria-disabled': true })}>
-        {`${query ? 'Update' : 'Confirm'}`} area
+        {/* {`${query ? 'Update' : 'Confirm'}`} <span className='fm-u-visually-hidden'>area</span> */}
+        Done
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn-secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
         Cancel

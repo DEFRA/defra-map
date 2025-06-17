@@ -2,7 +2,7 @@ import { events, settings } from './js/store/constants.js'
 import maplibreProvider from './js/provider/maplibre/provider.js'
 import geocodeProvider from './js/provider/os-open-names/provider.js'
 import reverseGeocodeProvider from './js/provider/os-open-names-reverse/provider.js'
-import { parseAttribute } from './js/lib/utils.js'
+import { parseAttribute, getQueryParam } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
 // Polyfills
@@ -189,12 +189,13 @@ export class FloodMap extends EventTarget {
   }
 
   _handlePopstate () {
-    const { behaviour } = this.props
+    const { id, behaviour } = this.props
     const hasButton = behaviour === 'buttonFirst' || (behaviour === 'hybrid' && this.isMobile)
-    if (history.state?.isBack) {
+    if (history.state?.isBack && id === getQueryParam('view')) {
       this._importComponent()
-    } else if (hasButton) {
+    } else if (hasButton && this.el.children.length) {
       this._removeComponent()
+      this.button.focus()
     } else {
       // No action
     }

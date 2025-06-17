@@ -10,6 +10,11 @@ jest.mock('../src/js/lib/dom', () => ({
   setInitialFocus: jest.fn()
 }))
 
+jest.mock('../src/js/lib/utils', () => { return {
+  getQueryParam: jest.fn(() => 'test-id'),
+  parseAttribute: jest.fn()
+}})
+
 jest.mock('../src/js/provider/maplibre/provider', () => { return {
   checkSupport: jest.fn(() => ({
     isSupported: true
@@ -346,6 +351,7 @@ describe('FloodMap', () => {
   it('should handle popstate event - when is button', () => {
     const props = { behaviour: 'buttonFirst' }
     floodMap = new FloodMap('test-id', props)
+    floodMap.el = { children: [{}] }
 
     jest.spyOn(floodMap, '_removeComponent')
 
@@ -357,7 +363,7 @@ describe('FloodMap', () => {
   })
 
   it('should handle popstate event - when is back', () => {
-    const props = { behaviour: 'hybrid', isMobile: true }
+    const props = { id: 'test-id', behaviour: 'hybrid', isMobile: true }
     floodMap = new FloodMap('test-id', props)
 
     jest.spyOn(floodMap, '_importComponent')

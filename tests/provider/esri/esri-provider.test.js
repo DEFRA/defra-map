@@ -1,8 +1,8 @@
-import Provider from '../../src/js/provider/esri/provider.js'
-import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../src/js/provider/esri/events'
-import { debounce } from '../../src/js/lib/debounce.js'
-import { getFocusPadding } from '../../src/js/lib/viewport.js'
-import { getDetail } from '../../src/js/provider/esri/query.js'
+import Provider from '../../../src/js/provider/esri/esri-provider.js'
+import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../../src/js/provider/esri/events.js'
+import { debounce } from '../../../src/js/lib/debounce.js'
+import { getFocusPadding } from '../../../src/js/lib/viewport.js'
+import { getDetail } from '../../../src/js/provider/esri/query.js'
 
 // Constants for testing
 const TEST_COORDINATES = [50, 50]
@@ -14,7 +14,7 @@ const TEST_MAX_ZOOM = 15
 const TEST_PADDING = { top: 10, left: 10, right: 10, bottom: 10 }
 const TEST_POINT = { x: 100, y: 200 }
 
-jest.mock('../../src/js/provider/esri/events', () => ({
+jest.mock('../../../src/js/provider/esri/events', () => ({
   handleBaseTileLayerLoaded: jest.fn(),
   handleStyleChange: jest.fn(),
   handleMoveStart: jest.fn(),
@@ -22,7 +22,7 @@ jest.mock('../../src/js/provider/esri/events', () => ({
   handleStationary: jest.fn()
 }))
 
-jest.mock('../../src/js/provider/esri/query.js', () => ({
+jest.mock('../../../src/js/provider/esri/query.js', () => ({
   getDetail: jest.fn().mockResolvedValue({
     bounds: TEST_BOUNDS,
     TEST_CENTER,
@@ -45,17 +45,17 @@ jest.mock('@arcgis/core/geometry/Point.js', () => ({
   }
 }))
 
-jest.mock('../../src/js/provider/esri/draw.js', () => ({
+jest.mock('../../../src/js/provider/esri/draw.js', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-jest.mock('../../src/js/lib/debounce.js', () => ({
+jest.mock('../../../src/js/lib/debounce.js', () => ({
   debounce: jest.fn(fn => fn)
 }))
 
-jest.mock('../../src/js/lib/viewport.js', () => ({
-  ...jest.requireActual('../../src/js/lib/viewport.js'),
+jest.mock('../../../src/js/lib/viewport.js', () => ({
+  ...jest.requireActual('../../../src/js/lib/viewport.js'),
   getFocusPadding: jest.fn(() => (TEST_PADDING))
 }))
 
@@ -66,8 +66,8 @@ jest.mock('@arcgis/core/layers/VectorTileLayer', () => {
   }))
 })
 
-jest.mock('../../src/js/provider/esri/marker.js', () => ({
-  ...jest.requireActual('../../src/js/provider/esri/marker.js'),
+jest.mock('../../../src/js/provider/esri/marker.js', () => ({
+  ...jest.requireActual('../../../src/js/provider/esri/marker.js'),
   targetMarkerGraphic: jest.fn((coord, isDark, hasData) => ({
     geometry: { type: 'point', x: coord[0], y: coord[1], spatialReference: 27700 },
     symbol: { color: isDark ? '#ffffff' : '#0b0c0c', type: 'simple-marker', outline: { color: isDark ? '#ffffff' : '#0b0c0c', width: 0 } }
@@ -85,7 +85,7 @@ jest.mock('@arcgis/core/views/MapView', () => {
   }))
 })
 
-describe('Provider', () => {
+describe('ESRIProvider', () => {
   let provider
   let mockSetupEsriConfig
   let modules
@@ -127,7 +127,7 @@ describe('Provider', () => {
 
     mockDraw.mockClear()
 
-    jest.mock('../../src/js/provider/esri/draw.js', () => ({
+    jest.mock('../../../src/js/provider/esri/draw.js', () => ({
       __esModule: true,
       default: mockDraw
     }), { virtual: true })

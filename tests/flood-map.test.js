@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { FloodMap } from '../src/flood-map'
 import eventBus from '../src/js/lib/eventbus'
 import { events } from '../src/js/store/constants'
-import { getMapProvider } from '../src/js/provider/registry'
 import * as dom from '../src/js/lib/dom'
 
 jest.mock('../src/js/lib/dom', () => ({
@@ -11,11 +10,20 @@ jest.mock('../src/js/lib/dom', () => ({
   setInitialFocus: jest.fn()
 }))
 
-jest.mock('../src/js/provider/registry.js', () => ({
-  getMapProvider: jest.fn(),
-  getGeocodeProvider: () => { return { load: jest.fn() }},
-  getReverseGeocodeProvider: () => { return { load: jest.fn() }}
-}))
+jest.mock('../src/js/provider/maplibre/provider', () => { return {
+  checkSupport: jest.fn(() => ({
+    isSupported: true
+  })),
+  load: jest.fn()
+}})
+
+jest.mock('../src/js/provider/os-open-names/provider', () => { return {
+  load: jest.fn()
+}})
+
+jest.mock('../src/js/provider/os-open-names-reverse/provider', () => { return {
+  load: jest.fn()
+}})
 
 describe('FloodMap', () => {
   let floodMap
@@ -39,13 +47,6 @@ describe('FloodMap', () => {
       }),
       back: backSpy // Direct assignment of the spy
     }
-
-    getMapProvider.mockReturnValue({
-      checkSupport: jest.fn(() => ({
-        isSupported: true
-      })),
-      load: jest.fn()
-    })
 
     // Define state property
     Object.defineProperty(mockHistory, 'state', {
@@ -197,15 +198,13 @@ describe('FloodMap', () => {
   })
 
   it('should insert not supported message if device is not supported', () => {
-    const props = {}
-
-    getMapProvider.mockReturnValue({
-      checkSupport: jest.fn(() => ({
+    const props = { mapProvider: {
+      checkSupport: () => ({
         isSupported: false,
         error: ''
-      })),
+      }),
       load: jest.fn()
-    })
+    }}
 
     floodMap = new FloodMap('test-id', props)
 

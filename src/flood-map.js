@@ -1,5 +1,7 @@
 import { events, settings } from './js/store/constants.js'
-import { getMapProvider, getGeocodeProvider, getReverseGeocodeProvider } from './js/provider/registry.js'
+import maplibreProvider from './js/provider/maplibre/provider.js'
+import geocodeProvider from './js/provider/os-open-names/provider.js'
+import reverseGeocodeProvider from './js/provider/os-open-names-reverse/provider.js'
 import { parseAttribute } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
@@ -21,7 +23,7 @@ export class FloodMap extends EventTarget {
     this.el = el
 
     // Check if map provider is supported on device
-    const mapProvider = getMapProvider(props.mapProvider)
+    const mapProvider = props.mapProvider || maplibreProvider
     const device = {
       ...mapProvider.checkSupport(),
       ...props.checkMapSupport ? { isSupported: props.checkMapSupport() } : {}
@@ -39,6 +41,10 @@ export class FloodMap extends EventTarget {
       device.error && console.log(device.error)
       return
     }
+
+    // Set referecnes to geocode providers
+    this.geocodeProvider = props.geocodeProvider || geocodeProvider
+    this.reverseGeocodeProvider = props.reverseGeocodeProvider || reverseGeocodeProvider
 
     // Merge props
     const dataset = { ...this.el?.dataset }
@@ -226,8 +232,8 @@ export class FloodMap extends EventTarget {
     // Load providers, but instantiate inside react
     if (!isLoaded) {
       this.props.mapProvider = await this.mapProvider.load()
-      this.props.geocodeProvider = await getGeocodeProvider(this.props.geocodeProvider).load()
-      this.props.reverseGeocodeProvider = await getReverseGeocodeProvider(this.props.reverseGeocodeProvider).load()
+      this.props.geocodeProvider = await this.geocodeProvider.load()
+      this.props.reverseGeocodeProvider = await this.reverseGeocodeProvider.load()
     }
 
     // All providers loaded

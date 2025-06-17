@@ -39,11 +39,7 @@ export default {
   plugins: [
     new MiniCssExtractPlugin({
       filename: '../css/[name].css'
-    }),
-    new webpack.NormalModuleReplacementPlugin(
-      /esri\/provider\.js$/,
-      path.resolve(dirname, 'src/js/provider/esri/provider.stub.js')
-    )
+    })
   ],
   module: {
     rules: [
@@ -67,8 +63,7 @@ export default {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime',
-      'esri/provider.js': path.join(dirname, 'src/js/provider/esri/provider.stub.js')
+      'react/jsx-runtime': 'preact/jsx-runtime'
     }
   }
 }

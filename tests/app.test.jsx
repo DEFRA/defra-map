@@ -1,8 +1,8 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import Provider from '../src/js/provider/maplibre/provider'
+import Provider from '../src/js/provider/maplibre/maplibre-provider'
 import Geocode from '../src/js/provider/os-open-names/geocode'
-import ReverseGeocode from '../src/js/provider/os-open-names/reverse-geocode'
+import ReverseGeocode from '../src/js/provider/os-open-names-reverse/reverse-geocode'
 
 import App from '../src/app'
 

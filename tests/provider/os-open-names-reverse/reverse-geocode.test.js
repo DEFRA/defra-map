@@ -1,7 +1,7 @@
-import ReverseGeocode from '../../../src/js/provider/os-open-names/reverse-geocode'
+import ReverseGeocode from '../../../src/js/provider/os-open-names-reverse/reverse-geocode'
 
-jest.mock('../../../src/js/provider/os-open-names/config.json', () => ({
-  OS_NEAREST_URL: 'https://example.com/{easting}/{northing}'
+jest.mock('../../../src/js/provider/os-open-names-reverse/config.json', () => ({
+  URL: 'https://example.com/{easting}/{northing}'
 }))
 
 describe('getNearest', () => {

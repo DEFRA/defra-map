@@ -1,4 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
+import esri from '../../src/js/provider/esri/provider.js'
 import { setupEsriConfig, getRequest } from './request.js'
 
 let map, isDark, isRamp
@@ -167,7 +168,7 @@ const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   behaviour: 'inline',
-  mapProvider: 'esri',
+  mapProvider: esri,
   place: 'Ambleside',
   // banner: '<p>Rivers and sea supporting data may show inconsistent results. <a href="">Find out more</a></p>',
   zoom: 16,

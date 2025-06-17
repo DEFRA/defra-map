@@ -1,5 +1,5 @@
-import { getDetail, getViewport, getFeatures } from '../../src/js/provider/esri/query'
-import { defaults } from '../../src/js/provider/esri/constants'
+import { getDetail, getViewport, getFeatures } from '../../../src/js/provider/esri/query'
+import { defaults } from '../../../src/js/provider/esri/constants'
 
 jest.mock('@arcgis/core/views/MapView', () => {
   return jest.fn().mockImplementation(() => ({

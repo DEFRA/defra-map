@@ -1,4 +1,4 @@
-import { targetMarkerGraphic, reColourMarkers } from '../../src/js/provider/esri/marker'
+import { targetMarkerGraphic, reColourMarkers } from '../../../src/js/provider/esri/marker'
 
 describe('Marker Module', () => {
   describe('targetMarkerGraphic', () => {

@@ -3,15 +3,15 @@ import {
   handleStyleChange,
   handleStationary,
   handleMoveStart
-} from '../../src/js/provider/esri/events'
+} from '../../../src/js/provider/esri/events'
 
-import { getDetail } from '../../src/js/provider/esri/query'
+import { getDetail } from '../../../src/js/provider/esri/query'
 
-jest.mock('../../src/js/provider/esri/marker', () => ({
+jest.mock('../../../src/js/provider/esri/marker', () => ({
   reColourMarkers: jest.fn()
 }))
 
-jest.mock('../../src/js/provider/esri/query')
+jest.mock('../../../src/js/provider/esri/query')
 
 describe('esri events', () => {
   it('should handleBaseTileLayerLoaded', () => {

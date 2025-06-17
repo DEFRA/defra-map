@@ -23,7 +23,7 @@ class ReverseGeocode {
       }
     }
 
-    let url = config.OS_NEAREST_URL
+    let url = config.URL
     url = url.replace('{easting}', Math.round(coord[0])).replace('{northing}', Math.round(coord[1]))
     const response = await fetch(await this.transformGeocodeRequest(url))
     const json = await response.json()

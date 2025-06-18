@@ -5,8 +5,9 @@ import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as TurfCircle } from '@turf/circle'
 import { defaults } from './constants'
 
-export class Draw {
+export class Draw extends EventTarget {
   constructor (provider, options) {
+    super()
     const { container, map, style } = provider
     Object.assign(this, options)
 
@@ -18,7 +19,7 @@ export class Draw {
     provider.draw = this
 
     // Get reference to edit vertex button for use with touch interface
-    this.editVertexButton = container.parentNode.nextSibling.querySelector('[data-edit-vertex-button]')
+    this.vertexButton = container.parentNode.nextSibling.querySelector('[data-vertex-button]')
 
     const initialFeature = feature ? { ...feature, id: shape } : null
     this.oFeature = initialFeature
@@ -55,19 +56,10 @@ export class Draw {
         draw.changeMode('edit_vertex', {
           container: container.parentNode,
           featureId: this.shape,
-          editVertexButton: this.editVertexButton,
+          vertexButton: this.vertexButton,
           interfaceType
         })
       }
-    })
-
-    // Pass vertex selected event to provider
-    map.on('draw.vertexselected', e => {
-      provider.dispatchEvent(new CustomEvent('vertex', {
-        detail: {
-          isSelected: e.isSelected
-        }
-      }))
     })
 
     // Start new
@@ -91,15 +83,15 @@ export class Draw {
       draw.changeMode('draw_vertex', {
         container: container.parentNode,
         featureId: shape,
-        editVertexButton: this.editVertexButton,
+        vertexButton: this.vertexButton,
         interfaceType
       })
     }
   }
 
   // Edit existing shape
-  edit (drawMode, shape) {
-    const { oFeature, draw } = this
+  edit (drawMode, shape, interfaceType) {
+    const { oFeature, draw, vertexButton } = this
     const { map, container } = this.provider
     this.shape = shape
 
@@ -121,7 +113,8 @@ export class Draw {
       draw.changeMode('edit_vertex', {
         container: container.parentNode,
         featureId: shape,
-        editVertexButton: this.editVertexButton
+        vertexButton,
+        interfaceType
       })
     }
   }
@@ -159,11 +152,12 @@ export class Draw {
       this.addFeature(elFeature)
     }
 
-    // Set ref to feature
-    this.oFeature = draw.get(shape)
-
     // Set disabled mode
     draw.changeMode('disabled')
+
+    // Set ref to feature
+    this.oFeature = draw.get(shape)
+    console.log('finish', draw.get(shape))
 
     return this.oFeature
   }

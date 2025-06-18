@@ -17,8 +17,12 @@
 import './commands'
 
 import { mount } from 'cypress/react'
+import { addCompareSnapshotCommand } from 'cypress-visual-regression/dist/command'
 
 Cypress.Commands.add('mount', mount)
-
+addCompareSnapshotCommand()
 // Example use:
 // cy.mount(<MyComponent />)
+
+
+// compareSnapshots

@@ -139,6 +139,16 @@ export function handleStyleData (e) {
   }
 }
 
+export function handleDrawModeChange (e) {
+  const modes = {
+    edit_vertex: 'editVertex',
+    draw_vertex: 'drawVertex'
+  }
+  this.dispatchEvent(new CustomEvent('draw', {
+    detail: { mode: modes[e.mode] || null }
+  }))
+}
+
 export function handleError (err) {
   console.log(err)
 }

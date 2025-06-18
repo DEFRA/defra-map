@@ -137,10 +137,19 @@ export const EditVertexMode = {
   ...DirectSelect,
 
   onSetup (options) {
+    console.log('EditVertexMode')
+    const { map } = this
     const state = DirectSelect.onSetup.call(this, options)
-    const { container, featureId, selectedIndex, selectedType, isPanEnabled, editButton } = options
+
+    // Force modechnage event to fire
+    map.fire('draw.modechange', {
+      mode: 'edit_vertex'
+    })
+
+    const { container, featureId, selectedIndex, selectedType, isPanEnabled, vertexButton, interfaceType } = options
     state.container = container
-    state.editButton = editButton
+    state.interfaceType = interfaceType
+    state.vertexButton = vertexButton
     state.isPanEnabled = isPanEnabled
     state.featureId = featureId
     state.vertecies = this.getVerticies(featureId) // Store vertecies
@@ -148,25 +157,26 @@ export const EditVertexMode = {
     state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
 
-    // Bind touch events
-    this.touchstartHandler = (e) => this.onTouchstart(state, e)
-    this.touchendHandler = (e) => this.onTouchend(state, e)
-    container.addEventListener('touchstart', this.touchstartHandler)
-    container.addEventListener('touchend', this.touchendHandler)
+    // Swap edit button (Move to React, via event dispatch)
+    state.vertexButton.innerText = 'Delete point'
 
-    // Bind keyboard events as default events require map container to have focus
+    // Define event handlers
     this.keydownHandler = (e) => this.onKeydown(state, e)
     this.keyupHandler = (e) => this.onKeyup(state, e)
-    container.addEventListener('keydown', this.keydownHandler)
-    container.addEventListener('keyup', this.keyupHandler)
-
-    // Selection change event
+    this.pointerdownHandler = (e) => this.onPointerdown(state, e)
     this.selectionChangeHandler = (e) => this.onSelectionChange(state, e)
-    this.map.on('draw.selectionchange', this.selectionChangeHandler)
+    this.updateHandler = (e) => this.onUpdate(state, e)
+    this.vertexButtonClickHandler = (e) => this.onVertexButtonClick(state, e)
 
+    // Add event listenrs
+    window.addEventListener('keydown', this.keydownHandler, { capture: true })
+    window.addEventListener('keyup', this.keyupHandler, { capture: true })
+    container.addEventListener('pointerdown', this.pointerdownHandler)
+    map.on('draw.selectionchange', this.selectionChangeHandler)
     // Feature or vertex update event
-    const updateHandler = (e) => this.onUpdate(state, e)
-    this.map.on('draw.update', updateHandler)
+    map.on('draw.update', this.updateHandler)
+    // Edit button
+    vertexButton.addEventListener('click', this.vertexButtonClickHandler)
 
     // Add midpoint
     if (selectedType === 'midpoint') {
@@ -178,23 +188,27 @@ export const EditVertexMode = {
   },
 
   onSelectionChange (state, e) {
+    const { interfaceType } = state
     const vertexCoord = e.points[e.points.length - 1]?.geometry.coordinates
     const coords = e.features[0].geometry.coordinates.flat(1)
     const selectedIndex = coords.findIndex(c => vertexCoord && c[0] === vertexCoord[0] && c[1] === vertexCoord[1])
-    state.selectedIndex = state.selectedIndex < 0 ? selectedIndex : state.selectedIndex
+    const keyBoardIndex = state.selectedIndex < 0 ? selectedIndex : state.selectedIndex
+    // state.selectedIndex is already uptodate if set by keyboard
+    state.selectedIndex = interfaceType === 'keyboard' ? keyBoardIndex : selectedIndex
     state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
   },
 
   onUpdate (state, e) {
     const selectedIndex = parseInt(state.selectedCoordPaths[0]?.split('.')[1], 10)
     state.selectedIndex = !isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
-  },
-
-  onTouchstart (state, e) {
-    console.log('onTouchstart')
+    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+    state.vertecies = this.getVerticies(state.featureId)
+    state.midpoints = this.getMidpoints(state.featureId)
   },
 
   onKeydown (state, e) {
+    state.interfaceType = 'keyboard'
+
     // Set selected index and type
     if (e.key === ' ' && state.selectedIndex < 0) {
       state.isPanEnabled = false
@@ -227,15 +241,15 @@ export const EditVertexMode = {
       state.selectedType = null
 
       const draw = this._ctx.api
-      draw.changeMode('edit_vertex', { container: state.container, isPanEnabled: true, featureId: state.featureId })
+      draw.changeMode('edit_vertex', {
+        ...state
+      })
     }
   },
 
-  onTouchend (state, e) {
-    console.log('onTouchend')
-  },
-
   onKeyup (state, e) {
+    state.interfaceType = 'keyboard'
+
     // Arrow keys propogating to container
     if (ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
       e.stopPropagation()
@@ -245,6 +259,15 @@ export const EditVertexMode = {
     if (e.key === 'Delete') {
       this.deleteVertex(state)
     }
+  },
+
+  onPointerdown (state, e) {
+    state.interfaceType = e.pointerType === 'touch' ? 'touch' : 'pointer'
+    state.isPanEnabled = true
+  },
+
+  onVertexButtonClick (state, e) {
+    this.deleteVertex(state)
   },
 
   getVerticies (featureId) {
@@ -307,13 +330,10 @@ export const EditVertexMode = {
   },
 
   updateVertex (state, direction) {
-    const { container, isPanEnabled, featureId } = state
     const [index, type] = this.getVertexOrMidpoint(state, direction)
 
     this._ctx.api.changeMode('edit_vertex', {
-      container,
-      isPanEnabled,
-      featureId,
+      ...state,
       selectedIndex: index,
       selectedType: type,
       ...(type === 'vertex' ? { coordPath: `0.${index}` } : {})
@@ -380,9 +400,7 @@ export const EditVertexMode = {
 
     // Change mode to select the new vertex
     this._ctx.api.changeMode('edit_vertex', {
-      container: state.container,
-      isPanEnabled: state.isPanEnabled,
-      featureId: state.featureId,
+      ...state,
       selectedIndex: newVertexIndex,
       selectedType: 'vertex',
       coordPath: `0.${newVertexIndex}`
@@ -439,9 +457,7 @@ export const EditVertexMode = {
 
     // Reenter the mode to refresh the state
     draw.changeMode('edit_vertex', {
-      container: state.container,
-      isPanEnabled: state.isPanEnabled,
-      featureId: state.featureId,
+      ...state,
       selectedIndex: nextVertexIndex,
       selectedType: 'vertex',
       coordPath: `0.${nextVertexIndex}`
@@ -449,9 +465,14 @@ export const EditVertexMode = {
   },
 
   onStop (state) {
-    this.map.off('draw.selectionchange', this.selectionChangeHandler)
-    state.container.removeEventListener('keydown', this.keydownHandler)
-    state.container.removeEventListener('keyup', this.keyupHandler)
+    const { map } = this
+    const { container, vertexButton } = state
+    container.removeEventListener('pointerdown', this.pointerdownHandler)
+    map.off('draw.selectionchange', this.selectionChangeHandler)
+    map.off('draw.update', this.updateHandler)
+    vertexButton.removeEventListener('click', this.vertexButtonClickHandler)
+    window.removeEventListener('keydown', this.keydownHandler, { capture: true })
+    window.removeEventListener('keyup', this.keyupHandler, { capture: true })
   }
 }
 
@@ -459,10 +480,17 @@ export const DrawVertexMode = {
   ...DrawPolygon,
 
   onSetup (options) {
+    console.log('DrawVertexMode')
     const { map } = this
+
+    // Force modechnage event to fire
+    map.fire('draw.modechange', {
+      mode: 'draw_vertex'
+    })
+
     const state = DrawPolygon.onSetup.call(this, options)
-    const { interfaceType, container, featureId, editVertexButton } = options
-    state.editVertexButton = editVertexButton
+    const { interfaceType, container, featureId, vertexButton } = options
+    state.vertexButton = vertexButton
     state.interfaceType = interfaceType
     state.container = container
     state.featureId = featureId
@@ -478,8 +506,6 @@ export const DrawVertexMode = {
     state.vertexMarker = vertexMarker
 
     // Bind events as default events require map container to have focus
-    this.touchstartHandler = (e) => this.onTouchstart(state, e)
-    this.touchendHandler = (e) => this.onTouchend(state, e)
     this.keydownHandler = (e) => this.onKeydown(state, e)
     this.keyupHandler = (e) => this.onKeyup(state, e)
     this.pointerdownHandler = (e) => this.onPointerdown(state, e)
@@ -488,16 +514,15 @@ export const DrawVertexMode = {
     this.createHandler = (e) => this.onCreate(state, e)
     this.moveHandler = (e) => this.onMove(state, e)
     this.pointermoveHandler = (e) => this.onPointermove(state, e)
-    this.editClickHandler = (e) => this.onEditClick(state, e)
-    editVertexButton.addEventListener('click', this.editClickHandler)
-    container.addEventListener('keydown', this.keydownHandler)
-    container.addEventListener('keyup', this.keyupHandler)
+    this.vertexButtonClickHandler = (e) => this.onVertexButtonClick(state, e)
+
+    // Add event listeners
+    vertexButton.addEventListener('click', this.vertexButtonClickHandler)
+    window.addEventListener('keydown', this.keydownHandler)
+    window.addEventListener('keyup', this.keyupHandler)
     container.addEventListener('focus', this.focusHandler)
     container.addEventListener('blur', this.blurHandler)
-    map.on('touchstart', this.touchstartHandler)
-    map.on('touchend', this.touchendHandler)
-    map.on('pointerdown', this.pointerdownHandler)
-    map.on('pointermove', this.pointermoveHandler)
+    container.addEventListener('pointerdown', this.pointerdownHandler)
     map.on('pointermove', this.pointermoveHandler)
     map.on('draw.create', this.createHandler)
     map.on('move', this.moveHandler)
@@ -506,7 +531,7 @@ export const DrawVertexMode = {
   },
 
   onTap (state, e) {
-    console.log('onTap', state)
+
   },
 
   onCreate (state, e) {
@@ -517,15 +542,11 @@ export const DrawVertexMode = {
     draw.add(feature)
   },
 
-  onUpdate (state, e) {
-    console.log('onUpdate')
+  onVertexButtonClick (state, e) {
+    this.doClick(state)
   },
 
-  onEditClick (state, e) {
-    console.log('click')
-  },
-
-  onTouchstart (state, e) {
+  onTouchStart (state, e) {
     // Update line when switching interfaceType
     if (state.interfaceType === 'touch') {
       this.onMove(state, e)
@@ -536,7 +557,7 @@ export const DrawVertexMode = {
     state.vertexMarker.style.display = 'block'
   },
 
-  onTouchend (state, e) {
+  onTouchEnd (state, e) {
     // Update line when switching interfaceType
     if (state.interfaceType === 'touch') {
       this.onMove(state, e)
@@ -548,10 +569,15 @@ export const DrawVertexMode = {
   },
 
   onKeydown (state, e) {
-    // Enter keypress or invalid vertex
+    // Escape keypress
     if (e.key === 'Escape') {
       e.preventDefault()
       return
+    }
+
+    // Enter keypress set active flag
+    if (e.key === 'Enter') {
+      state.isActive = true
     }
 
     // Update line when switching interfaceType
@@ -575,8 +601,8 @@ export const DrawVertexMode = {
       this.onMove(state, e)
     }
 
-    // Enter keypress and valid vertex
-    if (state.interfaceType === 'keyboard' && e.key === 'Enter') {
+    // Do click on Enter keypress
+    if (e.key === 'Enter' && state.isActive) {
       this.doClick(state)
     }
     state.interfaceType = 'keyboard'
@@ -672,22 +698,17 @@ export const DrawVertexMode = {
 
   onStop (state) {
     DrawPolygon.onStop.call(this, state)
-
-    const { container } = state
-    // container.removeEventListener('keydown', this.keydownHandler)
-    // container.removeEventListener('keyup', this.keyupHandler)
-    // container.removeEventListener('pointerdown', this.pointerdownHandler)
-    // container.removeEventListener('focus', this.focusHandler)
-    // container.removeEventListener('blur', this.blurHandler)
-    // container.removeEventListener('pointermove', this.pointermoveHandler)
-    container.removeEventListener('keydown', this.keydownHandler)
-    container.removeEventListener('keyup', this.keyupHandler)
+    const { map } = this
+    const { container, vertexButton } = state
+    window.removeEventListener('keydown', this.keydownHandler)
+    window.removeEventListener('keyup', this.keyupHandler)
     container.removeEventListener('focus', this.focusHandler)
     container.removeEventListener('blur', this.blurHandler)
-    this.map.off('pointerdown', this.pointerdownHandler)
-    this.map.off('pointermove', this.pointermoveHandler)
-    this.map.off('draw.create', this.createHandler)
-    this.map.off('move', this.moveHandler)
+    container.removeEventListener('pointerdown', this.pointerdownHandler)
+    map.off('pointermove', this.pointermoveHandler)
+    map.off('draw.create', this.createHandler)
+    map.off('move', this.moveHandler)
+    vertexButton.removeEventListener('click', this.vertexButtonClickHandler)
 
     // Remove vertex target
     container.querySelector('[data-vertex-target]')?.remove()

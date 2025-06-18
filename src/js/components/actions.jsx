@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
@@ -58,14 +58,21 @@ export default function Actions () {
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
 
+  useEffect(() => {
+    provider.addEventListener('draw', (e) => {
+      console.log('Draw event', e.detail)
+    })
+  }, [])
+
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      <button className='fm-c-btn-primary' {...(!isVertexTouch && { style: { display: 'none' } })} data-edit-vertex-button={true}>
-        {`${query ? 'Delete point' : 'Add point'}`}
-      </button>
+      {provider.capabilities?.hasInclusiveDraw && (
+        <button className='fm-c-btn-primary' {...(!isVertexTouch && { style: { display: 'none' } })} data-vertex-button={true}>
+          {`${query ? 'Delete point' : 'Add point'}`}
+        </button>
+      )}
       <button onClick={handleUpdateClick} className='fm-c-btn-primary' {...(isDefaultMode && { style: { display: 'none' } })} {...(!isDrawValid && { 'aria-disabled': true })}>
-        {/* {`${query ? 'Update' : 'Confirm'}`} <span className='fm-u-visually-hidden'>area</span> */}
-        Done
+        {`${query ? 'Done' : 'Finish'}`}
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn-secondary' {...(isDefaultMode && { style: { display: 'none' } })}>
         Cancel

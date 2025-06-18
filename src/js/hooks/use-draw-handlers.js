@@ -8,12 +8,12 @@ export function useDrawHandlers () {
   const { dispatch: viewportDispatch, size, style } = useViewport()
   const { styles, minZoom, maxZoom } = draw || {}
 
-  const handleAddClick = (shapeId) => {
+  const handleAddClick = ({ shapeId, interfaceType }) => {
     if (!provider.map) {
       return
     }
     const drawMode = drawTools.find(m => m.id === shapeId)?.drawMode || 'frame'
-    provider.draw?.add(drawMode, shapeId)
+    provider.draw?.add(drawMode, shapeId, interfaceType)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, shape: shapeId, query } })
     viewportDispatch({ type: 'TOGGLE_CONSTRAINTS', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })
@@ -21,12 +21,12 @@ export function useDrawHandlers () {
     activeRef.current?.focus()
   }
 
-  const handleEditClick = (shapeId) => {
+  const handleEditClick = ({ shapeId, interfaceType }) => {
     if (!provider.map) {
       return
     }
     const drawMode = drawTools.find(m => m.id === shapeId)?.drawMode || 'frame'
-    provider.draw?.edit(drawMode, shapeId)
+    provider.draw?.edit(drawMode, shapeId, interfaceType)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, shape: shapeId, query } })
     viewportDispatch({ type: 'TOGGLE_CONSTRAINTS', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })

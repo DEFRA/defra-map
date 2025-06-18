@@ -1,4 +1,4 @@
-import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events.js'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleError } from './events.js'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query.js'
 import { locationMarkerHTML, targetMarkerHTML } from './marker.js'
 import { highlightLabel } from './symbols.js'
@@ -8,7 +8,7 @@ import { throttle } from '../../lib/throttle.js'
 import { defaults, css } from './constants.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
-class MapLibreProvider extends EventTarget {
+class Framework extends EventTarget {
   constructor ({ capabilities, transformRequest, symbols }) {
     super()
     this.srid = 4326
@@ -127,6 +127,9 @@ class MapLibreProvider extends EventTarget {
 
     // Map style change
     map.on('style.load', handleStyleLoad.bind(this))
+
+    // Draw events
+    map.on('draw.modechange', handleDrawModeChange.bind(this))
 
     // Capture errors
     map.on('error', handleError.bind(this))
@@ -303,4 +306,4 @@ class MapLibreProvider extends EventTarget {
   }
 }
 
-export default MapLibreProvider
+export default Framework

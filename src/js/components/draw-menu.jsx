@@ -4,7 +4,7 @@ import { tools as defaultTools } from '../store/constants.js'
 import { useDrawHandlers } from '../hooks/use-draw-handlers'
 
 export default function DrawMenu () {
-  const { dispatch, options, legend, draw, isDrawMenuExpanded, query, shape, drawTools } = useApp()
+  const { dispatch, options, legend, draw, isDrawMenuExpanded, query, shape, drawTools, interfaceType } = useApp()
   const { id } = options
   const isDetails = ['expanded', 'collapse'].includes(draw?.collapse)
   const { handleAddClick, handleEditClick, handleDeleteClick } = useDrawHandlers()
@@ -52,10 +52,10 @@ export default function DrawMenu () {
                 aria-disabled={drawTools.includes(tool) ? !!query : !query}
                 onClick={() => {
                   if (drawTools.includes(tool) && !query) {
-                    handleAddClick(tool.id)
+                    handleAddClick({ shapeId: tool.id, interfaceType })
                   }
                   if (tool.id === 'edit' && query) {
-                    handleEditClick(shape)
+                    handleEditClick({ shapeId: shape, interfaceType })
                   }
                   if (tool.id === 'delete' && query) {
                     handleDeleteClick()

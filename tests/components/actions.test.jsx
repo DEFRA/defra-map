@@ -30,6 +30,7 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       provider: {
+        addEventListener: jest.fn(),
         map: {},
         draw: {
           finish: drawFinish
@@ -44,7 +45,7 @@ describe('actions', () => {
 
     render(<Actions cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Done'))
+    fireEvent.click(screen.getByText('Finish'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
@@ -56,6 +57,7 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           cancel: drawFinish
         }
@@ -83,6 +85,7 @@ describe('actions', () => {
       dispatch,
       query: true,
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           finish: drawFinish
         }
@@ -112,6 +115,7 @@ describe('actions', () => {
       draw: { queryLabel: 'Submit' },
       drawMode: 'default',
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           finish: drawFinish
         }

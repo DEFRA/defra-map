@@ -7,7 +7,7 @@ import { defaults } from './constants.js'
 import { targetMarkerGraphic } from './marker.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
-class ESRIProvider extends EventTarget {
+class Framework extends EventTarget {
   constructor ({ capabilities, setupEsriConfig }) {
     super()
     this.srid = 27700
@@ -326,4 +326,4 @@ class ESRIProvider extends EventTarget {
   }
 }
 
-export default ESRIProvider
+export default Framework

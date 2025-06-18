@@ -39,7 +39,7 @@ const getArrayFindLast = () => {
 // ESRI provider descriptor
 export default {
   capabilities: {
-    hasDraw: true,
+    hasInclusiveDraw: false,
     hasSize: false
   },
   checkSupport: () => {
@@ -51,7 +51,7 @@ export default {
     }
   },
   load: async () => {
-    const module = await import(/* webpackChunkName: "flood-map-esri-provider" */ './esri-provider.js')
+    const module = await import(/* webpackChunkName: "flood-map-esri-provider" */ './framework.js')
     return module.default
   }
 }

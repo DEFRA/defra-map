@@ -20,9 +20,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "cypress:open": "cypress open",
-    "test:visual": "start-server-and-test storybook http://localhost:6006 'cypress run'",
-    "test:visual:update": "start-server-and-test storybook http://localhost:6006 'cypress run --env visualRegressionType=base'",
-    "test:visual:ci": "cypress run --headless"
+    "test:visual": "cypress run --component --headless",
+    "test:visual:update": "cypress run --component --headless --env visualRegressionType=base",
+    "test:visual:ci": "cypress run --component --headless"
   },
   "standard": {
     "ignore": [
@@ -39,8 +39,10 @@
   "license": "OGL-UK-3.0",
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@cypress/webpack-preprocessor": "^6.0.4",
     "@esri/arcgis-rest-request": "^4.2.3",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@storybook/addon-essentials": "^8.6.0",

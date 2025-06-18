@@ -30,7 +30,7 @@ const getWebGL = names => {
 export default {
   capabilities: {
     isLatest: !!window.globalThis,
-    hasDraw: true,
+    hasInclusiveDraw: true,
     hasSize: !!window.globalThis
   },
   checkSupport: () => {
@@ -42,7 +42,7 @@ export default {
     }
   },
   load: async () => {
-    const module = await import(/* webpackChunkName: "flood-map-maplibre-provider" */ './maplibre-provider.js')
+    const module = await import(/* webpackChunkName: "flood-map-maplibre-provider" */ './framework.js')
     return module.default
   }
 }

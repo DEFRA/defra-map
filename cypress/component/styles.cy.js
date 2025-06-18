@@ -40,6 +40,10 @@ const defaultArgs = {
     name: 'default',
     attribution: 'Attribution',
     url: 'https://labs.os.uk/tiles/styles/open-zoomstack-outdoor/style.json'
+  },{
+    name: 'dark',
+    attribution: 'Attribution',
+    url: 'https://labs.os.uk/tiles/styles/open-zoomstack-night/style.json'
   }]
 }
 
@@ -48,28 +52,27 @@ describe('Visual Regression Tests', () => {
     // Optional global setup
   })
 
-  it('should hide zoom buttons on mobile', () => {
+  it('should show style button', () => {
     cy.viewport('iphone-6')
 
     cy.mount(<FloodMapStoryWrapper {...defaultArgs} />)
     cy.wait(2000) // wait for map to render
 
     // Use screenshot instead of compareSnapshot for now
-    cy.compareSnapshot('iphone-6-zoom--hidden')
+    cy.compareSnapshot('styles--button-visibile')
   })
 
-  it('should disable zoom in button', () => {
-    cy.viewport('ipad-2')
+  it('should open the map styles panel', () => {
+    cy.viewport('iphone-6')
 
     cy.mount(<FloodMapStoryWrapper {...defaultArgs} />)
-    cy.wait(2000)
+    cy.wait(2000) // wait for map to render
 
-    cy.get('.fm-c-btn--zoom-in').click()
-    cy.wait(1000)
-    cy.get('.fm-c-btn--zoom-in').click()
-    cy.wait(1000)
+    // Get styles button
+    cy.get('.fm-c-btn--style').click()
+    cy.wait(500)
 
     // Use screenshot instead of compareSnapshot for now
-    cy.compareSnapshot('tablet-zoom--max-zoom')
+    cy.compareSnapshot('styles--panel-open')
   })
 })

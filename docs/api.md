@@ -101,13 +101,6 @@ deviceTestCallback: () => {
 
 ### _`draw`_ (**[draw](./api/draw.md)**)
 
-### `framework`  (**string**)
-
-The name of the framework used if not MapLibre. This allows the component to check the device capabilities before the framework is loaded. If the the device does not meet the requirements then an appropriate error message will be displayed in the container.
-
-> [!NOTE]
-> Only applicable if using a an alternative framework. Currently the only value supported is `esri`.
-
 ### _`geocodeProvider`_ (**async function**)
 
 ### `hasAutoMode`  (**boolean**)

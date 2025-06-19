@@ -67,13 +67,14 @@ export default function Actions () {
     }
   }
 
+  const hasInclusiveDraw = provider.capabilities?.hasInclusiveDraw
   const isDefaultMode = drawMode === 'default'
   const isVertexTouch = drawMode === 'vertex' && interfaceType === 'touch'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
-  const isUpdateDisabled = !isDrawValid || numVertecies < 3
-  const isDeleteDisabled = vertexButtonAction === 'delete' && numVertecies < 4
+  const isUpdateDisabled = !hasInclusiveDraw && !isDrawValid || (hasInclusiveDraw && (!isDrawValid || numVertecies < 3))
+  const isDeleteDisabled = hasInclusiveDraw && (vertexButtonAction === 'delete' && numVertecies < 4)
 
   useEffect(() => {
     provider.addEventListener('draw', handleDrawEvent)
@@ -81,7 +82,7 @@ export default function Actions () {
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      {provider.capabilities?.hasInclusiveDraw && (
+      {hasInclusiveDraw && (
         <button className='fm-c-btn-primary' {...(!isVertexTouch && { style: { display: 'none' } })} aria-disabled={isDeleteDisabled} data-vertex-button={true}>
           {`${vertexButtonAction === 'delete' ? 'Delete point' : 'Add point'}`}
         </button>

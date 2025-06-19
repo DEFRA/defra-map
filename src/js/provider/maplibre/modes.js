@@ -137,14 +137,8 @@ export const EditVertexMode = {
   ...DirectSelect,
 
   onSetup (options) {
-    console.log('EditVertexMode')
     const { map } = this
     const state = DirectSelect.onSetup.call(this, options)
-
-    // Force modechnage event to fire
-    map.fire('draw.modechange', {
-      mode: 'edit_vertex'
-    })
 
     const { container, featureId, selectedIndex, selectedType, isPanEnabled, vertexButton, interfaceType } = options
     state.container = container
@@ -157,8 +151,11 @@ export const EditVertexMode = {
     state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
 
-    // Swap edit button (Move to React, via event dispatch)
-    state.vertexButton.innerText = 'Delete point'
+    // Force modechange event to fire
+    map.fire('draw.modechange', {
+      mode: 'edit_vertex',
+      feature: this.getFeature(featureId)
+    })
 
     // Define event handlers
     this.keydownHandler = (e) => this.onKeydown(state, e)
@@ -168,14 +165,12 @@ export const EditVertexMode = {
     this.updateHandler = (e) => this.onUpdate(state, e)
     this.vertexButtonClickHandler = (e) => this.onVertexButtonClick(state, e)
 
-    // Add event listenrs
+    // Add event listeners
     window.addEventListener('keydown', this.keydownHandler, { capture: true })
     window.addEventListener('keyup', this.keyupHandler, { capture: true })
     container.addEventListener('pointerdown', this.pointerdownHandler)
     map.on('draw.selectionchange', this.selectionChangeHandler)
-    // Feature or vertex update event
     map.on('draw.update', this.updateHandler)
-    // Edit button
     vertexButton.addEventListener('click', this.vertexButtonClickHandler)
 
     // Add midpoint
@@ -183,6 +178,9 @@ export const EditVertexMode = {
       const coords = state.midpoints[selectedIndex - state.vertecies.length]
       this.updateMidpoint(coords)
     }
+
+    // Dispatch vertex chnage event on entering mode
+    this.dispatchVertexChange(state.vertecies)
 
     return state
   },
@@ -204,6 +202,9 @@ export const EditVertexMode = {
     state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
     state.vertecies = this.getVerticies(state.featureId)
     state.midpoints = this.getMidpoints(state.featureId)
+
+    // Dispatch vertex change event
+    this.dispatchVertexChange(state.vertecies)
   },
 
   onKeydown (state, e) {
@@ -268,6 +269,12 @@ export const EditVertexMode = {
 
   onVertexButtonClick (state, e) {
     this.deleteVertex(state)
+  },
+
+  dispatchVertexChange (coords) {
+    this.map.fire('draw.vertexchange', {
+      numVertecies: coords.length
+    })
   },
 
   getVerticies (featureId) {
@@ -480,7 +487,6 @@ export const DrawVertexMode = {
   ...DrawPolygon,
 
   onSetup (options) {
-    console.log('DrawVertexMode')
     const { map } = this
 
     // Force modechnage event to fire
@@ -508,12 +514,13 @@ export const DrawVertexMode = {
     // Bind events as default events require map container to have focus
     this.keydownHandler = (e) => this.onKeydown(state, e)
     this.keyupHandler = (e) => this.onKeyup(state, e)
-    this.pointerdownHandler = (e) => this.onPointerdown(state, e)
     this.focusHandler = (e) => this.onFocus(state, e)
     this.blurHandler = (e) => this.onBlur(state, e)
     this.createHandler = (e) => this.onCreate(state, e)
     this.moveHandler = (e) => this.onMove(state, e)
+    this.pointerdownHandler = (e) => this.onPointerdown(state, e)
     this.pointermoveHandler = (e) => this.onPointermove(state, e)
+    this.pointerupHandler = (e) => this.onPointerup(state, e)
     this.vertexButtonClickHandler = (e) => this.onVertexButtonClick(state, e)
 
     // Add event listeners
@@ -522,12 +529,46 @@ export const DrawVertexMode = {
     window.addEventListener('keyup', this.keyupHandler)
     container.addEventListener('focus', this.focusHandler)
     container.addEventListener('blur', this.blurHandler)
-    container.addEventListener('pointerdown', this.pointerdownHandler)
-    map.on('pointermove', this.pointermoveHandler)
+    container.addEventListener('pointermove', this.pointermoveHandler)
+    container.addEventListener('pointerup', this.pointerupHandler)
+    map.on('pointerdown', this.pointerdownHandler)
     map.on('draw.create', this.createHandler)
     map.on('move', this.moveHandler)
 
     return state
+  },
+
+  doClick (state) {
+    const coords = state.polygon.coordinates
+    this.dispatchVertexChange(coords[0])
+
+    // Not a valid vertex
+    if (!isValidClick(coords)) {
+      return
+    }
+
+    const { map } = this
+    const center = map.getCenter()
+    const point = map.project(center)
+
+    const simulatedClickEvent = {
+      lngLat: center,
+      point,
+      originalEvent: new window.MouseEvent('click', {
+        clientX: point.x,
+        clientY: point.y,
+        bubbles: true,
+        cancelable: true
+      })
+    }
+    DrawPolygon.onClick.call(this, state, simulatedClickEvent)
+    this._ctx.store.render()
+  },
+
+  dispatchVertexChange (coords) {
+    this.map.fire('draw.vertexchange', {
+      numVertecies: coords.length
+    })
   },
 
   onTap (state, e) {
@@ -611,13 +652,6 @@ export const DrawVertexMode = {
     state.vertexMarker.style.display = 'block'
   },
 
-  onPointerdown (state, e) {
-    if (e.pointerType !== 'touch') {
-      state.interfaceType = 'pointer'
-      state.vertexMarker.style.display = 'none'
-    }
-  },
-
   onFocus (state, e) {
     const { vertexMarker, interfaceType } = state
     vertexMarker.style.display = ['touch', 'keyboard'].includes(interfaceType) ? 'block' : 'none'
@@ -627,32 +661,6 @@ export const DrawVertexMode = {
     if (e.target !== state.container) {
       state.vertexMarker.style.display = 'none'
     }
-  },
-
-  doClick (state) {
-    const coords = state.polygon.coordinates
-
-    // Not a valid vertex
-    if (!isValidClick(coords)) {
-      return
-    }
-
-    const { map } = this
-    const center = map.getCenter()
-    const point = map.project(center)
-
-    const simulatedClickEvent = {
-      lngLat: center,
-      point,
-      originalEvent: new window.MouseEvent('click', {
-        clientX: point.x,
-        clientY: point.y,
-        bubbles: true,
-        cancelable: true
-      })
-    }
-    DrawPolygon.onClick.call(this, state, simulatedClickEvent)
-    this._ctx.store.render()
   },
 
   onMove (state, e) {
@@ -677,10 +685,21 @@ export const DrawVertexMode = {
     }
   },
 
+  onPointerdown (state, e) {
+    if (e.pointerType !== 'touch') {
+      state.interfaceType = 'pointer'
+      state.vertexMarker.style.display = 'none'
+    }
+  },
+
   onPointermove (state, e) {
     if (e.pointerType !== 'touch') {
       state.vertexMarker.style.display = 'none'
     }
+  },
+
+  onPointerup (state, e) {
+    this.dispatchVertexChange(state.polygon.coordinates[0])
   },
 
   toDisplayFeatures (state, geojson, display) {
@@ -704,8 +723,9 @@ export const DrawVertexMode = {
     window.removeEventListener('keyup', this.keyupHandler)
     container.removeEventListener('focus', this.focusHandler)
     container.removeEventListener('blur', this.blurHandler)
-    container.removeEventListener('pointerdown', this.pointerdownHandler)
-    map.off('pointermove', this.pointermoveHandler)
+    container.removeEventListener('pointermove', this.pointermoveHandler)
+    container.removeEventListener('pointerup', this.pointerupHandler)
+    map.off('pointerdown', this.pointerdownHandler)
     map.off('draw.create', this.createHandler)
     map.off('move', this.moveHandler)
     vertexButton.removeEventListener('click', this.vertexButtonClickHandler)

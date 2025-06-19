@@ -140,12 +140,24 @@ export function handleStyleData (e) {
 }
 
 export function handleDrawModeChange (e) {
-  const modes = {
-    edit_vertex: 'editVertex',
-    draw_vertex: 'drawVertex'
+  const actions = {
+    edit_vertex: 'delete',
+    draw_vertex: 'add'
   }
   this.dispatchEvent(new CustomEvent('draw', {
-    detail: { mode: modes[e.mode] || null }
+    detail: {
+      action: actions[e.mode] || null,
+      feature: e.feature
+    }
+  }))
+}
+
+export function handleDrawVertexChange (e) {
+  this.dispatchEvent(new CustomEvent('draw', {
+    detail: {
+      action: 'change',
+      numVertecies: e.numVertecies
+    }
   }))
 }
 

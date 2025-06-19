@@ -157,7 +157,6 @@ export class Draw extends EventTarget {
 
     // Set ref to feature
     this.oFeature = draw.get(shape)
-    console.log('finish', draw.get(shape))
 
     return this.oFeature
   }

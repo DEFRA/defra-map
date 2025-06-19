@@ -342,17 +342,3 @@ fm.addEventListener('query', e => {
     fm.setInfo(null)
   }
 })
-
-const fm2 = new FloodMap('map-two', {
-  behaviour: 'buttonFirst',
-  pageTitle: 'Test page title one',
-  place: 'Penberth',
-  center: [-5.6303099, 50.048378],
-  zoom: 8,
-  backgroundColor: 'default: #f5f5f0, dark: #162639',
-  styles: [{
-    name: 'default',
-    attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-    url: process.env.DEFAULT_URL
-  }]
-})

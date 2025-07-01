@@ -17,7 +17,7 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String), // The long path string for markers with data
-          size: '38px',
+          size: '36px',
           color: '#0b0c0c',
           outline: {
             color: '#ffffff',
@@ -40,7 +40,7 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String), // The long path string for markers without data
-          size: '38px',
+          size: '36px',
           color: '#0b0c0c',
           outline: {
             color: '#ffffff',
@@ -63,7 +63,7 @@ describe('Marker Module', () => {
         symbol: {
           type: 'simple-marker',
           path: expect.any(String),
-          size: '38px',
+          size: '36px',
           color: '#ffffff', // White color for dark theme
           outline: {
             color: '#0b0c0c',

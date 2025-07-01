@@ -2,13 +2,23 @@
   "name": "@defra/flood-map",
   "version": "0.4.0",
   "description": "Accessible map component",
-  "browser": "dist/client.js",
+  "browser": "dist/es5/flood-map.js",
+  "style": "dist/css/flood-map.css",
+  "exports": {
+    ".": {
+      "import": "./dist/es5/flood-map.js",
+      "require": "./dist/js/flood-map.js",
+      "browser": "./dist/es5/flood-map.js",
+      "default": "./dist/es5/flood-map.js"
+    },
+    "./style": "./dist/css/flood-map.css"
+  },
   "scripts": {
     "dev": "(cd demo && webpack server)",
     "dev:esri": "(cd demo && webpack server --config webpack.esri.mjs)",
     "prod": "(cd demo && webpack server --config webpack.prod.mjs)",
     "prod:esri": "(cd demo && webpack server --config webpack.prod-esri.mjs)",
-    "build": "webpack --config webpack.module.mjs && webpack --config webpack.window.mjs",
+    "build": "webpack --config webpack.browser.mjs && webpack --config webpack.window.mjs",
     "report": "webpack --profile --json --config='./demo/webpack.prod.mjs' > stats.json; webpack-bundle-analyzer ./stats.json",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:scss -- --fix",

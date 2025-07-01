@@ -14,7 +14,8 @@ export const draw = (styleName) => {
     vertexActive(fgColor),
     midpointHalo(bgColor, hColor),
     midpointActive(fgColor),
-    circle(fgColor)
+    circle(fgColor),
+    touchVertexIndicator(fgColor)
   ]
 }
 
@@ -146,5 +147,22 @@ const circle = (fgColor) => ({
     'line-color': fgColor,
     'line-width': 2,
     'line-opacity': 0.8
+  }
+})
+
+const touchVertexIndicator = (fgColor) => ({
+  id: 'touch-vertex-indicator',
+  type: 'circle',
+  // source: 'mapbox-gl-draw-cold',
+  filter: ['all',
+    ['==', '$type', 'Point'],
+    ['==', 'meta', 'touch-vertex-indicator']
+  ],
+  paint: {
+    'circle-radius': 12,
+    'circle-color': '#3bb2d0',
+    'circle-stroke-width': 3,
+    'circle-stroke-color': '#ffffff',
+    'circle-opacity': 0.9
   }
 })

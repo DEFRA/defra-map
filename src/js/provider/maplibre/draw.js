@@ -44,12 +44,6 @@ export class Draw extends EventTarget {
     map.addControl(draw)
     this.draw = draw
 
-    // Add existing feature
-    if (initialFeature && drawMode === 'default') {
-      this.addFeature(initialFeature)
-      return
-    }
-
     // Disable simple_select mode
     map.on('draw.modechange', e => {
       if (e.mode === 'simple_select') {
@@ -57,10 +51,17 @@ export class Draw extends EventTarget {
           container: container.parentNode,
           featureId: this.shape,
           vertexButton: this.vertexButton,
+          isPanEnabled: interfaceType !== 'keyboard',
           interfaceType
         })
       }
     })
+
+    // Add existing feature
+    if (initialFeature && drawMode === 'default') {
+      this.addFeature(initialFeature)
+      return
+    }
 
     // Start new
     this.add(drawMode, shape, interfaceType)
@@ -114,7 +115,7 @@ export class Draw extends EventTarget {
         container: container.parentNode,
         featureId: shape,
         vertexButton,
-        interfaceType
+        isPanEnabled: interfaceType !== 'keyboard'
       })
     }
   }

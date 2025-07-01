@@ -161,6 +161,16 @@ export function handleDrawVertexChange (e) {
   }))
 }
 
+export function handleDrawVertexSelect (e) {
+  this.dispatchEvent(new CustomEvent('draw', {
+    detail: {
+      action: 'select',
+      featureId: e.featureId,
+      selectedIndex: e.selectedIndex
+    }
+  }))
+}
+
 export function handleError (err) {
   console.log(err)
 }

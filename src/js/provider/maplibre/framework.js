@@ -1,4 +1,4 @@
-import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleDrawVertexChange, handleError } from './events.js'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleDrawVertexChange, handleDrawVertexSelect, handleError } from './events.js'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query.js'
 import { locationMarkerHTML, targetMarkerHTML } from './marker.js'
 import { highlightLabel } from './symbols.js'
@@ -134,6 +134,7 @@ class Framework extends EventTarget {
     // Draw events
     map.on('draw.modechange', handleDrawModeChange.bind(this))
     map.on('draw.vertexchange', handleDrawVertexChange.bind(this))
+    map.on('draw.vertexselect', handleDrawVertexSelect.bind(this))
 
     // Capture errors
     map.on('error', handleError.bind(this))

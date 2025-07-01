@@ -18,6 +18,7 @@ export default function Actions () {
   const { dispatch: viewportDispatch, size, isDrawValid } = useViewport()
   const [vertexButtonAction, setVertexButtonAction ] = useState(query ? 'delete' : 'add')
   const [numVertecies, setNumVertecies ] = useState(null)
+  const [vertexSelectedIndex, setVertexSelectedIndex ] = useState(null)
 
   const handleUpdateClick = () => {
     if (!(provider.map || drawTool) || !isDrawValid) {
@@ -65,6 +66,9 @@ export default function Actions () {
     if (action === 'change') {
       setNumVertecies(e.detail.numVertecies) 
     }
+    if (action === 'select') {
+      setVertexSelectedIndex(e.detail.selectedIndex)
+    }
   }
 
   const hasInclusiveDraw = provider.capabilities?.hasInclusiveDraw
@@ -73,8 +77,8 @@ export default function Actions () {
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
-  const isUpdateDisabled = !hasInclusiveDraw && !isDrawValid || (hasInclusiveDraw && (!isDrawValid || numVertecies < 3))
-  const isDeleteDisabled = hasInclusiveDraw && (vertexButtonAction === 'delete' && numVertecies < 4)
+  const isUpdateDisabled = !isDrawValid || (hasInclusiveDraw && drawMode === 'vertex' && numVertecies < 3)
+  const isDeleteDisabled = hasInclusiveDraw && (vertexSelectedIndex < 0 || numVertecies < 4)
 
   useEffect(() => {
     provider.addEventListener('draw', handleDrawEvent)

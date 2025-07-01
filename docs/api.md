@@ -120,11 +120,28 @@ hasAutoMode: true
 
 If `true` a 'Use your location' button will be visible. Selecting this button will centre the map on the users current locaton if the website has permission to use location services. Defaults to `false`.
 
+```js
+// Example: Enable use your location button
+hasGeoLocation: true
+```
+
 ### `hasReset`  (**boolean**)
 
 If `true` a 'Reset map view' button will be visible. Selecting this button will re-centre the map on initial location. Defaults to `false`.
 
+```js
+// Example: Enable reset map view button
+hasReset: true
+```
+
 ### `height`  (**string**)
+
+The height of the map container, eg '600px' or '50%'. Used when the behaviour is inline or behaviour is hybrid and the browser size is desktop. If a percentage is used then an ancestor container will require a height.
+
+```js
+// Example: Set container height
+height: '600px'
+```
 
 ### `info`  (**[Info](./api/info.md)**)
 

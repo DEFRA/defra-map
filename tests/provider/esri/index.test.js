@@ -6,7 +6,7 @@ describe('provider', () => {
     })
 
     it('should return no support', async () => {
-        const provider = (await import('../../../src/js/provider/esri/provider.js')).default
+        const provider = (await import('../../../src/js/provider/esri/index.js')).default
 
         const result = {
             isSupported: false,
@@ -22,7 +22,7 @@ describe('provider', () => {
             value: true
         })
 
-        const provider = (await import('../../../src/js/provider/esri/provider.js')).default
+        const provider = (await import('../../../src/js/provider/esri/index.js')).default
 
         const result = {
             isSupported: false,
@@ -60,7 +60,7 @@ describe('provider', () => {
             isSupported: true
         }
 
-        const provider = (await import('../../../src/js/provider/esri/provider.js')).default
+        const provider = (await import('../../../src/js/provider/esri/index.js')).default
         expect(provider.checkSupport()).toEqual(result)
     })
 
@@ -68,7 +68,7 @@ describe('provider', () => {
         const originalFindLast = Array.prototype.findLast
         delete Array.prototype.findLast
 
-        const provider = (await import('../../../src/js/provider/esri/provider.js')).default
+        const provider = (await import('../../../src/js/provider/esri/index.js')).default
 
         expect(provider.checkSupport()).toEqual({
             isSupported: false,
@@ -80,7 +80,7 @@ describe('provider', () => {
     })
 
     it('should load the esri provider module', async () => {
-        jest.mock('../../../src/js/provider/esri/provider.js', () => ({
+        jest.mock('../../../src/js/provider/esri/index.js', () => ({
             __esModule: true,
             default: {
                 load: jest.fn().mockResolvedValue(function MockEsriProvider() {})
@@ -88,7 +88,7 @@ describe('provider', () => {
         }))
 
         // Dynamically import registry AFTER mocking
-        const provider = (await import('../../../src/js/provider/esri/provider.js')).default
+        const provider = (await import('../../../src/js/provider/esri/index.js')).default
         const loaded = await provider.load()
 
         expect(loaded.name).toBe('MockEsriProvider')

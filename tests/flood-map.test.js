@@ -15,18 +15,18 @@ jest.mock('../src/js/lib/utils', () => { return {
   parseAttribute: jest.fn()
 }})
 
-jest.mock('../src/js/provider/maplibre/provider', () => { return {
+jest.mock('../src/js/provider/maplibre/index', () => { return {
   checkSupport: jest.fn(() => ({
     isSupported: true
   })),
   load: jest.fn()
 }})
 
-jest.mock('../src/js/provider/os-open-names/provider', () => { return {
+jest.mock('../src/js/provider/os-open-names/index', () => { return {
   load: jest.fn()
 }})
 
-jest.mock('../src/js/provider/os-open-names-reverse/provider', () => { return {
+jest.mock('../src/js/provider/os-open-names-reverse/index', () => { return {
   load: jest.fn()
 }})
 

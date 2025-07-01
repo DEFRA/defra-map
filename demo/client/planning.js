@@ -1,5 +1,5 @@
 import { FloodMap } from '../../src/flood-map.js'
-import esri from '../../src/js/provider/esri/provider.js'
+import esri from '../../src/js/provider/esri/index.js'
 import { setupEsriConfig, getRequest } from './request.js'
 
 let map, isDark, isRamp

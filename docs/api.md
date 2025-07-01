@@ -103,6 +103,8 @@ deviceTestCallback: () => {
 
 ### _`geocodeProvider`_ (**async function**)
 
+An instance of a geocode provider class. Allows replacing the default geocode provider with a custom geocode provider.
+
 ### `hasAutoMode`  (**boolean**)
 
 If `true` then a light or dark theme will be used for the map style and interface that corresponds to the current operating system appearance. If the operating appearance is changed the map style and interface will update automatically. If `false` then a light theme will be used for the initial map style and interafce, regardless of operating system appearance.
@@ -115,6 +117,8 @@ hasAutoMode: true
 ```
 
 ### `hasGeoLocation`  (**boolean**)
+
+If `true` then a 'Use your location' button is visible. Selecting this button will centre the map on the users current locaton. Defaults to `false`.
 
 ### `hasReset`  (**boolean**)
 
@@ -133,6 +137,8 @@ hasAutoMode: true
 ### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
 
 ### _`reverseGeocodeProvider`_ (**async function**)
+
+An instance of a reverser geocode provider class. Allows replacing the default reverse geocode provider with a custom reverse geocode provider.
 
 ### _`scaleBar`_ (**string**)
 

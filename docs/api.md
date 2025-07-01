@@ -118,9 +118,11 @@ hasAutoMode: true
 
 ### `hasGeoLocation`  (**boolean**)
 
-If `true` then a 'Use your location' button is visible. Selecting this button will centre the map on the users current locaton. Defaults to `false`.
+If `true` a 'Use your location' button will be visible. Selecting this button will centre the map on the users current locaton if the website has permission to use location services. Defaults to `false`.
 
 ### `hasReset`  (**boolean**)
+
+If `true` a 'Reset map view' button will be visible. Selecting this button will re-centre the map on initial location. Defaults to `false`.
 
 ### `height`  (**string**)
 

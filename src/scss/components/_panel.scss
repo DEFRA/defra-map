@@ -120,6 +120,12 @@
     margin: $margin $margin 0;
 }
 
+// Error panel
+.fm-c-panel--error {
+    width: calc(100% - $margin * 2);
+    max-width: 400px;
+}
+
 // Header overides
 .fm-c-panel--legend:not(.fm-c-panel--inset) .fm-c-panel__header {
     border-bottom: 1px solid var(--border-colour);

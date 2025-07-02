@@ -147,7 +147,7 @@ height: '600px'
 
 ### `info`  (**[info](./api/info.md)**)
 
-A `info` object. Options for adding and configuring initial info panel.
+An `info` object. Options for adding and configuring initial info panel.
 
 ### `legend` (**[legend](./api/legend.md)**)
 
@@ -230,4 +230,4 @@ To follow...
 
 ### `setInfo` (**[Info](./api/info.md)**)
 
-To follow...
+An `info` object or `null`. Add or remove and info panel.

@@ -186,7 +186,7 @@ scaleBar: 'imperial'
 An array of SVG symbol URL's. URL's can be relative or absolute. SVG symbol files are loaded and processed by the map component at run time. They are made available for use on the map and within the key.
 
 ```js
-// Example: Add a marker symbol for use on the map and within a legend
+// Example: Add a marker symbol for use on the map and or within the legend
 symbols: [
     '/assets/images/symbol.svg'
 ]
@@ -201,12 +201,9 @@ The `id` of the html element on the page that will contain the map container onl
 target: 'map-container'
 ```
 
-### _`transformGeocodeRequest`_
+### _`transformGeocodeRequest`_ (**function () => [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)**)
 
-### _`transformRequest`_
-
-> [!NOTE]
-> MapLibre specific
+A callback run before a geocode request is made for a URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object
 
 ### _`setupEsriConfig`_
 

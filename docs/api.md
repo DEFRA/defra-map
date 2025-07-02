@@ -149,7 +149,16 @@ height: '600px'
 
 ### _`mapProvider`_ (**async function**)
 
+An instance of a map provider class. Allows replacing the default map provider with a custom map provider.
+
 ### `place` (**string**)
+
+The initial viewport description location. The viewport description includes the words 'Approximate centre `place`'. Defaults to the corresposnding lat lon coordinates if no `place` is provided.
+
+```js
+// Example: Set initial viewport description to 'Approximate centre Carlisle '
+place: 'Carlisle'
+```
 
 ### `queryLocation` (**[QueryLocation](./api/query-location.md)**)
 
@@ -160,6 +169,8 @@ height: '600px'
 An instance of a reverser geocode provider class. Allows replacing the default reverse geocode provider with a custom reverse geocode provider.
 
 ### _`scaleBar`_ (**string**)
+
+Adds a scale bar to the map. Values include `metric` or `imperial`. Defaults to `none`.
 
 ### `search` (**[Search](./api/search.md)**)
 

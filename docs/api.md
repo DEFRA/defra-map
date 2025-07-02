@@ -207,7 +207,7 @@ A callback run before a geocode or reverse geocode request is made for an extern
 
 ### _`setupEsriConfig`_ (**function ([config](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html)) => void**)
 
-A callback run before the underlying MapView is instantiated. This callback can be used to modify the config object such as configure authetication or interceptors.
+A callback run before the underlying MapView is instantiated. This callback can be used to modify the config object such as configure authetication or add interceptors.
 
 > [!NOTE]
 > ESRI specific

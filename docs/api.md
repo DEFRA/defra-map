@@ -172,13 +172,34 @@ An instance of a reverser geocode provider class. Allows replacing the default r
 
 Adds a scale bar to the map. Values include `metric` or `imperial`. Defaults to `none`.
 
+```js
+// Example: Add an imperial scale bar
+scaleBar: 'imperial'
+```
+
 ### `search` (**[Search](./api/search.md)**)
 
 ### `styles` (**array[[Style](./api/style.md)]**)
 
-### `symbols` (**array[string]**)
+### `symbols` (**array[string: url]**)
+
+An array of SVG symbol URL's. URL's can be relative or absolute. SVG symbol files are loaded and processed by the map component at run time. They are made available for use on the map and within the key.
+
+```js
+// Example: Add a marker symbol for use on the map and within a legend
+symbols: [
+    '/assets/images/symbol.svg'
+]
+```
 
 ### `target` (**string**)
+
+The `id` of the html element on the page that will contain the map container only. Used if you need to render the map container in a custom target. By default the map container is rendered in a new element imediately after the default target.
+
+```js
+// Example: Use a custom target for the map container
+target: 'map-container'
+```
 
 ### _`transformGeocodeRequest`_
 

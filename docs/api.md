@@ -143,9 +143,9 @@ The height of the map container, eg '600px' or '50%'. Used when the behaviour is
 height: '600px'
 ```
 
-### `info`  (**[Info](./api/info.md)**)
+### `info`  (**[info](./api/info.md)**)
 
-### `legend` (**[Legend](./api/legend.md)**)
+### `legend` (**[legend](./api/legend.md)**)
 
 ### _`mapProvider`_ (MapProvider instance)
 
@@ -160,9 +160,9 @@ The initial viewport description location. The viewport description includes the
 place: 'Carlisle'
 ```
 
-### `queryLocation` (**[QueryLocation](./api/query-location.md)**)
+### `queryLocation` (**[queryLocation](./api/query-location.md)**)
 
-### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
+### `queryFeature` (**[queryFeature](./api/query-feature.md)**)
 
 ### _`reverseGeocodeProvider`_ (ReverseGeocodeProvider instance)
 
@@ -177,9 +177,9 @@ Adds a scale bar to the map. Values include `metric` or `imperial`. Defaults to 
 scaleBar: 'imperial'
 ```
 
-### `search` (**[Search](./api/search.md)**)
+### `search` (**[search](./api/search.md)**)
 
-### `styles` (**array[[Style](./api/style.md)]**)
+### `styles` (**array[[style](./api/style.md)]**)
 
 ### `symbols` (**array[string: url]**)
 

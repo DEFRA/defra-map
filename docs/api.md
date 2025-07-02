@@ -101,7 +101,7 @@ deviceTestCallback: () => {
 
 ### _`draw`_ (**[draw](./api/draw.md)**)
 
-### _`geocodeProvider`_ (**async function**)
+### _`geocodeProvider`_ (Geocode instance)
 
 An instance of a geocode provider class. Allows replacing the default geocode provider with a custom geocode provider.
 
@@ -147,7 +147,7 @@ height: '600px'
 
 ### `legend` (**[Legend](./api/legend.md)**)
 
-### _`mapProvider`_ (**async function**)
+### _`mapProvider`_ (Provider instance)
 
 An instance of a map provider class. Allows replacing the default map provider with a custom map provider.
 
@@ -164,7 +164,7 @@ place: 'Carlisle'
 
 ### `queryFeature` (**[QueryFeature](./api/query-feature.md)**)
 
-### _`reverseGeocodeProvider`_ (**async function**)
+### _`reverseGeocodeProvider`_ (ReverseGeocode instance)
 
 An instance of a reverser geocode provider class. Allows replacing the default reverse geocode provider with a custom reverse geocode provider.
 

@@ -168,11 +168,11 @@ place: 'Carlisle'
 
 ### `queryLocation` (**[queryLocation](./api/query-location.md)**)
 
-A `queryLocation` object. Use this to enable identifying a point on the map using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any features available at the same point in the rendered vector tile. 
+A `queryLocation` object. Identify a point on the map using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any features available at the same point in the rendered vector tile. 
 
 ### `queryFeature` (**[queryFeature](./api/query-feature.md)**)
 
-A `queryFeature` object. Use this to enable selecting a feature using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any feature properties available in the rendered vector tile.
+A `queryFeature` object. Select a feature using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any feature properties available in the rendered vector tile.
 
 ### _`reverseGeocodeProvider`_ (ReverseGeocodeProvider instance)
 

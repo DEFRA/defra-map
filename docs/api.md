@@ -101,6 +101,8 @@ deviceTestCallback: () => {
 
 ### _`draw`_ (**[draw](./api/draw.md)**)
 
+A `draw` configuration object. Options for adding and configuring draw functionality.
+
 ### _`geocodeProvider`_ (GeocodeProvider instance)
 
 An instance of a geocode provider class. Allows replacing the default geocode provider with a custom geocode provider.
@@ -145,7 +147,11 @@ height: '600px'
 
 ### `info`  (**[info](./api/info.md)**)
 
+A `info` object. Options for adding and configuring initial info panel.
+
 ### `legend` (**[legend](./api/legend.md)**)
+
+A `legend` object. Options for adding and configuring a legend.
 
 ### _`mapProvider`_ (MapProvider instance)
 
@@ -162,7 +168,11 @@ place: 'Carlisle'
 
 ### `queryLocation` (**[queryLocation](./api/query-location.md)**)
 
+A `queryLocation` object. Use this to enable identifying a point on the map using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any features available at the same point in the rendered vector tile. 
+
 ### `queryFeature` (**[queryFeature](./api/query-feature.md)**)
+
+A `queryFeature` object. Use this to enable selecting a feature using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any feature properties available in the rendered vector tile.
 
 ### _`reverseGeocodeProvider`_ (ReverseGeocodeProvider instance)
 

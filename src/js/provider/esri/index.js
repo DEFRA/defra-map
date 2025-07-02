@@ -51,7 +51,7 @@ export default {
     }
   },
   load: async () => {
-    const module = await import(/* webpackChunkName: "flood-map-esri-provider" */ './provider.js')
+    const module = await import(/* webpackChunkName: "flood-map-esri-provider" */ './map-provider.js')
     return module.default
   }
 }

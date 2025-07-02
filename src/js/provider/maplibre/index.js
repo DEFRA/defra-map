@@ -42,7 +42,7 @@ export default {
     }
   },
   load: async () => {
-    const module = await import(/* webpackChunkName: "flood-map-maplibre-provider" */ './provider.js')
+    const module = await import(/* webpackChunkName: "flood-map-maplibre-provider" */ './map-provider.js')
     return module.default
   }
 }

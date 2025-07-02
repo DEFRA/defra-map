@@ -159,7 +159,7 @@ const touchVertexIndicator = (fgColor) => ({
     ['==', 'meta', 'touch-vertex-indicator']
   ],
   paint: {
-    'circle-radius': 12,
+    'circle-radius': 30,
     'circle-color': '#3bb2d0',
     'circle-stroke-width': 3,
     'circle-stroke-color': '#ffffff',

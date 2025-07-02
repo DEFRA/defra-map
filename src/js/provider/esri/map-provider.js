@@ -7,7 +7,7 @@ import { defaults } from './constants.js'
 import { targetMarkerGraphic } from './marker.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
-class Provider extends EventTarget {
+class MapProvider extends EventTarget {
   constructor ({ capabilities, setupEsriConfig }) {
     super()
     this.srid = 27700
@@ -326,4 +326,4 @@ class Provider extends EventTarget {
   }
 }
 
-export default Provider
+export default MapProvider

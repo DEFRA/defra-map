@@ -141,7 +141,6 @@ export const EditVertexMode = {
     const state = DirectSelect.onSetup.call(this, options)
 
     const { container, featureId, selectedIndex, selectedType, isPanEnabled, vertexButton, interfaceType } = options
-    console.log(interfaceType, isPanEnabled)
     state.container = container
     state.interfaceType = interfaceType
     state.vertexButton = vertexButton
@@ -151,10 +150,6 @@ export const EditVertexMode = {
     state.midpoints = this.getMidpoints(featureId) // Store midpoints
     state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
     state.selectedType = selectedType // Tracks select type vertex or midpoint
-
-    // Touch offset configuration
-    state.touchOffsetDistance = 40 // pixels
-    state.touchOffsetAngle = 45 // degrees from vertex
 
     // Force modechange event to fire
     map.fire('draw.modechange', {
@@ -532,15 +527,18 @@ export const EditVertexMode = {
     const coords = feature.coordinates.flat(1)
     const vertex = coords[state.selectedIndex]
 
+    const TARGET_DISTANCE = 40
+    const TARGET_ANGLE = 45
+
     // Calculate offset position for the large touch graphic
     const vertexPixel = map.project(vertex)
-    const angleRad = (state.touchOffsetAngle * Math.PI) / 180
-    const offsetX = Math.cos(angleRad) * state.touchOffsetDistance
-    const offsetY = Math.sin(angleRad) * state.touchOffsetDistance
+    const angleRad = (TARGET_ANGLE * Math.PI) / 180
+    const offsetX = Math.cos(angleRad) * TARGET_DISTANCE
+    const offsetY = Math.sin(angleRad) * TARGET_DISTANCE
 
     const offsetPixel = {
       x: vertexPixel.x + offsetX,
-      y: vertexPixel.y - offsetY // Subtract Y because screen coordinates are inverted
+      y: vertexPixel.y + offsetY // Subtract Y because screen coordinates are inverted
     }
 
     const offsetCoord = map.unproject(offsetPixel)
@@ -614,6 +612,7 @@ export const EditVertexMode = {
     map.off('draw.selectionchange', this.selectionChangeHandler)
     map.off('draw.update', this.updateHandler)
     map.off('zoom', this.zoomHandler)
+    map.dragPan.enable()
     vertexButton.removeEventListener('click', this.vertexButtonClickHandler)
     window.removeEventListener('keydown', this.keydownHandler, { capture: true })
     window.removeEventListener('keyup', this.keyupHandler, { capture: true })

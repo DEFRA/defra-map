@@ -1,4 +1,4 @@
-import ReverseGeocode from '../../../src/js/provider/os-open-names-reverse/reverse-geocode'
+import ReverseGeocode from '../../../src/js/provider/os-open-names-reverse/reverse-geocode-provider'
 import { detectCoordinateType } from '../../../src/js/lib/viewport'
 import { LatLon } from 'geodesy/osgridref.js'
 

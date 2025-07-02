@@ -5,12 +5,12 @@ import { initialState } from '../../src/js/store/search-reducer'
 import Search from '../../src/js/components/search'
 import { useApp } from '../../src/js/store/use-app'
 import { useViewport } from '../../src/js/store/use-viewport'
-import Geocode from '../../src/js/provider/os-open-names/geocode.js'
+import Geocode from '../../src/js/provider/os-open-names/geocode-provider.js'
 import { useOutsideInteract } from '../../src/js/hooks/use-outside-interact'
 
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
-jest.mock('../../src/js/provider/os-open-names/geocode.js')
+jest.mock('../../src/js/provider/os-open-names/geocode-provider.js')
 jest.mock('../../src/js/hooks/use-outside-interact')
 
 describe('Search', () => {

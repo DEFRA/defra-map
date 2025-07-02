@@ -8,7 +8,7 @@ import { throttle } from '../../lib/throttle.js'
 import { defaults, css } from './constants.js'
 import { defaults as storeDefaults } from '../../store/constants.js'
 
-class Provider extends EventTarget {
+class MapProvider extends EventTarget {
   constructor ({ capabilities, transformRequest, symbols }) {
     super()
     this.srid = 4326
@@ -311,4 +311,4 @@ class Provider extends EventTarget {
   }
 }
 
-export default Provider
+export default MapProvider

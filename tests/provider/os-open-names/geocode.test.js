@@ -1,4 +1,4 @@
-import Geocode from '../../../src/js/provider/os-open-names/geocode'
+import Geocode from '../../../src/js/provider/os-open-names/geocode-provider'
 
 describe('OS Open Names Geocode', () => {
   let geocode

@@ -6,7 +6,7 @@ const place = ({ NAME1, POPULATED_PLACE, COUNTY_UNITARY, REGION }) => {
   return `${NAME1}${POPULATED_PLACE ? ', ' + POPULATED_PLACE : ''}${COUNTY_UNITARY ? ', ' + COUNTY_UNITARY : ''}, ${REGION}`
 }
 
-class ReverseGeocode {
+class ReverseGeocodeProvider {
   constructor (transformGeocodeRequest = (u) => u) {
     this.transformGeocodeRequest = transformGeocodeRequest
   }
@@ -16,7 +16,7 @@ class ReverseGeocode {
     if (detectCoordinateType(coord) === 'WSG84') {
       try {
         const bng = (new LatLon(coord[1], coord[0])).toOsGrid()
-        coord = [bng.easting, bng.northing]
+        coord = [bng.easting, bng.northing].map(c => Math.round(c))
       } catch (err) {
         console.log(err)
         return null
@@ -31,4 +31,4 @@ class ReverseGeocode {
   }
 }
 
-export default ReverseGeocode
+export default ReverseGeocodeProvider

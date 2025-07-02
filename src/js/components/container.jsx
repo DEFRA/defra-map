@@ -183,6 +183,7 @@ export default function Container () {
                   <>
                     <StylesButton stylesBtnRef={stylesBtnRef} />
                     <Reset />
+                    <EditButton editBtnRef={editBtnRef} />
                     <Location provider={provider} />
                     <Zoom />
                   </>
@@ -219,7 +220,6 @@ export default function Container () {
               </div>
               {!isMobile && <Actions />}
               <div className='fm-o-tools'>
-                <EditButton editBtnRef={editBtnRef} />
                 <DrawAction />
                 <ScaleBar />
               </div>

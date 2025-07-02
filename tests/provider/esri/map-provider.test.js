@@ -1,4 +1,4 @@
-import Provider from '../../../src/js/provider/esri/provider.js'
+import Provider from '../../../src/js/provider/esri/map-provider.js'
 import { handleBaseTileLayerLoaded, handleMoveStart, handleStationary, handleStyleChange } from '../../../src/js/provider/esri/events.js'
 import { debounce } from '../../../src/js/lib/debounce.js'
 import { getFocusPadding } from '../../../src/js/lib/viewport.js'

@@ -194,7 +194,7 @@ symbols: [
 
 ### `target` (**string**)
 
-The `id` of the html element on the page that will contain the map container only. Used if you need to render the map container in a custom target. By default the map container is rendered in a new element imediately after the default target.
+The `id` of the html element on the page that will contain map container. Used if you need to render the map container in a custom target. By default the map container is rendered in a new element imediately after the default target. The open map button (when behaviour is set to buttonFirst or hybrid) will always be redered in the default target.
 
 ```js
 // Example: Use a custom target for the map container

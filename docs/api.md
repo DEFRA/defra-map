@@ -203,9 +203,11 @@ target: 'map-container'
 
 ### _`transformGeocodeRequest`_ (**function () => [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)**)
 
-A callback run before a geocode request is made for a URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object
+A callback run before a geocode or reverse geocode request is made for an external URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object
 
-### _`setupEsriConfig`_
+### _`setupEsriConfig`_ (**function ([config](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html)) => void**)
+
+A callback run before the underlying MapView is instantiated. This callback can be used to modify the config object such as configure authetication or interceptors.
 
 > [!NOTE]
 > ESRI specific

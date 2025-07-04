@@ -87,7 +87,7 @@ The button or anchor text used for the view map button. Defaults to 'View map'.
 buttonText: 'View map of main rivers'
 ```
 
-### `checkMapSupport` (**function () => boolean**)
+<!-- ### `checkMapSupport` (**function () => boolean**)
 
 A function that is run immediately before a demand for the map. A response of `true` will load the map and a response of `false` will show the device compatibility error message. This is useful if you a need to use a modern feature that an older device doesn't support. By default the FloodMap checks device capabiities. It will serve a legacy version if the device has limited capabilities. It will fallback to the device compatibility error message if device does not meet the minimum requirements.
 
@@ -97,11 +97,12 @@ deviceTestCallback: () => {
     const hasPopoverSupport = HTMLElement.prototype.hasOwnProperty('popover')
     return hasPopoverSupport
 }
-```
+```-->
 
-### _`draw`_ (**[draw](./api/draw.md)**)
 
-A `draw` configuration object. Options for adding and configuring draw functionality.
+<--### _`draw`_ (**[draw](./api/draw.md)**)
+
+A `draw` configuration object. Options for adding and configuring draw functionality.-->
 
 ### _`geocodeProvider`_ (GeocodeProvider instance)
 
@@ -118,23 +119,23 @@ Selecting a dark basemap if available will always overide the map style and inte
 hasAutoMode: true
 ```
 
-### `hasGeoLocation`  (**boolean**)
+<!--### `hasGeoLocation`  (**boolean**)
 
 If `true` a 'Use your location' button will be visible. Selecting this button will centre the map on the users current locaton if the website has permission to use location services. Defaults to `false`.
 
 ```js
 // Example: Enable use your location button
 hasGeoLocation: true
-```
+```-->
 
-### `hasReset`  (**boolean**)
+<!--### `hasReset`  (**boolean**)
 
 If `true` a 'Reset map view' button will be visible. Selecting this button will re-centre the map on initial location. Defaults to `false`.
 
 ```js
 // Example: Enable reset map view button
 hasReset: true
-```
+```-->
 
 ### `height`  (**string**)
 
@@ -153,9 +154,9 @@ An `info` object. Options for adding and configuring initial info panel.
 
 A `legend` object. Options for adding and configuring a legend.
 
-### _`mapProvider`_ (MapProvider instance)
+<!--### _`mapProvider`_ (MapProvider instance)
 
-An instance of a map provider class. Allows replacing the default map provider with a custom map provider.
+An instance of a map provider class. Allows replacing the default map provider with a custom map provider.-->
 
 ### `place` (**string**)
 
@@ -174,24 +175,24 @@ A `queryLocation` object. Identify a point on the map using mouse, touch or keyb
 
 A `queryFeature` object. Select a feature using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any feature properties available in the rendered vector tile.
 
-### _`reverseGeocodeProvider`_ (ReverseGeocodeProvider instance)
+<!--### _`reverseGeocodeProvider`_ (ReverseGeocodeProvider instance)
 
-An instance of a reverser geocode provider class. Allows replacing the default reverse geocode provider with a custom reverse geocode provider.
+An instance of a reverser geocode provider class. Allows replacing the default reverse geocode provider with a custom reverse geocode provider.-->
 
-### _`scaleBar`_ (**string**)
+<!--### _`scaleBar`_ (**string**)
 
 Adds a scale bar to the map. Values include `metric` or `imperial`. Defaults to `none`.
 
 ```js
 // Example: Add an imperial scale bar
 scaleBar: 'imperial'
-```
+```-->
 
 ### `search` (**[search](./api/search.md)**)
 
 ### `styles` (**array[[style](./api/style.md)]**)
 
-### `symbols` (**array[string: url]**)
+<!--### `symbols` (**array[string: url]**)
 
 An array of SVG symbol URL's. URL's can be relative or absolute. SVG symbol files are loaded and processed by the map component at run time. They are made available for use on the map and within the key.
 
@@ -200,7 +201,7 @@ An array of SVG symbol URL's. URL's can be relative or absolute. SVG symbol file
 symbols: [
     '/assets/images/symbol.svg'
 ]
-```
+```-->
 
 ### `target` (**string**)
 
@@ -211,16 +212,16 @@ The `id` of the html element on the page that will contain map container. Used i
 target: 'map-container'
 ```
 
-### _`transformGeocodeRequest`_ (**function () => [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)**)
+<!--### _`transformGeocodeRequest`_ (**function () => [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)**)
 
-A callback run before a geocode or reverse geocode request is made for an external URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object
+A callback run before a geocode or reverse geocode request is made for an external URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object-->
 
-### _`setupEsriConfig`_ (**function ([config](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html)) => void**)
+<!--### _`setupEsriConfig`_ (**function ([config](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html)) => void**)
 
 A callback run before the underlying MapView is instantiated. This callback can be used to modify the config object such as configure authetication or add interceptors.
 
 > [!NOTE]
-> ESRI specific
+> ESRI specific-->
 
 ## Events
 

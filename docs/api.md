@@ -100,7 +100,7 @@ deviceTestCallback: () => {
 ```-->
 
 
-<--### _`draw`_ (**[draw](./api/draw.md)**)
+<!--### _`draw`_ (**[draw](./api/draw.md)**)
 
 A `draw` configuration object. Options for adding and configuring draw functionality.-->
 

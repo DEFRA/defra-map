@@ -1,3 +1,3 @@
-# QueryLocation
+# queryLocation
 
 To follow...

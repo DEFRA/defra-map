@@ -33,8 +33,8 @@ width: '360px'
 
 ### `segments` (**array[[segment](./segment.md)]**)
 
-An array of segement objects. Segments are used to manage data segmentation or categories. The are presented within the legend as radio groups along with a group heading.
+An array of segement objects. Segments are used to manage data segmentation or categories. They are presented within the legend as radio groups along with a group heading.
 
 ### `key` (**array[[key](./key.md)]**)
 
-An array of key objects. Key objects are used to display data layers. The are presented within the legend typically as a checkbox group along with a group heading.
+An array of key objects. Key objects are used to display data layers. They are presented within the legend typically as a checkbox group along with a group heading.

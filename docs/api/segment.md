@@ -4,4 +4,4 @@
 
 ### `collapse` (**string**)
 
-### `items` (**[segmentItem](./api/segment-item.md)**)
+### `items` (**array[[segmentItem](./api/segment-item.md)]**)

@@ -104,9 +104,9 @@ deviceTestCallback: () => {
 
 A `draw` configuration object. Options for adding and configuring draw functionality.-->
 
-### _`geocodeProvider`_ (GeocodeProvider instance)
+<!--### _`geocodeProvider`_ (GeocodeProvider instance)
 
-An instance of a geocode provider class. Allows replacing the default geocode provider with a custom geocode provider.
+An instance of a geocode provider class. Allows replacing the default geocode provider with a custom geocode provider.-->
 
 ### `hasAutoMode`  (**boolean**)
 

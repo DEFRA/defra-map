@@ -87,10 +87,6 @@ The button or anchor text used for the view map button. Defaults to 'View map'.
 buttonText: 'View map of main rivers'
 ```
 
-<!--### _`draw`_ (**[draw](./api/draw.md)**)
-
-A `draw` configuration object. Options for adding and configuring draw functionality.-->
-
 ### `framework`  (**string**)
 
 The map framework name if not MapLibre. Value `esri`, default `none`.
@@ -98,7 +94,7 @@ The map framework name if not MapLibre. Value `esri`, default `none`.
 > [!NOTE]
 > ESRI specific, may become deprecated
 
-### `hasAutoMode`  (**boolean**)
+### `hasAutoMode` (**boolean**)
 
 If `true` then a light or dark theme will be used for the map style and interface that corresponds to the current operating system appearance. If the operating appearance is changed the map style and interface will update automatically. If `false` then a light theme will be used for the initial map style and interafce, regardless of operating system appearance.
 
@@ -109,7 +105,7 @@ Selecting a dark basemap if available will always overide the map style and inte
 hasAutoMode: true
 ```
 
-### `height`  (**string**)
+### `height` (**string**)
 
 The height of the map container, eg '600px' or '50%'. Used when the behaviour is inline or behaviour is hybrid and the browser size is desktop. If a percentage is used then an ancestor container will require a height.
 
@@ -118,7 +114,7 @@ The height of the map container, eg '600px' or '50%'. Used when the behaviour is
 height: '600px'
 ```
 
-### `info`  (**[info](./api/info.md)**)
+### `info` (**[info](./api/info.md)**)
 
 An `info` object. Options for adding and configuring initial info panel.
 

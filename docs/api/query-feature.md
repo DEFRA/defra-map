@@ -1,3 +1,3 @@
-# QueryFeature
+# queryFeature
 
 To follow...

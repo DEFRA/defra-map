@@ -142,11 +142,15 @@ The initial viewport description location. The viewport description includes the
 place: 'Carlisle'
 ```
 
+### `queryArea` (**[draw](./api/query-area.md)**)
+
+A `queryArea` object. Define an area on the map using mouse, touch or keyboard and perform a query. Following the query interaction a `query` event is dispatched containing the geometry .
+
 ### `queryLocation` (**[queryLocation](./api/query-location.md)**)
 
 A `queryLocation` object. Identify a point on the map using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any features available at the same point in the rendered vector tile. 
 
-### `queryFeature` (**[queryFeature](./api/query-feature.md)**)
+### _`queryFeature`_ (**[queryFeature](./api/query-feature.md)**)
 
 A `queryFeature` object. Select a feature using mouse, touch or keyboard. Following the interaction a `query` event is dispatched containing any feature properties available in the rendered vector tile.
 

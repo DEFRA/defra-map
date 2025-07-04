@@ -122,6 +122,13 @@ height: '600px'
 
 An `info` object. Options for adding and configuring initial info panel.
 
+### _`interceptorsCallback`_ (**function () => array[[RequestInterceptor](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html#RequestInterceptor)]**)
+
+A callback that returns an array of RequestInterceptors. Can be used to add RequestInterceptors to the esriConfig.request object.
+
+> [!NOTE]
+> ESRI specific, may become deprectaed and replaced with a higher level esriConfig callback
+
 ### `legend` (**[legend](./api/legend.md)**)
 
 A `legend` object. Options for adding and configuring a legend.
@@ -170,6 +177,20 @@ The `id` of the html element on the page that will contain map container. Used i
 // Example: Use a custom target for the map container
 target: 'map-container'
 ```
+
+### _`tokenCallback`_ (**function ([config](https://developers.arcgis.com/javascript/latest/api-reference/esri-config.html#apiKey)) => void**)
+
+A callback run when the esriConfig.apiKey is set. This callback can be used to obtain obtain a new authentication token.
+
+> [!NOTE]
+> ESRI specific, may become deprectaed and replaced with a higher level esriConfig callback
+
+### _`transformSearchRequest`_ (**function () => [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)**)
+
+A callback run before a geocode or reverse geocode request is made for an external URL. The callback can be used to modify the url, set headers, or set the credentials property for cross-origin requests. Expected to return an instance of a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object
+
+> [!NOTE]
+> May become deprecated, and replaced with a new method
 
 ## Events
 

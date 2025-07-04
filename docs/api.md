@@ -96,7 +96,7 @@ A `draw` configuration object. Options for adding and configuring draw functiona
 The map framework name if not MapLibre. Value `esri`, default `none`.
 
 > [!NOTE]
-> ESRI specific, may become deprecated-->
+> ESRI specific, may become deprecated
 
 ### `hasAutoMode`  (**boolean**)
 
@@ -145,7 +145,22 @@ A `queryFeature` object. Select a feature using mouse, touch or keyboard. Follow
 
 ### `search` (**[search](./api/search.md)**)
 
+A search configuration object. Add and configure search behaviour.
+
 ### `styles` (**array[[style](./api/style.md)]**)
+
+An array of map style objects used in the map style picker.
+
+### `symbols` (**array[string: url]**)
+
+An array of SVG symbol URL's. URL's can be relative or absolute. SVG symbol files are loaded and processed by the map component at run time. They are made available for use on the map and within the key.
+
+```js
+// Example: Add a marker symbol for use on the map and or within the legend
+symbols: [
+    '/assets/images/symbol.svg'
+]
+```
 
 ### `target` (**string**)
 

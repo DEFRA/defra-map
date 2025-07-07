@@ -22,7 +22,7 @@ An array of `keyItem` objects.
 
 ### `parentIds` (**array[string]**)
 
-An array of `id's`. This section will be visible if any parent section with a corresponding `id` is visible. If no parent sections with correspondig `id's` are visible then this section will be hidden.
+An array of `id's`. This key section will be visible if any parent section with a corresponding `id` is visible. If no parent sections with correspondig `id's` are visible then this section will be hidden.
 
 ```js
 // Example to ensure section is only visible if parent is visible

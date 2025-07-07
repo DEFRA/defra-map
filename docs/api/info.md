@@ -11,8 +11,18 @@ width: '400px'
 
 ### `label`
 
-The title used for the info panel. Rendered as a level 3 heading.
+The title used for the info panel. Rendered as an h3.
+
+```js
+// Example: Set panel title
+label: 'Hadrian’s Wall Path'
+```
 
 ### `html`
 
 The body content for the info panel.
+
+```js
+// Example: Set panel title
+html: 'The Hadrian’s Wall Path is an 84 mile (135 km) long National Trail stretching coast to coast across northern England'
+```

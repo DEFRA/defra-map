@@ -1,7 +1,7 @@
 # search
 
-### country (**string**)
+### `country` (**string**)
 
-### isAutocomplete (**boolean**)
+### `isAutocomplete` (**boolean**)
 
-### errorText (**string**)
+### `errorText` (**string**)

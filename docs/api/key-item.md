@@ -2,7 +2,7 @@
 
 ### `fill` (**string[[Color](./api/color.md)]**)
 
-A `color` value string. If no icon provided then a square symbol is rendered with the appropriate fill. 
+A `color` value string. If no is icon provided then a square symbol is rendered with the appropriate fill. 
 
 ### `icon` (**string**)
 

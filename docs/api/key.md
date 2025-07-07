@@ -18,7 +18,7 @@ heading: 'National trails'
 
 ### `items` (**array[[keyItem](./key-item.md)]**)
 
-An array of `keyItem` objects.
+An array of `keyItem` objects. Key items are displayed as a checkbox group.
 
 ### `parentIds` (**array[string]**)
 

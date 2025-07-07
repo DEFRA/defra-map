@@ -9,6 +9,22 @@ Values include `collapse` or `expanded`. Defaults to `null`. A value of `collaps
 
 ### `heading` (**string**)
 
+The heading used for the section.
+
+```js
+// Example that adds a key section heading
+heading: 'National trails'
+```
+
 ### `items` (**array[[keyItem](./key-item.md)]**)
 
+An array of `keyItem` objects.
+
 ### `parentIds` (**array[string]**)
+
+An array of `id's`. This section will be visible if any parent section with a corresponding `id` is visible. If no parent sections with correspondig `id's` are visible then this section will be hidden.
+
+```js
+// Example to ensure section is only visible if parent is visible
+parentIds: ['access']
+```

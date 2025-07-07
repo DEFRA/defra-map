@@ -18,7 +18,7 @@ heading: 'National trails'
 
 ### `items` (**array[[segmentItem](./segment-item.md)]**)
 
-An array of `segmentItem` objects.
+An array of `segmentItem` objects. Segment items are displayed as a radio group.
 
 ### `parentIds` (**array[string]**)
 

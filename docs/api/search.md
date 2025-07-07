@@ -1,3 +1,7 @@
 # search
 
-To follow...
+### country (**string**)
+
+### isAutocomplete (**boolean**)
+
+### errorText (**string**)

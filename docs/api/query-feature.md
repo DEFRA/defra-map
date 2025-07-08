@@ -2,4 +2,4 @@
 
 ### layers  (**array[string: [id](https://maplibre.org/maplibre-style-spec/layers/#id)]**)
 
-An array of mapbox style spec layer `id's`. Query feature functionality will be enabled for an corresponding layer that exists within the map. Query feature functionality includes selecting point and polygon features use the touch, mouse or keyboard.
+An array of mapbox style spec layer `id's`. Query feature functionality will be enabled for any corresponding layer that exists within the map. Query feature functionality includes selecting point and polygon features use the touch, mouse or keyboard.

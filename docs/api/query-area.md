@@ -20,6 +20,6 @@ The label text displayed in the key against the drawn feature.
 
 A string of HTML. Provide help text instructions for using the drawing tools.
 
-### `styles` (**array[[style](./api/style.md)]**)
+### `styles` (**array[[style](./style.md)]**)
 
 An array of map style objects. Provides an option to swap map styles when the map the interface switches to draw mode to enable flexibility with different implementation licenses. For example, use a default open style when overlaying data and switch to a more detailed style when drawing features.

@@ -50,7 +50,7 @@ export default function Styles () {
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
           {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
-            <StyleItem key={item.name} item={item} currentStyleName={currentStyleName} ref={buttonsRef.current[i]} />
+            <StyleItem key={item.name} item={item} currentStyleName={currentStyleName} />
           ))}
         </div>
       </div>

@@ -16,7 +16,7 @@ const getStyleItemDisplayName = (item) => {
   }[item.name] || item.name
 }
 
-const StyleItem = ({ key, item, currentStyleName, ref }) => {
+const StyleItem = ({ item, currentStyleName }) => {
   const viewportDispatch = useViewport().dispatch
   const handleStyleClick = e => {
     viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
@@ -25,8 +25,8 @@ const StyleItem = ({ key, item, currentStyleName, ref }) => {
   const displayName = getStyleItemDisplayName(item)
 
   return (
-    <div key={key} className='fm-c-layers__item govuk-body-s'>
-      <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={ref} onClick={handleStyleClick}>
+    <div className='fm-c-layers__item govuk-body-s'>
+      <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} onClick={handleStyleClick}>
         <div className='fm-c-layers__image'>
           <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(item.name) }} />
         </div>

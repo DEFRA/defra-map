@@ -196,7 +196,7 @@ A callback run before a geocode or reverse geocode request is made for an extern
 
 ### `ready`
 
-Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add the initial data layers to the map.
+Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add initial data layers to the map.
 
 ### `change`
 

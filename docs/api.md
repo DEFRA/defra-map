@@ -214,19 +214,35 @@ Events include:
 
 ### `ready`
 
-Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add initial data layers to the map.
+Dispatched when the map component has loaded and the underlying map framework is ready.
+
+```js
+// Example use - Add initial data layers to the map.
+```
 
 ### `change`
 
-Dispatched when a style, or data layer has changed. Example use - Update data layers on the map.
+Dispatched when a style, segment or layer has been changed.
+
+```js
+// Example use - Update data layers on the map when a user selects a new layer from the legend
+```
 
 ### `query`
 
-Dispatched when a map query has been performed. Example use - Show an info panel.
+Dispatched when a map query has been performed.
+
+```js
+// Example use - Show an info panel
+```
 
 ### `action`
 
-Dispatched when draw action has been performed. Example use - Redirect user to a report.
+Dispatched when a draw action has been performed.
+
+```js
+// Example use - Redirect user a page on the service with a report
+```
 
 ## Methods
 

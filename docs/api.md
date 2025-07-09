@@ -194,6 +194,22 @@ A callback run before a geocode or reverse geocode request is made for an extern
 
 ## Events
 
+The component disaptches the following events. Events include a detail object with with supporting values.
+
+```js
+// Example that creates an instance of the map component and listens to the 'ready' event
+const floodMap = new FloodMap('map', {
+    behaviour: 'hybrid',
+    center: [-2.938769, 54.893806],
+    zoom: 12
+})
+
+floodMap.addEventListener('ready', e => {
+    console.log(e.detail)
+    // Add data layers
+})
+```
+
 ### `ready`
 
 Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add initial data layers to the map.

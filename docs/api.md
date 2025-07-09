@@ -194,7 +194,7 @@ A callback run before a geocode or reverse geocode request is made for an extern
 
 ## Events
 
-The component disaptches the following events. Events include a detail object with with supporting values.
+The component disaptches several events that you can use to build you implementation. Events include a detail object with with supporting values.
 
 ```js
 // Example that creates an instance of the map component and listens to the 'ready' event

@@ -210,6 +210,8 @@ floodMap.addEventListener('ready', e => {
 })
 ```
 
+Events include:
+
 ### `ready`
 
 Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add initial data layers to the map.

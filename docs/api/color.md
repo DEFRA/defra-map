@@ -1,4 +1,4 @@
-# Color (string)
+# color (string)
 
 A single hexidecimal color value or a comma sperated list of key value pairs. Keys must be one of the following `default`, `dark`, `aerial`, `deuteranopia` or `tritanopia` and values must be hexidecimal colors, eg. `#d4351c`.
 

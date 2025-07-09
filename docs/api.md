@@ -194,7 +194,21 @@ A callback run before a geocode or reverse geocode request is made for an extern
 
 ## Events
 
-To follow...
+### `ready`
+
+Dispatched when the map component has loaded and the underlying map framework is ready. Example use - Add the initial data layers to the map.
+
+### `change`
+
+Dispatched when a style, or data layer has changed. Example use - Update data layers on the map.
+
+### `query`
+
+Dispatched when a map query has been performed. Example use - Show an info panel.
+
+### `action`
+
+Dispatched when draw action has been performed. Example use - Redirect user to a report.
 
 ## Methods
 

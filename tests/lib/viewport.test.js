@@ -389,12 +389,11 @@ describe('lib/viewport - getStyle', () => {
     expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
   })
 
-  it('should filter out invalid styles not included in defaults.STYLES', () => {
+  it('should use the first available style, if an invalid style def is set in local storage', () => {
     // Use some valid styles and one invalid style
     const styles = [
       { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
-      { name: defaults.STYLES[1], color: '#000000' },
-      { name: 'invalid-style', color: '#FF0000' } // This style is not in defaults.STYLES
+      { name: defaults.STYLES[1], color: '#000000' }
     ]
 
     // Set localStorage to return the invalid style

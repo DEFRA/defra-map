@@ -284,6 +284,5 @@ export const getPoint = (el, e, scale) => {
 
 export const getStyle = (styles = []) => {
   const style = window.localStorage.getItem('style')
-  console.log('something')
   return styles.find(s => s.name === style) || styles[0]
 }

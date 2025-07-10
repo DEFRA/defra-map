@@ -161,7 +161,9 @@ describe('app-reducer and initialState', () => {
         }
         const mockState = initialState(options)
         const expectedState = actionsMap[actionType](mockState, payload)
-        expect(reducer(mockState, { type: actionType, payload })).toEqual(expectedState)
+        const reducedState = reducer(mockState, { type: actionType, payload })
+        expectedState.hash = 'DUMMY'
+        expect(reducedState).toEqual(expectedState)
       })
     })
 

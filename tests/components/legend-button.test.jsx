@@ -66,7 +66,7 @@ describe('legend-button', () => {
     const { container } = render(<LegendButton legendBtnRef={null} />)
 
     screen.debug()
-    expect(container.querySelector('span').textContent).toEqual('Legend')
+    expect(container.querySelector('span').textContent).toEqual('Key')
   })
 
   it('should have \'Menu\' as label if draw option includes a heading', () => {

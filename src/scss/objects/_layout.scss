@@ -423,7 +423,7 @@
 }
 
 // Panel fixed width
-.fm-o-top .fm-c-panel:not(.fm-c-panel--viewport-label):not(.fm-c-panel--error) {
+.fm-o-top .fm-c-panel:not(.fm-c-panel--viewport-label):not(.fm-c-panel--error):not(.fm-c-panel--draw-constraint) {
     width: $panel-width;
 }
 

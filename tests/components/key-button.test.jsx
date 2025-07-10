@@ -22,7 +22,7 @@ describe('key-button', () => {
 
   it('should render key button', () => {
     render(<KeyButton />)
-    const keyButton = screen.getByRole('button', { name: /legend/i })
+    const keyButton = screen.getByRole('button', { name: /key/i })
     expect(keyButton).toBeTruthy()
   })
 
@@ -37,7 +37,7 @@ describe('key-button', () => {
 
     render(<KeyButton />)
 
-    const keyButton = screen.getByRole('button', { name: /legend/i })
+    const keyButton = screen.getByRole('button', { name: /key/i })
     fireEvent.click(keyButton)
 
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'OPEN', payload: 'KEY' })

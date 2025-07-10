@@ -12,6 +12,23 @@ const markerSVG = `
   </svg>
 `
 
+const touchVertexTarget = `
+  <svg width='44' height='44' viewBox='0 0 44 44' fill-rule='evenodd' fill='currentColor' style='display:none;position:absolute;top:50%;left:50%;margin:20px 0 0 -22px' class='touch-vertex-target' data-touch-vertex-target>
+    <circle cx='22' cy='22' r='22' fill='currentColor'/>
+    <g fill='none' stroke='#fff' stroke-width='2'>
+      <path d='M31.5,19.456l2.5,2.501l-2.5,2.5'/>
+      <line x1='22' y1='10' x2='22' y2='16' />
+      <path d='M12.5,24.457l-2.5,-2.5l2.5,-2.501'/>
+      <line x1='10' y1='22' x2='16' y2='22' />
+      <path d='M24.5,31.5l-2.5,2.5l-2.5,-2.5'/>
+      <line x1='28' y1='22' x2='34' y2='22' />
+      <path d='M19.5,12.5l2.5,-2.5l2.5,2.5'/>
+      <line x1='22' y1='28' x2='22' y2='34' />
+    </g>
+    <circle cx='22' cy='22' r='1.5' fill='#fff' stroke="#fff" stroke-width='2'/>
+  </svg>
+`
+
 const NUDGE = 1
 const STEP = 5
 const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
@@ -164,17 +181,23 @@ export const EditVertexMode = {
     this.pointerupHandler = (e) => this.onPointerup(state, e)
     this.selectionChangeHandler = (e) => this.onSelectionChange(state, e)
     this.updateHandler = (e) => this.onUpdate(state, e)
-    this.zoomHandler = (e) => this.onZoom(state, e)
+    // this.zoomHandler = (e) => this.onZoom(state, e)
+    this.moveHandler = (e) => this.onMove(state, e)
     this.vertexButtonClickHandler = (e) => this.onVertexButtonClick(state, e)
+    this.touchStartHandler = (e) => this.onTouchstart(state, e)
+    this.touchMoveHandler = (e) => this.onTouchmove(state, e)
 
     // Add event listeners
     window.addEventListener('keydown', this.keydownHandler, { capture: true })
     window.addEventListener('keyup', this.keyupHandler, { capture: true })
     container.addEventListener('pointerdown', this.pointerdownHandler)
     container.addEventListener('pointerup', this.pointerupHandler)
+    container.addEventListener('touchstart', this.touchStartHandler, { passive: false })
+    container.addEventListener('touchmove', this.touchMoveHandler, { passive: false })
     map.on('draw.selectionchange', this.selectionChangeHandler)
     map.on('draw.update', this.updateHandler)
-    map.on('zoom', this.zoomHandler)
+    map.on('move', this.moveHandler)
+    // map.on('zoom', this.zoomHandler)
     vertexButton.addEventListener('click', this.vertexButtonClickHandler)
 
     // Add midpoint
@@ -183,8 +206,8 @@ export const EditVertexMode = {
       this.updateMidpoint(coords)
     }
 
-    // Update vertex display based on interface type
-    this.updateVertexDisplay(state)
+    // Add touch vertex target
+    this.addTouchVertexTarget(state)
 
     // Dispatch vertex chnage event on entering mode
     this.dispatchVertexChange(state.vertecies)
@@ -193,6 +216,7 @@ export const EditVertexMode = {
   },
 
   onSelectionChange (state, e) {
+    const { map } = this
     const { interfaceType, featureId } = state
     const vertexCoord = e.points[e.points.length - 1]?.geometry.coordinates
     const coords = e.features[0].geometry.coordinates.flat(1)
@@ -206,18 +230,33 @@ export const EditVertexMode = {
     this.map.fire('draw.vertexselect', { featureId, selectedIndex })
 
     // Update vertex display when selection changes
-    this.updateVertexDisplay(state, e)
+    const coord = e.points?.[0]?.geometry.coordinates
+    const point = coord ? map.project(coord) : null
+    this.updateTouchVertexTarget(state, point)
   },
 
   onUpdate (state, e) {
-    const selectedIndex = parseInt(state.selectedCoordPaths[0]?.split('.')[1], 10)
-    state.selectedIndex = !isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
-    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+    const { map } = this
+
+    const previousLength = state.vertecies.length
+    const previousVertecies = new Set(state.vertecies.map(coord => JSON.stringify(coord)))
     state.vertecies = this.getVerticies(state.featureId)
     state.midpoints = this.getMidpoints(state.featureId)
 
+    if (previousLength === state.vertecies.length) {
+      return
+    }
+
     // Update vertex display when coordinates update
-    this.updateVertexDisplay(state, e)
+    const coord = state.vertecies.filter(coord => !previousVertecies.has(JSON.stringify(coord)))?.[0]
+
+    const selectedIndex = state.vertecies.findIndex(coord => !previousVertecies.has(JSON.stringify(coord)))
+    state.selectedIndex = selectedIndex //! isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
+    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+
+    // Udate touch vertex target
+    const point = coord ? map.project(coord) : null
+    this.updateTouchVertexTarget(state, point)
 
     // Dispatch vertex change event
     this.dispatchVertexChange(state.vertecies)
@@ -225,9 +264,7 @@ export const EditVertexMode = {
 
   onKeydown (state, e) {
     state.interfaceType = 'keyboard'
-
-    // Update vertex display when coordinates update
-    this.updateVertexDisplay(state)
+    this.hideTouchVertexIndicator(state)
 
     // Set selected index and type
     if (e.key === ' ' && state.selectedIndex < 0) {
@@ -245,7 +282,8 @@ export const EditVertexMode = {
       }
 
       if (state.selectedType === 'vertex') {
-        this.moveVertex(state, e)
+        const coord = this.getNewCoord(state, e)
+        this.moveVertex(state, coord)
       }
     }
 
@@ -284,29 +322,73 @@ export const EditVertexMode = {
   onPointerdown (state, e) {
     state.interfaceType = e.pointerType === 'touch' ? 'touch' : 'pointer'
     state.isPanEnabled = true
-
-    // Update vertex display when coordinates update
-    this.updateVertexDisplay(state, e)
   },
 
   onPointerup (state, e) {
     state.interfaceType = e.pointerType === 'touch' ? 'touch' : 'pointer'
     state.isPanEnabled = true
-
-    // Update vertex display when coordinates update
-    this.updateVertexDisplay(state, e)
   },
 
+  // Dispatched when target is a DOM element
+  onTouchstart (state, e) {
+    if (state.selectedIndex < 0) {
+      return
+    }
+    const { map } = this
+    const { vertecies, selectedIndex, touchVertexTarget } = state
+    const touchPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    state.deltaTarget = { x: touchPoint.x - parseFloat(window.getComputedStyle(touchVertexTarget).left), y: touchPoint.y - parseFloat(window.getComputedStyle(touchVertexTarget).top) }
+    const vertexPoint = map.project(vertecies[selectedIndex >= 0 ? selectedIndex : 0])
+    state.deltaVertex = { x: touchPoint.x - vertexPoint.x, y: touchPoint.y - vertexPoint.y }
+  },
+
+  // Dispatched when target is a DOM element
+  onTouchmove (state, e) {
+    const { map } = this
+    const { deltaVertex, deltaTarget } = state
+    const targetEl = e.target.parentNode
+
+    if (!(targetEl instanceof window.SVGElement || targetEl.ownerSVGElement)) {
+      return
+    }
+
+    const touchPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    const newVertexPoint = { x: touchPoint.x - deltaVertex.x, y: touchPoint.y - deltaVertex.y }
+    const coord = map.unproject(newVertexPoint)
+    this.moveVertex(state, coord)
+    const newTargetPoint = { x: touchPoint.x - deltaTarget.x, y: touchPoint.y - deltaTarget.y }
+    this.updateTouchVertexTarget(state, newTargetPoint)
+  },
+
+  // Dispatched when target is mapbox-gl-draw or the canvas
   onDrag (state, e) {
     DirectSelect.onDrag.call(this, state, e)
 
+    const { map } = this
+    const { deltaVertex, deltaTarget } = state
+
+    if (!deltaVertex) {
+      return
+    }
+
+    const touchPoint = { x: e.point.x, y: e.point.y }
+    const newVertexPoint = { x: touchPoint.x - deltaVertex.x, y: touchPoint.y - deltaVertex.y }
+    const coord = map.unproject(newVertexPoint)
+    this.moveVertex(state, coord)
     // Update vertex display when coordinates update
-    this.updateVertexDisplay(state, e)
+    const newTargetPoint = { x: touchPoint.x - deltaTarget.x, y: touchPoint.y - deltaTarget.y }
+    this.updateTouchVertexTarget(state, newTargetPoint)
   },
 
-  onZoom (state, e) {
+  onMove (state, e) {
+    const { map } = this
+    const { vertecies, selectedIndex } = state
+
     // Update vertex display when coordinates update
-    this.updateVertexDisplay(state, e)
+    const vertex = vertecies[selectedIndex]
+    if (vertex) {
+      this.updateTouchVertexTarget(state, map.project(vertex))
+    }
   },
 
   onVertexButtonClick (state, e) {
@@ -358,11 +440,21 @@ export const EditVertexMode = {
     return [index, type]
   },
 
-  updateVertexDisplay (state, e) {
+  addTouchVertexTarget (state) {
+    const { container } = state
+    let el = container.querySelector('[data-touch-vertex-target]')
+    if (!el) {
+      container.insertAdjacentHTML('beforeend', touchVertexTarget)
+      el = container.querySelector('[data-touch-vertex-target]')
+    }
+    state.touchVertexTarget = el
+  },
+
+  updateTouchVertexTarget (state, point) {
     if (state.interfaceType === 'touch' && state.selectedIndex >= 0 && state.selectedType === 'vertex') {
-      this.showTouchVertexIndicator(state, e)
+      this.showTouchVertexIndicator(state, point)
     } else {
-      this.hideTouchVertexIndicator()
+      this.hideTouchVertexIndicator(state)
     }
   },
 
@@ -464,7 +556,7 @@ export const EditVertexMode = {
     })
   },
 
-  moveVertex (state, e) {
+  getNewCoord (state, e) {
     const feature = this.getFeature(state.featureId)
     const coords = feature.coordinates.flat(1)
 
@@ -472,7 +564,11 @@ export const EditVertexMode = {
     const currentCoord = coords[state.selectedIndex]
 
     // Calculate new coord based on direction
-    const newCoord = this.getOffset(currentCoord, e)
+    return this.getOffset(currentCoord, e)
+  },
+
+  moveVertex (state, coord) {
+    const feature = this.getFeature(state.featureId)
 
     // Directly update the coordinates in the feature's internal structure
     // This depends on your feature type (point, line, polygon)
@@ -480,13 +576,13 @@ export const EditVertexMode = {
 
     // For polygon: find the right ring and position (Assuming first ring (outer boundary) for simplicity)
     if (geojson.geometry.type === 'Polygon') {
-      geojson.geometry.coordinates[0][state.selectedIndex] = [newCoord.lng, newCoord.lat]
+      geojson.geometry.coordinates[0][state.selectedIndex] = [coord.lng, coord.lat]
     }
 
     // For LineString: directly update the position
-    if (geojson.geometry.type === 'LineString') {
-      geojson.geometry.coordinates[state.selectedIndex] = [newCoord.lng, newCoord.lat]
-    }
+    // if (geojson.geometry.type === 'LineString') {
+    //   geojson.geometry.coordinates[state.selectedIndex] = [newCoord.lng, newCoord.lat]
+    // }
 
     // Update the feature with the modified GeoJSON
     this._ctx.api.add(geojson)
@@ -507,10 +603,11 @@ export const EditVertexMode = {
       return
     }
 
-    draw.trash()
-
     // Get next vertexIndex after deletion
     const nextVertexIndex = state.selectedIndex >= (state.vertecies.length - 1) ? 0 : state.selectedIndex
+
+    // Delete vertex
+    draw.trash()
 
     // Reenter the mode to refresh the state
     draw.changeMode('edit_vertex', {
@@ -521,87 +618,16 @@ export const EditVertexMode = {
     })
   },
 
-  showTouchVertexIndicator (state, e) {
-    const { map } = this
-    const feature = this.getFeature(state.featureId)
-    const coords = feature.coordinates.flat(1)
-    const vertex = coords[state.selectedIndex]
-
-    const TARGET_DISTANCE = 40
-    const TARGET_ANGLE = 45
-
-    // Calculate offset position for the large touch graphic
-    const vertexPixel = map.project(vertex)
-    const angleRad = (TARGET_ANGLE * Math.PI) / 180
-    const offsetX = Math.cos(angleRad) * TARGET_DISTANCE
-    const offsetY = Math.sin(angleRad) * TARGET_DISTANCE
-
-    const offsetPixel = {
-      x: vertexPixel.x + offsetX,
-      y: vertexPixel.y + offsetY // Subtract Y because screen coordinates are inverted
-    }
-
-    const offsetCoord = map.unproject(offsetPixel)
-
-    // Create large touch target at offset position
-    const touchIndicator = {
-      type: 'Feature',
-      properties: {
-        meta: 'touch-vertex-indicator',
-        active: 'true',
-        id: 'touch-vertex-indicator',
-        parent: state.featureId,
-        vertexIndex: state.selectedIndex
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [offsetCoord.lng, offsetCoord.lat]
-      }
-    }
-
-    // Add touch indicator to cold layer
-    setTimeout(() => {
-      try {
-        const hotSource = map.getSource('mapbox-gl-draw-cold')
-        if (hotSource) {
-          const existingData = hotSource._data || { type: 'FeatureCollection', features: [] }
-          const features = existingData.features.filter(f =>
-            f.properties.meta !== 'touch-vertex-indicator'
-          )
-          features.push(touchIndicator)
-
-          hotSource.setData({
-            type: 'FeatureCollection',
-            features
-          })
-        }
-      } catch (error) {
-        console.warn('Could not update touch vertex indicator:', error)
-      }
-    }, 0)
+  showTouchVertexIndicator (state, point) {
+    const { touchVertexTarget } = state
+    touchVertexTarget.style.display = 'block'
+    touchVertexTarget.style.top = `${point.y}px`
+    touchVertexTarget.style.left = `${point.x}px`
   },
 
-  hideTouchVertexIndicator () {
-    const { map } = this
-
-    setTimeout(() => {
-      try {
-        const hotSource = map.getSource('mapbox-gl-draw-cold')
-        if (hotSource) {
-          const existingData = hotSource._data || { type: 'FeatureCollection', features: [] }
-          const features = existingData.features.filter(f =>
-            f.properties.meta !== 'touch-vertex-indicator'
-          )
-
-          hotSource.setData({
-            type: 'FeatureCollection',
-            features
-          })
-        }
-      } catch (error) {
-        console.warn('Could not hide touch vertex indicator:', error)
-      }
-    }, 0)
+  hideTouchVertexIndicator (state) {
+    const { touchVertexTarget } = state
+    touchVertexTarget.style.display = 'none'
   },
 
   onStop (state) {
@@ -609,9 +635,12 @@ export const EditVertexMode = {
     const { container, vertexButton } = state
     container.removeEventListener('pointerdown', this.pointerdownHandler)
     container.removeEventListener('pointerup', this.pointerupHandler)
+    container.removeEventListener('touchstart', this.touchStartHandler)
+    container.removeEventListener('touchmove', this.touchMoveHandler)
     map.off('draw.selectionchange', this.selectionChangeHandler)
     map.off('draw.update', this.updateHandler)
-    map.off('zoom', this.zoomHandler)
+    map.off('move', this.moveHandler)
+    // map.off('zoom', this.zoomHandler)
     map.dragPan.enable()
     vertexButton.removeEventListener('click', this.vertexButtonClickHandler)
     window.removeEventListener('keydown', this.keydownHandler, { capture: true })
@@ -708,7 +737,7 @@ export const DrawVertexMode = {
     })
   },
 
-  onTap (state, e) {
+  onTap () {
 
   },
 

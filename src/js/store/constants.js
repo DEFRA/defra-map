@@ -30,7 +30,7 @@ export const defaults = {
 
 export const labels = {
   legend: {
-    TITLE: 'Legend',
+    TITLE: 'Key',
     SVG: '<path d="M9.125 5V3h9v2h-9zm0 6V9h9v2h-9zm0 6v-2h9v2h-9zm-3-9v4h-4V8h4zm0-6v4h-4V2h4zm0 12v4h-4v-4h4z" fill="currentColor" />'
   },
   layers: {

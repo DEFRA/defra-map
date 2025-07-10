@@ -109,15 +109,22 @@
     flex-direction: row;
     margin-bottom: 10px;
     align-items: center;
+    text-align: left;
 
     svg {
         color: currentcolor;
         margin-right: 5px;
+        flex-shrink: 0;
     }
 }
 
 .fm-mobile .fm-c-panel--draw-constraint {
     margin: $margin $margin 0;
+}
+
+.fm-tablet .fm-c-panel--draw-constraint,
+.fm-desktop .fm-c-panel--draw-constraint {
+    max-width: 400px;
 }
 
 // Error panel

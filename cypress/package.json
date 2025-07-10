@@ -1,0 +1,23 @@
+{
+  "name": "visual-test-with-cypress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "browserstack": "./node_modules/.bin/cypress run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "axe-core": "^4.10.3",
+    "cypress": "^14.4.1",
+    "cypress-axe": "^1.6.0",
+    "cypress-image-diff-js": "^1.26.0"
+  },
+  "dependencies": {
+    "browserstack-local": "^1.5.6",
+    "or": "^0.2.0"
+  }
+}

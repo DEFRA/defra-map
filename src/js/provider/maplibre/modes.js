@@ -157,7 +157,7 @@ export const EditVertexMode = {
     const { map } = this
     const state = DirectSelect.onSetup.call(this, options)
 
-    const { container, featureId, selectedIndex, selectedType, isPanEnabled, vertexButton, interfaceType } = options
+    const { container, featureId, selectedVertexIndex, selectedVertexType, isPanEnabled, vertexButton, interfaceType } = options
     state.container = container
     state.interfaceType = interfaceType
     state.vertexButton = vertexButton
@@ -165,8 +165,8 @@ export const EditVertexMode = {
     state.featureId = featureId
     state.vertecies = this.getVerticies(featureId) // Store vertecies
     state.midpoints = this.getMidpoints(featureId) // Store midpoints
-    state.selectedIndex = selectedIndex !== undefined ? selectedIndex : -1 // Tracks selected vertex/midpoint
-    state.selectedType = selectedType // Tracks select type vertex or midpoint
+    state.selectedVertexIndex = selectedVertexIndex !== undefined ? selectedVertexIndex : -1 // Tracks selected vertex/midpoint
+    state.selectedVertexType = selectedVertexType // Tracks select type vertex or midpoint
 
     // Force modechange event to fire
     map.fire('draw.modechange', {
@@ -201,8 +201,8 @@ export const EditVertexMode = {
     vertexButton.addEventListener('click', this.vertexButtonClickHandler)
 
     // Add midpoint
-    if (selectedType === 'midpoint') {
-      const coords = state.midpoints[selectedIndex - state.vertecies.length]
+    if (selectedVertexType === 'midpoint') {
+      const coords = state.midpoints[selectedVertexIndex - state.vertecies.length]
       this.updateMidpoint(coords)
     }
 
@@ -210,24 +210,32 @@ export const EditVertexMode = {
     this.addTouchVertexTarget(state)
 
     // Dispatch vertex chnage event on entering mode
-    this.dispatchVertexChange(state.vertecies)
+    this.map.fire('draw.vertexchange', {
+      featureId: state.featureId,
+      selectedVertexIndex: state.selectedVertexIndex,
+      numVertecies: state.vertecies.length
+    })
 
     return state
   },
 
   onSelectionChange (state, e) {
     const { map } = this
-    const { interfaceType, featureId } = state
+    const { interfaceType, featureId, vertecies } = state
     const vertexCoord = e.points[e.points.length - 1]?.geometry.coordinates
     const coords = e.features[0].geometry.coordinates.flat(1)
-    const selectedIndex = coords.findIndex(c => vertexCoord && c[0] === vertexCoord[0] && c[1] === vertexCoord[1])
-    const keyBoardIndex = state.selectedIndex < 0 ? selectedIndex : state.selectedIndex
-    // state.selectedIndex is already uptodate if set by keyboard
-    state.selectedIndex = interfaceType === 'keyboard' ? keyBoardIndex : selectedIndex
-    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+    const selectedVertexIndex = coords.findIndex(c => vertexCoord && c[0] === vertexCoord[0] && c[1] === vertexCoord[1])
+    const keyBoardIndex = state.selectedVertexIndex < 0 ? selectedVertexIndex : state.selectedVertexIndex
+    // state.selectedVertexIndex is already uptodate if set by keyboard
+    state.selectedVertexIndex = interfaceType === 'keyboard' ? keyBoardIndex : selectedVertexIndex
+    state.selectedVertexType ??= selectedVertexIndex >= 0 ? 'vertex' : null
 
     // Fire selection change draw event
-    this.map.fire('draw.vertexselect', { featureId, selectedIndex })
+    this.map.fire('draw.vertexchange', {
+      featureId,
+      selectedVertexIndex,
+      numVertecies: vertecies.length
+    })
 
     // Update vertex display when selection changes
     const coord = e.points?.[0]?.geometry.coordinates
@@ -250,16 +258,20 @@ export const EditVertexMode = {
     // Update vertex display when coordinates update
     const coord = state.vertecies.filter(coord => !previousVertecies.has(JSON.stringify(coord)))?.[0]
 
-    const selectedIndex = state.vertecies.findIndex(coord => !previousVertecies.has(JSON.stringify(coord)))
-    state.selectedIndex = selectedIndex //! isNaN(selectedIndex) ? selectedIndex : state.selectedIndex
-    state.selectedType ??= selectedIndex >= 0 ? 'vertex' : null
+    const selectedVertexIndex = state.vertecies.findIndex(coord => !previousVertecies.has(JSON.stringify(coord)))
+    state.selectedVertexIndex = selectedVertexIndex //! isNaN(selectedVertexIndex) ? selectedVertexIndex : state.selectedVertexIndex
+    state.selectedVertexType ??= selectedVertexIndex >= 0 ? 'vertex' : null
 
     // Udate touch vertex target
     const point = coord ? map.project(coord) : null
     this.updateTouchVertexTarget(state, point)
 
     // Dispatch vertex change event
-    this.dispatchVertexChange(state.vertecies)
+    this.map.fire('draw.vertexchange', {
+      featureId: state.featureId,
+      selectedVertexIndex: state.selectedVertexIndex,
+      numVertecies: state.vertecies.length
+    })
   },
 
   onKeydown (state, e) {
@@ -267,36 +279,36 @@ export const EditVertexMode = {
     this.hideTouchVertexIndicator(state)
 
     // Set selected index and type
-    if (e.key === ' ' && state.selectedIndex < 0) {
+    if (e.key === ' ' && state.selectedVertexIndex < 0) {
       state.isPanEnabled = false
       this.updateVertex(state)
     }
 
     // Move vertex
-    if (!e.altKey && ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
+    if (!e.altKey && ARROW_KEYS.includes(e.key) && state.selectedVertexIndex >= 0) {
       e.preventDefault()
       e.stopPropagation()
 
-      if (state.selectedType === 'midpoint') {
+      if (state.selectedVertexType === 'midpoint') {
         this.insertVertex(state, e)
       }
 
-      if (state.selectedType === 'vertex') {
+      if (state.selectedVertexType === 'vertex') {
         const coord = this.getNewCoord(state, e)
         this.moveVertex(state, coord)
       }
     }
 
     // Navigate points
-    if (e.altKey && ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
+    if (e.altKey && ARROW_KEYS.includes(e.key) && state.selectedVertexIndex >= 0) {
       this.updateVertex(state, e.key)
     }
 
     // Clear selected index and type
     if (e.key === 'Escape') {
       state.isPanEnabled = true
-      state.selectedIndex = -1
-      state.selectedType = null
+      state.selectedVertexIndex = -1
+      state.selectedVertexType = null
 
       const draw = this._ctx.api
       draw.changeMode('edit_vertex', {
@@ -309,7 +321,7 @@ export const EditVertexMode = {
     state.interfaceType = 'keyboard'
 
     // Arrow keys propogating to container
-    if (ARROW_KEYS.includes(e.key) && state.selectedIndex >= 0) {
+    if (ARROW_KEYS.includes(e.key) && state.selectedVertexIndex >= 0) {
       e.stopPropagation()
     }
 
@@ -331,14 +343,14 @@ export const EditVertexMode = {
 
   // Dispatched when target is a DOM element
   onTouchstart (state, e) {
-    if (state.selectedIndex < 0) {
+    if (state.selectedVertexIndex < 0) {
       return
     }
     const { map } = this
-    const { vertecies, selectedIndex, touchVertexTarget } = state
+    const { vertecies, selectedVertexIndex, touchVertexTarget } = state
     const touchPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY }
     state.deltaTarget = { x: touchPoint.x - parseFloat(window.getComputedStyle(touchVertexTarget).left), y: touchPoint.y - parseFloat(window.getComputedStyle(touchVertexTarget).top) }
-    const vertexPoint = map.project(vertecies[selectedIndex >= 0 ? selectedIndex : 0])
+    const vertexPoint = map.project(vertecies[selectedVertexIndex >= 0 ? selectedVertexIndex : 0])
     state.deltaVertex = { x: touchPoint.x - vertexPoint.x, y: touchPoint.y - vertexPoint.y }
   },
 
@@ -382,10 +394,10 @@ export const EditVertexMode = {
 
   onMove (state, e) {
     const { map } = this
-    const { vertecies, selectedIndex } = state
+    const { vertecies, selectedVertexIndex } = state
 
     // Update vertex display when coordinates update
-    const vertex = vertecies[selectedIndex]
+    const vertex = vertecies[selectedVertexIndex]
     if (vertex) {
       this.updateTouchVertexTarget(state, map.project(vertex))
     }
@@ -393,12 +405,6 @@ export const EditVertexMode = {
 
   onVertexButtonClick (state, e) {
     this.deleteVertex(state)
-  },
-
-  dispatchVertexChange (coords) {
-    this.map.fire('draw.vertexchange', {
-      numVertecies: coords.length
-    })
   },
 
   getVerticies (featureId) {
@@ -430,7 +436,7 @@ export const EditVertexMode = {
     const vertexPixels = state.vertecies.map(p => Object.values(map.project(p)))
     const midpointPixels = state.midpoints.map(p => Object.values(map.project(p)))
     const pixels = [...vertexPixels, ...midpointPixels]
-    const startPixel = pixels[state.selectedIndex]
+    const startPixel = pixels[state.selectedVertexIndex]
     const start = startPixel || Object.values(map.project(map.getCenter()))
 
     const index = spatialNavigate(start, pixels, direction)
@@ -451,7 +457,7 @@ export const EditVertexMode = {
   },
 
   updateTouchVertexTarget (state, point) {
-    if (state.interfaceType === 'touch' && state.selectedIndex >= 0 && state.selectedType === 'vertex') {
+    if (state.interfaceType === 'touch' && state.selectedVertexIndex >= 0 && state.selectedVertexType === 'vertex') {
       this.showTouchVertexIndicator(state, point)
     } else {
       this.hideTouchVertexIndicator(state)
@@ -483,8 +489,8 @@ export const EditVertexMode = {
 
     this._ctx.api.changeMode('edit_vertex', {
       ...state,
-      selectedIndex: index,
-      selectedType: type,
+      selectedVertexIndex: index,
+      selectedVertexType: type,
       ...(type === 'vertex' ? { coordPath: `0.${index}` } : {})
     })
   },
@@ -507,7 +513,7 @@ export const EditVertexMode = {
 
   insertVertex (state, e) {
     const feature = this.getFeature(state.featureId)
-    const midpointIndex = state.selectedIndex - state.vertecies.length
+    const midpointIndex = state.selectedVertexIndex - state.vertecies.length
 
     // Get the midpoint coordinates
     let midpointCoord = state.midpoints[midpointIndex]
@@ -550,8 +556,8 @@ export const EditVertexMode = {
     // Change mode to select the new vertex
     this._ctx.api.changeMode('edit_vertex', {
       ...state,
-      selectedIndex: newVertexIndex,
-      selectedType: 'vertex',
+      selectedVertexIndex: newVertexIndex,
+      selectedVertexType: 'vertex',
       coordPath: `0.${newVertexIndex}`
     })
   },
@@ -561,7 +567,7 @@ export const EditVertexMode = {
     const coords = feature.coordinates.flat(1)
 
     // Get current coordinate and its pixel position
-    const currentCoord = coords[state.selectedIndex]
+    const currentCoord = coords[state.selectedVertexIndex]
 
     // Calculate new coord based on direction
     return this.getOffset(currentCoord, e)
@@ -576,12 +582,12 @@ export const EditVertexMode = {
 
     // For polygon: find the right ring and position (Assuming first ring (outer boundary) for simplicity)
     if (geojson.geometry.type === 'Polygon') {
-      geojson.geometry.coordinates[0][state.selectedIndex] = [coord.lng, coord.lat]
+      geojson.geometry.coordinates[0][state.selectedVertexIndex] = [coord.lng, coord.lat]
     }
 
     // For LineString: directly update the position
     // if (geojson.geometry.type === 'LineString') {
-    //   geojson.geometry.coordinates[state.selectedIndex] = [newCoord.lng, newCoord.lat]
+    //   geojson.geometry.coordinates[state.selectedVertexIndex] = [newCoord.lng, newCoord.lat]
     // }
 
     // Update the feature with the modified GeoJSON
@@ -604,7 +610,7 @@ export const EditVertexMode = {
     }
 
     // Get next vertexIndex after deletion
-    const nextVertexIndex = state.selectedIndex >= (state.vertecies.length - 1) ? 0 : state.selectedIndex
+    const nextVertexIndex = state.selectedVertexIndex >= (state.vertecies.length - 1) ? 0 : state.selectedVertexIndex
 
     // Delete vertex
     draw.trash()
@@ -612,8 +618,8 @@ export const EditVertexMode = {
     // Reenter the mode to refresh the state
     draw.changeMode('edit_vertex', {
       ...state,
-      selectedIndex: nextVertexIndex,
-      selectedType: 'vertex',
+      selectedVertexIndex: nextVertexIndex,
+      selectedVertexType: 'vertex',
       coordPath: `0.${nextVertexIndex}`
     })
   },

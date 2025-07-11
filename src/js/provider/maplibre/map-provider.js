@@ -1,4 +1,5 @@
-import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleDrawVertexChange, handleDrawVertexSelect, handleError } from './events.js'
+import { applyPreventDefaultFix } from './maplibre-fixes.js'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleDrawVertexChange, handleError } from './events.js'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query.js'
 import { locationMarkerHTML, targetMarkerHTML } from './marker.js'
 import { highlightLabel } from './symbols.js'
@@ -49,6 +50,17 @@ class MapProvider extends EventTarget {
     const { container, paddingBox, bounds, maxBounds, center, zoom, minZoom, maxZoom, style, size, featureLayers, locationLayers, callBack } = options
     const { Map: MaplibreMap, Marker, LngLatBounds } = module.default
     const scale = getScale(size)
+
+    // ============================================
+    // TEMPORARY FIX: MapLibre touchmove preventDefault issue - Chrome console error
+    // TODO: Rasie issue with maplibre
+    // ============================================
+
+    applyPreventDefaultFix(container)
+
+    // ============================================
+    // END TEMPORARY FIX
+    // ============================================
 
     const map = new MaplibreMap({
       ...options,
@@ -134,7 +146,6 @@ class MapProvider extends EventTarget {
     // Draw events
     map.on('draw.modechange', handleDrawModeChange.bind(this))
     map.on('draw.vertexchange', handleDrawVertexChange.bind(this))
-    map.on('draw.vertexselect', handleDrawVertexSelect.bind(this))
 
     // Capture errors
     map.on('error', handleError.bind(this))

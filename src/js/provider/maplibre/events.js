@@ -153,20 +153,13 @@ export function handleDrawModeChange (e) {
 }
 
 export function handleDrawVertexChange (e) {
+  const { featureId, selectedVertexIndex, numVertecies } = e
   this.dispatchEvent(new CustomEvent('draw', {
     detail: {
       action: 'change',
-      numVertecies: e.numVertecies
-    }
-  }))
-}
-
-export function handleDrawVertexSelect (e) {
-  this.dispatchEvent(new CustomEvent('draw', {
-    detail: {
-      action: 'select',
-      featureId: e.featureId,
-      selectedIndex: e.selectedIndex
+      featureId,
+      selectedVertexIndex,
+      numVertecies
     }
   }))
 }

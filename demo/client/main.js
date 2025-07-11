@@ -55,14 +55,17 @@ const fm = new FloodMap('map', {
   },
   legend: {
     title: 'Live flood risk',
-    width: '360px',
-    display: 'inset',
+    // width: '360px',
+    width: '280px',
+    keyWidth: '360px',
+    // display: 'inset',
     isVisible: true,
     isPersistInUrl: true,
     segments: [
       {
-        display: 'timeline',
+        // display: 'timeline',
         heading: 'Timeline',
+        collapse: 'collapse',
         items: [
           {
             id: queryMap.live,
@@ -84,7 +87,7 @@ const fm = new FloodMap('map', {
       },
       {
         parentIds: [queryMap.outlook],
-        display: 'segmented',
+        // display: 'segmented',
         heading: 'Days',
         items: [
           {
@@ -113,7 +116,7 @@ const fm = new FloodMap('map', {
     key: [
       {
         heading: 'Forecast flood risk',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.outlook],
         display: 'ramp',
         items: [
@@ -137,7 +140,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Annual likelyhood of flooding',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.yearly],
         display: 'ramp',
         items: [
@@ -157,7 +160,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Flood warnings and alerts',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
         minZoom: 12,
         items: [
@@ -188,7 +191,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Flood warnings and alerts',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
         maxZoom: 12,
         items: [
@@ -217,9 +220,9 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Water level measuring stations',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
-        isHidden: true,
+        // isHidden: true,
         items: [
           {
             id: queryMap.river,

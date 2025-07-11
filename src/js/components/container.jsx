@@ -238,7 +238,7 @@ export default function Container () {
                   <Layers hasSymbols hasInputs />
                 </Panel>
               )}
-              {isMobile && !hasInspector && <Actions />}
+              {isMobile && <Actions />}
             </div>
             <Attribution />
           </div>

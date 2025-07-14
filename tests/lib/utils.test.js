@@ -1,4 +1,4 @@
-import { parseAttribute, isSame, getQueryParam, hasQueryParam, getImagePos, getColor } from '../../src/js/lib/utils'
+import { parseAttribute, isSame, getQueryParam, hasQueryParam, getColor } from '../../src/js/lib/utils'
 
 describe('lib/utils - parseAttribute', () => {
   it('should parse correctly', () => {
@@ -39,16 +39,6 @@ describe('lib/utils - hasQueryParam', () => {
 
   it('should pass correctly', () => {
     expect(hasQueryParam('name')).toEqual(true)
-  })
-})
-describe('lib/utils - getImagePos', () => {
-  it('should getImagePos returns correct positions', () => {
-    expect(getImagePos('default')).toBe('0 0')
-    expect(getImagePos('dark')).toBe('0 -120px')
-    expect(getImagePos('aerial')).toBe('0 -240px')
-    expect(getImagePos('deuteranopia')).toBe('0 -360px')
-    expect(getImagePos('tritanopia')).toBe('0 -480px')
-    expect(getImagePos('invalid')).toBe(undefined)
   })
 })
 

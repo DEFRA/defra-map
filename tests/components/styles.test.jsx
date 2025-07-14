@@ -8,9 +8,6 @@ import { useViewport } from '../../src/js/store/use-viewport'
 
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
-jest.mock('../../src/js/lib/style-image.json', () => ({
-  src: 'test-image'
-}))
 
 describe('styles', () => {
   const appDispatch = jest.fn()
@@ -28,7 +25,8 @@ describe('styles', () => {
       {
         name: 'default',
         attribution: 'Test',
-        url: 'https://test/default/styles.json'
+        url: 'https://test/default/styles.json',
+        iconUrl: 'testUrl'
       },
       {
         name: 'dark',
@@ -90,6 +88,8 @@ describe('styles', () => {
     expect(screen.getByText(/Default/)).toBeTruthy()
     expect(screen.getByText(/Dark/)).toBeTruthy()
     expect(screen.getByText(/Aerial/)).toBeTruthy()
+    expect((container.querySelector('button[value="default"] img')).src).toEqual('http://localhost/testUrl')
+    expect((container.querySelector('button[value="dark"] img')).src).toEqual('')
   })
 
   it('should render all styles and text sizes on clicking "More styles"', () => {

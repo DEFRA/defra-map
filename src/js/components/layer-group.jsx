@@ -28,8 +28,8 @@ const getDisplay = (group, item) => {
   return group.display || (item.icon && 'icon') || (item.fill && 'fill') || item.display
 }
 
-export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
-  const { parent, dispatch, mode, layers, segments } = useApp()
+export default function LayerGroup ({ id, group, legendDisplay, hasSymbols, hasInputs }) {
+  const { parent, dispatch, drawMode, layers, segments } = useApp()
   const { size, style } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryLyr] = useQueryState('lyr')
@@ -39,19 +39,27 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const dispatchAppChange = lyr => {
     dispatch({ type: 'TOGGLE_LAYERS', payload: lyr })
     viewportDispatch({ type: 'CLEAR_FEATURES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', mode, style, size, segments, layers: lyr })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'layer', drawMode, style, size, segments, layers: lyr })
     // Update query param
     setQueryLyr(lyr.join(','))
   }
 
-  const handleItemClick = e => {
+  const handleButtonClick = (e) => {
     const lyr = layers
     const index = lyr.indexOf(e.currentTarget.value)
-    e.currentTarget.getAttribute('aria-checked') === 'false' ? lyr.push(e.currentTarget.value) : lyr.splice(index, 1)
+    const isPressed = e.currentTarget.getAttribute('aria-pressed')
+    isPressed === 'true' ? lyr.splice(index, 1) : lyr.push(e.currentTarget.value)
     dispatchAppChange(lyr)
   }
 
-  const handleItemChange = e => {
+  const handleCheckboxChange = (e) => {
+    const lyr = layers
+    const index = lyr.indexOf(e.target.value)
+    e.target.checked ? lyr.push(e.target.value) : lyr.splice(index, 1)
+    dispatchAppChange(lyr)
+  }
+
+  const handleRadioChange = e => {
     const lyr = layers
     if (checkedRadioId) {
       lyr.splice(lyr.indexOf(checkedRadioId), 1)
@@ -105,29 +113,100 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   const itemInner = ({ item, index, display, isChecked }) => {
     if (hasInputs && group.type === 'radio') {
       return (
+        // Radio
         <>
-          <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleItemChange} />
+          <input className='fm-c-layers__radio' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='radio' value={item.id} onChange={handleRadioChange} />
           <label className='fm-c-layers__label' htmlFor={item.id}>
             {hasSymbols && keySymbol({ display, item })}
             <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
           </label>
         </>
       )
-    } else if (hasInputs && item.id) {
+    } else if (hasInputs && item.id && legendDisplay === 'inset') {
       return (
-        <button className='fm-c-layers__button' role='switch' aria-checked={isChecked} value={item.id} onClick={handleItemClick}>
+        // Toggle button
+        <button className='fm-c-layers__button' aria-pressed={isChecked} value={item.id} onClick={handleButtonClick}>
           {hasSymbols && keySymbol({ display, item })}
           <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
         </button>
       )
+    } else if (hasInputs && item.id) {
+      return (
+        // Checkbox
+        <>
+          <input className='fm-c-layers__checkbox' defaultChecked={isChecked} id={item.id} name={`group-${id}`} type='checkbox' value={item.id} onChange={handleCheckboxChange} />
+          <label className='fm-c-layers__label' htmlFor={item.id}>
+            {hasSymbols && keySymbol({ display, item })}
+            <span className='fm-c-layers__text' dangerouslySetInnerHTML={{ __html: item.label }} />
+          </label>
+        </>
+      )
     } else {
       return (
+        // Symbol only
         <>
           {hasSymbols && keySymbol({ display, item })}
           <span className={group.numLabels && index % group.numLabels !== 0 ? 'fm-u-visually-hidden' : 'fm-c-layers__text'} dangerouslySetInnerHTML={{ __html: item.label }} />
         </>
       )
     }
+  }
+
+  const layersHeader = () => {
+    return (
+      <>
+      {isDetails
+        ? (
+          <h3 className='fm-c-layers__heading fm-c-layers__heading--details'>
+            <button className='fm-c-details' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+              <span className='fm-c-details__label'>
+                <span id={`layers-${id}`} className='fm-c-details__label-focus'>{heading}</span>
+              </span>
+              <span className='fm-c-details__summary'>
+                <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
+              </span>
+              <span className='fm-c-details__toggle'>
+                <span className='fm-c-details__toggle-focus'>
+                  <span className='fm-c-details__chevron' />
+                  {isExpanded ? 'Hide' : 'Show'}
+                </span>
+              </span>
+            </button>
+          </h3>
+          )
+        : heading && (
+          <h3 id={`layers-${id}`} className='fm-c-layers__heading'>{heading}</h3>
+        )}
+      </>
+    )
+  }
+
+  const layersBody = (layout) => {
+    return (
+      <div id={`content-${id}`} className={`fm-c-layers__${layout || 'row'}s`} {...styleAttr}>
+        {group.items.map((item, i) => {
+          let display = getDisplay(group, item)
+          const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
+          return (
+            <Fragment key={(item.id || item.label).toLowerCase()}>
+              {(hasSymbols || item.id) && (
+                <div className={`fm-c-layers__item fm-c-layers__item--${display}`}>
+                  {itemInner({ item, index: i, display, isChecked })}
+                </div>
+              )}
+              {hasSymbols && item.items?.map((child, j) => {
+                display = item.display || (child.icon ? 'icon' : 'fill')
+                return (
+                  <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display}`}>
+                    {itemInner({ item: child, index: j, display })}
+                  </div>
+                )
+              })}
+            </Fragment>
+          )
+        })}
+      </div>
+    )
   }
 
   useEffect(() => {
@@ -148,54 +227,22 @@ export default function LayerGroup ({ id, group, hasSymbols, hasInputs }) {
   }, [group])
 
   return (
-    <div className={`fm-c-layers__group fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-label={heading}>
-      {isDetails
-        ? (
-          <button className='fm-c-details govuk-body-s' aria-expanded={isExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
-            <span className='fm-c-details__label'>
-              <span className='fm-c-details__label-focus'>{heading}</span>
-            </span>
-            <span className='fm-c-details__summary'>
-              <span className='fm-c-details__summary-focus'>{groupSummary || 'None selected'}</span>
-            </span>
-            <span className='fm-c-details__toggle'>
-              <span className='fm-c-details__toggle-focus'>
-                <span className='fm-c-details__chevron' />
-                {isExpanded ? 'Hide' : 'Show'}
-              </span>
-            </span>
-          </button>
-          )
-        : heading && (
-          <h3 className='fm-c-layers__heading govuk-body-s' aria-hidden='true'>{heading}</h3>
-        )}
-      <div
-        id={`content-${id}`}
-        className={`fm-c-layers__${layout || 'row'}s`}
-        {...styleAttr}
-      >
-        {group.items.map((item, i) => {
-          let display = getDisplay(group, item)
-          const isChecked = group?.type === 'radio' ? item?.id === checkedRadioId : layers?.includes(item.id)
-          return (
-            <Fragment key={(item.id || item.label).toLowerCase()}>
-              {(hasSymbols || item.id) && (
-                <div className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                  {itemInner({ item, index: i, display, isChecked })}
-                </div>
-              )}
-              {hasSymbols && item.items?.map((child, j) => {
-                display = item.display || (child.icon ? 'icon' : 'fill')
-                return (
-                  <div key={`${item.label.toLowerCase()}-${j}`} className={`fm-c-layers__item fm-c-layers__item--${display} govuk-body-s`}>
-                    {itemInner({ item: child, index: j, display })}
-                  </div>
-                )
-              })}
-            </Fragment>
-          )
-        })}
-      </div>
-    </div>
+    <>
+      {layout === 'column' ? (
+        <div className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`} role='group' aria-labelledby={`layers-${id}`}>
+          <div className='fm-c-layers__header'>
+            {layersHeader()}
+          </div>
+          {layersBody(layout)}
+        </div>
+      ) : (
+        <fieldset className={`fm-c-layers__group${isDetails && !isExpanded ? ' fm-c-layers__group--hidden' : ''} fm-c-layers__group--${layout || 'row'}${group.numLabels ? ' fm-c-layers__group--custom-labels' : ''}`}>
+          <legend className='fm-c-layers__legend'>
+            {layersHeader()}
+          </legend>
+          {layersBody(layout)}
+        </fieldset>
+      )}
+    </>
   )
 }

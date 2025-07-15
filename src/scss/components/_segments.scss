@@ -1,22 +1,41 @@
-.fm-c-segments:not(:first-child) {
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
+.fm-c-segments {
+    border: 0;
+    padding: 0;
+    margin: 0
+}
+
+.fm-c-segments:not(:first-child) .fm-c-segments__legend {
     border-top: 1px solid var(--border-colour);
+}
+
+.fm-c-segments__legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box
 }
 
 .fm-c-segments__inner {
     margin-top: -15px;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 .fm-c-segments__heading {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    @include body-font(16px, 400);
     margin-bottom: 0;
     color: var(--foreground-colour);
     padding: 15px 0;
 }
 
+.fm-c-segments__heading--details {
+    padding-bottom: 10px;
+}
+
 .fm-c-segments__item {
+    @include body-font(16px, 400);
     display: flex;
     position: relative;
     align-items: start;
@@ -40,7 +59,7 @@
 .fm-c-segments__label {
     align-self: start;
     margin-bottom: 0;
-    padding: 12px 15px 7px 0;
+    padding: 10px 15px 9px 0;
     cursor: pointer;
     touch-action: manipulation;
 }
@@ -103,6 +122,7 @@
     }
 
     .fm-c-segments__button {
+        @include body-font(16px, 400);
         position: relative;
         display: flex;
         flex-direction: column;
@@ -216,7 +236,7 @@
         flex-wrap: nowrap;
         color: var(--secondary-text-colour);
         background-color: transparent;
-        padding: 0 5px 24px;
+        padding: 5px 5px 24px;
         margin: 0;
         border: 0;
         min-height: 44px;
@@ -294,11 +314,10 @@
     .fm-c-segments__button:hover:not([aria-pressed="true"]) {
         z-index: 9;
     }
-}
 
-// Segments without panel heading overide
-.fm-c-panel__header--collapse + .fm-c-panel__body .fm-c-segments:first-child {
-    margin-top: 20px;
+    + .fm-c-segments {
+        border-top: 0;
+    }
 }
 
 // Collapsible sections
@@ -306,6 +325,7 @@
     font-weight: 700;
 }
 
-.fm-c-segments .fm-c-details[aria-expanded="false"] + .fm-c-segments__inner {
+// Toggle details
+.fm-c-segments--hidden .fm-c-segments__inner {
     display: none;
 }

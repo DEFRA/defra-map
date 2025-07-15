@@ -1,3 +1,5 @@
+@use '../tools/mixins' as *;
+
 .fm-page {
     height: 100%;
     overflow-y: visible;
@@ -22,8 +24,8 @@
     padding: 15px;
     border: 5px solid #b1b4b6;
     
-    p {
-        margin-bottom: 0;
+    &__body {
+        @include body-font(19px, 400);
     }
 }
 
@@ -47,4 +49,9 @@
 
 .fm-u-visually-hidden {
     @extend %fm-u-visually-hidden;
+}
+
+.fm-u-hidden {
+    opacity: 0;
+    visibility: hidden;
 }

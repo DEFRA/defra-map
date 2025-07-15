@@ -1,3 +1,6 @@
+@use '../settings/dimensions' as *;
+@use '../settings/colours' as *;
+
 .fm-c-padding-box {
     position: absolute;
     pointer-events: none;
@@ -26,11 +29,15 @@
     left: 50%;
     pointer-events: none;
     z-index: 2;
-    border: 2px dashed #505a5f;
+    border: 2px dashed $foreground-colour;
     width: 240px;
     height: 240px;
     margin-top: -120px;
     margin-left: -120px;
+
+    @media (forced-colors: active) {
+        border-color: Canvas;
+    }
 }
 
 .fm-tablet .fm-c-padding-box__frame,
@@ -41,28 +48,50 @@
     margin-left: -200px;
 }
 
+// Dark basemaps
+.fm-o-viewport--dark .fm-c-padding-box__frame,
+.fm-o-viewport--aerial .fm-c-padding-box__frame {
+    border-color: $background-colour;
+
+    @media (forced-colors: active) {
+        border-color: ButtonText;
+    }
+}
+
 // Viewport padding box style and colours
 .fm-o-viewport.fm-u-focus-visible {
     .fm-c-padding-box--visible .fm-c-padding-box__frame {
         opacity: 1;
     }
 
-    .fm-c-padding-box--active .fm-c-padding-box__frame {
-        border-style: solid;
-    }
+    // &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
+    //     border-color: $background-colour;
+    // }
+}
 
-    &.fm-o-viewport--dark-style .fm-c-padding-box__frame {
-        border-color: #b1b4b6;
-    }
-
-    &.fm-o-viewport--dark-style .fm-c-padding-box--active .fm-c-padding-box__frame {
-        border-color: #ffffff;
-    }
+// Active padding box
+.fm-c-padding-box--active .fm-c-padding-box__frame {
+    border-style: solid;
 }
 
 // Frame mode
-.fm-c-padding-box--frame-mode .fm-c-padding-box__frame {
-    opacity: 1;
-    border-style: solid;
-    border-color: var(--query-polygon-stroke-colour);
+.fm-c-padding-box--square, .fm-c-padding-box--circle {
+    .fm-c-padding-box__frame {
+        opacity: 1;
+        // border-color: var(--foreground-colour);
+    }
+}
+
+// Circle frame
+.fm-c-padding-box--circle .fm-c-padding-box__frame {
+    border-radius: 100%;
+}
+
+// Text size
+.fm-o-viewport--medium .fm-c-padding-box__frame {
+    border-width: 3px;
+}
+
+.fm-o-viewport--large .fm-c-padding-box__frame {
+    border-width: 4px;
 }

@@ -1,30 +1,29 @@
-import React, { useRef, useEffect, useMemo } from 'react'
+import React, { useRef, useEffect, useMemo, useCallback } from 'react'
 import { debounce } from '../lib/debounce'
 import { defaults } from '../store/constants'
 
 export default function Autocomplete ({ id, state, dispatch, geocode, errorText, updateViewport }) {
-  const SUGGEST_DELAY = 350
-  const STATUS_DELAY = 500
+  const DELAY = 500
   const selectedRef = useRef()
 
   const { value, selected } = state
 
-  const debounceUpdateSuggest = debounce(async (text) => {
+  const debounceUpdateSuggest = useCallback(debounce(async (text) => {
     const items = await geocode.suggest(text)
     dispatch({ type: 'SHOW_SUGGESTIONS', payload: items })
     updateStatus()
-  }, SUGGEST_DELAY)
+  }, DELAY), [])
 
   const updateStatus = () => {
     dispatch({ type: 'CLEAR_STATUS' })
     debounceUpdateStatus()
   }
 
-  const debounceUpdateStatus = debounce(() => {
+  const debounceUpdateStatus = useCallback(debounce(() => {
     dispatch({ type: 'UPDATE_STATUS' })
-  }, STATUS_DELAY)
+  }, DELAY), [])
 
-  const handleOnMouseDown = (e, i) => {
+  const handleClick = (e, i) => {
     e.preventDefault()
     const text = state.suggestions[i].text
     const suggestionId = state.suggestions[i].id
@@ -53,8 +52,8 @@ export default function Autocomplete ({ id, state, dispatch, geocode, errorText,
     <div className='fm-c-search__suggestions'>
       {useMemo(() => {
         return (
-          <div className='fm-u-visually-hidden' aria-live='assertive' aria-atomic>
-            {state.status}
+          <div className='fm-u-visually-hidden' aria-live='polite' aria-atomic>
+            {state.status === 'error' ? (errorText || 'No results are available') : state.status}
           </div>
         )
       }, [state.status])}
@@ -63,7 +62,7 @@ export default function Autocomplete ({ id, state, dispatch, geocode, errorText,
       )}
       <ul id={`${id}-suggestions`} role='listbox' aria-labelledby={`${id}-search`} className='fm-c-search__list' {...(!state.isVisible ? { style: { display: 'none' } } : {})} onMouseEnter={() => dispatch({ type: 'MOUSEENTER' })}>
         {state.suggestions?.map((item, i) =>
-          <li key={item.id} ref={state.selected === i ? selectedRef : null} className={`fm-c-search-item${state.selected === i ? ' fm-c-search-item--selected' : ''} govuk-body-s`} onMouseDown={e => handleOnMouseDown(e, i)} role='option' aria-selected={state.selected === i} aria-posinset={i + 1} aria-setsize={state.suggestions.length} tabIndex='-1'>
+          <li key={item.id} ref={state.selected === i ? selectedRef : null} id={`${id}-search-suggestion-${i}`} className={`fm-c-search-item${state.selected === i ? ' fm-c-search-item--selected' : ''}`} onClick={e => handleClick(e, i)} role='option' aria-selected={state.selected === i} aria-posinset={i + 1} aria-setsize={state.suggestions.length} tabIndex='-1'>
             <span className='fm-c-search-item__primary' dangerouslySetInnerHTML={item.marked} />
           </li>)}
       </ul>

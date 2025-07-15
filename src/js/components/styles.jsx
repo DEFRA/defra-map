@@ -3,13 +3,12 @@ import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
 import { getImagePos } from '../lib/utils.js'
-import { capabilities } from '../lib/capabilities.js'
 import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
-  const { options } = useApp()
-  const { id, framework, hasAutoMode } = options
+  const { options, provider } = useApp()
+  const { id, hasAutoMode } = options
   const { size, style, styles } = useViewport()
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
@@ -19,18 +18,15 @@ export default function Styles () {
   const [isExpanded, setIsExpanded] = useState(styles.map(s => s.name).indexOf(currentStyleName) > 2 || size !== 'small')
   buttonsRef.current = styles.map(s => s.name).map((_, i) => buttonsRef.current[i] ?? createRef())
 
-  const hasSize = capabilities[framework || 'default'].hasSize
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3
 
   const handleStyleClick = e => {
-    // activeRef.current = null
     viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
   }
 
   const handleSizeClick = e => {
-    // activeRef.current = null
     viewportDispatch({ type: 'SET_SIZE', payload: e.currentTarget.value })
   }
 
@@ -53,10 +49,10 @@ export default function Styles () {
 
   return (
     <div id='map-styles' className='fm-c-layers fm-c-layers--style'>
-      <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
+      <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-panel-style-label`}>
         <div className='fm-c-layers__columns'>
-          {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
-            <div key={item.name} className='fm-c-layers__item govuk-body-s'>
+          {styles?.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
+            <div key={item.name} className='fm-c-layers__item'>
               <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
                 <div className='fm-c-layers__image'>
                   <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(item.name) }} />
@@ -65,22 +61,22 @@ export default function Styles () {
                   default: 'Default',
                   dark: 'Dark',
                   aerial: 'Aerial',
-                  deuteranopia: 'Green-red enhanced',
-                  tritanopia: 'Blue-yellow enhanced'
+                  deuteranopia: 'Deuteranopia',
+                  tritanopia: 'Tritanopia'
                 }[item.name]}
               </button>
             </div>
           ))}
         </div>
       </div>
-      {hasSize && isExpanded && (
+      {provider.capabilities.hasSize && isExpanded && (
         <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-text-sizes`}>
-          <div id={`${id}-text-sizes`} className='fm-c-layers__header'>
-            <h3 className='fm-c-layers__heading govuk-body-s'>Text size</h3>
+          <div className='fm-c-layers__header'>
+            <h3 id={`${id}-text-sizes`} className='fm-c-layers__heading'>Text size</h3>
           </div>
           <div className='fm-c-layers__columns'>
             {['small', 'medium', 'large'].map((name, i) => (
-              <div key={name} className='fm-c-layers__item govuk-body-s'>
+              <div key={name} className='fm-c-layers__item'>
                 <button className='fm-c-layers__button' value={name} aria-pressed={currentSize === name} onClick={handleSizeClick}>
                   <div className='fm-c-layers__image'>
                     <svg width='60' height='60' viewBox='0 0 60 60' fillRule='evenodd'>
@@ -97,7 +93,7 @@ export default function Styles () {
           </div>
         </div>
       )}
-      {(styles.length > 3 || hasSize) && (
+      {(styles.length > 3 || provider.capabilities.hasSize) && (
         <div className='fm-c-layers__more fm-c-layers__more--center'>
           <More id={`${id}-styles`} label={moreLabel} isExpanded={isExpanded} setIsExpanded={() => setIsExpanded(!isExpanded)} isRemove />
         </div>

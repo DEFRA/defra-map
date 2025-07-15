@@ -1,0 +1,80 @@
+@use '../settings/colours' as *;
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
+.fm-c-action-menu {
+    position: relative;
+
+    &__list {
+        position: absolute;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        min-width: 160px;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow-offset;
+        border-radius: $panel-radius;
+        pointer-events: auto;
+        outline: 2px solid transparent;
+
+        &.fm-u-focus-visible::after {
+            @include focus($offset: -3px);
+        }
+
+        &.fm-u-focus-visible .fm-c-action-menu__item--selected {
+            background-color: var(--link-colour);
+            color: var(--background-colour);
+            outline-offset: -2px;
+            outline: 3px solid transparent;
+        }
+    }
+
+    &__item {
+        @include body-font(16px, 400);
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--border-colour);
+        cursor: pointer;
+
+        svg {
+            margin-right: 7px;
+        }
+
+        &:last-child {
+            border: 0;
+        }
+
+        &:hover {
+            background-color: var(--link-colour);
+            color: var(--background-colour);
+        }
+    }
+
+    .fm-c-btn {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .fm-c-btn__chevron {
+        content: '';
+        box-sizing: border-box;
+        align-self: center;
+        bottom: 50%;
+        right: 0.375rem;
+        width: 0.375rem;
+        height: 0.375rem;
+        transform: rotate(135deg);
+        border-top: 0.125rem solid;
+        border-right: 0.125rem solid;
+        margin-left: auto;
+    }
+
+    // Positions
+    &--above-right &__list {
+        right: 0;
+        bottom: calc(100% + 10px);
+    }
+}

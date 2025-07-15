@@ -1,3 +1,7 @@
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 .fm-c-status {
     position: absolute;
     z-index: 3;
@@ -12,9 +16,9 @@
     padding: 0 $margin;
 
     &__inner {
+        @include body-font(16px, 400);
         padding: 15px;
         border-radius: $button-radius;
-        background-color: #ffffff;
         box-shadow: $panel-shadow;
         pointer-events: auto;
         max-width: 500px;

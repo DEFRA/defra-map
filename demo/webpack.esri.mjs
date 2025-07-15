@@ -17,15 +17,18 @@ export default mergeWithCustomize({
   }
 })(common, {
   entry: {
-    planning: [
+    main: [
       path.join(__dirname, 'client/planning.js'),
       path.join(__dirname, 'client/main.scss')
     ]
   },
+  output: {
+    filename: 'planning.js'
+  },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(
-      /js\/provider\/os-maplibre\/provider\.js/,
-      './js/provider/esri-sdk/provider.js'
+      /js\/provider\/maplibre\/provider\.js/,
+      './js/provider/esri/provider.js'
     )
   ]
 })

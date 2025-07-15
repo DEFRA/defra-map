@@ -9,6 +9,7 @@ jest.mock('../../src/js/store/use-app')
 describe('styles-button', () => {
   const mockDispatch = jest.fn()
   const mockStylesBtnRef = { current: null }
+
   it('should show styles button', () => {
     jest.mocked(useApp).mockReturnValue({
       options: {
@@ -67,6 +68,7 @@ describe('styles-button', () => {
     const { container } = render(<StylesButton stylesBtnRef={mockStylesBtnRef} />)
     expect(container.firstChild).toBeNull()
   })
+
   it('should return null when styles is undefined', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: mockDispatch,
@@ -91,6 +93,7 @@ describe('styles-button', () => {
     const { container } = render(<StylesButton stylesBtnRef={mockStylesBtnRef} />)
     expect(container.firstChild).toBeNull()
   })
+
   it('should render button when styles array has multiple items', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: mockDispatch,
@@ -104,9 +107,10 @@ describe('styles-button', () => {
 
     const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('fm-c-btn', 'fm-c-btn--style', 'govuk-body-s')
+    expect(button).toHaveClass('fm-c-btn', 'fm-c-btn--style')
     expect(button).toHaveAttribute('aria-labelledby', 'test-style-label')
   })
+
   it('should render tooltip with correct props', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: mockDispatch,

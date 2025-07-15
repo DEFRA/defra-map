@@ -1,26 +1,31 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getRequest, getTileRequest } from './request.js'
+import { getRequest, createTileRequest, isBoundsWithin } from './request.js'
 import getSymbols from './symbols.js'
 import { addSources, addLayers, toggleVisibility, queryMap } from './layers.js'
 
 const symbols = getSymbols()
 
+let map, bounds
+
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
+  pageTitle: 'Test page title one',
+  buttonText: 'Custom text one',
   place: 'Carlisle',
-  zoom: 14,
-  minZoom: 8,
+  // zoom: 14,
+  minZoom: 6,
   maxZoom: 18,
   // center: [-2.938769, 54.893806],
   bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
-  // hasReset: true,
+  maxBounds: [-5.719993, 49.955638, 1.794689, 55.825973],
   hasGeoLocation: true,
+  // hasReset: true,
   height: '600px',
   // buttonType: 'anchor',
   symbols,
-  transformRequest: getTileRequest,
-  transformSearchRequest: getRequest,
-  // geocodeProvider: 'esri-world-geocoder',
+  transformRequest: createTileRequest(() => map),
+  transformGeocodeRequest: getRequest,
+  scaleBar: 'imperial',
   hasAutoMode: true,
   backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: [{
@@ -33,7 +38,6 @@ const fm = new FloodMap('map', {
     url: process.env.DARK_URL
   },{
     name: 'aerial',
-    attribution: 'Test',
     url: process.env.AERIAL_URL,
     logo: null
   },{
@@ -50,15 +54,18 @@ const fm = new FloodMap('map', {
     isAutocomplete: true
   },
   legend: {
-    title: 'Menu',
-    width: '360px',
-    display: 'inset',
+    title: 'Live flood risk',
+    // width: '360px',
+    width: '280px',
+    keyWidth: '360px',
+    // display: 'inset',
     isVisible: true,
-    keyDisplay: 'min', // 'all'
     isPersistInUrl: true,
     segments: [
       {
-        display: 'timeline',
+        // display: 'timeline',
+        heading: 'Timeline',
+        collapse: 'collapse',
         items: [
           {
             id: queryMap.live,
@@ -80,7 +87,8 @@ const fm = new FloodMap('map', {
       },
       {
         parentIds: [queryMap.outlook],
-        display: 'segmented',
+        // display: 'segmented',
+        heading: 'Days',
         items: [
           {
             id: queryMap.day1,
@@ -108,7 +116,7 @@ const fm = new FloodMap('map', {
     key: [
       {
         heading: 'Forecast flood risk',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.outlook],
         display: 'ramp',
         items: [
@@ -132,27 +140,27 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Annual likelyhood of flooding',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.yearly],
         display: 'ramp',
         items: [
           {
             label: '> 3.3%',
-            fill: 'default: #75D0E9, dark: #4779C4, aerial: #4779C4'
+            fill: 'default: #75D0E9, dark: #4779C4, deuteranopia: #79604A, tritanopia: #CF2A2B, aerial: #4779C4'
           },
           {
             label: '> 1%',
-            fill: 'default: #B1E2EE, dark: #3C649F, aerial: #3C649F'
+            fill: 'default: #B1E2EE, dark: #3C649F, deuteranopia: #297BE1, tritanopia: #008791, aerial: #3C649F'
           },
           {
             label: '> 0.1%',
-            fill: 'default: #D5EBF2, dark: #2C456B, aerial: #2C456B'
+            fill: 'default: #D5EBF2, dark: #2C456B, deuteranopia: #FFB72C, tritanopia: #FFADB9, aerial: #2C456B'
           }
         ]
       },
       {
         heading: 'Flood warnings and alerts',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
         minZoom: 12,
         items: [
@@ -183,7 +191,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Flood warnings and alerts',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
         maxZoom: 12,
         items: [
@@ -212,8 +220,9 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Water level measuring stations',
-        layout: 'column',
+        // layout: 'column',
         parentIds: [queryMap.live],
+        // isHidden: true,
         items: [
           {
             id: queryMap.river,
@@ -241,37 +250,45 @@ const fm = new FloodMap('map', {
   },
   // info: {
   //   featureId: '011WAFLE',
+  //   link: 'http://google.co.uk',
   //   // coord: [-2.934171,54.901112],
   //   // hasData: true,
   //   width: '360px',
-  //   label: '[dynamic title]',
-  //   html: '<p class="govuk-body-s">[dynamic body]</p>'
+  //   label: 'Dynamic title',
+  //   html: '<p class="govuk-body-s">dynamic body</p>'
   // },
   queryLocation: {
     layers: ['river-sea-fill', 'surface-water-30-fill', 'surface-water-100-fill', 'surface-water-1000-fill']
   },
   queryFeature: {
     layers: ['warning-fill', 'warning-symbol', 'stations', 'stations-small', 'five-day-forecast']
+    // layers: ['warning-fill', 'warning-symbol', 'rainfall', 'stations', 'rainfall-small', 'stations-small', 'five-day-forecast']
   }
+}, (provider) => {
+  // Call GeoJSON source with new bbox on map move end if zoom is greater than layer minzoom
+  // const { map } = provider
+  // map.on('moveend', () => {
+  //   if (map.getZoom() >= 12 && !isBoundsWithin(map.getBounds(), bounds)) {
+  //     bounds = map.getBounds()
+  //     map.getSource('warning-polygons')?.setData(process.env.CFF_WARNING_POLYGONS)
+  //   }
+  // })
 })
 
 // Component is ready and we have access to map
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
-  const map = fm.map
-  const isDarkBasemap = ['dark', 'aerial'].includes(e.detail.style)
+  map = fm.map
   addSources(map)
-  addLayers(map, isDarkBasemap)
+  addLayers(map, e.detail.style)
   toggleVisibility(map, e.detail)
 })
 
 // Listen for segments, layers or style changes
 fm.addEventListener('change', e => {
-  const map = fm.map
-  const isDarkBasemap = ['dark', 'aerial'].includes(e.detail.style)
   if (e.detail.type === 'style') {
     addSources(map)
-    addLayers(fm.map, isDarkBasemap)
+    addLayers(fm.map, e.detail.style)
   }
   toggleVisibility(fm.map, e.detail)
 })
@@ -284,7 +301,7 @@ fm.addEventListener('query', e => {
     fm.setInfo({
       width: '360px',
       label: feature.name,
-      html: '<p class="govuk-body-s">Feature content2</p>'
+      html: `<p class="govuk-body-s">id: ${feature.id}</p>`
     })
   }
 

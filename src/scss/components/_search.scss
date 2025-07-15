@@ -1,3 +1,8 @@
+@use '../settings/dimensions' as *;
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../components/button' as *;
+
 .fm-c-search {
     position: absolute;
     pointer-events: auto;
@@ -5,7 +10,6 @@
     top: 0;
     right: 0;
     box-shadow: $panel-shadow;
-    background-color: #ffffff;
     text-align: left;
     z-index: 99;
 
@@ -13,9 +17,11 @@
         display: flex;
         position: relative;
         flex: 1 1 auto;
+        outline: 3px solid transparent;
     }
 
     &__input {
+        @include body-font(16px, 400);
         flex: 1 1 auto;
         position: relative;
         width: calc(100% - 40px);
@@ -95,7 +101,7 @@
 .fm-desktop .fm-c-search {
     left: $margin;
     right: auto;
-    top: $margin;
+    top: auto;
     width: $search-width;
 }
 
@@ -169,11 +175,12 @@
 }
 
 .fm-c-search-item {
+    @include body-font(16px, 400);
     margin: 0;
     padding: 10px 12px;
     position: relative;
     color: var(--secondary-text-colour);
-    border-top: 1px solid var(--button-hover-colour);
+    border-top: 1px solid var(--border-colour);
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
@@ -189,18 +196,35 @@
 
     mark {
         font-weight: bold;
-        color: var(--foreground-colour);
-        background-color: transparent;
+    }
+
+    @media (forced-colors: active) {
+        border: 1px solid var(--border-colour);
+    }
+
+    @media (forced-colors: none) {
+        mark {
+            color: var(--foreground-colour);
+            background-color: transparent;
+        }
     }
 
     &:hover {
         @media (hover: hover) and (pointer: fine) {
-            background-color: var(--button-hover-colour);
+            background-color: var(--link-colour);
+
+            .fm-c-search-item__primary, .fm-c-search-item__qualifier, mark {
+                color: var(--background-colour);
+            }
         }
     }
 
     &--selected {
-        background-color: var(--button-hover-colour);
+        background-color: var(--link-colour);
+        
+        .fm-c-search-item__primary, .fm-c-search-item__qualifier, mark {
+            color: var(--background-colour);
+        }
 
         &::after {
             content: '';
@@ -209,7 +233,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            border: 2px solid var(--button-hover-colour);
+            border: 2px solid var(--link-colour);
         }
     }
 }

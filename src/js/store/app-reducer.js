@@ -1,40 +1,57 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
-import { getStyle } from '../lib/viewport'
+import { getStyle, getFeatureShape } from '../lib/viewport'
+import { drawTools as defaultDrawTools } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
-const getActivePanel = (info, featureId, targetMarker, legend) => {
+const getActivePanel = (drawMode, info, featureId, targetMarker, legend) => {
   let panel
-  if (info && (featureId || targetMarker)) {
+  if (drawMode === 'default' && info && (featureId || targetMarker)) {
     panel = 'INFO'
-  } else if (legend?.isVisible) {
-    panel = ['compact', 'inset'].includes(legend?.display) ? 'LEGEND' : 'KEY'
+  } else if (drawMode === 'default' && legend?.isVisible) {
+    panel = legend?.display === 'inset' ? 'LEGEND' : 'KEY'
   } else {
     panel = null
   }
   return panel
 }
 
+const parseDrawTools = (tool, tools, defaultTools) => {
+  // Remove invalid tools
+  let validTools = tools ? defaultTools.filter(d => tools.includes(d.id)) : defaultTools
+  // Sort tools on order provided by config if any
+  validTools = validTools.sort((a, b) => { return tools?.indexOf(a.id) - tools?.indexOf(b.id) })
+  // Find valid initial tool or return null
+  const validTool = validTools.find(m => m.id === tool) ? tool : null
+  return [validTool, validTools]
+}
+
 export const initialState = (options) => {
-  const { styles, legend, search, info, queryArea, hasAutoMode } = options
+  const { styles, legend, search, info, banner, draw, hasAutoMode } = options
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
-  const activePanel = getActivePanel(info, featureId, targetMarker, legend)
+  const query = draw?.feature
+  const [drawTool, drawTools] = parseDrawTools(draw?.tool, draw?.tools, defaultDrawTools)
+  const featureShape = getFeatureShape(query)
+  const shape = featureShape || drawTool || drawTools[0].id
+  const drawMode = drawTool ? defaultDrawTools.find(m => m.id === drawTool).drawMode : 'default'
+  const activePanel = getActivePanel(drawMode, info, featureId, targetMarker, legend)
 
   return {
     isContainerReady: false,
     search,
     legend,
     info,
-    queryArea,
+    banner,
     segments: legend && parseSegments(legend.segments),
-    layers: legend?.key && parseLayers(legend.key),
+    layers: legend && parseLayers(legend.key),
     isKeyExpanded: false,
-    isDarkMode: getIsDarkMode(style.name, hasAutoMode),
+    isDrawMenuExpanded: draw?.collapse !== 'collapse',
+    isDarkMode: getIsDarkMode(style?.name, hasAutoMode),
     hasAutoMode,
     featureId,
     targetMarker: !featureId && targetMarker,
@@ -43,11 +60,15 @@ export const initialState = (options) => {
     activePanel,
     activePanelHasFocus: false,
     hasViewportLabel: false,
-    mode: 'default',
+    draw,
+    drawMode,
+    drawTool,
+    drawTools,
+    shape,
     isFrameVisible: false,
     isTargetVisible: false,
-    query: queryArea?.feature,
-    hash: null
+    query,
+    hash: 1
   }
 }
 
@@ -58,6 +79,5 @@ export const reducer = (state, action) => {
     const actionFunction = fn.bind(this, state, payload)
     return actionFunction()
   }
-
   return state
 }

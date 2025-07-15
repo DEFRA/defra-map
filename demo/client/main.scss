@@ -2,7 +2,6 @@
 $govuk-new-typography-scale: true;
 
 // GOVUK Styles
-// @import 'govuk-frontend/dist/govuk/all';
 @import 'govuk-frontend/dist/govuk/base';
 @import 'govuk-frontend/dist/govuk/core/typography';
 @import 'govuk-frontend/dist/govuk/core/links';
@@ -15,7 +14,7 @@ $govuk-new-typography-scale: true;
 .fm-mobile.fm-inline.fm-o-container {
     position:fixed;
     box-sizing: border-box;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     justify-content: space-between;
     z-index: 999;
@@ -34,6 +33,10 @@ $govuk-new-typography-scale: true;
     @include mq ($from: tablet) {
         height: 650px;
     }
+
+    // canvas {
+    //     filter: brightness(125%);
+    // }
 }
 
 // Disable page elements when map is fullscreen on mobile

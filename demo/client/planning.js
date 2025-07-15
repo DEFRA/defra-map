@@ -1,5 +1,6 @@
 import { FloodMap } from '../../src/flood-map.js'
-import { getInterceptors, getRequest, getEsriToken } from './request.js'
+import esri from '../../src/js/provider/esri/index.js'
+import { setupEsriConfig, getRequest } from './request.js'
 
 let map, isDark, isRamp
 
@@ -25,57 +26,79 @@ const fLayers = [
   { n: 'nat_fsa', q: 'fsa' }
 ]
 
-const addLayers = (layers) => {
-  return Promise.all([
+const loadImageData = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = url
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      resolve(ctx.getImageData(0, 0, img.width, img.height))
+    }
+    img.onerror = reject
+  })
+}
+
+const addLayers = async (layers) => {
+  const [{default: VectorTileLayer}, {default: FeatureLayer}] = await Promise.all([
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/VectorTileLayer.js'),
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js')
-  ]).then(modules => {
-    const VectorTileLayer = modules[0].default
-    const FeatureLayer = modules[1].default
-    const bands = [0, 200, 300, 600, 900, 1200]
-    vtLayers.forEach((layer, i) => {
-      map.add(new VectorTileLayer({
-        id: layer.n,
-        opacity: 0.75,
-        style: {
-          version: 8,
-          sources: {
-            esri: {
-              type: 'vector',
-              minzoom: 4,
-              maxzoom: 16,
-              scheme: 'xyz',
-              url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
-            }
-          },
-          layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
-            return {
-              id: layer.n + j,
-              type: 'fill',
-              source: 'esri',
-              'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
-              minzoom: 4.7597,
-              ...(i === 0 && { filter: ['==', '_symbol', j] }),
-              layout: {
-                visibility: 'visible'
-              },
-              paint: {
-                'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
-              }
-            }
-          })
+  ])
+  // const hatchPatternData = await loadImageData('assets/images/hatch-outdoor.png')
+
+  const bands = [0, 200, 300, 600, 900, 1200]
+  vtLayers.forEach((layer, i) => {
+    const vtLayer = new VectorTileLayer({
+      id: layer.n,
+      opacity: 0.75,
+      style: {
+        version: 8,
+        sprite: 'assets/images/sprite',
+        sources: {
+          esri: {
+            type: 'vector',
+            minzoom: 4,
+            maxzoom: 16,
+            scheme: 'xyz',
+            url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
+          }
         },
-        visible: false
-      }))
+        layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
+          return {
+            id: layer.n + j,
+            type: 'fill',
+            source: 'esri',
+            'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
+            minzoom: 4.7597,
+            ...(i === 0 && { filter: ['==', '_symbol', j] }),
+            layout: {
+              visibility: 'visible'
+            },
+            paint: {
+              ...(i === 0 && j === 1
+                ? { 'fill-pattern': isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor' }
+                : { 'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6) })
+            }
+          }
+        })
+      },
+      visible: false
     })
-    fLayers.forEach(layer => {
-      map.add(new FeatureLayer({
-        id: layer.n,
-        url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n}/FeatureServer`,
-        renderer: layer.n === 'nat_defences' ? renderFloodDefence() : renderFloodStorage(),
-        visible: false
-      }))
-    })
+
+
+    map.add(vtLayer)
+  })
+
+  fLayers.forEach(layer => {
+    map.add(new FeatureLayer({
+      id: layer.n,
+      url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n}/FeatureServer`,
+      renderer: layer.n === 'nat_defences' ? renderFloodDefence() : renderFloodStorage(),
+      visible: false
+    }))
   })
 }
 
@@ -124,21 +147,25 @@ const renderFloodStorage = () => {
 //   return isVisible ? 'visible' : 'none'
 // }
 
-const toggleVisibility = (type, mode, segments, layers) => {
+const toggleVisibility = (type, drawMode, segments, layers) => {
   // Conditionally add/remove layers might offer better for performance
-  const isDrawMode = ['frame', 'draw'].includes(mode)
+  const isDrawMode = ['frame', 'vertex'].includes(drawMode)
   vtLayers.forEach((l, i) => {
     const id = l.n
     const layer = map.findLayerById(id)
     // const isVisibleLyr = vtLayers[i].q === 'fz' || ['fe', 'md'].some(l => layers.includes(l))
     // const isVisible = !isDrawMode && isVisibleLyr && segments.join('') === vtLayers[i].q
     const isVisible = !isDrawMode && segments.join('') === vtLayers[i].q
-    const isModeChange = type === 'mode'
+    const isModeChange = type === 'drawMode'
     layer.visible = isVisible
     Array(i === 0 ? 2 : 7).fill(0).forEach((_, j) => {
       const paintProperties = layer.getPaintProperties(id + j)
       if (paintProperties && isVisible && !isModeChange) {
-        paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+        if (i === 0 && j === 1) {
+          paintProperties['fill-pattern'] = isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+        } else {
+          paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+        }
         layer.setPaintProperties(id + j, paintProperties)
         // if (i !== 0) return
         // Flood zones visiblity
@@ -161,14 +188,15 @@ const getSymbols = () => {
 
 const symbols = getSymbols()
 
-const attribution = `<a href="">${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789</a>`
+const attribution = `<a href="">${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()} OS AB0123456789</a>. Powered by <a href="https://www.esri.com">ESRI</a>`
 
 const depthMap = ['over 2.3', '2.3', '1.2', '0.9', '0.6', '0.3', '0.15']
 
 const fm = new FloodMap('map', {
   behaviour: 'inline',
-  framework: 'esri',
+  mapProvider: esri,
   place: 'Ambleside',
+  // banner: '<p>Rivers and sea supporting data may show inconsistent results. <a href="">Find out more</a></p>',
   zoom: 16,
   minZoom: 7,
   maxZoom: 20,
@@ -176,11 +204,13 @@ const fm = new FloodMap('map', {
   // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
+  scaleBar: 'imperial',
   hasGeoLocation: true,
   symbols,
-  transformSearchRequest: getRequest,
-  tokenCallback: getEsriToken,
-  interceptorsCallback: getInterceptors,
+  transformGeocodeRequest: getRequest,
+  setupEsriConfig: setupEsriConfig,
+  // tokenCallback: getEsriToken,
+  // interceptorsCallback: getInterceptors,
   // hasAutoMode: true,
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
@@ -188,11 +218,11 @@ const fm = new FloodMap('map', {
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
-    attribution
+    // attribution
   }, {
     name: 'dark',
     url: process.env.OS_VTAPI_DARK_URL,
-    attribution
+    attribution: 'Open data, dark style'
   }],
   search: {
     country: 'england',
@@ -474,12 +504,15 @@ const fm = new FloodMap('map', {
   //     label: '[dynamic title]',
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
-  queryArea: {
-    heading: 'Site boundary',
-    submitLabel: 'Get site report',
-    helpLabel: 'How to draw a shape',
+  draw: {
+    heading: 'Get a boundary report',
+    summary: 'Add or edit site boundary',
+    // collapse: 'collapse',
+    tools: ['square', 'polygon'],
+    queryLabel: 'Get summary report',
+    helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',
-    html: '<p class="govuk-body-s">Instructions</p>',
+    maxArea: 1000000, // Square metres
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,
@@ -489,9 +522,9 @@ const fm = new FloodMap('map', {
       url: process.env.OS_VTAPI_DARK_DRAW_URL,
       attribution
     }],
-    minZoom: 12,
     maxZoom: 21,
     // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
+    // feature: {type: 'feature', geometry: { type: 'polygon', coordinates: [[[326542.8,535877.9],[326541.6,535852.5],[326537.8,535827.4],[326531.6,535802.7],[326523.1,535778.8],[326512.2,535755.8],[326499.2,535734],[326484,535713.6],[326466.9,535694.8],[326448.1,535677.7],[326427.7,535662.5],[326405.9,535649.5],[326382.9,535638.6],[326359,535630.1],[326334.3,535623.9],[326309.2,535620.1],[326283.8,535618.9],[326258.4,535620.1],[326233.3,535623.9],[326208.6,535630.1],[326184.7,535638.6],[326161.7,535649.5],[326139.9,535662.5],[326119.5,535677.7],[326100.7,535694.8],[326083.6,535713.6],[326068.4,535734],[326055.4,535755.8],[326044.5,535778.8],[326036,535802.7],[326029.8,535827.4],[326026,535852.5],[326024.8,535877.9],[326026,535903.3],[326029.8,535928.4],[326036,535953.1],[326044.5,535977],[326055.4,536000],[326068.4,536021.8],[326083.6,536042.2],[326100.7,536061],[326119.5,536078.1],[326139.9,536093.3],[326161.7,536106.3],[326184.7,536117.2],[326208.6,536125.7],[326233.3,536131.9],[326258.4,536135.7],[326283.8,536136.9],[326309.2,536135.7],[326334.3,536131.9],[326359,536125.7],[326382.9,536117.2],[326405.9,536106.3],[326427.7,536093.3],[326448.1,536078.1],[326466.9,536061],[326484,536042.2],[326499.2,536021.8],[326512.2,536000],[326523.1,535977],[326531.6,535953.1],[326537.8,535928.4],[326541.6,535903.3],[326542.8,535877.9]]]}}
   },
   queryLocation: {
     layers: vtLayers.map(l => l.n)
@@ -502,11 +535,11 @@ const fm = new FloodMap('map', {
 // We can listen for map events now, such as 'loaded'
 fm.addEventListener('ready', e => {
   map = fm.map
-  const { mode, style, segments, layers } = e.detail
+  const { drawMode, style, segments, layers } = e.detail
   isDark = style === 'dark'
   isRamp = layers.includes('md')
   addLayers(layers).then(() => {
-    toggleVisibility(null, mode, segments, layers)
+    toggleVisibility(null, drawMode, segments, layers)
   })
 })
 
@@ -515,15 +548,15 @@ fm.addEventListener('action', e => {
   // console.log(e.detail)
 })
 
-// Listen for mode, segments, layers or style changes
+// Listen for drawMode, segments, layers or style changes
 fm.addEventListener('change', e => {
-  const { type, mode, style, segments, layers } = e.detail
+  const { type, drawMode, style, segments, layers } = e.detail
   if (['layer', 'segment'].includes(type)) {
     fm.setInfo(null)
   }
   isDark = style === 'dark'
   isRamp = layers.includes('md')
-  toggleVisibility(type, mode, segments, layers)
+  toggleVisibility(type, drawMode, segments, layers)
 })
 
 // Listen to map queries

@@ -1,0 +1,278 @@
+import polylabel from 'polylabel'
+import { area as turfArea } from '@turf/area'
+import { distance as turfDistance } from '@turf/distance'
+import { point as TurfPoint, polygon as TurfPolygon, multiPolygon as TurfMultiPolygon } from '@turf/helpers'
+import { bboxClip as TurfBboxClip } from '@turf/bbox-clip'
+import { getFocusBounds } from '../../lib/viewport'
+import { defaults } from './constants'
+
+function getPaddedBounds () {
+  const { map } = this
+  const padding = map.getPadding()
+  const bounds = map.getBounds()
+
+  // Get the pixel coordinates for the current bounds
+  const sw = map.project([bounds.getWest(), bounds.getSouth()])
+  const ne = map.project([bounds.getEast(), bounds.getNorth()])
+
+  // Adjust for padding
+  sw.x += padding.left
+  sw.y -= padding.bottom
+  ne.x -= padding.right
+  ne.y += padding.top
+
+  // Convert back to geographical coordinates
+  const paddedSW = map.unproject(sw)
+  const paddedNE = map.unproject(ne)
+
+  // Create new bounds
+  const paddedBounds = [[paddedSW.lng, paddedSW.lat], [paddedNE.lng, paddedNE.lat]]
+
+  return paddedBounds.flat(1)
+}
+
+function addFeatureProperties (features) {
+  const { map } = this
+  return features.map(f => {
+    const { lng, lat } = map.getCenter()
+    const coord = f.geometry.type === 'Polygon' ? polylabel(f.geometry.coordinates, 0.00001) : f.geometry.coordinates
+    const p1 = new TurfPoint([coord[0], coord[1]])
+    const p2 = new TurfPoint([lng, lat])
+    const distance = turfDistance(p1, p2, { units: 'metres' })
+    return {
+      ...f.properties,
+      id: f.properties.id || f.id,
+      geometryType: f.geometry.type,
+      coord,
+      distance
+    }
+  })
+}
+
+function intersectFeatures (bounds, features) {
+  features = features.map(f => {
+    if (['Polygon', 'MultiPolygon'].includes(f.geometry.type)) {
+      const polygon = f.geometry.type === 'Polygon' ? new TurfPolygon(f.geometry.coordinates) : new TurfMultiPolygon(f.geometry.coordinates)
+      const clipped = TurfBboxClip(polygon, bounds)
+      // Remove empty rings
+      clipped.geometry.coordinates = clipped.geometry.coordinates.filter(c => c.length)
+      // const clippedGeometry = martinez.intersection(boundsPolygon.geometry.coordinates, f.geometry.coordinates)
+      f.geometry = clipped.geometry
+    }
+    return f
+  })
+  return features
+}
+
+function combineFeatures (features) {
+  const combined = []
+  features.forEach(f => {
+    const group = combined.find(c => c.length && ((f.id && f.id === c[0].id) || (f.properties.id && f.properties.id === c[0].properties.id)))
+    if (f.geometry.type === 'MultiPolygon') {
+      // Get largest single polygon, outer shape (excluding holes) and add area
+      const parts = f.geometry.coordinates.map(c => {
+        const polygon = new TurfPolygon([c[0]])
+        polygon.properties = { area: turfArea(polygon) }
+        return polygon
+      })
+      const largest = parts.find(p => p.properties.area === Math.max(...parts.map(b => b.properties.area)))
+      f.geometry = largest.geometry
+      f.properties.area = largest.properties.area
+    } else if (f.geometry.type === 'Polygon') {
+      // Get out shape (excluding holes) and add area
+      const polygon = new TurfPolygon([f.geometry.coordinates[0]])
+      f.properties.area = turfArea(polygon)
+      f.geometry = polygon.geometry
+    } else {
+      f.properties.area = 0
+    }
+    group?.push(f) || combined.push([f])
+  })
+  // Return largest single polygon
+  return combined.map(g => g.find(f => f.properties.area === Math.max(...g.map(b => b.properties.area))))
+}
+
+function getViewport () {
+  const { map } = this
+  const bounds = map.getBounds().toArray().flat(1)
+  const focusBounds = getPaddedBounds.bind(this)()
+  let center = map.getCenter()
+  let zoom = map.getZoom()
+  center = center.toArray().map(n => parseFloat(n.toFixed(defaults.PRECISION)))
+  zoom = parseFloat(zoom.toFixed(defaults.PRECISION))
+  const isMaxZoom = map.getZoom() >= map.getMaxZoom()
+  const isMinZoom = map.getZoom() <= map.getMinZoom()
+
+  return {
+    bounds,
+    focusBounds,
+    center,
+    zoom,
+    isMaxZoom,
+    isMinZoom
+  }
+}
+
+export function addMapHoverBehaviour () {
+  const { map, featureLayers, labelLayers } = this
+
+  // Toggle cursor style for features
+  map.on('mousemove', [...featureLayers, ...labelLayers], e => {
+    const features = map.queryRenderedFeatures(e.point, { layers: [...featureLayers, ...labelLayers] })
+    const isFeature = !e.originalEvent.altKey && features && !!features.find(f => featureLayers.includes(f.layer.id))
+    const isLabel = e.originalEvent.altKey && features && !!features.find(f => labelLayers.includes(f.layer.id))
+    map.getCanvas().style.cursor = isFeature || isLabel ? 'pointer' : ''
+  })
+
+  // Revert cursor on mouseout
+  map.on('mouseout', [...featureLayers, ...labelLayers], () => { map.getCanvas().style.cursor = '' })
+}
+
+export async function getDetail (pixel) {
+  const { selectedLayers } = this
+  const viewport = getViewport.bind(this)()
+  const features = getFeatures.bind(this)(pixel)
+  const label = getHighlightedLabel.bind(this)()
+  const selectedId = getSelectedFeatureId.bind(this)(selectedLayers)
+
+  return {
+    ...viewport,
+    resultType: features.resultType,
+    coord: features.coord,
+    selectedId,
+    features,
+    label
+  }
+}
+
+export function getFeatures (pixel) {
+  const { map, featureLayers, locationLayers, paddingBox, scale } = this
+  const bounds = getFocusBounds(paddingBox, scale)
+
+  // Get all visible feature and pixel layers
+  let layers = [...featureLayers, ...locationLayers]
+  layers = map.getStyle()?.layers.filter(l => layers.includes(l?.id) && l?.layout?.visibility !== 'none').map(l => l.id)
+
+  // Get all features at given pixel
+  let featuresAtPixel = map.queryRenderedFeatures(pixel, { layers })
+
+  featuresAtPixel = (featuresAtPixel.map(f => {
+    return {
+      ...f.properties,
+      id: f.properties.id || f.id,
+      name: f.properties.name,
+      layer: f.layer.id
+    }
+  }))
+
+  // Get all 'featureLayer' features in the viewport
+  const renderedFeaturesInViewport = map.queryRenderedFeatures({ layers: featureLayers })
+
+  // Get total 'featureLayer' features in viewport (May be more than 9)
+  const featuresTotal = Array.from(new Set(renderedFeaturesInViewport.map(f => f.properties.id || f.id))).length
+
+  // Get all 'featureLayer' features in the padded bounds
+  const renderedFeaturesInPadding = map.queryRenderedFeatures(bounds, { layers: featureLayers })
+
+  // Get total 'featureLayer' features in padding bounds (May be more than 9)
+  const featuresFocusTotal = Array.from(new Set(renderedFeaturesInPadding.map(f => f.properties.id || f.id))).length
+
+  // Get geometry that intersects bounds
+  const intersectingFocusFeatures = intersectFeatures(getPaddedBounds.bind(this)(), renderedFeaturesInPadding)
+
+  // Split multi polygons and combine duplicate features
+  const viewportPolygonFeatures = featuresFocusTotal <= defaults.MAX_FEATURES ? combineFeatures(renderedFeaturesInViewport) : []
+  const focusPolygonFeatures = featuresFocusTotal <= defaults.MAX_FEATURES ? combineFeatures(intersectingFocusFeatures) : []
+
+  // Add props and sort features
+  const featuresInViewport = renderedFeaturesInViewport.length <= defaults.MAX_FEATURES ? addFeatureProperties.bind(this)(viewportPolygonFeatures) : []
+  const featuresInFocus = addFeatureProperties.bind(this)(focusPolygonFeatures).sort((a, b) => a.distance - b.distance)
+
+  // Get long lat of query
+  let lngLat
+  if (pixel) {
+    lngLat = map.unproject(pixel)
+    lngLat = [lngLat.lng, lngLat.lat]
+    lngLat = lngLat.map(c => Math.round(c * Math.pow(10, defaults.PRECISION)) / Math.pow(10, defaults.PRECISION))
+  }
+
+  // Set 'features' result type
+  const feature = featuresAtPixel.length ? featuresAtPixel[0] : null
+  const featureType = (featureLayers?.includes(feature?.layer) && 'feature') || (locationLayers?.includes(feature?.layer) && 'pixel')
+  const hasFeatureLayers = layers?.some(l => featureLayers?.includes(l))
+  const hasPixelLayers = layers?.some(l => locationLayers?.includes(l))
+  const resultType = featureType || (hasPixelLayers ? 'pixel' : null)
+
+  return {
+    resultType,
+    items: featuresAtPixel,
+    featuresTotal,
+    featuresInViewport,
+    featuresFocusTotal,
+    featuresInFocus,
+    isFeaturesInMap: hasFeatureLayers,
+    isPixelFeaturesAtPixel: locationLayers?.includes(feature?.layer),
+    isPixelFeaturesInMap: hasPixelLayers,
+    coord: lngLat
+  }
+}
+
+export function toggleSelectedFeature (id) {
+  const { map, selectedLayers } = this
+  if (map?.getStyle()) {
+    for (const layer of selectedLayers) {
+      map.setLayoutProperty(layer, 'visibility', id ? 'visible' : 'none')
+      map.setFilter(layer, [
+        'any',
+        ['==', ['id'], id || ''],
+        ['==', ['get', 'id'], id || '']
+      ])
+    }
+  }
+}
+
+export function getHighlightedLabel () {
+  const { map } = this
+  const features = map.queryRenderedFeatures({ layers: ['label'] })
+  let text
+  if (features?.length) {
+    const label = map.getStyle()?.layers.find(l => l.id === 'label')?.layout['text-field']
+    text = `${label} (${features[0].properties.layer})`
+  }
+  return text
+}
+
+export function getSelectedFeatureId (selectedLayers) {
+  const { map } = this
+  const features = map.queryRenderedFeatures({ layers: selectedLayers })
+  return features.length ? (features[0].properties?.id || features[0]?.id) : null
+}
+
+export function getLabel (pixel) {
+  const { map, labelLayers } = this
+  const feature = map.queryRenderedFeatures(pixel, { layers: labelLayers })[0]
+  return feature
+}
+
+export function getLabels () {
+  const { map, paddingBox, scale } = this
+  const bounds = getFocusBounds(paddingBox, scale)
+  const features = map.queryRenderedFeatures(bounds, { layers: this.labelLayers })
+  const labels = features.map(f => {
+    let pixel = f.geometry.type === 'Point' && map.project(f.geometry.coordinates)
+    if (f.geometry.type !== 'Point') {
+      const coordinates = f.geometry.coordinates.flat(f.geometry.type === 'MultiLineString' ? 1 : 0)
+      const pixels = coordinates.map(c => map.project(c))
+      const xS = pixels.map(p => p.x)
+      const yS = pixels.map(p => p.y)
+      const centerX = ((Math.max(...xS) - Math.min(...xS)) / 2) + Math.min(...xS)
+      const centerY = ((Math.max(...yS) - Math.min(...yS)) / 2) + Math.min(...yS)
+      pixel = { x: centerX, y: centerY }
+    }
+    return {
+      feature: f,
+      pixel: [pixel.x, pixel.y]
+    }
+  })
+  return labels
+}

@@ -15,7 +15,7 @@ describe('exit', () => {
       isDesktop: true,
       isBack: false,
       isPage: true,
-      mode: null
+      drawMode: null
     })
 
     const { container } = render(<Exit />)
@@ -35,7 +35,7 @@ describe('exit', () => {
       isDesktop: true,
       isPage: true,
       isBack: true,
-      mode: null
+      drawMode: null
     })
 
     const { container } = render(<Exit />)
@@ -55,14 +55,14 @@ describe('exit', () => {
       isDesktop: true,
       isBack: false,
       isPage: true,
-      mode: 'frame'
+      drawMode: 'frame'
     })
 
     const { container } = render(<Exit />)
     expect(container.firstChild).toBeNull()
   })
 
-  it('should return null when not in page mode', () => {
+  it('should return null when not in page drawMode', () => {
     const handleExit = jest.fn()
 
     jest.mocked(useApp).mockReturnValue({
@@ -70,7 +70,7 @@ describe('exit', () => {
       isDesktop: true,
       isBack: false,
       isPage: false,
-      mode: null
+      drawMode: null
     })
 
     const { container } = render(<Exit />)

@@ -26,7 +26,7 @@ describe('layer-group', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
       parent: document.body,
-      mode: null,
+      drawMode: null,
       segments: ['li'],
       layers: ['ts', 'tw', 'ta']
     })
@@ -133,6 +133,7 @@ describe('layer-group', () => {
       <LayerGroup
         hasInputs
         id='l0'
+        legendDisplay='inset'
         group={{
           heading: 'Flood warnings and alerts',
           layout: 'column',

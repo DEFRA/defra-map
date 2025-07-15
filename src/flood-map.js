@@ -1,6 +1,8 @@
 import { events, settings } from './js/store/constants.js'
-import { capabilities } from './js/lib/capabilities.js'
-import { parseAttribute } from './js/lib/utils.js'
+import maplibreProvider from './js/provider/maplibre/index.js'
+import geocodeProvider from './js/provider/os-open-names/index.js'
+import reverseGeocodeProvider from './js/provider/os-open-names-reverse/index.js'
+import { parseAttribute, getQueryParam } from './js/lib/utils.js'
 import { setInitialFocus, updateTitle, toggleInert } from './js/lib/dom.js'
 import eventBus from './js/lib/eventbus.js'
 // Polyfills
@@ -13,14 +15,22 @@ export class FloodMap extends EventTarget {
   _search
   _info
   _selected
+  _banner
 
   constructor (id, props, callBack) {
     super()
-    this.el = document.getElementById(id)
+    const el = document.getElementById(id)
+    this.el = el
 
-    // Check capabilities
-    const device = this._testDevice(props)
+    // Check if map provider is supported on device
+    const mapProvider = props.mapProvider || maplibreProvider
+    const device = {
+      ...mapProvider.checkSupport(),
+      ...props.checkMapSupport ? { isSupported: props.checkMapSupport() } : {}
+    }
+    this.mapProvider = mapProvider
 
+    // Device not supported
     if (!device.isSupported) {
       this._renderError('Your device is not supported. A map is available with a more up-to-date browser or device.')
       // Remove hidden class
@@ -32,10 +42,14 @@ export class FloodMap extends EventTarget {
       return
     }
 
+    // Set referecnes to geocode providers
+    this.geocodeProvider = props.geocodeProvider || geocodeProvider
+    this.reverseGeocodeProvider = props.reverseGeocodeProvider || reverseGeocodeProvider
+
     // Merge props
-    const dataset = { ...this.el.dataset }
+    const dataset = { ...this.el?.dataset }
     Object.keys(dataset).forEach(key => { dataset[key] = parseAttribute(dataset[key]) })
-    const parent = document.getElementById(dataset.container || props.container || id)
+    const parent = document.getElementById(dataset?.container || props?.container || id)
     const options = { id, parent, title: document.title, ...props, ...dataset }
     this.props = options
     this.callBack = callBack
@@ -54,6 +68,18 @@ export class FloodMap extends EventTarget {
     if (this.isVisible) {
       this._importComponent()
     }
+
+    // Polyfil :focus-visible set
+    this.handleFocusIn = e => {
+      if (this.interfaceType === 'keyboard') {
+        e.target.classList.add(cssFocusVisible)
+      }
+    }
+    el.addEventListener('focusin', this.handleFocusIn)
+
+    // Polyfil :focus-visible remove
+    this.handleFocusOut = e => { e.target.classList.remove(cssFocusVisible) }
+    el.addEventListener('focusout', this.handleFocusOut)
 
     // Add button
     if (['buttonFirst', 'hybrid'].includes(props.behaviour)) {
@@ -80,7 +106,8 @@ export class FloodMap extends EventTarget {
     window.addEventListener('focus', () => { setInitialFocus() })
 
     // Set keyboard interfaceType
-    window.addEventListener('keydown', this._handleKeydown.bind(this), true)
+    window.addEventListener('keydown', this._handleKeyboard.bind(this), true)
+    window.addEventListener('keyup', this._handleKeyboard.bind(this), true)
 
     // Set touch interfaceType
     window.addEventListener('touchstart', this._handleTouchstart.bind(this), true)
@@ -88,18 +115,6 @@ export class FloodMap extends EventTarget {
     // Unset interfaceType
     window.addEventListener('pointerdown', this._handlePointerdown.bind(this))
     window.addEventListener('wheel', this._handlePointerdown.bind(this))
-
-    // Polyfil :focus-visible set
-    const handleFocusIn = () => {
-      if (this.interfaceType === 'keyboard') {
-        document.activeElement.classList.add(cssFocusVisible)
-      }
-    }
-    window.addEventListener('focusin', handleFocusIn)
-
-    // Polyfil :focus-visible remove
-    const handleFocusOut = e => { e.target.classList.remove(cssFocusVisible) }
-    window.addEventListener('focusout', handleFocusOut)
 
     // Component ready
     eventBus.on(parent, events.APP_READY, data => {
@@ -112,6 +127,7 @@ export class FloodMap extends EventTarget {
       // Need to call these after the component is ready
       if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
       if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
+      if (this._banner) { eventBus.dispatch(this.props.parent, events.SET_BANNER, this._banner) }
     })
 
     // Change, eg segment, layer or style
@@ -124,20 +140,10 @@ export class FloodMap extends EventTarget {
     eventBus.on(parent, events.APP_ACTION, data => { eventBus.dispatch(this, events.ACTION, data) })
   }
 
-  _testDevice (props) {
-    const device = framework => capabilities[framework || 'default'].getDevice()
-    const { isSupported, error } = device(props.framework)
-    const isImplementationSupported = props.deviceTestCallback ? props.deviceTestCallback() : true
-    return {
-      isSupported: isSupported && isImplementationSupported,
-      error
-    }
-  }
-
   _renderError (text) {
     this.el.insertAdjacentHTML('beforebegin', `
       <div class="fm-error">
-        <p class="govuk-body">${text}</p>
+        <p class="fm-error__body">${text}</p>
       </div>
     `)
   }
@@ -145,13 +151,15 @@ export class FloodMap extends EventTarget {
   _insertButtonHTML () {
     const { buttonText, buttonType } = this.props
     this.el.insertAdjacentHTML('beforebegin', `
-      <a href="${location.pathname}?view=${this.id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-open-map-anchor' : 'fm-c-btn-open-map')}" ${this.isVisible ? 'style="display:none"' : ''} role="button">
+      <a href="${location.pathname}?view=${this.id}" class="${(buttonType === 'anchor' ? 'fm-c-btn-hyperlink' : 'fm-c-btn-tertiary')}" ${this.isVisible ? 'style="display:none"' : ''} role="button">
           <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'><path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/><path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/></svg><span>${buttonText || 'Map view'}</span>
           <span class='fm-u-visually-hidden'>(Visual only)</span>
       </a>
     `)
     const button = this.el.previousElementSibling
     button.addEventListener('click', this._handleClick.bind(this))
+    button.addEventListener('focusin', this.handleFocusIn)
+    button.addEventListener('focusout', this.handleFocusOut)
     this.button = button
   }
 
@@ -181,18 +189,19 @@ export class FloodMap extends EventTarget {
   }
 
   _handlePopstate () {
-    const { behaviour } = this.props
+    const { id, behaviour } = this.props
     const hasButton = behaviour === 'buttonFirst' || (behaviour === 'hybrid' && this.isMobile)
-    if (history.state?.isBack) {
+    if (history.state?.isBack && id === getQueryParam('view')) {
       this._importComponent()
-    } else if (hasButton) {
+    } else if (hasButton && this.el.children.length) {
       this._removeComponent()
+      this.button.focus()
     } else {
       // No action
     }
   }
 
-  _handleKeydown (event) {
+  _handleKeyboard (event) {
     if (event.key === 'Tab') {
       this.interfaceType = 'keyboard'
       eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'keyboard')
@@ -204,17 +213,37 @@ export class FloodMap extends EventTarget {
     eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, 'touch')
   }
 
-  _handlePointerdown () {
+  _handlePointerdown (e) {
+    if (e.pointerType === 'touch') {
+      return
+    }
     eventBus.dispatch(this.props.parent, events.SET_INTERFACE_TYPE, null)
     document.activeElement.classList.remove(cssFocusVisible)
     this.interfaceType = null
   }
 
-  _importComponent () {
+  async _importComponent () {
     this.button?.setAttribute('style', 'display: none')
+
+    // Flag ensures providers only set once
+    const isLoaded = !!this.isLoaded
+
     // Add loading spinner
+
+    // Load providers, but instantiate inside react
+    if (!isLoaded) {
+      this.props.mapProvider = await this.mapProvider.load()
+      this.props.geocodeProvider = await this.geocodeProvider.load()
+      this.props.reverseGeocodeProvider = await this.reverseGeocodeProvider.load()
+    }
+
+    // All providers loaded
+    this.isLoaded = true
+
+    // Load main App
     import(/* webpackChunkName: "flood-map-ui" */ './root.js').then(module => {
-      this._addComponent(module.default)
+      const App = module.default
+      this._addComponent(App)
     }).catch(err => {
       // Display error content
       this._renderError('There was a problem loading the map. Please try again later')
@@ -226,19 +255,23 @@ export class FloodMap extends EventTarget {
     if (this.root) {
       return
     }
-    this.root = root(this.el, { ...this.props, callBack: this.callBack, interfaceType: this.interfaceType })
+    const { capabilities } = this.mapProvider
+    this.root = root(this.el, { ...this.props, capabilities, callBack: this.callBack, interfaceType: this.interfaceType })
   }
 
   _removeComponent () {
-    this.button.removeAttribute('style')
-    this.button.removeAttribute('data-open')
-    this.button.focus()
-    this.root?.unmount()
-    this.root = null
-    this._selected = null
-    this._info = null
-    updateTitle()
-    toggleInert()
+    if (this.button) {
+      this.button.removeAttribute('style')
+      this.button.removeAttribute('data-open')
+      this.button.focus()
+      this.root?.unmount()
+      this.root = null
+      this._info = null
+      this._selected = null
+      this._banner = null
+      updateTitle()
+      toggleInert()
+    }
   }
 
   // Public methods
@@ -257,5 +290,13 @@ export class FloodMap extends EventTarget {
       return
     }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
+  }
+
+  setBanner (value) {
+    this._banner = value
+    if (!this.isReady) {
+      return
+    }
+    eventBus.dispatch(this.props.parent, events.SET_BANNER, this._banner)
   }
 }

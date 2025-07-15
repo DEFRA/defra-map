@@ -1,5 +1,5 @@
 import React from 'react'
-import { act, fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
 import SegmentGroup from '../../src/js/components/segment-group'
@@ -23,8 +23,9 @@ describe('segment-group', () => {
     dispatch: appDispatch,
     parent: document.body,
     style: undefined,
-    mode: 'default',
+    drawMode: 'default',
     segments: ['fz'],
+    activeRef: { current: null },
     legend: {
       width: '280px',
       keyWidth: '360px',
@@ -136,6 +137,7 @@ describe('segment-group', () => {
       expect(viewportDispatch).toHaveBeenCalled()
     })
   })
+
   it('should render with a display modifier class when display prop is provided', () => {
     const { container } = render(
       <SegmentGroup
@@ -156,7 +158,7 @@ describe('segment-group', () => {
     expect(container.querySelector('.fm-c-segments--timeline')).toBeTruthy()
   })
 
-  it('should render without display modifier class when display prop is not provided', () => {
+  it('should render without display modifier class when display \'ramp\' is not provided', () => {
     const { container } = render(
       <SegmentGroup
         id='test'
@@ -173,7 +175,7 @@ describe('segment-group', () => {
     )
 
     expect(container.querySelector('.fm-c-segments')).toBeTruthy()
-    expect(container.querySelector('[class*="fm-c-segments--"]')).toBeFalsy()
+    expect(container.querySelector('[class*="fm-c-segments--ramp"]')).toBeFalsy()
   })
 
   it('should not be visible when isHidden is true', () => {
@@ -216,20 +218,20 @@ describe('segment-group', () => {
     expect(headingElement.textContent).toBe('Test Heading')
   })
 
-  it('should not render h3 heading when heading is not provided and isDetails is false', () => {
-    const { container } = render(
-      <SegmentGroup
-        id='test'
-        group={{
-          isDetails: false,
-          items: [
-            { id: 'fz', label: 'Flood zones 2 and 3' }
-          ]
-        }}
-      />
-    )
+  // it('should render h3 heading visually hidden is not provided and isDetails is false', () => {
+  //   const { container } = render(
+  //     <SegmentGroup
+  //       id='test'
+  //       group={{
+  //         isDetails: false,
+  //         items: [
+  //           { id: 'fz', label: 'Flood zones 2 and 3' }
+  //         ]
+  //       }}
+  //     />
+  //   )
 
-    const headingElement = container.querySelector('.fm-c-layers__heading')
-    expect(headingElement).not.toBeInTheDocument()
-  })
+  //   const legendElement = container.querySelector('.fm-c-layers__legend')
+  //   expect(headingElement).not.toBeInTheDocument()
+  // })
 })

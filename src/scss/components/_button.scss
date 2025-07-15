@@ -1,4 +1,9 @@
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+@use '../settings/colours' as *;
+
 %fm-c-btn {
+    @include body-font(16px, 400);
     margin: 0;
     position: relative;
     line-height: 20px;
@@ -32,7 +37,6 @@
     }
 
     svg {
-        color: var(--foreground-colour);
         display: block;
         flex-shrink: 0;
     }
@@ -59,23 +63,31 @@
 }
 
 // Open map button
-.fm-c-btn-open-map {
+.fm-c-btn-tertiary {
     @extend %fm-c-btn;
     @include body-font(16px, 400);
-    border: 1px solid govuk-colour('black');
-    background-color: govuk-colour('white');
-    padding: 7px 12px;
+    border: 1px solid var(--tertiary-button-border-colour);
+    background-color: var(--background-colour);
+    padding: 7px 10px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $govuk-link-colour;
+    color: var(--link-colour);
 
-    &:visited {
-        color: $govuk-link-colour;
+    svg {
+        color: var(--tertiary-button-icon-colour);
     }
 
-    &:hover:not(.fm-u-focus-visible) {
-        color: $govuk-link-hover-colour;
+    &:visited {
+        color: var(--tertiary-button-text-colour);
+    }
+
+    &:hover:not(.fm-u-focus-visible)  {
+        color: var(--tertiary-button-hover-colour);
+    }
+
+    &:hover:not(.fm-u-focus-visible) svg {
+        color: var(--foreground-colour);
     }
 
     &:focus:not(.fm-u-focus-visible) {
@@ -83,13 +95,18 @@
         box-shadow: none;
     }
 
-    &.fm-u-focus-visible,
-    &:hover.fm-u-focus-visible {
+    &.fm-u-focus-visible, &:hover.fm-u-focus-visible {
         @media (hover: hover) and (pointer: fine) {
-            background-color: $govuk-focus-colour;
-            border-color: $govuk-focus-colour;
-            color: $govuk-text-colour;
+            background-color: var(--focus-colour);
+            border-color: var(--focus-colour);
+            color: var(--foreground-colour);
             box-shadow: 0 2px var(--foreground-colour);
+        }
+    }
+
+    &.fm-u-focus-visible svg, &:hover.fm-u-focus-visible svg {
+        @media (hover: hover) and (pointer: fine) {
+            color: var(--foreground-colour);
         }
     }
 
@@ -99,7 +116,7 @@
 }
 
 // Open map anchor
-.fm-c-btn-open-map-anchor {
+.fm-c-btn-hyperlink {
     position: relative;
     display: inline-block;
     color: var(--link-colour);
@@ -113,18 +130,18 @@
     &:focus:not(.fm-u-focus-visible) {
         background-color: transparent;
         box-shadow: none;
-        color: $govuk-link-colour;
+        color: $link-colour;
         text-decoration: underline;
     }
 
     &:hover:not(.fm-u-focus-visible) {
         text-decoration-thickness: 3px;
         text-decoration-skip: none;
-        color: $govuk-link-hover-colour;
+        color: $link-hover-colour;
     }
 
     &:focus {
-        color: $govuk-text-colour;
+        color: $foreground-colour;
         outline: 3px solid transparent;
     }
 
@@ -150,16 +167,25 @@
     }
 }
 
+// Close panel
+.fm-c-btn--close-panel {
+    position: absolute;
+    z-index: 1;
+    right: 3px;
+    top: 3px;
+}
+
 // Draw
-.fm-c-btn--primary,
-.fm-c-btn--secondary {
-    @include body-font(16px, normal);
+.fm-c-btn-primary,
+.fm-c-btn-secondary {
+    @extend %fm-c-btn;
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
     flex-grow: 1;
     position: relative;
-    padding: 8px 10px 7px;
+    padding: 8px 8px 7px;
     border: 2px solid transparent;
     border-radius: 0;
     color: var(--foreground-colour);
@@ -171,7 +197,10 @@
 
     svg {
         flex-shrink: 0;
-        margin-right: 5px;
+    }
+
+    svg + span {
+        margin-left: 5px;
     }
 
     &:hover:not([aria-disabled="true"]) {
@@ -198,9 +227,9 @@
     }
 }
 
-.fm-c-btn--primary {
-    background-color: var(--green);
-    color: #ffffff;
+.fm-c-btn-primary {
+    background-color: var(--primary-button-background-colour);
+    color: var(--primary-button-text-colour);
     box-shadow: 0 2px 0 var(--primary-button-shadow-colour);
 
     &:hover:not([aria-disabled="true"]) {
@@ -244,24 +273,25 @@
 
 // Draw
 .fm-o-viewport-controls .fm-c-btn,
-.fm-c-btn--help {
+.fm-c-btn--help,
+.fm-c-btn--edit {
     display: flex;
     justify-content: center;
 }
 
-.fm-c-btn--edit svg {
-    margin-right: 5px;
+.fm-tablet .fm-c-btn--help,
+.fm-desktop .fm-c-btn--help {
+    margin-left: auto;
 }
 
-.fm-tablet .fm-c-btn--help svg,
-.fm-desktop .fm-c-btn--help svg {
-    margin-right: 5px;
+// Edit
+.fm-c-btn--edit {
+    margin-bottom: 10px;
 }
 
 // Zoom in/out
 .fm-c-zoom {
     width: 40px;
-    margin-top: 10px;
     margin-left: auto;
 }
 
@@ -418,7 +448,6 @@
     -webkit-font-smoothing: antialiased;
 
     svg {
-        color: var(--foreground-colour);
         margin-right: 7px;
     }
 
@@ -442,5 +471,19 @@
 
     &.fm-u-focus-visible .fm-c-btn__label {
         color: var(--foreground-colour);
+    }
+
+    &[aria-disabled="true"] {
+        color: var(--button-border-colour);
+        outline-style: dashed;
+        cursor: default;
+
+        .fm-c-btn__label, &:hover .fm-c-btn__label {
+            color: var(--button-border-colour);
+        }
+
+        &.fm-u-focus-visible, &.fm-u-focus-visible .fm-c-btn__label {
+            color: var(--foreground-colour);
+        }
     }
 }

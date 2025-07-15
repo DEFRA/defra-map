@@ -39,7 +39,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -64,7 +64,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -85,7 +85,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -112,7 +112,7 @@ describe('PaddingBox', () => {
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'default',
+      drawMode: 'default',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -143,12 +143,12 @@ describe('PaddingBox', () => {
     jest.useRealTimers()
   })
 
-  it('should reset padding when entering frame or draw mode', async () => {
+  it('should reset padding when entering frame or vertex drawMode', async () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
       options: {},
       isContainerReady: true,
-      mode: 'frame',
+      drawMode: 'frame',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -175,7 +175,7 @@ describe('PaddingBox', () => {
     jest.mocked(useViewport).mockReturnValue({
       dispatch: mockViewportDispatch,
       features: {
-        featuresInViewport: ['feature1'], // Make sure this matches your component's check
+        featuresInFocus: ['feature1'], // Make sure this matches your component's check
         isPixelFeaturesInMap: true
       },
       padding: { top: 10, right: 10, bottom: 10, left: 10 },
@@ -190,7 +190,8 @@ describe('PaddingBox', () => {
         queryFeature: { layers: ['layer2'] }
       },
       isContainerReady: true,
-      mode: 'frame',
+      drawMode: 'frame',
+      shape: 'square',
       viewportRef: mockViewportRef,
       obscurePanelRef: mockObscurePanelRef,
       frameRef: mockFrameRef,
@@ -203,16 +204,11 @@ describe('PaddingBox', () => {
       isActive: true // Add this if your component checks for it
     })
 
-    const { container } = render(<PaddingBox />)
+    const { container } = render(<PaddingBox isFocusArea={true} />)
 
     expect(container.firstChild).toHaveClass('fm-c-padding-box')
-    expect(container.firstChild).toHaveClass('fm-c-padding-box--frame-mode')
+    expect(container.firstChild).toHaveClass('fm-c-padding-box--square')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--visible')
     expect(container.firstChild).toHaveClass('fm-c-padding-box--active')
-
-    // You can also test the complete className string
-    expect(container.firstChild).toHaveClass(
-      'fm-c-padding-box fm-c-padding-box--frame-mode fm-c-padding-box--visible fm-c-padding-box--active'
-    )
   })
 })

@@ -4,6 +4,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import dotenv from 'dotenv'
 import { setupMiddlewares } from './server/main.js'
 import CompressionPlugin from 'compression-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import zlib from 'zlib'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -15,6 +16,12 @@ export default {
     main: [
       path.join(__dirname, 'client/main.js'),
       path.join(__dirname, 'client/main.scss')
+    ],
+    planning: [
+      path.join(__dirname, 'client/planning.js')
+    ],
+    draw: [
+      path.join(__dirname, 'client/draw.js')
     ]
   },
   devtool: 'source-map',
@@ -28,6 +35,10 @@ export default {
     {
       directory: path.resolve(__dirname, 'dist'),
       publicPath: '/dist/'
+    },
+    {
+      directory: path.resolve(__dirname, '../dist'),
+      publicPath: '/public/'
     }],
     devMiddleware: {
       writeToDisk: true
@@ -47,6 +58,8 @@ export default {
     clean: true
   },
   optimization: {
+    usedExports: true,
+    sideEffects: true,
     splitChunks: {
       chunks () {
         return false
@@ -66,8 +79,19 @@ export default {
         OS_VTAPI_DARK_URL: JSON.stringify(process.env.OS_VTAPI_DARK_URL),
         OS_VTAPI_DEFAULT_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DEFAULT_DRAW_URL),
         OS_VTAPI_DARK_DRAW_URL: JSON.stringify(process.env.OS_VTAPI_DARK_DRAW_URL),
-        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY)
+        MAPTILER_API_KEY: JSON.stringify(process.env.MAPTILER_API_KEY),
+        MAPBOX_API_KEY: JSON.stringify(process.env.MAPBOX_API_KEY),
+        CFF_WARNING_POLYGONS: JSON.stringify(process.env.CFF_WARNING_POLYGONS),
+        CFF_WARNING_CENTROIDS: JSON.stringify(process.env.CFF_WARNING_CENTROIDS),
+        CFF_STATION_CENTROIDS: JSON.stringify(process.env.CFF_STATION_CENTROIDS),
+        CFF_RAINFALL_CENTROIDS: JSON.stringify(process.env.CFF_RAINFALL_CENTROIDS)
       }
+    }),
+    new HtmlWebpackPlugin({
+      template: './counties.html',
+      filename: 'counties.html',
+      inject: false,
+      templateParameters: process.env
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css'

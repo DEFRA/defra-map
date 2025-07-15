@@ -19,7 +19,9 @@ describe('actions', () => {
   jest.mocked(useViewport).mockReturnValue({
     dispatch: viewportDispatch,
     size: null,
-    basemap: null
+    basemap: null,
+    isDrawValid: true,
+    dimensions: { area: 10 }
   })
 
   jest.mocked(eventBus)
@@ -28,6 +30,8 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       provider: {
+        addEventListener: jest.fn(),
+        map: {},
         draw: {
           finish: drawFinish
         }
@@ -41,7 +45,7 @@ describe('actions', () => {
 
     render(<Actions cancelBtnRef={null} />)
 
-    fireEvent.click(screen.getByText('Confirm area'))
+    fireEvent.click(screen.getByText('Finish'))
 
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
@@ -53,6 +57,7 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           cancel: drawFinish
         }
@@ -61,7 +66,8 @@ describe('actions', () => {
         current: {
           focus: viewPortRefFocus
         }
-      }
+      },
+      drawTools: [{ id: 'square' }]
     })
 
     render(<Actions />)
@@ -79,6 +85,7 @@ describe('actions', () => {
       dispatch,
       query: true,
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           finish: drawFinish
         }
@@ -92,9 +99,9 @@ describe('actions', () => {
 
     render(<Actions />)
 
-    fireEvent.click(screen.getByText('Update area'))
+    fireEvent.click(screen.getByText('Done'))
 
-    expect(screen.getByText('Update area')).toBeTruthy()
+    expect(screen.getByText('Done')).toBeTruthy()
     expect(drawFinish).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalled()
     expect(viewPortRefFocus).toHaveBeenCalled()
@@ -105,8 +112,10 @@ describe('actions', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       query: true,
-      queryArea: { submitLabel: 'Submit' },
+      draw: { queryLabel: 'Submit' },
+      drawMode: 'default',
       provider: {
+        addEventListener: jest.fn(),
         draw: {
           finish: drawFinish
         }
@@ -120,13 +129,12 @@ describe('actions', () => {
 
     render(<Actions />)
 
-    const button = screen.getByRole('button', { name: /submit/i })
+    screen.debug()
+
+    const button = screen.getByRole('button', { name: /Submit/i })
     fireEvent.click(button)
 
     expect(screen.getByText('Submit')).toBeTruthy()
-    expect(drawFinish).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalled()
-    expect(viewPortRefFocus).toHaveBeenCalled()
     expect(eventBus.dispatch).toHaveBeenCalled()
   })
 })

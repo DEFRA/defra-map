@@ -13,6 +13,8 @@ const setSearch = (state, payload) => {
 }
 
 const setInfo = (state, payload) => {
+  // Conditioanlly set featureId
+  const featureId = payload?.featureId || state.featureId
   // Restore previous panel only if it was the key
   let previousPanel = (state.activePanel !== 'INFO' && state.activePanel) || state.previousPanel
   previousPanel = previousPanel === 'KEY' && 'KEY'
@@ -20,10 +22,12 @@ const setInfo = (state, payload) => {
   activePanel = payload ? 'INFO' : activePanel
   return {
     ...state,
+    featureId,
     info: payload,
     previousPanel,
     activePanel,
-    hasViewportLabel: false
+    hasViewportLabel: false,
+    hash: state.hash + 1
   }
 }
 
@@ -33,7 +37,14 @@ const setSelected = (state, payload) => {
     featureId: payload.featureId,
     targetMarker: payload.targetMarker,
     activePanelHasFocus: payload.activePanelHasFocus || state.activePanelHasFocus,
-    hash: Date.now()
+    hash: state.hash + (payload.featureId ? 1 : 0)
+  }
+}
+
+const setBanner = (state, payload) => {
+  return {
+    ...state,
+    banner: payload
   }
 }
 
@@ -77,7 +88,7 @@ const open = (state, payload) => {
     hasViewportLabel: false,
     targetMarker: payload === 'SEARCH' && null,
     featureId: payload === 'INFO' ? state.featureId : '',
-    hash: Date.now()
+    hash: state.hash + 1
   }
 }
 
@@ -98,9 +109,10 @@ const close = (state) => {
 const setMode = (state, payload) => {
   return {
     ...state,
-    mode: payload.value || state.mode,
-    query: Object.hasOwn(payload, 'query') ? payload.query : state.query,
-    activePanel: null,
+    drawMode: payload.value,
+    query: payload.query,
+    shape: payload.shape,
+    activePanel: state.activePanel === 'INSPECTOR' ? state.activePanel : null,
     featureId: null,
     targetMarker: null
   }
@@ -148,6 +160,13 @@ const toggleKeyExpanded = (state, payload) => {
   }
 }
 
+const toggleDrawExpanded = (state, payload) => {
+  return {
+    ...state,
+    isDrawMenuExpanded: payload
+  }
+}
+
 const toggleViewportLabel = (state, payload) => {
   const hasViewportLabel = payload.data && (!state.isMobile || !state.activePanel || state.activePanel === 'LEGEND')
   return {
@@ -165,11 +184,13 @@ export const actionsMap = {
   CLOSE: close,
   SET_MODE: setMode,
   SET_SELECTED: setSelected,
+  SET_BANNER: setBanner,
   SET_NEXT_SELECTED: setNextSelected,
   SET_IS_DARK_MODE: setIsDarkMode,
   SET_IS_TARGET_VISIBLE: setIsTargetVisible,
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
+  TOGGLE_DRAW_EXPANDED: toggleDrawExpanded,
   TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
 }

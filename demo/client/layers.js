@@ -1,3 +1,11 @@
+const fills = {
+  dark: ['#4779C4', '#3C649F', '#2C456B'], 
+  aerial: ['#4779C4', '#3C649F', '#2C456B'],
+  deuteranopia: ['#79604A', '#297BE1', '#FFB72C'],
+  tritanopia: ['#CF2A2B', '#008791', '#FFADB9'],
+  default: ['#75D0E9', '#B1E2EE', '#D5EBF2'],
+}
+
 export const queryMap = {
   warningsGroup: 'fwg',
   waterGroup: 'wlg',
@@ -25,7 +33,7 @@ export const queryMap = {
 }
 
 export const addSources = (map) => {
-  map.addSource('warning-areas', {
+  map.addSource('warning-polygons', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/warning_areas`
   })
@@ -37,6 +45,7 @@ export const addSources = (map) => {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/station_centroids`
   })
+
   map.addSource('five-day-forecast', {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/five_day_forecast_areas`
@@ -49,9 +58,27 @@ export const addSources = (map) => {
     type: 'vector',
     url: `${process.env.TILE_SERVER_URL}/ufmfsw_enw_extent_1in30_bv,ufmfsw_enw_extent_1in100_bv,ufmfsw_enw_extent_1in1000_bv`
   })
+
+  // GeoJSON sources
+  // map.addSource('warning-polygons', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_POLYGONS
+  // })
+  // map.addSource('warning-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_WARNING_CENTROIDS
+  // })
+  // map.addSource('station-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_STATION_CENTROIDS
+  // })
+  // map.addSource('rainfall-centroids', {
+  //   type: 'geojson',
+  //   data: process.env.CFF_RAINFALL_CENTROIDS
+  // })
 }
 
-export const addLayers = (map, isDarkBasemap) => {
+export const addLayers = (map, basemap) => {
   const position = map.getLayer('small settlement names')
     ? 'small settlement names'
     : map.getLayer('Road labels')
@@ -61,10 +88,16 @@ export const addLayers = (map, isDarkBasemap) => {
   map.addLayer({
     id: 'warning-fill',
     type: 'fill',
-    source: 'warning-areas',
-    'source-layer': 'warning_areas',
+    source: 'warning-polygons',
+    'source-layer': 'warning_areas', // Remove for GeoJSON source
     layout: {
-      visibility: 'none'
+      visibility: 'none',
+      // 'fill-sort-key': ['match', ['get', 'state'],
+      //   'severe', 4,
+      //   'warning', 3,
+      //   'alert', 2,
+      //   1
+      // ]
     },
     paint: {
       'fill-color': ['match',
@@ -81,13 +114,34 @@ export const addLayers = (map, isDarkBasemap) => {
     },
     minzoom: 12
   }, position)
+
+  // Geoserver only
+  // map.addLayer({
+  //   id: 'rainfall',
+  //   type: 'symbol',
+  //   source: 'rainfall-centroids',
+  //   layout: {
+  //     'icon-image': ['concat', ['get', 'category'], '-', ['get', 'state']],
+  //     'icon-size': 0.5,
+  //     'icon-allow-overlap': true,
+  //     'icon-ignore-placement': true,
+  //     'symbol-z-order': 'source',
+  //     'symbol-sort-key': ['match', ['get', 'state'],
+  //       'wet', 4,
+  //       'dry', 2,
+  //       1
+  //     ]
+  //   },
+  //   minzoom: 12
+  // })
+
   map.addLayer({
     id: 'stations',
     type: 'symbol',
     source: 'station-centroids',
-    'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids', // Remove for GeoJSON source
     layout: {
-      'icon-image': ['concat', ['get', 'type'], '-', ['get', 'state']],
+      'icon-image': ['concat', ['get', 'category'], '-', ['get', 'state']],
       'icon-size': 0.5,
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
@@ -102,17 +156,42 @@ export const addLayers = (map, isDarkBasemap) => {
     },
     minzoom: 12
   })
+
+  // Geoserver only
+  // map.addLayer({
+  //   id: 'rainfall-small',
+  //   type: 'symbol',
+  //   source: 'rainfall-centroids',
+  //   layout: {
+  //     'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
+  //       'wet', 'normal',
+  //       'dry', 'low',
+  //       'error'
+  //     ]],
+  //     'icon-size': 0.5,
+  //     'icon-allow-overlap': true,
+  //     'icon-ignore-placement': true,
+  //     'symbol-z-order': 'source',
+  //     'symbol-sort-key': ['match', ['get', 'state'],
+  //       'wet', 4,
+  //       'dry', 2,
+  //       1
+  //     ]
+  //   },
+  //   maxzoom: 12
+  // })
+
   map.addLayer({
     id: 'stations-small',
     type: 'symbol',
     source: 'station-centroids',
-    'source-layer': 'station_centroids',
+    'source-layer': 'station_centroids', // Remove for GeoJSON source
     layout: {
       'icon-image': ['concat', 'station-', ['match', ['get', 'state'],
         'high', 'alert',
-        'wet', 'alert',
+        'wet', 'normal',
         'normal', 'normal',
-        'dry', 'normal',
+        'dry', 'low',
         'low', 'low',
         'error'
       ]],
@@ -130,11 +209,12 @@ export const addLayers = (map, isDarkBasemap) => {
     },
     maxzoom: 12
   })
+
   map.addLayer({
     id: 'warning-symbol',
     type: 'symbol',
     source: 'warning-centroids',
-    'source-layer': 'warning_centroids',
+    'source-layer': 'warning_centroids', // Remove for GeoJSON source
     layout: {
       'icon-image': ['get', 'state'],
       'icon-size': 0.5,
@@ -150,17 +230,16 @@ export const addLayers = (map, isDarkBasemap) => {
     },
     maxzoom: 12
   })
+
   map.addLayer({
     id: 'five-day-forecast',
     type: 'fill',
     source: 'five-day-forecast',
-    'source-layer': 'five_day_forecast_areas',
-    // 'source-layer': 'main.five_day_forecast',
+    'source-layer': 'five_day_forecast_areas', // Remove for GeoJSON source
     layout: {
       visibility: 'none'
     },
     paint: {
-      // 'fill-color': '#00703c',
       'fill-color': ['match',
         ['get', 'risk_level'],
         4,
@@ -175,6 +254,7 @@ export const addLayers = (map, isDarkBasemap) => {
     },
     filter: ['==', 'id', '']
   }, position)
+
   map.addLayer({
     id: 'river-sea-fill',
     type: 'fill',
@@ -187,16 +267,17 @@ export const addLayers = (map, isDarkBasemap) => {
       'fill-color': ['match',
         ['get', 'prob_4band'],
         'High',
-        isDarkBasemap ? '#4779C4' : '#75D0E9',
+        fills[basemap][0],
         'Medium',
-        isDarkBasemap ? '#3C649F' : '#B1E2EE',
+        fills[basemap][1],
         'Low',
-        isDarkBasemap ? '#2C456B' : '#D5EBF2',
+        fills[basemap][2],
         'transparent'
       ],
       'fill-opacity': 0.75
     }
-  }, position),
+  }, position)
+  
   map.addLayer({
     id: 'surface-water-1000-fill',
     type: 'fill',
@@ -206,10 +287,11 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#2C456B' : '#D5EBF2',
+      'fill-color': fills[basemap][2],
       'fill-opacity': 1
     }
-  }, position),
+  }, position)
+
   map.addLayer({
     id: 'surface-water-100-fill',
     type: 'fill',
@@ -219,10 +301,11 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#3C649F' : '#B1E2EE',
+      'fill-color': fills[basemap][1],
       'fill-opacity': 1
     }
-  }, position),
+  }, position)
+  
   map.addLayer({
     id: 'surface-water-30-fill',
     type: 'fill',
@@ -232,7 +315,7 @@ export const addLayers = (map, isDarkBasemap) => {
       visibility: 'none'
     },
     paint: {
-      'fill-color': isDarkBasemap ? '#4779C4' : '#75D0E9',
+      'fill-color': fills[basemap][0],
       'fill-opacity': 1
     }
   }, position)
@@ -240,9 +323,9 @@ export const addLayers = (map, isDarkBasemap) => {
 
 export const toggleVisibility = (map, detail) => {
   // Set zoom constraints
-  map.setMaxZoom(20)
+  map.setMaxZoom(18)
   map.setMinZoom(detail.segments.includes(queryMap.outlook) || detail.segments.includes(queryMap.live) ? 6 : 12)
-  map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 16)
+  map.setMaxZoom(detail.segments.includes(queryMap.outlook) ? 8 : 18)
   // Toggle layers
   map.setLayoutProperty('warning-fill', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
   map.setLayoutProperty('warning-symbol', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
@@ -253,19 +336,18 @@ export const toggleVisibility = (map, detail) => {
   map.setLayoutProperty('surface-water-30-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
   map.setLayoutProperty('surface-water-100-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
   map.setLayoutProperty('surface-water-1000-fill', 'visibility', detail.segments.includes('ye') ? 'visible' : 'none')
+  // Geoserver
+  // map.setLayoutProperty('rainfall', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
+  // map.setLayoutProperty('rainfall-small', 'visibility', detail.segments.includes('li') ? 'visible' : 'none')
   // Filter features
   const layers = (Object.keys(queryMap).filter(k => detail.layers?.includes(queryMap[k])))
   map.setFilter('warning-fill', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
   map.setFilter('warning-symbol', ['match', ['get', 'state'], layers.length ? layers : '', true, false])
-  map.setFilter('stations', ['match', ['get', 'type'], layers.length ? layers : '', true, false])
-  map.setFilter('stations-small', ['match', ['get', 'type'], layers.length ? layers : '', true, false])
+  map.setFilter('stations', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+  map.setFilter('stations-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
   const day = detail.segments.filter(s => ['d1', 'd2', 'd3', 'd4', 'd5'].includes(s)).map(s => s.charAt(1))[0] || ''
   map.setFilter('five-day-forecast', ['any', ['in', day, ['get', 'days']]])
-}
-
-export const toggleSelected = (map, id = '') => {
-  map.setFilter('warning-fill-selected', ['==', 'id', id])
-  map.setFilter('warning-symbol-selected', ['==', 'id', id])
-  map.setFilter('stations-selected', ['==', 'id', id])
-  map.setFilter('stations-small-selected', ['==', 'id', id])
+  // Geoserver only
+  // map.setFilter('rainfall', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
+  // map.setFilter('rainfall-small', ['match', ['get', 'category'], layers.length ? layers : '', true, false])
 }

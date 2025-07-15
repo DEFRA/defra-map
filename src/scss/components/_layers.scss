@@ -1,10 +1,28 @@
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 // All layers styles
 .fm-c-layers {
     &__group {
+        border: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__group:not(:first-child) &__legend,
+    &__group:not(:first-child) &__header {
         border-top: 1px solid var(--border-colour);
     }
 
+    &__legend {
+        display: block;
+        width: 100%;
+        padding: 0;
+        box-sizing: border-box
+    }
+
     &__item {
+        @include body-font(16px, 400);
         color: var(--foreground-colour);
     }
 
@@ -16,12 +34,19 @@
     }
 
     &__heading {
+        @include body-font(16px, 400);
         padding: 15px 0;
         color: var(--foreground-colour);
         margin-bottom: 0;
     }
 
+    &__heading--details {
+        padding-bottom: 10px;
+    }
+
+
     &__button {
+        @include body-font(16px, 400);
         display: flex;
         position: relative;
         flex-direction: row;
@@ -70,12 +95,16 @@
     &__more--offset {
         margin-top: 5px;
     }
+
+    &__error {
+        @include body-font(16px, 400);
+    }
 }
 
 // Default row style
 .fm-c-layers__rows {
-    margin-top: -5px;
-    padding-bottom: 15px;
+    margin-top: -15px;
+    padding-bottom: 10px;
 
     .fm-c-layers__item {
         display: flex;
@@ -83,17 +112,33 @@
         align-items: start;
         position: relative;
         margin-bottom: 0;
-        padding-left: 28px;
         min-height: 44px;
     }
 
-    .fm-c-layers__button {
-        margin-left: -28px;
-        width: calc(100% + 28px);
-        padding-left: 28px;
+    .fm-c-layers__item:first-child {
+        margin-top: 10px;
     }
 
-    .fm-c-layers__button::before {
+    // Checkboxes
+    .fm-c-layers__checkbox {
+        position: relative;
+        margin: 0 0 0 -10px;
+        height: 44px;
+        width: 44px;
+        text-indent: -5000px;
+        flex-shrink: 0;
+        opacity: 0;
+    }
+
+    .fm-c-layers__checkbox + .fm-c-layers__label {
+        align-self: start;
+        margin-bottom: 0;
+        padding: 10px 15px 9px 0;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .fm-c-layers__checkbox + .fm-c-layers__label::before {
         position: absolute;
         content: '';
         top: 10px;
@@ -105,24 +150,24 @@
         border: 2px solid var(--foreground-colour);
     }
 
-    .fm-c-layers__button:hover::before {
+    .fm-c-layers__checkbox + .fm-c-layers__label:hover::before {
         outline: 3px dashed transparent;
         outline-offset: 1px;
         box-shadow: 0 0 0 10px var(--button-border-colour);
     }
 
-    .fm-c-layers__button:focus::before {
+    .fm-c-layers__checkbox:focus + .fm-c-layers__label::before {
         border-width: 4px;
         outline: 3px solid transparent;
         outline-offset: 1px;
         box-shadow: 0 0 0 3px var(--focus-colour);
     }
 
-    .fm-c-layers__button:hover:focus::before {
+    .fm-c-layers__checkbox:hover:focus + .fm-c-layers__label::before {
         box-shadow: 0 0 0 3px var(--focus-colour), 0 0 0 10px var(--button-border-colour);
     }
 
-    .fm-c-layers__button[aria-checked="true"]::after {
+    .fm-c-layers__checkbox[checked] + .fm-c-layers__label::after {
         content: '';
         box-sizing: border-box;
         position: absolute;
@@ -137,37 +182,37 @@
         border-width: 0 0 3px 3px;
     }
 
-    .fm-c-layers__image {
-        margin-right: 5px;
-    }
+    // .fm-c-layers__image {
+    //     margin-right: 5px;
+    // }
 
-    .fm-c-layers__image--fill,
-    .fm-c-layers__image--icon {
-        transform: scale(0.73);
-    }
+    // .fm-c-layers__image--fill,
+    // .fm-c-layers__image--icon {
+    //     transform: scale(0.73);
+    // }
 
-    .fm-c-layers__label {
-        display: flex;
-        flex-direction: row;
-        align-items: start;
-        cursor: pointer;
-        touch-action: manipulation;
-    }
+    // .fm-c-layers__label {
+    //     display: flex;
+    //     flex-direction: row;
+    //     align-items: start;
+    //     cursor: pointer;
+    //     touch-action: manipulation;
+    // }
 
-    .fm-c-layers__text {
-        flex-grow: 1;
-        text-align: left;
-        padding-top: 12px;
-        margin-left: 8px;
-    }
+    // .fm-c-layers__text {
+    //     flex-grow: 1;
+    //     text-align: left;
+    //     padding-top: 12px;
+    //     margin-left: 8px;
+    // }
 
-    .fm-c-layers__image + .fm-c-layers__text {
-        margin-left: 0;
-    }
+    // .fm-c-layers__image + .fm-c-layers__text {
+    //     margin-left: 0;
+    // }
 
-    .fm-c-layers__image svg {
-        margin: 2px 0;
-    }
+    // .fm-c-layers__image svg {
+    //     margin: 2px 0;
+    // }
     
     // Radios
     .fm-c-layers__radio {
@@ -180,7 +225,7 @@
         opacity: 0;
     }
 
-    .fm-c-layers__label::before {
+    .fm-c-layers__radio + .fm-c-layers__label::before {
         content: '';
         box-sizing: border-box;
         position: absolute;
@@ -193,7 +238,7 @@
         background: transparent;
     }
 
-    .fm-c-layers__label::after {
+    .fm-c-layers__radio + .fm-c-layers__label::after {
         content: '';
         position: absolute;
         top: 17px;
@@ -208,12 +253,6 @@
 
     .fm-c-layers__radio[checked] + .fm-c-layers__label::after {
         opacity: 1;
-    }
-
-    .fm-c-layers__item:hover .fm-c-layers__label::before {
-        outline: 4px dashed transparent;
-        outline-offset: 1px;
-        box-shadow: 0 0 0 10px  var(--button-border-colour);
     }
 
     .fm-c-layers__radio:focus + .fm-c-layers__label::before {
@@ -285,11 +324,11 @@
         border: 2px solid transparent;
     }
 
-    .fm-c-layers__button:hover:not([aria-checked="true"]) .fm-c-layers__image--fill::before {
+    .fm-c-layers__button:hover:not([aria-pressed="true"]) .fm-c-layers__image--fill::before {
         border-color: var(--border-colour);
     }
 
-    .fm-c-layers__button[aria-checked="true"] .fm-c-layers__image--fill::before {
+    .fm-c-layers__button[aria-pressed="true"] .fm-c-layers__image--fill::before {
         border-color: var(--foreground-colour);
     }
 }
@@ -337,48 +376,17 @@
     stroke-linecap: square;
 }
 
-// Overide header with switch
-.fm-c-layers__header .fm-c-switch {
-    position: relative;
-    margin: 3px 0;
-    z-index: 1;
+// Overide column header
+.fm-c-layers__group--column .fm-c-layers__heading {
+    padding-bottom: 5px;
 }
 
+// Overide more button
 .fm-c-layers__more + .fm-c-layers__group {
     margin-top: 10px;
 }
 
-.fm-c-layers__heading + .fm-c-switch {
-    margin-top: -5px;
-}
-
-// Overide first group
-.fm-c-segments--timeline + .fm-c-segments:nth-child(2) + .fm-c-layers .fm-c-layers__group:first-child,
-.fm-c-segments:first-of-type + .fm-c-layers .fm-c-layers__group--column:first-child,
-.fm-c-layers--style .fm-c-layers__group:first-child {
-    border-top: 0;
-}
-
-.fm-c-segments--timeline + .fm-c-segments:nth-child(2) + .fm-c-layers,
-.fm-c-segments:first-of-type + .fm-c-layers,
-.fm-c-panel__body > .fm-c-layers:first-child {
-    margin-top: 0;
-}
-
-// Overide layers only, first group
-.fm-c-panel__header + .fm-c-panel__body .fm-c-layers:first-child .fm-c-layers__group:first-child .fm-c-layers__header {
-    padding-top: 0;
-}
-
-// Overide key
-.fm-c-panel--key .fm-c-layers__group {
-    border-top: 0;
-
-    &:first-child .fm-c-layers__heading {
-        padding: 5px 0 0;
-    }
-}
-
+// Custom labels
 .fm-c-layers__group--custom-labels .fm-c-layers__columns .fm-c-layers__item {
     position: relative;
 
@@ -431,23 +439,12 @@
     }
 }
 
-// Heading overides
-.fm-c-panel--inset:not(.fm-c-panel--key) .fm-c-layers__group--column .fm-c-layers__heading {
-    padding: 15px 0 0;
-}
-
-.fm-c-panel:not(.fm-c-panel--inset) .fm-c-layers__heading,
-.fm-c-panel:not(.fm-c-panel--inset) .fm-c-segments__heading,
-.fm-c-panel:not(.fm-c-panel--inset) .fm-c-layers__header button {
-    font-weight: 700;
-}
-
 // Collapsible sections
 .fm-c-layers .fm-c-details {
     font-weight: 700;
 } 
 
-.fm-c-layers .fm-c-details[aria-expanded="false"] + .fm-c-layers__rows,
-.fm-c-layers .fm-c-switch[aria-expanded="false"] + .fm-c-layers__rows {
+// Toggle details
+.fm-c-layers__group--hidden .fm-c-layers__rows {
     display: none;
 }

@@ -1,12 +1,18 @@
 import React from 'react'
 import { useApp } from '../store/use-app'
+import { labels } from '../store/constants'
 
 export default function LegendButton ({ legendBtnRef }) {
-  const { dispatch, mode, legend, isDesktop, activePanel } = useApp()
-  const isQueryMode = ['frame', 'draw'].includes(mode)
-  const isLegendInset = legend?.display === 'inset'
-
-  if (!(legend && !isQueryMode && !(isDesktop && !isLegendInset))) {
+  const { dispatch, drawMode, legend, draw, isDesktop, activePanel } = useApp()
+  const isQueryMode = ['frame', 'vertex'].includes(drawMode)
+  const isCombined = ['compact', 'inset'].includes(legend?.display)
+  const combinedLabel = isCombined && labels.legend.TITLE
+  const seperateLabel = draw?.heading ? labels.menu.TITLE : labels.layers.TITLE
+  const label = combinedLabel || seperateLabel
+  const svg = (labels[label.toLowerCase()] || labels.legend).SVG
+  const hasButton = legend && !isQueryMode && !(isDesktop && !isCombined)
+  
+  if (!hasButton) {
     return null
   }
 
@@ -15,11 +21,9 @@ export default function LegendButton ({ legendBtnRef }) {
   }
 
   return (
-    <button onClick={handleClick} className='fm-c-btn fm-c-btn--legend govuk-body-s' ref={legendBtnRef} aria-expanded={false} {...activePanel === 'LEGEND' ? { style: { display: 'none' } } : {}}>
-      <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor'>
-        <path d='M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z' />
-      </svg>
-      <span className='fm-c-btn__label'>{legend.title || 'Layers'}</span>
+    <button onClick={handleClick} className='fm-c-btn fm-c-btn--legend' ref={legendBtnRef} aria-expanded={false} {...['LEGEND', 'SEARCH'].includes(activePanel) ? { style: { display: 'none' } } : {}}>
+      <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' dangerouslySetInnerHTML={{__html: svg}}/>
+      <span className='fm-c-btn__label'>{label}</span>
     </button>
   )
 }

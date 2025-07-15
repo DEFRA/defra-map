@@ -8,13 +8,13 @@ describe('keyboard', () => {
     const { container } = render(<Keyboard />)
 
     expect(container.querySelector('.fm-c-keyboard-list')).toBeTruthy()
-    expect(container.querySelectorAll('.fm-c-keyboard-list__item').length).toEqual(6)
+    expect(container.querySelectorAll('.fm-c-keyboard-list__item').length).toEqual(7)
 
     expect(screen.getByText('Select a map control')).toBeTruthy()
     expect(screen.getByText('Move in large steps')).toBeTruthy()
     expect(screen.getByText('Move in small steps')).toBeTruthy()
     expect(screen.getByText('Adjust zoom level')).toBeTruthy()
-    expect(screen.getByText('Select a feature')).toBeTruthy()
+    expect(screen.getByText('Select feature (when 9 or fewer)')).toBeTruthy()
     expect(screen.getByText('Get feature information')).toBeTruthy()
   })
 })

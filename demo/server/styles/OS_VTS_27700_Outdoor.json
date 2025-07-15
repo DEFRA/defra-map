@@ -5,7 +5,9 @@
   "sources": {
     "esri": {
       "type": "vector",
-      "url": "vts-tile.json"
+      "url": "vts-tile.json",
+      "attribution": "&copy; Custom attribution, MasterMap",
+      "copyrightText": "&copy; Custom attribution, MasterMap"
     }
   },
   "layers": [

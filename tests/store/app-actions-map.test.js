@@ -125,7 +125,7 @@ describe('store/app-actions-map - setInfo', () => {
 
 describe('store/app-actions-map - setSelected', () => {
   it('should return a new state with updated properties based on the payload', () => {
-    const state = { key: 'value', activePanelHasFocus: true }
+    const state = { key: 'value', activePanelHasFocus: true, hash: 1 }
     const payload = {
       featureId: 'newFeatureId',
       targetMarker: 'newTargetMarker',
@@ -329,7 +329,8 @@ describe('store/app-actions-map - open', () => {
     const state = {
       key: 'value',
       activePanel: 'KEY',
-      featureId: 'feature123'
+      featureId: 'feature123',
+      hash: 1
     }
     const payload = 'SEARCH'
     const result = actionsMap.OPEN(state, payload)
@@ -348,7 +349,8 @@ describe('store/app-actions-map - open', () => {
     const state = {
       key: 'value',
       activePanel: 'KEY',
-      featureId: 'feature123'
+      featureId: 'feature123',
+      hash: 1
     }
     const payload = 'INFO'
     const result = actionsMap.OPEN(state, payload)
@@ -412,19 +414,19 @@ describe('store/app-actions-map - setMode', () => {
   it('should return a new state with updated properties based on the payload', () => {
     const state = {
       key: 'Value',
-      mode: 'default',
+      drawMode: 'default',
       query: 'oldQuery',
       activePanel: 'INFO',
       featureId: 'feature123',
       targetMarker: 'marker1'
     }
     const payload = {
-      value: 'dark',
+      value: 'vertex',
       query: 'newQuery'
     }
     const result = actionsMap.SET_MODE(state, payload)
 
-    expect(result.mode).toEqual('dark')
+    expect(result.drawMode).toEqual('vertex')
     expect(result.query).toEqual('newQuery')
     expect(result.activePanel).toEqual(null)
     expect(result.featureId).toEqual(null)
@@ -432,19 +434,19 @@ describe('store/app-actions-map - setMode', () => {
     expect(result.key).toEqual('Value')
   })
 
-  it('should use the state mode if payload value is not provided', () => {
+  it('should use the state drawMode if payload value is not provided', () => {
     const state = {
       key: 'Value',
-      mode: 'default',
+      drawMode: 'default',
       query: 'oldQuery',
       activePanel: 'INFO',
       featureId: 'feature123',
       targetMarker: 'marker1'
     }
-    const payload = { query: 'newQuery' }
+    const payload = { value: 'default', query: 'newQuery' }
     const result = actionsMap.SET_MODE(state, payload)
 
-    expect(result.mode).toEqual('default')
+    expect(result.drawMode).toEqual('default')
     expect(result.query).toEqual('newQuery')
     expect(result.activePanel).toEqual(null)
     expect(result.featureId).toEqual(null)

@@ -22,7 +22,7 @@ describe('legend-button', () => {
       isDesktop: false,
       isEditMode: false,
       options: null,
-      mode: null,
+      drawMode: null,
       legend: {}
     })
 
@@ -33,21 +33,60 @@ describe('legend-button', () => {
     expect(dispatch).toHaveBeenCalled()
   })
 
-  it('should show legend title', () => {
+  it('should have \'Layers\' as label if no draw heading and default display', () => {
     const dispatch = jest.fn()
 
     jest.mocked(useApp).mockReturnValue({
       dispatch,
       isDesktop: false,
       isEditMode: false,
-      options: null,
-      mode: null,
-      legend: { title: 'legend title' }
+      legend: {},
+      drawMode: null
     })
 
     const { container } = render(<LegendButton legendBtnRef={null} />)
 
-    expect(container.querySelector('span').textContent).toEqual('legend title')
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Layers')
+  })
+
+  it('should have \'legend\' as label if legend display is inset', () => {
+    const dispatch = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      isDesktop: false,
+      isEditMode: false,
+      legend: {
+        display: 'inset'
+      },
+      drawMode: null
+    })
+
+    const { container } = render(<LegendButton legendBtnRef={null} />)
+
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Key')
+  })
+
+  it('should have \'Menu\' as label if draw option includes a heading', () => {
+    const dispatch = jest.fn()
+
+    jest.mocked(useApp).mockReturnValue({
+      dispatch,
+      isDesktop: false,
+      isEditMode: false,
+      legend: {},
+      draw: {
+        heading: 'Test'
+      },
+      drawMode: null
+    })
+
+    const { container } = render(<LegendButton legendBtnRef={null} />)
+
+    screen.debug()
+    expect(container.querySelector('span').textContent).toEqual('Menu')
   })
 
   it('should not display legend button', () => {
@@ -57,7 +96,7 @@ describe('legend-button', () => {
       dispatch,
       isDesktop: false,
       isEditMode: false,
-      mode: null,
+      drawMode: null,
       legend: { title: 'legend title' },
       activePanel: 'LEGEND'
     })
@@ -73,10 +112,10 @@ describe('legend-button', () => {
     [false, false, false, true, 'when legend is false'],
     [false, true, false, false, 'when legend is false'],
     [false, true, false, true, 'when legend is false'],
-    [true, true, false, false, 'when in query mode'],
-    [true, true, false, true, 'when in query mode'],
-    [true, true, true, false, 'when in query mode'],
-    [true, true, true, true, 'when in query mode'],
+    [true, true, false, false, 'when in query drawMode'],
+    [true, true, false, true, 'when in query drawMode'],
+    [true, true, true, false, 'when in query drawMode'],
+    [true, true, true, true, 'when in query drawMode'],
     [true, false, true, false, 'when desktop and not legend inset']
   ])('should return null %s', (legend, isQueryMode, isDesktop, isLegendInset, description) => {
     jest.mocked(useApp).mockReturnValue({

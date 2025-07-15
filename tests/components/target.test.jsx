@@ -26,7 +26,7 @@ describe('Target', () => {
   beforeEach(() => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: null,
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -64,7 +64,7 @@ describe('Target', () => {
   it('should render center target marker when using keyboard interface', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: null,
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -94,7 +94,7 @@ describe('Target', () => {
   it('should render center target marker when using touch interface', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: null,
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -116,10 +116,10 @@ describe('Target', () => {
     expect(screen.getByLabelText('Map marker')).not.toHaveClass('fm-c-marker--has-data')
   })
 
-  it('should not render center target when mode is not default', () => {
+  it('should not render center target when drawMode is not default', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'draw',
+      drawMode: 'draw',
       targetMarker: null,
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -143,7 +143,7 @@ describe('Target', () => {
   it('should render non-center target marker when provided coordinates', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: { coord: [1, 2], hasData: true },
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -163,7 +163,7 @@ describe('Target', () => {
   it('should hide target when touch interface and panel is active (not INFO)', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: null,
       activePanel: 'SEARCH',
       viewportRef: mockViewportRef,
@@ -191,7 +191,7 @@ describe('Target', () => {
   it('should show target when touch interface and INFO panel is active', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: null,
       activePanel: 'INFO',
       viewportRef: mockViewportRef,
@@ -215,7 +215,7 @@ describe('Target', () => {
   it('should not use center marker when in INFO panel with targetMarker', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: { coord: [1, 2], hasData: true },
       activePanel: 'INFO',
       viewportRef: mockViewportRef,
@@ -235,7 +235,7 @@ describe('Target', () => {
   it('should update padding when target is obscurred', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: { coord: [1, 2], hasData: true },
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -264,7 +264,7 @@ describe('Target', () => {
   it('should not update padding when target is not obscurred', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: { coord: [1, 2], hasData: true },
       activePanel: null,
       viewportRef: mockViewportRef,
@@ -285,7 +285,7 @@ describe('Target', () => {
   it('should not update padding when container is not ready', () => {
     jest.mocked(useApp).mockReturnValue({
       provider: mockProvider,
-      mode: 'default',
+      drawMode: 'default',
       targetMarker: { coord: [1, 2], hasData: true },
       activePanel: null,
       viewportRef: mockViewportRef,

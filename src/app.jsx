@@ -4,7 +4,6 @@ import { settings, events } from './js/store/constants.js'
 import eventBus from './js/lib/eventbus.js'
 import { AppProvider } from './js/store/app-provider.jsx'
 import Container from './js/components/container.jsx'
-import Provider from './js/provider/os-maplibre/provider.js'
 
 export default function App (options) {
   const { behaviour, parent, container, handleExit } = options
@@ -13,10 +12,23 @@ export default function App (options) {
 
   const [isMobile, setIsMobile] = useState(window?.matchMedia(mobileMQ).matches)
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(desktopMQ).matches)
-  const [interfaceType, setInterfaceType] = useState(!!options.interfaceType)
+  const [interfaceType, setInterfaceType] = useState(options.interfaceType)
 
-  // Create a provider instance
-  const provider = useRef(new Provider(options))
+  // Create a map provider instance
+  const provider = useRef(new options.mapProvider(options))
+
+  // Create the geocode functions
+  const GeocodeProvider = options.geocodeProvider
+  const geocodeProvider = new GeocodeProvider(options.transformGeocodeRequest)
+  const ReverseGecodeProvider = options.reverseGeocodeProvider
+  const reverseGeocodeProvider = new ReverseGecodeProvider(options.transformGeocodeRequest)
+  const geocode = useRef({
+    find: geocodeProvider.find.bind(geocodeProvider),
+    suggest: geocodeProvider.suggest.bind(geocodeProvider),
+    getNearest: reverseGeocodeProvider.getNearest.bind(reverseGeocodeProvider)
+  })
+
+  // Refs to elements
   const viewportRef = useRef(null)
   const frameRef = useRef(null)
   const obscurePanelRef = useRef(null)
@@ -57,6 +69,7 @@ export default function App (options) {
       options={options}
       app={{
         provider: provider.current,
+        geocode: geocode.current,
         isPage,
         isMobile,
         isDesktop,

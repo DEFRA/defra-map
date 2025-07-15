@@ -1,3 +1,6 @@
+@use '../settings/dimensions' as *;
+@use '../settings/fonts' as *;
+
 // Helper mixins
 
 // Clearfix
@@ -49,6 +52,7 @@
   font-size: $size;
   line-height: inherit;
   -webkit-font-smoothing: antialiased;
+  color: var(--foreground-colour);
 }
 
 @mixin visually-hidden() {

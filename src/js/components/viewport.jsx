@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react'
+import React, { useEffect, useRef, useMemo, useCallback } from 'react'
 import { useQueryState } from '../hooks/use-query-state.js'
 import { useResizeObserver } from '../hooks/use-resize-observer.js'
 import { useApp } from '../store/use-app.js'
@@ -9,18 +9,20 @@ import { getShortcutKey, getMapPixel, getScale, getPoint } from '../lib/viewport
 import { getColor } from '../lib/utils.js'
 import eventBus from '../lib/eventbus.js'
 import PaddingBox from './padding-box.jsx'
+import ViewportStatus from './viewport-status.jsx'
 import Target from './target.jsx'
+import { toggleInert } from '../lib/dom.js'
 
-const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts) => {
-  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''}${isDarkBasemap ? ' fm-o-viewport--dark-style' : ''}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
+const getClassName = (size, styleName, isFocusVisible, isKeyboard, hasShortcuts) => {
+  return `fm-o-viewport${size !== 'small' ? ' fm-o-viewport--' + size : ''} fm-o-viewport--${styleName}${hasShortcuts && isKeyboard ? ' fm-o-viewport--has-shortcuts' : ''}${isFocusVisible ? ' fm-u-focus-visible' : ''}`
 }
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
-  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
+  const { isContainerReady, provider, geocode, options, parent, drawMode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
+  const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, draw } = options
   const appDispatch = useApp().dispatch
 
-  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, status, isStatusVisuallyHidden, hasShortcuts, action, timestamp, isMoving, isUpdate } = useViewport()
+  const { style, bounds, center, zoom, oCentre, originalZoom, rZoom, minZoom, maxZoom, features, size, hasShortcuts, action, timestamp, isMoving, isUrlUpdate } = useViewport()
   const viewportDispatch = useViewport().dispatch
   const [, setQueryCz] = useQueryState(settings.params.centerZoom)
 
@@ -29,30 +31,42 @@ export default function Viewport () {
   const labelPixel = useRef(null)
   const pointerPixel = useRef(null)
   const isDraggingRef = useRef(false)
-  const STATUS_DELAY = 300
+  const STATUS_DELAY = 500
 
   // Template properties
   const isKeyboard = interfaceType === 'keyboard'
   const isFocusVisible = isKeyboard && document.activeElement === viewportRef.current
-  const isDarkBasemap = ['dark', 'aerial'].includes(style?.name)
-  const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
+  const className = getClassName(size, style?.name, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
-  const bgColor = getColor(backgroundColor, style.name)
+  const bgColor = getColor(backgroundColor, style?.name)
+
+  // Determin focus area
+  const isFocusArea = interfaceType === 'keyboard' && features?.isFeaturesInMap || drawMode === 'frame'
+  const activeFeatures = isFocusArea ? features?.featuresInFocus : features?.featuresInViewport
+
+  const handleFocus = () => {
+    toggleInert(viewportRef.current)
+  }
 
   const handleKeyDown = e => {
+    // Disable body scroll
+    if (e.key !== 'Tab') {
+      e.preventDefault()
+    }
+
     // Pan map (Cursor keys)
     if (!e.altKey && offsets.pan[e.key.toUpperCase()]) {
-      e.preventDefault()
       provider.panBy(offsets[e.shiftKey ? 'shiftPan' : 'pan'][e.key.toUpperCase()])
     }
 
     // Zoom map (+ or -)
     if (['+', '-', '=', '_'].includes(e.key)) {
-      ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
+      // ['+', '='].includes(e.key) ? provider.zoomIn() : provider.zoomOut()
+      ['+', '='].includes(e.key) ? viewportDispatch({ type: 'ZOOM_IN' }) : viewportDispatch({ type: 'ZOOM_OUT' })
     }
 
-    // Select feature or query center (Enter or Space)
-    if (!e.altKey && ['Enter', 'Space'].includes(e.key) && mode === 'default') {
+    // Select feature or query center (Enter)
+    if (!e.altKey && e.key === 'Enter' && drawMode === 'default') {
       if (featureId) {
         provider.queryFeature(featureId)
       } else if (queryLocation?.layers && !isMoving) {
@@ -65,23 +79,16 @@ export default function Viewport () {
 
     // Cycle through feature list (PageUp and PageDown)
     if (['PageDown', 'PageUp'].includes(e.key) && queryFeature) {
-      e.preventDefault()
       labelPixel.current = provider?.hideLabel()
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: features.featuresInViewport } })
+      appDispatch({ type: 'SET_NEXT_SELECTED', payload: { key: e.key, features: activeFeatures } })
       activeRef.current = viewportRef.current
-    }
-
-    // Disable body scroll
-    if (e.altKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && provider.showNextLabel) {
-      e.preventDefault()
     }
   }
 
   const handleKeyUp = e => {
     // Get map details (Alt + i)
-    if (provider.getNearest && e.altKey && e.code.slice(-1) === 'I') {
-      viewportDispatch({ type: 'CLEAR_STATUS' })
+    if (e.altKey && e.code.slice(-1) === 'I') {
       // Debounce place update
       debounceUpdatePlace(center)
     }
@@ -91,19 +98,18 @@ export default function Viewport () {
       appDispatch({ type: 'OPEN', payload: 'KEYBOARD' })
     }
 
-    // Feature shortcut keys (Alt + 1 - 9)
-    if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
-      const fId = getShortcutKey(e, features?.featuresInViewport)
-      provider.queryFeature(fId)
+    // Clear selected alternate feature or label
+    if (['Escape', 'Esc'].includes(e.key)) {
+      // Triggers an update event
+      labelPixel.current = provider.hideLabel?.()
+      viewportDispatch({ type: 'CLEAR_ALT_FEATURE' })
+      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
     }
 
-    // Clear selected feature and label
-    if (['Escape', 'Esc'].includes(e.key)) {
-      e.preventDefault()
-      // Triggers an update event
-      labelPixel.current = provider.hideLabel ? provider.hideLabel() : null
-      viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: true })
-      appDispatch({ type: 'SET_SELECTED', payload: { featureId: null } })
+    // Feature shortcut keys (Alt + 1 - 9)
+    if (e.altKey && /^[1-9]$/.test(e.code.slice(-1))) {
+      const fId = getShortcutKey(e, activeFeatures)
+      provider.queryFeature(fId)
     }
 
     // Select label (Alt + arrow key)
@@ -115,18 +121,25 @@ export default function Viewport () {
     }
 
     // Select label (Alt + Enter with mousehover)
-    if (e.altKey && ['Enter', 'Space'].includes(e.key) && pointerPixel.current && provider.showLabel) {
+    if (e.altKey && e.key === 'Enter' && pointerPixel.current && provider.showLabel) {
       viewportDispatch({ type: 'TOGGLE_SHORTCUTS', payload: false })
       labelPixel.current = provider.showLabel(pointerPixel.current)
     }
   }
 
   const handleClick = e => {
+    // Hide panel
+    if (['SEARCH', 'KEY'].includes(activePanel)) {
+      appDispatch({ type: 'CLOSE' })
+      return
+    }
+
+    // Query point
     if (!isDraggingRef.current) {
       const point = getPoint(viewportRef.current, e, scale)
       if (e.altKey && provider.showLabel) {
         labelPixel.current = provider.showLabel(point)
-      } else if (!(mode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
+      } else if (!(drawMode !== 'default' || !(queryFeature?.layers || queryLocation?.layers))) {
         provider.queryPoint(point)
       } else {
         // No action
@@ -140,12 +153,9 @@ export default function Viewport () {
   }
 
   const handleMapLoad = e => {
-    // Add polygonFeature
-    if (queryArea?.feature) {
-      provider.initDraw(queryArea)
-    }
+    viewportDispatch({ type: 'READY', payload: e.detail })
     eventBus.dispatch(parent, events.APP_READY, {
-      ...e.detail, mode, segments, layers, style, size
+      ...e.detail, drawMode, segments, layers, style: style.name, size
     })
   }
 
@@ -161,10 +171,10 @@ export default function Viewport () {
   }
 
   // Update place after Alt + i
-  const debounceUpdatePlace = debounce(async (coord) => {
-    const place = await provider.getNearest(coord)
-    viewportDispatch({ type: 'UPDATE_PLACE', payload: place })
-  }, STATUS_DELAY)
+  const debounceUpdatePlace = useCallback(debounce(async (coord) => {
+    const place = await geocode.getNearest(zoom, coord)
+    viewportDispatch({ type: 'UPDATE_PLACE', payload: place || 'remote area' })
+  }, STATUS_DELAY), [])
 
   // Provider events
   const handleMoveStart = e => {
@@ -175,7 +185,12 @@ export default function Viewport () {
     }
   }
 
-  // Get new bounds after map has moved
+  // Get is min or max zoom during animation
+  const handleMove = e => {
+    viewportDispatch({ type: 'MOVE', payload: { ...e.detail } })
+  }
+
+  // Primary update event
   const handleUpdate = e => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
   }
@@ -187,12 +202,12 @@ export default function Viewport () {
     const selectedId = resultType === 'feature' && items.length ? items[0].id : null
     const marker = resultType === 'pixel' ? { coord, hasData: isPixelFeaturesAtPixel } : null
     appDispatch({ type: 'SET_SELECTED', payload: { featureId: selectedId, targetMarker: marker, activePanelHasFocus: true } })
-    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, style, size, segments, layers })
+    eventBus.dispatch(parent, events.APP_QUERY, { ...e.detail, style: style.name, size, segments, layers })
   }
 
   // Provider style change
   const handleMapStyle = e => {
-    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, mode, segments, layers })
+    eventBus.dispatch(parent, events.APP_CHANGE, { ...e.detail, style: style.name, size, drawMode, segments, layers })
   }
 
   // Initial render
@@ -215,6 +230,7 @@ export default function Viewport () {
 
       provider.addEventListener('load', handleMapLoad)
       provider.addEventListener('update', handleUpdate)
+      provider.addEventListener('move', handleMove)
       provider.addEventListener('mapquery', handleMapQuery)
     }
 
@@ -223,15 +239,21 @@ export default function Viewport () {
       activeRef.current = viewportRef.current
     }
 
+    // Dispatch viewport ready if no style url provided
+    if (!style?.url) {
+      viewportDispatch({ type: 'READY', payload: {} })
+    }
+
     return () => {
       provider.removeEventListener('load', handleMapLoad)
       provider.removeEventListener('update', handleUpdate)
+      provider.removeEventListener('move', handleMove)
       provider.removeEventListener('mapquery', handleMapQuery)
       provider?.remove()
     }
   }, [isContainerReady])
 
-  // Movestart need access to some state
+  // Movestart and vertex edit need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMoveStart)
 
@@ -247,6 +269,9 @@ export default function Viewport () {
     switch (action) {
       case 'SEARCH':
         bounds ? provider.fitBounds(bounds) : provider.setCentre(center, zoom)
+        // Close search and move focus to viewport
+        appDispatch({ type: 'CLOSE' })
+        activeRef.current = viewportRef.current
         break
       case 'RESET':
         provider.setCentre(oCentre, rZoom)
@@ -276,14 +301,14 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('style', handleMapStyle)
     }
-  }, [timestamp, action, mode, style, size])
+  }, [timestamp, action, drawMode, style, size])
 
-  // All query params, debounced by provider. Must be min 300ms
+  // All query params, debounced by provider. Must be min 500ms
   useEffect(() => {
-    if (isUpdate) {
+    if (isUrlUpdate) {
       setQueryCz(`${center.toString()},${zoom}`)
     }
-  }, [isUpdate])
+  }, [isUrlUpdate])
 
   // Swap style on light/dark mode change
   useEffect(() => {
@@ -298,6 +323,13 @@ export default function Viewport () {
     provider.selectFeature(featureId)
   }, [featureId, targetMarker])
 
+  // Initialise draw
+  useEffect(() => {
+    if (provider.map && !provider.draw && (drawMode !== 'default' || draw?.feature)) {
+      provider.initDraw({ ...draw, drawMode, shape, interfaceType })
+    }
+  }, [provider.map, drawMode])
+
   // Update view padding on resize
   useResizeObserver(viewportRef.current, () => {
     provider.setPadding(null, false)
@@ -309,7 +341,9 @@ export default function Viewport () {
       className={className}
       role='application'
       aria-labelledby={`${id}-viewport-label`}
+      {...isUrlUpdate ? { 'aria-describedby': `${id}-viewport-description` } : {}}
       onClick={handleClick}
+      onFocus={handleFocus}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       onPointerDown={handlePointerDown}
@@ -323,26 +357,27 @@ export default function Viewport () {
       data-fm-viewport
     >
       <div id={`${id}-map-container`} className='fm-o-map-container' ref={mapContainerRef} />
-      <PaddingBox>
+      <PaddingBox isFocusArea={isFocusArea}>
         <Target />
       </PaddingBox>
       <ul id={`${id}-viewport-features`} className='fm-u-visually-hidden' role='listbox' aria-labelledby={`${id}-viewport-label`}>
-        {features?.featuresInViewport.map(feature => {
+        {activeFeatures?.map(feature => {
           const uid = `${id}${feature.id}`
           return (
             <li key={uid} id={`${id}-feature-${feature.id}`} role='option' aria-selected={featureId === (feature.id)} aria-setsize='-1' tabIndex='-1'>{feature.name}</li>
           )
         })}
       </ul>
-      {useMemo(() => {
+      <ViewportStatus />
+      {/* {useMemo(() => {
         return (
-          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live='assertive'>
-            <div className='fm-c-status__inner govuk-body-s' aria-atomic>
+          <div className={`fm-c-status${isStatusVisuallyHidden || !status ? ' fm-u-visually-hidden' : ''}`} aria-live={isUpdate ? 'polite' : 'assertive'}>
+            <div id={`${id}-viewport-description`} className='fm-c-status__inner' aria-atomic>
               {status}
             </div>
           </div>
         )
-      }, [status])}
+      }, [status])} */}
     </div>
   )
 }

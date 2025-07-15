@@ -1,4 +1,8 @@
+@use '../tools/mixins' as *;
+
 .fm-c-keyboard-list {
+    @include body-font(16px, 400);
+    
     margin: 0;
 
     &__item {
@@ -25,7 +29,7 @@
 
     dt {
         display: table-cell;
-        width: 45%;
+        width: 50%;
         padding-right: 15px;
         margin-bottom: 0;
     }

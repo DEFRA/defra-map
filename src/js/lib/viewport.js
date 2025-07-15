@@ -10,21 +10,6 @@ const getBearing = (coord1, coord2) => {
   return [east, west, north, south].filter(b => b && typeof b === 'string')
 }
 
-const getDistance = (coord1, coord2) => {
-  let distance
-  if (coord1[0] > 1000) {
-    const x = Math.abs(coord1[0] - coord2[0])
-    const y = Math.abs(coord1[1] - coord2[1])
-    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
-    distance = dist
-  } else {
-    const p1 = new TurfPoint(coord1)
-    const p2 = new TurfPoint(coord2)
-    distance = turfDistance(p1, p2, { units: 'metres' })
-  }
-  return Math.round(distance)
-}
-
 const getUnits = (metres) => {
   const MAX_METRES = 800
   const MAX_MILES = 5000
@@ -54,7 +39,7 @@ const getDirection = (coord1, coord2) => {
   const nsc = bearing.filter(b => ['north', 'south'].includes(b)).join('')
   const ew = ewc ? `${ewc} ${getUnits(ewd)}` : ''
   const ns = nsc ? `${nsc} ${getUnits(nsd)}` : ''
-  return ns + (ewc && nsc ? ', ' : '') + ew
+  return `${ns + (ewc && nsc ? ', ' : '') + ew}`
 }
 
 const getArea = (bounds) => {
@@ -63,21 +48,22 @@ const getArea = (bounds) => {
   return `${getUnits(ew)} by ${getUnits(ns)}`
 }
 
-const getBoundsChange = (oCentre, originalZoom, center, zoom, bounds) => {
+const getBoundsChange = (oCentre, originalZoom, isMaxZoom, isMinZoom, center, zoom) => {
   const isSameCentre = JSON.stringify(oCentre) === JSON.stringify(center)
   const isSameZoom = originalZoom === zoom
   const isMove = oCentre && originalZoom && !(isSameCentre && isSameZoom)
-  let change
+  const maxZoom = isMaxZoom ? ' (Maximum zoom reached)' : ''
+  const minZoom = isMinZoom ? ' (Minimum zoom reached)' : ''
+  let change = ''
   if (isMove) {
     if (!isSameCentre && !isSameZoom) {
-      change = 'New area'
+      change = `New area${maxZoom}${minZoom}. `
     } else if (!isSameCentre) {
-      change = `${getDirection(oCentre, center)}`
+      change = `Map move: ${getDirection(oCentre, center)}. `
     } else {
       const direction = zoom > originalZoom ? 'in' : 'out'
-      change = `zoomed ${direction}, focus area covering ${getArea(bounds)}`
+      change = `Zoomed ${direction}${maxZoom}${minZoom}. `
     }
-    change = `${change}`
   }
   return change
 }
@@ -91,6 +77,122 @@ const getSelectedStatus = (featuresInViewport, id) => {
 const getOffsetBoundingClientRect = (el) => {
   const offsetParent = el.closest('[data-fm-main]') || document.body
   return offsetParent.getBoundingClientRect()
+}
+
+const isCirclePolygon = (geometry) => {
+  const coordinates = geometry?.coordinates?.[0]
+
+  // Expect exactly 64 points
+  if (coordinates?.length !== 65) {
+    return false
+  }
+
+  // Compute approximate centre using two opposite points
+  const [x1, y1] = coordinates[0]
+  const [x2, y2] = coordinates[32]
+  const center = [(x1 + x2) / 2, (y1 + y2) / 2]
+
+  let minDist = Infinity; let maxDist = -Infinity
+  let minEdge = Infinity; let maxEdge = -Infinity
+
+  for (let i = 0; i < 64; i++) {
+    const [xA, yA] = coordinates[i]
+    const [xB, yB] = coordinates[(i + 1) % 64]
+
+    // Distance from center
+    const dist = Math.hypot(xA - center[0], yA - center[1])
+    minDist = Math.min(minDist, dist)
+    maxDist = Math.max(maxDist, dist)
+
+    // Distance to next vertex (edge length)
+    const edgeDist = Math.hypot(xB - xA, yB - yA)
+    minEdge = Math.min(minEdge, edgeDist)
+    maxEdge = Math.max(maxEdge, edgeDist)
+  }
+
+  // Need to revist tolerance as they depend on size too
+  const WSG84_TOLERANCE = 0.3
+  const BNG_TOLERANCE = 0.3
+  const tolerance = detectCoordinateType(center) === 'WSG84' ? WSG84_TOLERANCE : BNG_TOLERANCE
+
+  return Math.abs(maxDist - minDist) < tolerance && Math.abs(maxEdge - minEdge) < tolerance
+}
+
+// const metresToImperial = (metres) => {
+//   const MILE = 1609.344
+//   const YARD = 0.9144
+//   const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+//   if (metres >= MILE) {
+//     const miles = Math.floor(metres / MILE)
+//     const remainder = metres % MILE
+//     const yards = Math.floor(remainder / YARD)
+//     return `${pluralize(miles, 'mile', 'miles')}, ${pluralize(yards, 'yard', 'yards')}`
+//   } else {
+//     const yards = Math.floor(metres / YARD)
+//     return `${pluralize(yards, 'yard', 'yards')}`
+//   }
+// }
+
+const metresToKilometres = (metres) => {
+  const KILOMETRE = 1000
+  // const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+  if (metres >= KILOMETRE) {
+    const kilometres = metres / KILOMETRE
+    const roundedKm = Math.round(kilometres * 100) / 100
+    return `${roundedKm}km`
+  } else {
+    // return `${pluralize(Math.round(metres), 'metre', 'metres')}`
+    return `${Math.round(metres)}m`
+  }
+}
+
+export const squareMetresToKm = (metres) => {
+  const SQ_KM = 1_000_000
+  if (metres >= SQ_KM) {
+    let km2 = (metres / SQ_KM).toFixed(2)
+    km2 = Number(km2).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    return `${km2}km²`
+  } else {
+    return `${Math.ceil(metres).toLocaleString()}m²`
+  }
+}
+
+export const parseDimensions = (dimensions) => {
+  const { area, center, width, radius } = dimensions
+  const areaDisplay = area ? squareMetresToKm(area) : null
+  const centerDisplay = center ? center.map(c => Math.round(c)).join(', ') : null
+  const widthDisplay = width ? metresToKilometres(width) : null
+  const radiusDisplay = radius ? metresToKilometres(radius) : null
+  return { ...dimensions, areaDisplay, centerDisplay, widthDisplay, radiusDisplay }
+}
+
+export const detectCoordinateType = (coords) => {
+  if (coords.length === 3) {
+    return 'BNG' // If a third value exists (zone), it's UTM
+  }
+  const [x, y] = coords
+  if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
+    return 'WSG84'
+  }
+  if (x > 180 && y > 90) {
+    return 'BNG'
+  }
+  return 'Unknown'
+}
+
+export const getDistance = (coord1, coord2) => {
+  let distance
+  if (coord1[0] > 1000) {
+    const x = Math.abs(coord1[0] - coord2[0])
+    const y = Math.abs(coord1[1] - coord2[1])
+    const dist = Math.sqrt((Math.pow(x, 2)) + (Math.pow(y, 2)))
+    distance = dist
+  } else {
+    const p1 = new TurfPoint(coord1)
+    const p2 = new TurfPoint(coord2)
+    distance = turfDistance(p1, p2, { units: 'metres' })
+  }
+  return Math.round(distance)
 }
 
 export const getFocusPadding = (el, scale) => {
@@ -142,46 +244,46 @@ export const getMapPixel = (el, scale) => {
   return point
 }
 
-export const getDescription = (place, center, bounds, features) => {
-  const { featuresTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
+export const getDescription = (place, bounds, focusBounds, features, isFocusArea) => {
+  const { featuresTotal, featuresFocusTotal, isFeaturesInMap, isPixelFeaturesAtPixel, isPixelFeaturesInMap } = features || {}
+  const activeFeaturesTotal = isFocusArea ? featuresFocusTotal : featuresTotal
+  const activeBounds = isFocusArea ? focusBounds : bounds
   let text = ''
-
-  if (featuresTotal) {
-    text = `${featuresTotal} feature${featuresTotal === 1 ? '' : 's'} in this area`
+  if (activeFeaturesTotal) {
+    text = `${activeFeaturesTotal} feature${activeFeaturesTotal === 1 ? '' : 's'} in this area. `
   } else if (isPixelFeaturesAtPixel) {
-    text = 'Data visible at the center coordinate'
+    text = 'Data visible at the center coordinate. '
   } else if (isPixelFeaturesInMap) {
-    text = 'No data visible at the center coordinate'
+    text = 'No data visible at the center coordinate. '
   } else if (isFeaturesInMap) {
-    text = 'No feature data in this area'
+    text = 'No feature data in this area. '
   } else {
     // Null
   }
 
-  let coord
-  if (center[0] > 1000) {
-    coord = `easting ${Math.round(center[0])} long ${Math.round(center[1])}`
-  } else {
-    coord = `lat ${center[1].toFixed(4)} long ${center[0].toFixed(4)}`
-  }
+  const display = isFocusArea ? 'Focus area ' : ''
+  const newPlace = place ? `Approximate centre ${place}. ` : ''
+  const newArea = `Covering ${getArea(activeBounds)}. `
+  const findPlace = place ? '' : 'Use ALT plus I to find closest place'
 
-  return `Focus area approximate center ${place || coord}. Covering ${getArea(bounds)}. ${text}`
+  return `${display}${newPlace}${newArea}${text}${findPlace}`
 }
 
-export const getStatus = (action, isPanZoom, place, state, current) => {
-  const { center, bounds, zoom, features, label, selectedId } = current
+export const getStatus = ({ action, isBoundsChange, place, isFocusArea, prevZoom, prevCenter, center, bounds, focusBounds, zoom, isMaxZoom, isMinZoom, features, label, featureId }) => {
   let status = null
   if (label) {
     status = label
-  } else if (selectedId) {
-    const selected = getSelectedStatus(features?.featuresInViewport, selectedId)
+  } else if (featureId) {
+    const selected = getSelectedStatus(features?.featuresInViewport, featureId)
     status = selected
+  } else if (action === 'GEOCODE') {
+    status = getDescription(place, bounds, focusBounds, features, isFocusArea)
   } else if (action === 'DATA') {
     status = 'Map change: new data. Use ALT plus I to get new details'
-  } else if (isPanZoom || action === 'GEOLOC') {
-    const description = getDescription(place, center, bounds, features)
-    const direction = getBoundsChange(state.center, state.zoom, center, zoom, bounds)
-    status = place ? description : `${direction}. Use ALT plus I to get new details`
+  } else if (isBoundsChange) {
+    const direction = getBoundsChange(prevCenter, prevZoom, isMaxZoom, isMinZoom, center, zoom)
+    const description = getDescription(place, bounds, focusBounds, features, isFocusArea)
+    status = `${direction}${description}`
   } else {
     status = ''
   }
@@ -239,10 +341,16 @@ export const getShortcutKey = (e, featuresViewport) => {
   return id
 }
 
-export const isFeatureSquare = (feature) => {
-  const coords = feature.geometry.coordinates
-  const flatCoords = Array.from(new Set(coords.flat(2)))
-  return flatCoords.length === 4
+export const getFeatureShape = (feature) => {
+  if (isCirclePolygon(feature?.geometry)) {
+    return 'circle'
+  }
+  if (feature?.geometry?.type?.toLowerCase() === 'polygon') {
+    const coords = feature.geometry?.coordinates
+    const flatCoords = (coords && Array.from(new Set(coords.flat(2)))) || null
+    return flatCoords?.length === 4 ? 'square' : 'polygon'
+  }
+  return null
 }
 
 export const spatialNavigate = (direction, start, pixels) => {

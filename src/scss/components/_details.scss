@@ -1,8 +1,11 @@
+@use '../tools/mixins' as *;
+
 .fm-c-details {
+    @include body-font(1.125rem, 400);
     position: relative;
     border: 0;
     background-color: transparent;
-    padding: 15px 0;
+    padding: 0;
     margin: 0;
     width: 100%;
     text-align: left;
@@ -13,19 +16,16 @@
     display: block;
 }
 
-.fm-c-details__label {
-    font-size: 1.125rem;
-
-    &-focus {
-        display: inline-block;
-    }
+.fm-c-details__label-focus {
+    display: inline-block;
 }
 
 .fm-c-details__summary {
     display: block;
     font-weight: 400;
     margin-top: 7px;
-    
+    font-size: 16px;
+
     &-focus {
         display: inline-block;
     }
@@ -35,10 +35,12 @@
     margin-top: 8px;
     margin-bottom: -3px;
     display: block;
+    font-size: 16px;
 
     &-focus {
         display: inline-flex;
         flex-direction: row;
+        align-items: center;
         color: var(--link-colour);
         font-weight: 400;
     }

@@ -1,10 +1,9 @@
 import { parseCentre, parseZoom, getStyle } from '../lib/viewport'
-import { capabilities } from '../lib/capabilities'
 import { actionsMap } from './viewport-actions-map'
+import { defaults } from '../store/constants'
 
-const getSize = (framework) => {
-  const hasSize = capabilities[framework || 'default'].hasSize
-  return (hasSize && window.localStorage.getItem('size')) || 'small'
+const getSize = (hasSizeCapability) => {
+  return (hasSizeCapability && window.localStorage.getItem('size')) || 'small'
 }
 
 const getBounds = (cz, center, bounds, srid) => {
@@ -17,44 +16,58 @@ const getCentre = (cz, center, srid) => {
 }
 
 const getZoom = (cz, zoom, minZoom, maxZoom) => {
-  const initZoom = parseZoom(cz) || zoom
-  return (minZoom || maxZoom) ? Math.max(Math.min(initZoom, maxZoom), minZoom) : initZoom
+  let initZoom = parseZoom(cz) || zoom
+  initZoom = minZoom && initZoom ? Math.max(minZoom, initZoom) : initZoom
+  initZoom = maxZoom && initZoom ? Math.min(maxZoom, initZoom) : initZoom
+  return initZoom
 }
 
-export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, place, framework, features, styles }) => {
+export const initialState = ({ hasSizeCapability, srid, bounds, extent, center, zoom, maxZoom, minZoom, place, features, styles, draw }) => {
   const queryParams = new URLSearchParams(window.location.search)
   const style = getStyle(styles)
   const cz = queryParams.get('cz')
-  const srid = capabilities[framework || 'default'].srid
   bounds = getBounds(cz, center, (bounds || extent), srid)
   center = !bounds ? getCentre(cz, center, srid) : undefined
-  zoom = getZoom(cz, zoom, minZoom, maxZoom)
+  zoom = getZoom(cz, zoom, minZoom, maxZoom) || defaults.ZOOM
+
   return {
     bounds,
+    focusBounds: null,
     center,
     zoom,
+    currentZoom: zoom,
+    resolution: null,
     originalMinZoom: minZoom,
     originalMaxZoom: maxZoom,
     minZoom,
     maxZoom,
+    isMaxZoom: zoom >= maxZoom,
+    isMinZoom: zoom < -minZoom,
     originalStyles: styles,
     styles,
     style,
+    attributions: [],
+    dimensions: {},
     place: !cz ? place : null,
     originalZoom: zoom,
-    size: getSize(framework),
+    size: getSize(hasSizeCapability),
     features,
-    status: '',
+    isNewStatus: false,
     isStatusVisuallyHidden: true,
     error: null,
     action: 'INIT',
     isMoving: false,
-    isUpdate: false,
+    isUrlUpdate: false,
     isFeaturesChange: false,
     isPanZoomChange: false,
     isUserInitiated: false,
+    isReady: false,
     hasShortcuts: true,
     padding: null,
+    drawMaxArea: draw?.maxArea,
+    isDrawValid: !draw?.maxArea,
+    label: null,
+    status: null,
     timestamp: Date.now()
   }
 }

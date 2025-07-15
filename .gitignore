@@ -27,9 +27,17 @@ npm-debug.log
 node_modules/
 
 # Output
-dist/
-plugin
+demo/dist/
 coverage
+
+# Storybook
+storybook-static
+
+# Cypress
+cypress/snapshots/actual/
+cypress/snapshots/diff/
 
 # Webpack bundle analyser
 stats.json
+
+*storybook.log

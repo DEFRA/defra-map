@@ -1,10 +1,14 @@
+@use '../settings/shadows' as *;
+@use '../tools/mixins' as *;
+@use '../settings/dimensions' as *;
+
 // Panel default (fixed)
 .fm-c-panel {
     display: flex;
     flex-direction: column;
     position: relative;
     pointer-events: auto;
-    outline: 0;
+    outline: 3px solid transparent;
     background-color: var(--background-colour);
     box-shadow: $panel-shadow;
     border-radius: $panel-radius;
@@ -12,6 +16,8 @@
     max-height: 100%;
     max-width: 100%;
     z-index: 5;
+    opacity: 1;
+    transition: opacity 100ms ease;
 
     &.fm-u-focus-visible::after {
         @include focus($offset: 3px);
@@ -39,26 +45,22 @@
     z-index: 8;
 }
 
-// Inset panel
-
-
 // Panel contents
 .fm-c-panel__header {
     position: relative;
+    color: var(--foreground-colour);
+    padding: 12px 45px 9px $margin;
     z-index: 3;
 }
 
-.fm-c-btn--close-panel {
-    position: absolute;
-    z-index: 1;
-    right: 3px;
-    top: 3px;
-}
-
 .fm-c-panel__heading {
+    @include body-font(19px, 700);
+    line-height: 1.3em;
     color: var(--foreground-colour);
-    margin: 0 15px;
-    padding: 11px 30px 10px 0;
+    text-decoration: inherit;
+    margin: 0;
+    display: inline-block;
+    padding: 0;
 }
 
 .fm-c-panel__more {
@@ -70,19 +72,17 @@
     padding: 0 15px 15px;
     overflow: auto;
     touch-action: pan-y;
-
-    p {
-        @include body-font(16px, 400);
-    }
-}
-
-.fm-c-panel__body[tabindex="0"] {
     outline: 0;
 
     &:focus.fm-u-focus-visible::after {
         @include focus($offset: 3px);
         top: 34px;
     }
+    
+    p {
+        @include body-font(16px, 400);
+    }
+
 }
 
 .fm-c-panel__footer {
@@ -90,8 +90,9 @@
 }
 
 // Viewport keyboard shortcuts label
-.fm-c-panel--viewport-label {
-    display: none;
+.fm-c-panel--viewport-label,
+.fm-c-panel--draw-constraint {
+    @include body-font(16px, 400);
     position: relative;
     margin: 0 auto 5px;
     width: auto;
@@ -100,22 +101,47 @@
     padding: 10px;
 }
 
-// Overides
-.fm-mobile .fm-c-btn--close-panel.fm-u-focus-visible::after {
-    @include focus($offset: 0);
+.fm-c-panel--viewport-label {
+    display: none;
 }
 
-.fm-c-panel--legend .fm-c-panel__heading {
-    margin: 0;
-    padding-left: 15px;
-    padding-right: 45px; 
+.fm-c-panel--draw-constraint {
+    flex-direction: row;
+    margin-bottom: 10px;
+    align-items: center;
+    text-align: left;
+
+    svg {
+        color: currentcolor;
+        margin-right: 5px;
+        flex-shrink: 0;
+    }
+}
+
+.fm-mobile .fm-c-panel--draw-constraint {
+    margin: $margin $margin 0;
+}
+
+.fm-tablet .fm-c-panel--draw-constraint,
+.fm-desktop .fm-c-panel--draw-constraint {
+    max-width: 400px;
+}
+
+// Error panel
+.fm-c-panel--error {
+    width: calc(100% - $margin * 2);
+    max-width: 400px;
+}
+
+// Header overides
+.fm-c-panel--legend:not(.fm-c-panel--inset) .fm-c-panel__header {
     border-bottom: 1px solid var(--border-colour);
 }
 
-.fm-o-side .fm-c-panel__heading {
-    padding-right: 15px;
+.fm-c-panel__header.fm-c-panel__header--collapse {
+    padding: 0;
 }
 
-.fm-c-layers--style .fm-c-layers__heading {
-    padding-bottom: 0;
+.fm-c-panel:not([role="dialog"]) .fm-c-panel__header {
+    padding-right: $margin;
 }

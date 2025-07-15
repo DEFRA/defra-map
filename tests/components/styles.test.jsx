@@ -70,6 +70,7 @@ describe('styles', () => {
   it('should render 3 available styles', () => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: appDispatch,
+      provider: { capabilities: { hasSize: false } },
       options: {
         id: 'map',
         hasAutoMode: true
@@ -91,6 +92,7 @@ describe('styles', () => {
       activeRef: {
         current: document.body
       },
+      provider: { capabilities: { hasSize: true } },
       options: {
         id: 'map',
         hasAutoMode: true
@@ -116,6 +118,7 @@ describe('styles', () => {
       activeRef: {
         current: document.body
       },
+      provider: { capabilities: { hasSize: true } },
       options: {
         id: 'map',
         hasAutoMode: true

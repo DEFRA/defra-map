@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Container from '../../src/js/components/container'
 import { useApp } from '../../src/js/store/use-app'
-import { settings, events } from '../../src/js/store/constants'
+import { labels, settings, events } from '../../src/js/store/constants'
 import eventBus from '../../src/js/lib/eventbus'
 
 jest.mock('../../src/js/store/viewport-provider.jsx', () => ({
@@ -31,6 +31,20 @@ jest.mock('../../src/js/store/constants', () => ({
         attribution: 'Custom Attribution'
       }
     }
+  },
+  labels: {
+    legend: {
+      TITLE: 'Legend',
+      PATH: 'M9.125 5V3h9v2h-9zm0 6V9h9v2h-9zm0 6v-2h9v2h-9zm-3-9v4h-4V8h4zm0-6v4h-4V2h4zm0 12v4h-4v-4h4z'
+    },
+    layers: {
+      TITLE: 'Layers',
+      PATH: 'M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z'
+    },
+    menu: {
+      TITLE: 'Menu',
+      PATH: 'M10 .75c5.105 0 9.25 4.145 9.25 9.25s-4.145 9.25-9.25 9.25S.75 15.105.75 10 4.895.75 10 .75zm0 1.5c-4.277 0-7.75 3.473-7.75 7.75s3.473 7.75 7.75 7.75 7.75-3.473 7.75-7.75S14.277 2.25 10 2.25zm3.356 5.565L14.77 9.23 10 14 5.23 9.23l1.414-1.415L10 11.172l3.356-3.357z'
+    }
   }
 }))
 
@@ -50,7 +64,7 @@ jest.mock('../../src/js/components/exit.jsx', () => () => <div>Exit Mock</div>)
 jest.mock('../../src/js/components/search.jsx', () => () => <div>Search Mock</div>)
 jest.mock('../../src/js/components/segments.jsx', () => () => <div>Segments Mock</div>)
 jest.mock('../../src/js/components/layers.jsx', () => () => <div>Layers Mock</div>)
-jest.mock('../../src/js/components/draw.jsx', () => () => <div>Draw Mock</div>)
+jest.mock('../../src/js/components/draw-menu.jsx', () => () => <div>Menu Mock</div>)
 jest.mock('../../src/js/components/styles.jsx', () => () => <div>Styles Mock</div>)
 jest.mock('../../src/js/components/keyboard.jsx', () => () => <div>Keyboard Mock</div>)
 jest.mock('../../src/js/components/legend-button.jsx', () => () => <div>LegendButton Mock</div>)
@@ -63,10 +77,12 @@ jest.mock('../../src/js/components/location.jsx', () => () => <div>Location Mock
 jest.mock('../../src/js/components/logo.jsx', () => () => <div>Logo Mock</div>)
 jest.mock('../../src/js/components/map-error.jsx', () => () => <div>MapError Mock</div>)
 jest.mock('../../src/js/components/viewport-label.jsx', () => () => <div>ViewportLabel Mock</div>)
-jest.mock('../../src/js/components/draw-edit.jsx', () => () => <div>DrawEdit Mock</div>)
+jest.mock('../../src/js/components/draw-action.jsx', () => () => <div>DrawShape Mock</div>)
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
+jest.mock('../../src/js/components/inspector.jsx', () => () => <div>Inspector Mock</div>)
+jest.mock('../../src/js/components/scale-bar.jsx', () => () => <div>Scale bar Mock</div>)
 
 jest.mock('../../src/js/components/panel.jsx', () => ({ label, children }) => (
   <div className='mock-panel'>
@@ -86,13 +102,17 @@ describe('Container', () => {
       default: { CLASS: 'default-class', HEIGHT: '100%', attribution: 'Default Attribution' },
       custom: { CLASS: 'custom-class', HEIGHT: '80%', attribution: 'Custom Attribution' }
     }
+    labels.layers= {
+      TITLE: 'Layers',
+      PATH: 'M10 1l10 7-10 7L0 8l10-7zm0 2.441L3.488 8 10 12.559 16.512 8 10 3.441zm8.256 7.338L20 12l-10 7-10-7 1.744-1.221L10 16.559l8.256-5.78z'
+    }
     useApp.mockReset()
     mockUseApp = {
       activePanel: 'LEGEND',
       isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
       queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
-      isLegendFixed: false,
+      isFixed: false,
       isMobile: false,
       hasLengedHeading: true,
       provider: {},
@@ -133,7 +153,7 @@ describe('Container', () => {
     // Set mock values to satisfy rendering conditions
     mockUseApp.activePanel = 'LEGEND'
     mockUseApp.isLegendInset = false
-    mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
+    mockUseApp.legend = { width: '300px', display: true }
     mockUseApp.queryArea = { helpLabel: 'Help', html: '<p>Help content</p>' }
 
     // Mock the hook to return these values
@@ -142,14 +162,14 @@ describe('Container', () => {
     render(<Container />)
 
     // Validate that "Legend Title" is rendered
-    expect(screen.getByText('Legend Title')).toBeInTheDocument()
+    expect(screen.getByText('Layers')).toBeInTheDocument()
   })
 
-  it('renders the Help panel when activePanel is HELP', () => {
-    mockUseApp.activePanel = 'HELP'
-    mockUseApp.isLegendFixed = true
+  it('renders the Inspector panel when activePanel is INSPECTOR', () => {
+    mockUseApp.activePanel = 'INSPECTOR'
+    mockUseApp.isMobile = true
     render(<Container />)
-    expect(screen.getByText('Help')).toBeInTheDocument()
+    expect(screen.getByText('Dimensions')).toBeInTheDocument()
   })
 
   it('renders the Style panel when activePanel is STYLE', () => {
@@ -167,7 +187,7 @@ describe('Container', () => {
   it('renders the Key panel when activePanel is KEYBOARD', () => {
     mockUseApp.activePanel = 'KEY'
     render(<Container />)
-    expect(screen.getByText('Key')).toBeInTheDocument()
+    expect(screen.getByText('Legend')).toBeInTheDocument()
   })
 
   it('renders the Error panel when activePanel is ERROR', () => {
@@ -387,95 +407,23 @@ describe('Container', () => {
     expect(container.querySelector('.fm-o-side')).toBeInTheDocument()
   })
 
-  it('does not render side panel when isDesktop is false', () => {
-    mockUseApp.isDesktop = false
-    mockUseApp.legend = {
-      ...mockUseApp.legend,
-      display: 'fixed'
-    }
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
-  })
-
-  it('does not render side panel when legend display is inset', () => {
-    mockUseApp = {
-      activePanel: 'LEGEND',
-      isLegendInset: false,
-      error: { label: 'Error', message: 'Error message' },
-      queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
-      isLegendFixed: false,
-      isMobile: false,
-      isDesktop: true, // Add this as we need it
-      hasLengedHeading: true,
-      provider: {},
-      options: {
-        behaviour: 'default',
-        legend: {
-          title: 'Legend Title',
-          display: 'inset' // Change this to inset
-        },
-        hasAutoMode: true
-      },
-      dispatch: jest.fn(),
-      activeRef: { current: null },
-      viewportRef: { current: null },
-      parent: 'test-parent'
-    }
-
-    useApp.mockReturnValue(mockUseApp)
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
-  })
-  it('does not render side panel when isLegendFixed is false', () => {
-    mockUseApp.isLegendFixed = false
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
-  })
-
-  it('does not render side panel when legend display is inset', () => {
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-o-side')).not.toBeInTheDocument()
-  })
-
-  it('does not render Panel component when in query mode', () => {
-    mockUseApp.isLegendFixed = true
+  it('does not render legend component when in query mode', () => {
+    mockUseApp.isFixed = true
     mockUseApp.isQueryMode = true
 
     const { container } = render(<Container />)
-    expect(container.querySelector('.legend')).not.toBeInTheDocument()
-  })
-
-  it('renders Draw component when queryArea exists', () => {
-    mockUseApp.isLegendFixed = true
-    mockUseApp.isQueryMode = false
-    mockUseApp.queryArea = { some: 'data' }
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-c-menu')).toBeInTheDocument()
-  })
-
-  it('does not render Draw component when queryArea is null', () => {
-    mockUseApp.isLegendFixed = true
-    mockUseApp.isQueryMode = false
-    mockUseApp.queryArea = null
-
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-c-menu')).not.toBeInTheDocument()
+    expect(container.querySelector('.fm-c-panel--legend')).not.toBeInTheDocument()
   })
 
   it('passes correct props to Panel component', () => {
     mockUseApp = {
       ...mockUseApp,
-      isDesktop: true, // needed for isLegendFixed calculation
+      isDesktop: true, // needed for isFixed calculation
       isMobile: false,
-      mode: '', // empty string for isQueryMode to be false
+      drawMode: '', // empty string for isQueryMode to be false
       options: {
         behaviour: 'default',
         legend: {
-          title: 'Test Legend',
           width: '250px',
           display: 'fixed' // 'fixed' instead of true to ensure !isLegendInset
         },
@@ -494,11 +442,11 @@ describe('Container', () => {
     const { container } = render(<Container />)
     const panel = container.querySelector('.mock-panel')
     expect(panel).toBeInTheDocument()
-    expect(panel.querySelector('div')).toHaveTextContent('Test Legend')
+    expect(panel.querySelector('div')).toHaveTextContent('Layers')
   })
 
   it('handles case when legend display is false', () => {
-    mockUseApp.isLegendFixed = true
+    mockUseApp.isFixed = true
     mockUseApp.isQueryMode = false
     mockUseApp.legend = {
       title: 'Test Legend',
@@ -519,7 +467,6 @@ describe('Container', () => {
       options: {
         behaviour: 'default',
         legend: {
-          title: 'Legend Title',
           display: 'fixed'
         }
       },
@@ -535,9 +482,6 @@ describe('Container', () => {
     // Look for mock-panel instead of .key
     const panel = container.querySelector('.mock-panel')
     expect(panel).toBeInTheDocument()
-
-    // Check for the Key label
-    expect(panel.querySelector('div')).toHaveTextContent('Key')
 
     // Check that Layers component is rendered
     expect(screen.getByText('Layers Mock')).toBeInTheDocument()

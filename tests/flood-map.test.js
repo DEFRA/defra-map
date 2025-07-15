@@ -1,3 +1,4 @@
+import { screen } from '@testing-library/react'
 import { FloodMap } from '../src/flood-map'
 import eventBus from '../src/js/lib/eventbus'
 import { events } from '../src/js/store/constants'
@@ -8,6 +9,26 @@ jest.mock('../src/js/lib/dom', () => ({
   toggleInert: jest.fn(),
   setInitialFocus: jest.fn()
 }))
+
+jest.mock('../src/js/lib/utils', () => { return {
+  getQueryParam: jest.fn(() => 'test-id'),
+  parseAttribute: jest.fn()
+}})
+
+jest.mock('../src/js/provider/maplibre/index', () => { return {
+  checkSupport: jest.fn(() => ({
+    isSupported: true
+  })),
+  load: jest.fn()
+}})
+
+jest.mock('../src/js/provider/os-open-names/index', () => { return {
+  load: jest.fn()
+}})
+
+jest.mock('../src/js/provider/os-open-names-reverse/index', () => { return {
+  load: jest.fn()
+}})
 
 describe('FloodMap', () => {
   let floodMap
@@ -81,7 +102,6 @@ describe('FloodMap', () => {
         this.el.removeAttribute('data-open')
       }
     })
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
 
     // Mock dispatchEvent
     mockElement.dispatchEvent = jest.fn()
@@ -183,8 +203,13 @@ describe('FloodMap', () => {
   })
 
   it('should insert not supported message if device is not supported', () => {
-    const props = {}
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: false })
+    const props = { mapProvider: {
+      checkSupport: () => ({
+        isSupported: false,
+        error: ''
+      }),
+      load: jest.fn()
+    }}
 
     floodMap = new FloodMap('test-id', props)
 
@@ -326,6 +351,7 @@ describe('FloodMap', () => {
   it('should handle popstate event - when is button', () => {
     const props = { behaviour: 'buttonFirst' }
     floodMap = new FloodMap('test-id', props)
+    floodMap.el = { children: [{}] }
 
     jest.spyOn(floodMap, '_removeComponent')
 
@@ -337,7 +363,7 @@ describe('FloodMap', () => {
   })
 
   it('should handle popstate event - when is back', () => {
-    const props = { behaviour: 'hybrid', isMobile: true }
+    const props = { id: 'test-id', behaviour: 'hybrid', isMobile: true }
     floodMap = new FloodMap('test-id', props)
 
     jest.spyOn(floodMap, '_importComponent')
@@ -452,43 +478,29 @@ describe('FloodMap', () => {
   })
 
   it('should add focus-visible class when keyboard interface is used', () => {
-    // Create a div element with the ID 'test-div'
-    const div = document.createElement('div')
-    div.id = 'test-div'
-    div.setAttribute('tabindex', '0')
-    document.body.appendChild(div)
-
     // Create FloodMap instance
-    floodMap = new FloodMap('test-id', {})
+    floodMap = new FloodMap('test-id', { behaviour: 'buttonFirst'})
 
     // First trigger keyboard interaction with Tab key
     const keydownEvent = new Event('keydown')
     Object.defineProperty(keydownEvent, 'key', { value: 'Tab' })
     window.dispatchEvent(keydownEvent)
+    const button = screen.getByRole('button')
 
     // Verify keyboard interface is set
     expect(floodMap.interfaceType).toBe('keyboard')
-
-    // Mock document.activeElement
-    Object.defineProperty(document, 'activeElement', {
-      get: () => div,
-      configurable: true
-    })
 
     // Now trigger the focus event
     const focusInEvent = new Event('focusin', {
       bubbles: true,
       cancelable: true
     })
-
-    window.dispatchEvent(focusInEvent)
+    button.dispatchEvent(focusInEvent)
 
     // Verify the correct class was added
-    expect(div.classList.contains('fm-u-focus-visible')).toBe(true)
-
-    // Cleanup
-    document.body.removeChild(div)
+    expect(button.classList.contains('fm-u-focus-visible')).toBe(true)
   })
+
   it('should handle responsive changes correctly', () => {
     // Create spies for _removeComponent and _importComponent
     const removeComponentSpy = jest.spyOn(FloodMap.prototype, '_removeComponent')
@@ -527,6 +539,7 @@ describe('FloodMap', () => {
     changeHandler(mobileMQ)
     expect(importComponentSpy).toHaveBeenCalled()
   })
+
   it('should handle APP_READY event correctly', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -570,6 +583,7 @@ describe('FloodMap', () => {
       { type: 'ready', ...mockData }
     )
   })
+
   it('should dispatch SET_INFO and SET_SELECTED events when handling APP_READY if values exist', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -655,6 +669,7 @@ describe('FloodMap', () => {
       expect.any(Object)
     )
   })
+
   it('should handle touchstart event by setting interface type to touch', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -672,6 +687,7 @@ describe('FloodMap', () => {
       'touch'
     )
   })
+
   it('should handle pointerdown event by removing focus and setting interface type to null', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -693,7 +709,7 @@ describe('FloodMap', () => {
     floodMap.interfaceType = 'keyboard'
 
     // Call the pointerdown handler
-    floodMap._handlePointerdown()
+    floodMap._handlePointerdown({ pointerType: 'mouse' })
 
     // Verify interfaceType was set to null
     expect(floodMap.interfaceType).toBeNull()
@@ -1274,7 +1290,6 @@ describe('_importComponent implementation', () => {
         this.el.removeAttribute('data-open')
       }
     })
-    jest.spyOn(FloodMap.prototype, '_testDevice').mockReturnValue({ isSupported: true, error: null })
 
     // Restore the original _importComponent implementation
     jest.spyOn(FloodMap.prototype, '_importComponent').mockRestore()

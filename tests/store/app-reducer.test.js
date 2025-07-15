@@ -8,9 +8,10 @@ jest.mock('../../src/js/lib/query', () => ({
   parseLayers: jest.fn((key) => key ? `parsed_${key}` : undefined)
 }))
 
-// Mock getStyle to return an object with a name property based on the input
+// Mock getStyle to return an object with a name property based on the input and getFeatureShape to return 'square'
 jest.mock('../../src/js/lib/viewport', () => ({
-  getStyle: jest.fn(() => ({ name: 'light' }))
+  getStyle: jest.fn(() => ({ name: 'light' })),
+  getFeatureShape: jest.fn(() => ('square'))
 }))
 
 describe('app-reducer and initialState', () => {
@@ -43,21 +44,6 @@ describe('app-reducer and initialState', () => {
       expect(state.activePanel).toBe('INFO')
     })
 
-    it('should set activePanel to LEGEND when no info and legend is visible with display "compact"', () => {
-      const options = {
-        styles: 'dummyStyle',
-        legend: { isVisible: true, display: 'compact', segments: 'seg1', key: 'key1' },
-        search: {},
-        info: null,
-        queryArea: { feature: 'dummyFeature' },
-        hasAutoMode: false
-      }
-      const state = initialState(options)
-      expect(state.activePanel).toBe('LEGEND')
-      expect(state.segments).toBe('parsed_seg1')
-      expect(state.layers).toBe('parsed_key1')
-    })
-
     it('should set activePanel to LEGEND when no info and legend is visible with display "inset"', () => {
       const options = {
         styles: 'dummyStyle',
@@ -73,7 +59,7 @@ describe('app-reducer and initialState', () => {
       expect(state.layers).toBe('parsed_key2')
     })
 
-    it('should set activePanel to KEY when no info and legend is visible with display other than compact/inset', () => {
+    it('should set activePanel to KEY when no info and legend is visible with display compact or default', () => {
       const options = {
         styles: 'dummyStyle',
         legend: { isVisible: true, display: 'full', segments: 'seg3', key: 'key3' },

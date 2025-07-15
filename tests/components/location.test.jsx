@@ -20,7 +20,7 @@ describe('Location', () => {
     useApp.mockReturnValue({
       provider: mockProvider,
       options: { id: 'test-id', hasGeoLocation: true },
-      mode: 'default',
+      drawMode: 'default',
       dispatch: mockDispatch
     })
 
@@ -31,7 +31,7 @@ describe('Location', () => {
     useApp.mockReturnValue({
       provider: mockProvider,
       options: { id: 'test-id', hasGeoLocation: false },
-      mode: 'default'
+      drawMode: 'default'
     })
 
     const { container } = render(<Location />)

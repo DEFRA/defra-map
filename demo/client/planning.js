@@ -26,57 +26,79 @@ const fLayers = [
   { n: 'nat_fsa', q: 'fsa' }
 ]
 
-const addLayers = (layers) => {
-  return Promise.all([
+const loadImageData = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = url
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      resolve(ctx.getImageData(0, 0, img.width, img.height))
+    }
+    img.onerror = reject
+  })
+}
+
+const addLayers = async (layers) => {
+  const [{default: VectorTileLayer}, {default: FeatureLayer}] = await Promise.all([
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/VectorTileLayer.js'),
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/FeatureLayer.js')
-  ]).then(modules => {
-    const VectorTileLayer = modules[0].default
-    const FeatureLayer = modules[1].default
-    const bands = [0, 200, 300, 600, 900, 1200]
-    vtLayers.forEach((layer, i) => {
-      map.add(new VectorTileLayer({
-        id: layer.n,
-        opacity: 0.75,
-        style: {
-          version: 8,
-          sources: {
-            esri: {
-              type: 'vector',
-              minzoom: 4,
-              maxzoom: 16,
-              scheme: 'xyz',
-              url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
-            }
-          },
-          layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
-            return {
-              id: layer.n + j,
-              type: 'fill',
-              source: 'esri',
-              'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
-              minzoom: 4.7597,
-              ...(i === 0 && { filter: ['==', '_symbol', j] }),
-              layout: {
-                visibility: 'visible'
-              },
-              paint: {
-                'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
-              }
-            }
-          })
+  ])
+  // const hatchPatternData = await loadImageData('assets/images/hatch-outdoor.png')
+
+  const bands = [0, 200, 300, 600, 900, 1200]
+  vtLayers.forEach((layer, i) => {
+    const vtLayer = new VectorTileLayer({
+      id: layer.n,
+      opacity: 0.75,
+      style: {
+        version: 8,
+        sprite: 'assets/images/sprite',
+        sources: {
+          esri: {
+            type: 'vector',
+            minzoom: 4,
+            maxzoom: 16,
+            scheme: 'xyz',
+            url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
+          }
         },
-        visible: false
-      }))
+        layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
+          return {
+            id: layer.n + j,
+            type: 'fill',
+            source: 'esri',
+            'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
+            minzoom: 4.7597,
+            ...(i === 0 && { filter: ['==', '_symbol', j] }),
+            layout: {
+              visibility: 'visible'
+            },
+            paint: {
+              ...(i === 0 && j === 1
+                ? { 'fill-pattern': isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor' }
+                : { 'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6) })
+            }
+          }
+        })
+      },
+      visible: false
     })
-    fLayers.forEach(layer => {
-      map.add(new FeatureLayer({
-        id: layer.n,
-        url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n}/FeatureServer`,
-        renderer: layer.n === 'nat_defences' ? renderFloodDefence() : renderFloodStorage(),
-        visible: false
-      }))
-    })
+
+
+    map.add(vtLayer)
+  })
+
+  fLayers.forEach(layer => {
+    map.add(new FeatureLayer({
+      id: layer.n,
+      url: `https://services1.arcgis.com/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n}/FeatureServer`,
+      renderer: layer.n === 'nat_defences' ? renderFloodDefence() : renderFloodStorage(),
+      visible: false
+    }))
   })
 }
 
@@ -139,7 +161,11 @@ const toggleVisibility = (type, drawMode, segments, layers) => {
     Array(i === 0 ? 2 : 7).fill(0).forEach((_, j) => {
       const paintProperties = layer.getPaintProperties(id + j)
       if (paintProperties && isVisible && !isModeChange) {
-        paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+        if (i === 0 && j === 1) {
+          paintProperties['fill-pattern'] = isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+        } else {
+          paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+        }
         layer.setPaintProperties(id + j, paintProperties)
         // if (i !== 0) return
         // Flood zones visiblity

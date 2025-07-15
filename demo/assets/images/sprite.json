@@ -1,0 +1,23 @@
+{
+  "hatch-diagonal-outdoor": {
+    "width": 32,
+    "height": 32,
+    "x": 0,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "hatch-diagonal-dark": {
+    "width": 32,
+    "height": 32,
+    "x": 0,
+    "y": 32,
+    "pixelRatio": 1
+  },
+  "hatch-diagonal-bw": {
+    "width": 32,
+    "height": 32,
+    "x": 0,
+    "y": 0,
+    "pixelRatio": 1
+  }
+}

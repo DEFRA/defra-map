@@ -27,7 +27,9 @@ export default function EditVertex ({ setIsUpdateDisabled }) {
   }
 
   useEffect(() => {
-    setIsUpdateDisabled(drawMode === 'vertex' && numVertecies < 3)
+    if (hasInclusiveDraw) {
+      setIsUpdateDisabled(drawMode === 'vertex' && numVertecies < 3)
+    }
   }, [drawMode, numVertecies])
 
   useEffect(() => {

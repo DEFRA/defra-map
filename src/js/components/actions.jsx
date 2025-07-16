@@ -55,11 +55,16 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
+  useEffect(() => {
+    setIsUpdateDisabled(!isDrawValid)
+  }, [isDrawValid])
+
   const isDefaultMode = drawMode === 'default'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
   
+  console.log(isDrawValid)
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
       <button onClick={handleUpdateClick} className='fm-c-btn-primary' aria-disabled={isUpdateDisabled} {...(isDefaultMode && { style: { display: 'none' } })}>

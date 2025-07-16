@@ -1,23 +1,23 @@
 {
   "hatch-diagonal-outdoor": {
-    "width": 32,
-    "height": 32,
+    "width": 8,
+    "height": 8,
     "x": 0,
     "y": 0,
     "pixelRatio": 1
   },
   "hatch-diagonal-dark": {
-    "width": 32,
-    "height": 32,
+    "width": 8,
+    "height": 8,
     "x": 0,
-    "y": 32,
+    "y": 8,
     "pixelRatio": 1
   },
   "hatch-diagonal-bw": {
-    "width": 32,
-    "height": 32,
+    "width": 8,
+    "height": 8,
     "x": 0,
-    "y": 0,
+    "y": 16,
     "pixelRatio": 1
   }
 }

@@ -26,22 +26,6 @@ const fLayers = [
   { n: 'nat_fsa', q: 'fsa' }
 ]
 
-const loadImageData = (url) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.src = url
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0)
-      resolve(ctx.getImageData(0, 0, img.width, img.height))
-    }
-    img.onerror = reject
-  })
-}
-
 const addLayers = async (layers) => {
   const [{default: VectorTileLayer}, {default: FeatureLayer}] = await Promise.all([
     import(/* webpackChunkName: "esri-sdk" */ '@arcgis/core/layers/VectorTileLayer.js'),
@@ -66,23 +50,45 @@ const addLayers = async (layers) => {
             url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
           }
         },
-        layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
-          return {
-            id: layer.n + j,
+        layers: Array(i === 0 ? 2 : 6).fill(0).flatMap((_, j) => {
+          const sourceLayerName = i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s
+          const usePattern = i === 0 && j === 1
+          const baseId = `${layer.n}${j}`
+
+          const fillLayer = {
+            id: baseId,
             type: 'fill',
             source: 'esri',
-            'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
+            'source-layer': sourceLayerName,
+            minzoom: 4.7597,
+            ...(i === 0 && { filter: ['==', '_symbol', j] }),
+            layout: {
+              visibility: 'visible'
+            },
+            paint: usePattern ? {
+              'fill-pattern': isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+            } : {
+              'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
+            }
+          }
+
+          const lineLayer = usePattern ? {
+            id: `${baseId}-outline`,
+            type: 'line',
+            source: 'esri',
+            'source-layer': sourceLayerName,
             minzoom: 4.7597,
             ...(i === 0 && { filter: ['==', '_symbol', j] }),
             layout: {
               visibility: 'visible'
             },
             paint: {
-              ...(i === 0 && j === 1
-                ? { 'fill-pattern': isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor' }
-                : { 'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6) })
+              'line-color': isDark ? '#fff' : '#000',
+              'line-width': 1
             }
-          }
+          } : []
+
+          return [fillLayer, ...(lineLayer ? [lineLayer] : [])]
         })
       },
       visible: false
@@ -159,18 +165,26 @@ const toggleVisibility = (type, drawMode, segments, layers) => {
     const isModeChange = type === 'drawMode'
     layer.visible = isVisible
     Array(i === 0 ? 2 : 7).fill(0).forEach((_, j) => {
-      const paintProperties = layer.getPaintProperties(id + j)
-      if (paintProperties && isVisible && !isModeChange) {
-        if (i === 0 && j === 1) {
-          paintProperties['fill-pattern'] = isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+      if (isVisible && !isModeChange) {
+        const baseId = id + j
+        const isPattern = i === 0 && j === 1
+        const fillPaint = layer.getPaintProperties(baseId) || {}
+        if (isPattern) {
+          // Fill pattern
+          fillPaint['fill-pattern'] = isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+          console.log(layer)
+          layer.setPaintProperties(baseId, fillPaint)
+          // Pattern outline
+          const outlineId = `${baseId}-outline`
+          const outlinePaint = layer.getPaintProperties(outlineId) || {}
+          outlinePaint['line-color'] = isDark ? '#fff' : '#000',
+          outlinePaint['line-width'] = 1
+          layer.setPaintProperties(outlineId, outlinePaint)
         } else {
-          paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+          // Solid fill
+          fillPaint['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+          layer.setPaintProperties(baseId, fillPaint)
         }
-        layer.setPaintProperties(id + j, paintProperties)
-        // if (i !== 0) return
-        // Flood zones visiblity
-        // const visibility = getFloodZoneVisibility(layers)
-        // layer.setLayoutProperties(id + j, { visibility })
       }
     })
   })

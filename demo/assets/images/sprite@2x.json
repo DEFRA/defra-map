@@ -1,16 +1,16 @@
 {
   "Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1": {
-    "width": 8,
-    "height": 8,
+    "width": 16,
+    "height": 16,
     "x": 0,
     "y": 0,
-    "pixelRatio": 1
+    "pixelRatio": 2
   },
   "Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1/dark": {
-    "width": 8,
-    "height": 8,
+    "width": 16,
+    "height": 16,
     "x": 0,
-    "y": 8,
-    "pixelRatio": 1
+    "y": 16,
+    "pixelRatio": 2
   }
 }

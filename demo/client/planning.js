@@ -66,7 +66,7 @@ const addLayers = async (layers) => {
               visibility: 'visible'
             },
             paint: usePattern ? {
-              'fill-pattern': isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+              'fill-pattern': isDark ? 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1/dark' : 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1'
             } : {
               'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
             }
@@ -171,7 +171,7 @@ const toggleVisibility = (type, drawMode, segments, layers) => {
         const fillPaint = layer.getPaintProperties(baseId) || {}
         if (isPattern) {
           // Fill pattern
-          fillPaint['fill-pattern'] = isDark ? 'hatch-diagonal-dark' : 'hatch-diagonal-outdoor'
+          fillPaint['fill-pattern'] = isDark ? 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1/dark' : 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1'
           console.log(layer)
           layer.setPaintProperties(baseId, fillPaint)
           // Pattern outline

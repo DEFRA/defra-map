@@ -34,7 +34,7 @@
     }
 
     &__heading {
-        @include body-font(16px, 400);
+        @include body-font(16px, 700);
         padding: 15px 0;
         color: var(--foreground-colour);
         margin-bottom: 0;

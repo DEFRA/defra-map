@@ -52,7 +52,7 @@ const addLayers = async (layers) => {
         },
         layers: Array(i === 0 ? 2 : 6).fill(0).flatMap((_, j) => {
           const sourceLayerName = i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s
-          const usePattern = i === 0 && j === 1
+          const usePattern = false // i === 0 && j === 1
           const baseId = `${layer.n}${j}`
 
           const fillLayer = {
@@ -72,23 +72,25 @@ const addLayers = async (layers) => {
             }
           }
 
-          const lineLayer = usePattern ? {
-            id: `${baseId}-outline`,
-            type: 'line',
-            source: 'esri',
-            'source-layer': sourceLayerName,
-            minzoom: 4.7597,
-            ...(i === 0 && { filter: ['==', '_symbol', j] }),
-            layout: {
-              visibility: 'visible'
-            },
-            paint: {
-              'line-color': isDark ? '#fff' : '#000',
-              'line-width': 1
-            }
-          } : []
+          // const lineLayer = usePattern ? {
+          //   id: `${baseId}-outline`,
+          //   type: 'line',
+          //   source: 'esri',
+          //   'source-layer': sourceLayerName,
+          //   minzoom: 4.7597,
+          //   ...(i === 0 && { filter: ['==', '_symbol', j] }),
+          //   layout: {
+          //     visibility: 'visible'
+          //   },
+          //   paint: {
+          //     'line-color': isDark ? '#fff' : '#000',
+          //     'line-width': 1
+          //   }
+          // } : []
 
-          return [fillLayer, ...(lineLayer ? [lineLayer] : [])]
+          return [fillLayer]
+
+          // return [fillLayer, ...(lineLayer ? [lineLayer] : [])]
         })
       },
       visible: false
@@ -253,7 +255,7 @@ const fm = new FloodMap('map', {
     segments: [
       {
         heading: 'Datasets',
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             id: 'fz',
@@ -280,7 +282,7 @@ const fm = new FloodMap('map', {
       {
         id: 'tf',
         heading: 'Time frame',
-        collapse: 'collapse',
+        // collapse: 'collapse',
         // parentIds: ['rsd', 'rsu', 'sw'],
         parentIds: ['rsd', 'rsu'],
         items: [
@@ -297,7 +299,7 @@ const fm = new FloodMap('map', {
       {
         id: 'af1',
         heading: 'Annual likelihood of flooding',
-        collapse: 'collapse',
+        // collapse: 'collapse',
         parentIds: ['rsd', 'sw'],
         items: [
           {
@@ -317,7 +319,7 @@ const fm = new FloodMap('map', {
       {
         id: 'af2',
         heading: 'Annual likelihood of flooding',
-        collapse: 'collapse',
+        // collapse: 'collapse',
         parentIds: ['rsu'],
         items: [
           {
@@ -442,7 +444,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Map features',
         parentIds: ['fz'],
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             label: 'Flood zone 1',
@@ -469,7 +471,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Map features',
         parentIds: ['rsd', 'rsu', 'sw'],
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             // id: 'fz1',
@@ -493,7 +495,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Map features',
         parentIds: ['mo'],
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             id: 'fsa',

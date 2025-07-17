@@ -4,9 +4,8 @@
     padding-top: 15px;
 
     &__heading {
-        @include body-font(1.125rem, 400);
+        @include body-font(16px, 700);
         color: var(--foreground-colour);
-        font-weight: 700;
         margin-bottom: 0;
         padding-bottom: 15px;
     }

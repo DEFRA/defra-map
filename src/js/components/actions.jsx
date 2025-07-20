@@ -26,8 +26,10 @@ export default function Actions () {
     }
     const feature = provider.draw.finish(shape)
     const newShape = getFeatureShape(feature)
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape: newShape } })
-    viewportDispatch({ type: 'TOGGLE_CONSTRAINTS' })
+    if (!drawTool) {
+      appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape: newShape } })
+      viewportDispatch({ type: 'TOGGLE_CONSTRAINTS' })
+    }
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: feature })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
@@ -64,7 +66,6 @@ export default function Actions () {
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
   
-  console.log(isDrawValid)
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
       <button onClick={handleUpdateClick} className='fm-c-btn-primary' aria-disabled={isUpdateDisabled} {...(isDefaultMode && { style: { display: 'none' } })}>

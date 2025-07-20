@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 
-const getClassName = (isFocusArea, isActive, drawShape) => {
-  const visible = isFocusArea ? ' fm-c-padding-box--visible' : ''
+const getClassName = (isFocusArea, drawMode, isActive, drawShape) => {
+  const visible = isFocusArea || drawMode === 'frame' ? ' fm-c-padding-box--visible' : ''
   const active = isActive ? ' fm-c-padding-box--active' : ''
   const shape = drawShape ? ` fm-c-padding-box--${drawShape}` : ''
   return `fm-c-padding-box${visible}${active}${shape}`
@@ -16,7 +16,7 @@ export default function PaddingBox ({ isFocusArea, children }) {
   // Template properties
   const isActive = (isFocusArea && features?.featuresInFocus?.length) || (drawMode === 'frame' && isDrawValid)
   const drawShape = drawMode === 'frame' ? shape : null
-  const className = getClassName(isFocusArea, isActive, drawShape)
+  const className = getClassName(isFocusArea, drawMode, isActive, drawShape)
 
   // Update provider padding (uses current padding box), need to run this before viewport action effect
   useEffect(() => {

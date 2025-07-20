@@ -50,47 +50,21 @@ const addLayers = async (layers) => {
             url: `https://tiles.arcgis.com/tiles/JZM7qJpmv7vJ0Hzx/arcgis/rest/services/${layer.n + layer.v}/VectorTileServer`
           }
         },
-        layers: Array(i === 0 ? 2 : 6).fill(0).flatMap((_, j) => {
-          const sourceLayerName = i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s
-          const usePattern = false // i === 0 && j === 1
-          const baseId = `${layer.n}${j}`
-
-          const fillLayer = {
-            id: baseId,
+        layers: Array(i === 0 ? 2 : 6).fill(0).map((_, j) => {
+          return {
+            id: layer.n + j,
             type: 'fill',
             source: 'esri',
-            'source-layer': sourceLayerName,
+            'source-layer': i >= 1 && i <= 3 ? `${layer.s} \u003E ${bands[j]}mm` : layer.s,
             minzoom: 4.7597,
             ...(i === 0 && { filter: ['==', '_symbol', j] }),
             layout: {
               visibility: 'visible'
             },
-            paint: usePattern ? {
-              'fill-pattern': isDark ? 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1/dark' : 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1'
-            } : {
+            paint: {
               'fill-color': i === 0 ? fillFloodZones(j) : fillModel(6)
             }
           }
-
-          // const lineLayer = usePattern ? {
-          //   id: `${baseId}-outline`,
-          //   type: 'line',
-          //   source: 'esri',
-          //   'source-layer': sourceLayerName,
-          //   minzoom: 4.7597,
-          //   ...(i === 0 && { filter: ['==', '_symbol', j] }),
-          //   layout: {
-          //     visibility: 'visible'
-          //   },
-          //   paint: {
-          //     'line-color': isDark ? '#fff' : '#000',
-          //     'line-width': 1
-          //   }
-          // } : []
-
-          return [fillLayer]
-
-          // return [fillLayer, ...(lineLayer ? [lineLayer] : [])]
         })
       },
       visible: false
@@ -150,43 +124,20 @@ const renderFloodStorage = () => {
   }
 }
 
-// const getFloodZoneVisibility = (layers) => {
-//   const isVisible = layers.includes('fz23')
-//   return isVisible ? 'visible' : 'none'
-// }
-
 const toggleVisibility = (type, drawMode, segments, layers) => {
   // Conditionally add/remove layers might offer better for performance
   const isDrawMode = ['frame', 'vertex'].includes(drawMode)
   vtLayers.forEach((l, i) => {
     const id = l.n
     const layer = map.findLayerById(id)
-    // const isVisibleLyr = vtLayers[i].q === 'fz' || ['fe', 'md'].some(l => layers.includes(l))
-    // const isVisible = !isDrawMode && isVisibleLyr && segments.join('') === vtLayers[i].q
     const isVisible = !isDrawMode && segments.join('') === vtLayers[i].q
     const isModeChange = type === 'drawMode'
     layer.visible = isVisible
     Array(i === 0 ? 2 : 7).fill(0).forEach((_, j) => {
-      if (isVisible && !isModeChange) {
-        const baseId = id + j
-        const isPattern = i === 0 && j === 1
-        const fillPaint = layer.getPaintProperties(baseId) || {}
-        if (isPattern) {
-          // Fill pattern
-          fillPaint['fill-pattern'] = isDark ? 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1/dark' : 'Flood Zones 2 and 3 Rivers and Sea CCP1/Unavailable/1'
-          console.log(layer)
-          layer.setPaintProperties(baseId, fillPaint)
-          // Pattern outline
-          const outlineId = `${baseId}-outline`
-          const outlinePaint = layer.getPaintProperties(outlineId) || {}
-          outlinePaint['line-color'] = isDark ? '#fff' : '#000',
-          outlinePaint['line-width'] = 1
-          layer.setPaintProperties(outlineId, outlinePaint)
-        } else {
-          // Solid fill
-          fillPaint['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
-          layer.setPaintProperties(baseId, fillPaint)
-        }
+      const paintProperties = layer.getPaintProperties(id + j)
+      if (paintProperties && isVisible && !isModeChange) {
+        paintProperties['fill-color'] = i === 0 ? fillFloodZones(j) : fillModel(j)
+        layer.setPaintProperties(id + j, paintProperties)
       }
     })
   })
@@ -220,7 +171,7 @@ const fm = new FloodMap('map', {
   // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
-  scaleBar: 'imperial',
+  scaleBar: 'metric',
   hasGeoLocation: true,
   symbols,
   transformGeocodeRequest: getRequest,
@@ -523,8 +474,8 @@ const fm = new FloodMap('map', {
   draw: {
     heading: 'Get a boundary report',
     summary: 'Add or edit site boundary',
-    // collapse: 'collapse',
-    tools: ['square', 'polygon'],
+    collapse: 'collapse',
+    tools: ['polygon', 'square'],
     queryLabel: 'Get summary report',
     helpURL: 'http://www.google.co.uk',
     keyLabel: 'Report area',
@@ -557,6 +508,7 @@ fm.addEventListener('ready', e => {
   addLayers(layers).then(() => {
     toggleVisibility(null, drawMode, segments, layers)
   })
+  // fm.setBanner('Data here could be dodgy')
 })
 
 // Listen for actions

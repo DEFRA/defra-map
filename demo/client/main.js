@@ -9,8 +9,6 @@ let map, bounds
 
 const fm = new FloodMap('map', {
   behaviour: 'hybrid', // 'buttonFirst | inline',
-  pageTitle: 'Test page title one',
-  buttonText: 'Custom text one',
   place: 'Carlisle',
   // zoom: 14,
   minZoom: 6,
@@ -18,8 +16,8 @@ const fm = new FloodMap('map', {
   // center: [-2.938769, 54.893806],
   bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
   maxBounds: [-5.719993, 49.955638, 1.794689, 55.825973],
-  hasGeoLocation: true,
   // hasReset: true,
+  hasGeoLocation: true,
   height: '600px',
   // buttonType: 'anchor',
   symbols,
@@ -55,17 +53,13 @@ const fm = new FloodMap('map', {
   },
   legend: {
     title: 'Live flood risk',
-    // width: '360px',
-    width: '280px',
-    keyWidth: '360px',
-    // display: 'inset',
+    width: '360px',
+    display: 'inset',
     isVisible: true,
     isPersistInUrl: true,
     segments: [
       {
-        // display: 'timeline',
-        heading: 'Timeline',
-        collapse: 'collapse',
+        display: 'timeline',
         items: [
           {
             id: queryMap.live,
@@ -87,8 +81,7 @@ const fm = new FloodMap('map', {
       },
       {
         parentIds: [queryMap.outlook],
-        // display: 'segmented',
-        heading: 'Days',
+        display: 'segmented',
         items: [
           {
             id: queryMap.day1,
@@ -116,7 +109,7 @@ const fm = new FloodMap('map', {
     key: [
       {
         heading: 'Forecast flood risk',
-        // layout: 'column',
+        layout: 'column',
         parentIds: [queryMap.outlook],
         display: 'ramp',
         items: [
@@ -140,7 +133,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Annual likelyhood of flooding',
-        // layout: 'column',
+        layout: 'column',
         parentIds: [queryMap.yearly],
         display: 'ramp',
         items: [
@@ -160,7 +153,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Flood warnings and alerts',
-        // layout: 'column',
+        layout: 'column',
         parentIds: [queryMap.live],
         minZoom: 12,
         items: [
@@ -191,7 +184,7 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Flood warnings and alerts',
-        // layout: 'column',
+        layout: 'column',
         parentIds: [queryMap.live],
         maxZoom: 12,
         items: [
@@ -220,9 +213,9 @@ const fm = new FloodMap('map', {
       },
       {
         heading: 'Water level measuring stations',
-        // layout: 'column',
+        layout: 'column',
         parentIds: [queryMap.live],
-        // isHidden: true,
+        isHidden: true,
         items: [
           {
             id: queryMap.river,

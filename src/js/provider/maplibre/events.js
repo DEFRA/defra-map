@@ -139,31 +139,6 @@ export function handleStyleData (e) {
   }
 }
 
-export function handleDrawModeChange (e) {
-  const actions = {
-    edit_vertex: 'delete',
-    draw_vertex: 'add'
-  }
-  this.dispatchEvent(new CustomEvent('draw', {
-    detail: {
-      action: actions[e.mode] || null,
-      feature: e.feature
-    }
-  }))
-}
-
-export function handleDrawVertexChange (e) {
-  const { featureId, selectedVertexIndex, numVertecies } = e
-  this.dispatchEvent(new CustomEvent('draw', {
-    detail: {
-      action: 'change',
-      featureId,
-      selectedVertexIndex,
-      numVertecies
-    }
-  }))
-}
-
 export function handleError (err) {
   console.log(err)
 }

@@ -30,7 +30,6 @@ const getWebGL = names => {
 export default {
   capabilities: {
     isLatest: !!window.globalThis,
-    hasInclusiveDraw: true,
     hasSize: !!window.globalThis
   },
   checkSupport: () => {

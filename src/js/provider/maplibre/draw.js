@@ -1,5 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { DisabledMode, EditVertexMode, DrawVertexMode } from './modes'
+import { DisabledMode } from './modes'
 import { draw as drawStyles } from './styles'
 import { getFocusPadding, getDistance } from '../../lib/viewport'
 import { circle as TurfCircle } from '@turf/circle'
@@ -11,7 +11,7 @@ export class Draw extends EventTarget {
     const { container, map, style } = provider
     Object.assign(this, options)
 
-    const { drawMode, shape, feature, interfaceType } = options
+    const { drawMode, shape, feature } = options
     this.provider = provider
     this.shape = shape
 
@@ -31,8 +31,6 @@ export class Draw extends EventTarget {
 
     const modes = MapboxDraw.modes
     modes.disabled = DisabledMode
-    modes.edit_vertex = EditVertexMode
-    modes.draw_vertex = DrawVertexMode
 
     const draw = new MapboxDraw({
       modes,
@@ -44,17 +42,12 @@ export class Draw extends EventTarget {
     map.addControl(draw)
     this.draw = draw
 
-    // Disable simple_select mode
-    map.on('draw.modechange', e => {
-      if (e.mode === 'simple_select') {
-        draw.changeMode('edit_vertex', {
-          container: container.parentNode,
-          featureId: this.shape,
-          vertexButton: this.vertexButton,
-          isPanEnabled: interfaceType !== 'keyboard',
-          interfaceType
-        })
-      }
+    // Update feature Id
+    map.on('draw.create', e => {
+      const oldFeature = e.features[0]
+      const newFeature = { ...oldFeature, id: this.shape }
+      draw.delete(oldFeature.id)
+      draw.add(newFeature)
     })
 
     // Add existing feature
@@ -64,13 +57,12 @@ export class Draw extends EventTarget {
     }
 
     // Start new
-    this.add(drawMode, shape, interfaceType)
+    this.add(drawMode, shape)
   }
 
   // Add new shape
-  add (drawMode, shape, interfaceType) {
+  add (drawMode, shape) {
     const { draw } = this
-    const { container } = this.provider
     this.shape = shape
 
     // Remove existing drawn features
@@ -81,19 +73,16 @@ export class Draw extends EventTarget {
 
     // Start a new polygon
     if (drawMode === 'vertex' && !draw.get(shape)) {
-      draw.changeMode('draw_vertex', {
-        container: container.parentNode,
-        featureId: shape,
-        vertexButton: this.vertexButton,
-        interfaceType
+      draw.changeMode('draw_polygon', {
+        featureId: shape
       })
     }
   }
 
   // Edit existing shape
-  edit (drawMode, shape, interfaceType) {
-    const { oFeature, draw, vertexButton } = this
-    const { map, container } = this.provider
+  edit (drawMode, shape) {
+    const { oFeature, draw } = this
+    const { map } = this.provider
     this.shape = shape
 
     // Zoom to extent if we have an existing graphic
@@ -111,11 +100,8 @@ export class Draw extends EventTarget {
 
     // Edit existing feature
     if (drawMode === 'vertex' && draw.get(shape)) {
-      draw.changeMode('edit_vertex', {
-        container: container.parentNode,
-        featureId: shape,
-        vertexButton,
-        isPanEnabled: interfaceType !== 'keyboard'
+      draw.changeMode('direct_select', {
+        featureId: shape
       })
     }
   }
@@ -222,15 +208,7 @@ export class Draw extends EventTarget {
   }
 
   setStyle () {
-    const { draw, shape } = this
-
-    if (draw?.getMode() === 'edit_vertex') {
-      // Need to switch to another mode first to call onStop
-      draw.changeMode('simple_select')
-
-      // Call edit again to reinstate the mode
-      this.edit('vertex', shape)
-    }
+    // console.log('setStyle')
   }
 }
 

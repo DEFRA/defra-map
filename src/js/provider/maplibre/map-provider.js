@@ -1,5 +1,5 @@
 import { applyPreventDefaultFix } from './maplibre-fixes.js'
-import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleDrawModeChange, handleDrawVertexChange, handleError } from './events.js'
+import { handleLoad, handleMoveStart, handleMove, handleIdle, handleStyleData, handleStyleLoad, handleError } from './events.js'
 import { toggleSelectedFeature, getDetail, getLabels, getLabel } from './query.js'
 import { locationMarkerHTML, targetMarkerHTML } from './marker.js'
 import { highlightLabel } from './symbols.js'
@@ -139,13 +139,6 @@ class MapProvider extends EventTarget {
 
     // Map style change
     map.on('style.load', handleStyleLoad.bind(this))
-
-    // Draw events
-    map.on('draw.modechange', handleDrawModeChange.bind(this))
-
-    // Draw events
-    map.on('draw.modechange', handleDrawModeChange.bind(this))
-    map.on('draw.vertexchange', handleDrawVertexChange.bind(this))
 
     // Capture errors
     map.on('error', handleError.bind(this))

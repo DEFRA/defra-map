@@ -187,10 +187,12 @@ const fm = new FloodMap('map', {
   backgroundColor: 'default: #f5f5f0, dark: #060606',
   styles: [{
     name: 'default',
+    iconUrl: '/assets/images/outdoors.jpg',
     url: process.env.OS_VTAPI_DEFAULT_URL,
     attribution
   }, {
     name: 'dark',
+    iconUrl: '/assets/images/dark.jpg',
     url: process.env.OS_VTAPI_DARK_URL,
     attribution
   }],
@@ -494,7 +496,8 @@ const fm = new FloodMap('map', {
     // feature: {type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
   },
   queryLocation: {
-    layers: vtLayers.map(l => l.n)
+    layers: vtLayers.map(l => l.n),
+    requireFeatureAtCursor: true
   }
 })
 
@@ -533,13 +536,7 @@ fm.addEventListener('query', e => {
     const feature = features.isPixelFeaturesAtPixel ? features.items[0] : null
 
     if (!feature) {
-      fm.setInfo({
-        width: '360px',
-        label: 'Title',
-        html: `
-          <p class="govuk-body-s">No feature info</p>
-        `
-      })
+      fm.setInfo()
       return
     }
 

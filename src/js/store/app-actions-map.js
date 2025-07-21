@@ -119,7 +119,8 @@ const setIsDarkMode = (state, payload) => {
 const setIsTargetVisible = (state, payload) => {
   return {
     ...state,
-    isTargetVisible: payload
+    isTargetVisible: payload.isTargetVisible,
+    hasTargetData: payload.hasTargetData
   }
 }
 

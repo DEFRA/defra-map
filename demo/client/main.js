@@ -25,23 +25,28 @@ const fm = new FloodMap('map', {
   backgroundColor: 'default: #f5f5f0, dark: #162639',
   styles: [{
     name: 'default',
+    iconUrl: '/assets/images/outdoors.jpg',
     attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
     url: process.env.DEFAULT_URL
   }, {
     name: 'dark',
+    iconUrl: '/assets/images/dark.jpg',
     attribution: 'Test',
     url: process.env.DARK_URL
   },{
     name: 'aerial',
+    iconUrl: '/assets/images/aerial.jpg',
     attribution: 'Test',
     url: process.env.AERIAL_URL,
     logo: null
   },{
     name: 'deuteranopia',
+    iconUrl: '/assets/images/deuteranopia.jpg',
     attribution: 'Test',
     url: process.env.DEUTERANOPIA_URL
   },{
     name: 'tritanopia',
+    iconUrl: '/assets/images/tritanopia.jpg',
     attribution: 'Test',
     url: process.env.TRITANOPIA_URL
   }],

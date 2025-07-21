@@ -30,3 +30,8 @@
 .maplibregl-symbols {
     display: none;
 }
+
+// ESRI
+.esri-view-surface--touch-none {
+    touch-action: none;
+}

@@ -13,7 +13,7 @@ const getIsPolygonVisible = (isDrawVisible, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, mode, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, mode, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible, hasTargetData } = useApp()
   const { dispatch: viewportDispatch, size } = useViewport()
 
   const handleUpdateClick = () => {
@@ -59,7 +59,7 @@ export default function Actions () {
       <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
         {queryArea?.submitLabel}
       </button>
-      <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
+      <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })} {...!hasTargetData && { 'aria-disabled': true }}>
         Get feature information
       </button>
     </div>

@@ -33,8 +33,8 @@ export default function Target () {
 
   // Update app state
   useEffect(() => {
-    appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: isTargetVisible })
-  }, [isTargetVisible])
+    appDispatch({ type: 'SET_IS_TARGET_VISIBLE', payload: { isTargetVisible, hasTargetData }})
+  }, [isTargetVisible, hasTargetData])
 
   // Conditionally show target marker
   useEffect(() => {

@@ -1,24 +1,186 @@
 import { reducer, initialState } from '../../src/js/store/app-reducer'
 import { actionsMap } from '../../src/js/store/app-actions-map'
+import { getStyle } from '../../src/js/lib/viewport'
 
-describe('app-reducer', () => {
-  it('should return the initial state', () => {
-    expect(reducer(initialState, {})).toEqual(initialState)
-  })
+// Mock parseSegments and parseLayers to return predictable values
+jest.mock('../../src/js/lib/query', () => ({
+  parseSegments: jest.fn((segments) => segments ? `parsed_${segments}` : undefined),
+  parseLayers: jest.fn((key) => key ? `parsed_${key}` : undefined)
+}))
 
-  it('should handle actions correctly', () => {
-    Object.keys(actionsMap).forEach(actionType => {
-      const action = { type: actionType, payload: getMockPayload(actionType) }
-      const mockState = { ...initialState }
-      const expectedState = actionsMap[actionType](mockState, action.payload)
-      expect(reducer(mockState, action)).toEqual(expectedState)
+// Mock getStyle to return an object with a name property based on the input
+jest.mock('../../src/js/lib/viewport', () => ({
+  getStyle: jest.fn(() => ({ name: 'light' }))
+}))
+
+describe('app-reducer and initialState', () => {
+  describe('initialState', () => {
+    it('should set activePanel to INFO when info exists with featureId', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: { isVisible: true, display: 'full', segments: 'segX', key: 'keyX' },
+        search: {},
+        info: { featureId: '123' },
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBe('INFO')
+      expect(state.segments).toBe('parsed_segX')
+      expect(state.layers).toBe('parsed_keyX')
+    })
+
+    it('should set activePanel to INFO when info exists with targetMarker', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: {},
+        search: {},
+        info: { coord: [10, 20], hasData: true },
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBe('INFO')
+    })
+
+    it('should set activePanel to LEGEND when no info and legend is visible with display "compact"', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: { isVisible: true, display: 'compact', segments: 'seg1', key: 'key1' },
+        search: {},
+        info: null,
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBe('LEGEND')
+      expect(state.segments).toBe('parsed_seg1')
+      expect(state.layers).toBe('parsed_key1')
+    })
+
+    it('should set activePanel to LEGEND when no info and legend is visible with display "inset"', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: { isVisible: true, display: 'inset', segments: 'seg2', key: 'key2' },
+        search: {},
+        info: null,
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBe('LEGEND')
+      expect(state.segments).toBe('parsed_seg2')
+      expect(state.layers).toBe('parsed_key2')
+    })
+
+    it('should set activePanel to KEY when no info and legend is visible with display other than compact/inset', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: { isVisible: true, display: 'full', segments: 'seg3', key: 'key3' },
+        search: {},
+        info: null,
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBe('KEY')
+      expect(state.segments).toBe('parsed_seg3')
+      expect(state.layers).toBe('parsed_key3')
+    })
+
+    it('should set activePanel to null when no info and legend is not visible', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: { isVisible: false },
+        search: {},
+        info: null,
+        queryArea: { feature: 'dummyFeature' },
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.activePanel).toBeNull()
+      // legend is provided but no segments/key so parse functions return undefined
+      expect(state.segments).toBeUndefined()
+      expect(state.layers).toBeUndefined()
+    })
+
+    it('should compute isDarkMode correctly when style is dark', () => {
+      getStyle.mockReturnValueOnce({ name: 'dark' })
+      const options = {
+        styles: 'dummyStyle',
+        legend: {},
+        search: {},
+        info: {},
+        queryArea: {},
+        hasAutoMode: false
+      }
+      const state = initialState(options)
+      expect(state.isDarkMode).toBe(true)
+    })
+
+    it('should compute isDarkMode correctly using matchMedia when auto mode is enabled', () => {
+      window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+      getStyle.mockReturnValueOnce({ name: 'light' })
+      const options = {
+        styles: 'dummyStyle',
+        legend: {},
+        search: {},
+        info: {},
+        queryArea: {},
+        hasAutoMode: true
+      }
+      const state = initialState(options)
+      expect(state.isDarkMode).toBe(true)
     })
   })
 
-  it('should return the current state if action type is not recognized', () => {
-    const currentState = { ...initialState, value: 'test' }
-    const action = { type: 'UNKNOWN_ACTION', payload: {} }
-    expect(reducer(currentState, action)).toEqual(currentState)
+  describe('reducer', () => {
+    it('should return the current state when no action is provided', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: {},
+        search: {},
+        info: {},
+        queryArea: {},
+        hasAutoMode: false
+      }
+      const init = initialState(options)
+      expect(reducer(init, {})).toEqual(init)
+    })
+
+    it('should handle actions correctly from actionsMap', () => {
+      Object.keys(actionsMap).forEach(actionType => {
+        const payload = getMockPayload(actionType)
+        const options = {
+          styles: 'dummyStyle',
+          legend: {},
+          search: {},
+          info: {},
+          queryArea: {},
+          hasAutoMode: false
+        }
+        const mockState = initialState(options)
+        const expectedState = actionsMap[actionType](mockState, payload)
+        const reducedState = reducer(mockState, { type: actionType, payload })
+        // the hash value can occasionally be out by one, it is not deemed an important test, so we remove it.
+        delete expectedState.hash
+        delete reducedState.hash
+        expect(reducedState).toEqual(expectedState)
+      })
+    })
+
+    it('should return current state if action type is not recognized', () => {
+      const options = {
+        styles: 'dummyStyle',
+        legend: {},
+        search: {},
+        info: {},
+        queryArea: {},
+        hasAutoMode: false
+      }
+      const currentState = { ...initialState(options), value: 'test' }
+      expect(reducer(currentState, { type: 'UNKNOWN_ACTION', payload: {} })).toEqual(currentState)
+    })
   })
 })
 

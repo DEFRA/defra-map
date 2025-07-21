@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import SearchButton from '../../src/js/components/search-button'
 import { useApp } from '../../src/js/store/use-app'
 
@@ -47,7 +48,69 @@ describe('search-button', () => {
 
     render(<SearchButton />)
 
-    const button = screen.queryByRole('button')
-    expect(button).toBeNull()
+    // Use hidden: true to find the hidden button
+    const button = screen.getByRole('button', { hidden: true })
+    expect(button).toHaveAttribute('style', expect.stringContaining('display: none'))
+  })
+
+  it('should not render when search is falsy', () => {
+    jest.mocked(useApp).mockReturnValue({
+      options: { id: 'test-id' },
+      search: null,
+      mode: null
+    })
+
+    const { container } = render(<SearchButton />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should not render when in frame query mode', () => {
+    jest.mocked(useApp).mockReturnValue({
+      options: { id: 'test-id' },
+      search: {},
+      mode: 'frame'
+    })
+
+    const { container } = render(<SearchButton />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should not render when in draw query mode', () => {
+    jest.mocked(useApp).mockReturnValue({
+      options: { id: 'test-id' },
+      search: {},
+      mode: 'draw'
+    })
+
+    const { container } = render(<SearchButton />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should add aria-labelledby when tooltip is provided', () => {
+    jest.mocked(useApp).mockReturnValue({
+      options: { id: 'test-id' },
+      search: {},
+      mode: null
+    })
+
+    render(<SearchButton tooltip='right' />)
+
+    const button = screen.getByRole('button')
+    expect(button.getAttribute('aria-labelledby')).toBe('test-id-search-label')
+    expect(screen.queryByText('Search')).toBeNull()
+  })
+
+  it('should correctly pass searchBtnRef to the button', () => {
+    const mockRef = { current: null }
+    jest.mocked(useApp).mockReturnValue({
+      options: { id: 'test-id' },
+      search: {},
+      mode: null
+    })
+
+    render(<SearchButton searchBtnRef={mockRef} />)
+
+    const button = screen.getByRole('button')
+    expect(button).not.toBeNull()
   })
 })

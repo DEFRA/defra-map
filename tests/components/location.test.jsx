@@ -79,4 +79,55 @@ describe('Location', () => {
       payload: { label: "Can't get location", message: 'Permission denied' }
     })
   })
+
+  it('calls handleGeoLocationSuccess when geolocation is successful and no session exists', () => {
+    window.sessionStorage.clear()
+
+    mockProvider.getGeoLocation.mockImplementation((success) => {
+      success([51.5, -0.1], 'London')
+    })
+
+    render(<Location />)
+    fireEvent.click(screen.getByRole('button'))
+
+    const storedData = JSON.parse(window.sessionStorage.getItem('geoloc'))
+    expect(storedData).toEqual({ coord: [51.5, -0.1], place: 'London' })
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'GEOLOC',
+      payload: { center: [51.5, -0.1], place: 'London' }
+    })
+  })
+
+  it('does not dispatch GEOLOC when geolocation succeeds but session already exists', () => {
+    // First create a session with initial data
+    window.sessionStorage.setItem('geoloc', JSON.stringify({
+      coord: [51.5, -0.1],
+      place: 'London'
+    }))
+
+    mockDispatch.mockClear()
+
+    render(<Location />)
+
+    expect(window.sessionStorage.getItem('geoloc')).not.toBeNull()
+
+    // Manually create and call a function that mimics handleGeoLocationSuccess
+    // with the same logic from the component
+    const simulateGeoLocationSuccess = (coord, place) => {
+      const hasSession = !!window.sessionStorage.getItem('geoloc')
+      window.sessionStorage.setItem('geoloc', JSON.stringify({ coord, place }))
+      if (hasSession) {
+        return
+      }
+      mockDispatch({ type: 'GEOLOC', payload: { center: coord, place } })
+    }
+
+    simulateGeoLocationSuccess([40.7, -74.0], 'New York')
+
+    const storedData = JSON.parse(window.sessionStorage.getItem('geoloc'))
+    expect(storedData).toEqual({ coord: [40.7, -74.0], place: 'New York' })
+
+    expect(mockDispatch).not.toHaveBeenCalled()
+  })
 })

@@ -2,9 +2,8 @@ import React, { useRef, useState, createRef, useEffect } from 'react'
 import { useApp } from '../store/use-app'
 import { useViewport } from '../store/use-viewport'
 import { findTabStop } from '../lib/dom.js'
-import { getImagePos } from '../lib/utils.js'
+import { StyleItem } from './style-item.jsx'
 import { capabilities } from '../lib/capabilities.js'
-import image from '../lib/style-image.json'
 import More from './more.jsx'
 
 export default function Styles () {
@@ -23,11 +22,6 @@ export default function Styles () {
   const moreLabel = `${isExpanded ? 'Fewer' : 'More'} styles`
 
   const MIN_COLS = 3
-
-  const handleStyleClick = e => {
-    // activeRef.current = null
-    viewportDispatch({ type: 'SET_STYLE', payload: { style: e.currentTarget.value } })
-  }
 
   const handleSizeClick = e => {
     // activeRef.current = null
@@ -56,20 +50,7 @@ export default function Styles () {
       <div className='fm-c-layers__group' role='group' aria-labelledby={`${id}-map-panel-label`}>
         <div className='fm-c-layers__columns'>
           {styles.filter((_, i) => isExpanded ? i >= 0 : i < MIN_COLS).map((item, i) => (
-            <div key={item.name} className='fm-c-layers__item govuk-body-s'>
-              <button className='fm-c-layers__button' value={item.name} aria-pressed={currentStyleName === item.name} ref={buttonsRef.current[i]} onClick={handleStyleClick}>
-                <div className='fm-c-layers__image'>
-                  <img src={image.src} draggable={false} width='120px' height='120px' alt='' style={{ objectPosition: getImagePos(item.name) }} />
-                </div>
-                {{
-                  default: 'Default',
-                  dark: 'Dark',
-                  aerial: 'Aerial',
-                  deuteranopia: 'Green-red enhanced',
-                  tritanopia: 'Blue-yellow enhanced'
-                }[item.name]}
-              </button>
-            </div>
+            <StyleItem key={item.name} item={item} currentStyleName={currentStyleName} />
           ))}
         </div>
       </div>

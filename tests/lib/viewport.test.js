@@ -389,12 +389,11 @@ describe('lib/viewport - getStyle', () => {
     expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
   })
 
-  it('should filter out invalid styles not included in defaults.STYLES', () => {
+  it('should use the first available style, if an invalid style def is set in local storage', () => {
     // Use some valid styles and one invalid style
     const styles = [
       { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
-      { name: defaults.STYLES[1], color: '#000000' },
-      { name: 'invalid-style', color: '#FF0000' } // This style is not in defaults.STYLES
+      { name: defaults.STYLES[1], color: '#000000' }
     ]
 
     // Set localStorage to return the invalid style
@@ -405,6 +404,24 @@ describe('lib/viewport - getStyle', () => {
 
     // Assert result is the default style since 'invalid-style' should be filtered out
     expect(result).toEqual({ name: defaults.STYLES[0], color: '#FFFFFF' })
+  })
+
+  it('should accept an invalid style that is not included in defaults.STYLES', () => {
+    // Use some valid styles and one invalid style
+    const styles = [
+      { name: defaults.STYLES[0], color: '#FFFFFF' }, // Assuming this is 'default'
+      { name: defaults.STYLES[1], color: '#000000' },
+      { name: 'non-default-style', color: '#FF0000' } // This style is not in defaults.STYLES
+    ]
+
+    // Set localStorage to return the invalid style
+    localStorageMock.getItem.mockReturnValue('non-default-style')
+
+    // Call the function
+    const result = getStyle(styles)
+
+    // Assert result is the default style since 'invalid-style' should be filtered out
+    expect(result).toEqual({ name: 'non-default-style', color: '#FF0000' })
   })
 
   it('should handle empty styles array', () => {

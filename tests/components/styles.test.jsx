@@ -8,9 +8,6 @@ import { useViewport } from '../../src/js/store/use-viewport'
 
 jest.mock('../../src/js/store/use-app')
 jest.mock('../../src/js/store/use-viewport')
-jest.mock('../../src/js/lib/style-image.json', () => ({
-  src: 'test-image'
-}))
 
 describe('styles', () => {
   const appDispatch = jest.fn()
@@ -28,7 +25,8 @@ describe('styles', () => {
       {
         name: 'default',
         attribution: 'Test',
-        url: 'https://test/default/styles.json'
+        url: 'https://test/default/styles.json',
+        iconUrl: 'testUrl'
       },
       {
         name: 'dark',
@@ -44,13 +42,20 @@ describe('styles', () => {
       {
         name: 'deuteranopia',
         attribution: 'Test',
-        url: 'https://test/deuteranopia/styles.json'
+        url: 'https://test/deuteranopia/styles.json',
+        displayName: 'Red-green colour deficiency'
       },
       {
         name: 'tritanopia',
         attribution: 'Test',
         url: 'https://test/tritanopia/styles.json'
+      },
+      {
+        name: 'no-display-name',
+        attribution: 'Test',
+        url: 'https://test/no-display-name/styles.json'
       }
+
     ]
   })
 
@@ -83,6 +88,8 @@ describe('styles', () => {
     expect(screen.getByText(/Default/)).toBeTruthy()
     expect(screen.getByText(/Dark/)).toBeTruthy()
     expect(screen.getByText(/Aerial/)).toBeTruthy()
+    expect((container.querySelector('button[value="default"] img')).src).toEqual('http://localhost/testUrl')
+    expect((container.querySelector('button[value="dark"] img')).src).toEqual('')
   })
 
   it('should render all styles and text sizes on clicking "More styles"', () => {
@@ -102,7 +109,7 @@ describe('styles', () => {
     fireEvent.click(container.querySelector('.fm-c-btn-more'))
 
     act(() => {
-      expect(container.querySelectorAll('.fm-c-layers__item').length).toEqual(8)
+      expect(container.querySelectorAll('.fm-c-layers__item').length).toEqual(9)
       expect(container.querySelector('.fm-c-btn-more')).toBeFalsy()
       expect(screen.getByText(/Small/)).toBeTruthy()
       expect(screen.getByText(/Medium/)).toBeTruthy()
@@ -127,6 +134,8 @@ describe('styles', () => {
     fireEvent.click(container.querySelector('.fm-c-btn-more'))
     fireEvent.click(container.querySelectorAll('.fm-c-layers__button')[0])
     fireEvent.click(container.querySelectorAll('.fm-c-layers__button')[6])
+    expect(screen.getByText(/Red-green colour deficiency/)).toBeTruthy()
+    expect(screen.getByText(/no-display-name/)).toBeTruthy()
 
     act(() => {
       expect(viewportDispatch).toHaveBeenCalledTimes(2)

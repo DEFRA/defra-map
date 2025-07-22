@@ -58,7 +58,7 @@
         //click on feature show 
         // cy.get('.fm-c-layers__heading > .fm-c-details > .fm-c-details__toggle > .fm-c-details__toggle-focus').click()
         cy.get('#map-key > div > button > span.fm-c-details__toggle > span').click()
-        cy.wait(1000)
+        cy.wait(2000)
         cy.get('#content-l0 > div:nth-child(1) > button > span').click()
         cy.wait(4500)
         cy.compareSnapshot(Cypress.env('tags') + 'ky45 Key Evidence')

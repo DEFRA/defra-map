@@ -148,6 +148,13 @@ const toggleKeyExpanded = (state, payload) => {
   }
 }
 
+const toggleDrawExpanded = (state, payload) => {
+  return {
+    ...state,
+    isDrawMenuExpanded: payload
+  }
+}
+
 const toggleViewportLabel = (state, payload) => {
   const hasViewportLabel = payload.data && (!state.isMobile || !state.activePanel || state.activePanel === 'LEGEND')
   return {
@@ -171,5 +178,6 @@ export const actionsMap = {
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
+  TOGGLE_DRAW_EXPANDED: toggleDrawExpanded,
   TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
 }

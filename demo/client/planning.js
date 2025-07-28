@@ -475,10 +475,12 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   queryArea: {
-    heading: 'Site boundary',
+    heading: 'Get a boundary report',
+    summary: 'Add or edit site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
+    // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     styles: [{
       name: 'default',

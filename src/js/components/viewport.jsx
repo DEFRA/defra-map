@@ -293,6 +293,13 @@ export default function Viewport () {
     }
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
+    // Initialise draw
+  useEffect(() => {
+    if (provider.map && !provider.draw && (mode !== 'default' || queryArea?.feature)) {
+      provider.initDraw({ ...draw, drawMode, shape, interfaceType })
+    }
+  }, [provider.map, mode])
+
   // Set initial selected feature
   useEffect(() => {
     provider.selectFeature(featureId)

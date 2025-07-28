@@ -443,4 +443,22 @@
     &.fm-u-focus-visible .fm-c-btn__label {
         color: var(--foreground-colour);
     }
+
+    &[aria-disabled="true"] {
+        color: var(--button-border-colour);
+        outline-style: dashed;
+        cursor: default;
+
+        .fm-c-btn__label, &:hover .fm-c-btn__label {
+            color: var(--button-border-colour);
+        }
+
+        &.fm-u-focus-visible, &.fm-u-focus-visible .fm-c-btn__label {
+            color: var(--foreground-colour);
+        }
+
+        svg {
+            color: var(--button-border-colour);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 import { getStyle } from '../lib/viewport'
+import { drawTools } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -34,6 +35,7 @@ export const initialState = (options) => {
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
     isKeyExpanded: false,
+    isDrawMenuExpanded: queryArea?.collapse !== 'collapse',
     isDarkMode: getIsDarkMode(style.name, hasAutoMode),
     hasAutoMode,
     featureId,
@@ -44,6 +46,7 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode: 'default',
+    drawTools,
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,

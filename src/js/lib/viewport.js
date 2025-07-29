@@ -286,3 +286,12 @@ export const getStyle = (styles = []) => {
   const style = window.localStorage.getItem('style')
   return styles.find(s => s.name === style) || styles[0]
 }
+
+export const getFeatureShape = (feature) => {
+  if (feature?.geometry?.type?.toLowerCase() === 'polygon') {
+    const coords = feature.geometry?.coordinates
+    const flatCoords = (coords && Array.from(new Set(coords.flat(2)))) || null
+    return flatCoords?.length === 4 ? 'square' : 'polygon'
+  }
+  return null
+}

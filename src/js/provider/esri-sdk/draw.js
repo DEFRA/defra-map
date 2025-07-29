@@ -1,11 +1,7 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
-import * as centroidOperator from '@arcgis/core/geometry/operators/centroidOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
-import Circle from '@arcgis/core/geometry/Circle.js'
-import Point from '@arcgis/core/geometry/Point.js'
 import Graphic from '@arcgis/core/Graphic'
-import { getDistance } from '../../lib/viewport'
 import { defaults } from './constants'
 
 export class Draw {
@@ -199,24 +195,8 @@ export class Draw {
   }
 
   getGraphicFromElement (el, shape) {
-    const { view } = this.provider
-
     const bounds = this.getBounds(el)
-    let rings
-
-    if (shape === 'circle') {
-      // Circle
-      const { x, y } = view.center
-      const center = new Point({ x, y, spatialReference: { wkid: 27700 } })
-      const radius = getDistance([bounds[0], bounds[1]], [bounds[2], bounds[1]]) / 2
-      const circle = new Circle({ center, geodesic: false, numberOfPoints: 64, radius, radiusUnit: 'meters' })
-      const roundedCoords = circle.rings[0].map(([e, n]) => [+(e.toFixed(1)), +(n.toFixed(1))])
-      rings = [roundedCoords]
-    } else {
-      // Polygon
-      rings = [[[bounds[0], bounds[1]], [bounds[2], bounds[1]], [bounds[2], bounds[3]], [bounds[0], bounds[3]], [bounds[0], bounds[1]]]]
-    }
-
+    const rings = [[[bounds[0], bounds[1]], [bounds[2], bounds[1]], [bounds[2], bounds[3]], [bounds[0], bounds[3]], [bounds[0], bounds[1]]]]
     return this.createGraphic(shape, rings)
   }
 

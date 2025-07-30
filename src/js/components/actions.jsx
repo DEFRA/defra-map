@@ -13,18 +13,16 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, draw, drawTool, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size, } = useViewport()
 
   const handleUpdateClick = () => {
-    if (!(provider.map || drawTool)) {
+    if (!provider.map) {
       return
     }
     const feature = provider.draw.finish(shape)
-    if (!drawTool) {
-      appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape } })
-      viewportDispatch({ type: 'TOGGLE_CONSTRAINTS' })
-    }
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape } })
+    viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: feature })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
@@ -52,7 +50,7 @@ export default function Actions () {
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
-  
+ 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
       <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...isDefaultMode && { style: { display: 'none' } }}>
@@ -61,10 +59,10 @@ export default function Actions () {
       <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...isDefaultMode && { style: { display: 'none' } }}>
         <span>Cancel</span>
       </button>
-      <button onClick={handlePolygonClick} className='fm-c-btn-primary' {...!isPolygonVisible && { style: { display: 'none' } }}>
-        {draw?.queryLabel}
+      <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...!isPolygonVisible && { style: { display: 'none' } }}>
+        {queryArea?.submitLabel}
       </button>
-      <button onClick={handlePixelClick} className='fm-c-btn-primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
+      <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
         Get info
       </button>
     </div>

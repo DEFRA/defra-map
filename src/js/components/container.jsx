@@ -41,7 +41,6 @@ export default function Container () {
   const keyBtnRef = useRef(null)
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
-  const helpBtnRef = useRef(null)
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
@@ -122,7 +121,6 @@ export default function Container () {
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
                 <KeyButton keyBtnRef={keyBtnRef} />
-                <HelpButton helpBtnRef={helpBtnRef} label={queryArea?.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
@@ -152,6 +150,7 @@ export default function Container () {
                 )}
                 {hasButtons && (
                   <>
+                    <HelpButton />
                     <StylesButton stylesBtnRef={stylesBtnRef} />
                     <Reset />
                     <Location provider={provider} />

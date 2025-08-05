@@ -176,7 +176,7 @@ const fm = new FloodMap('map', {
   // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
-  hasGeoLocation: true,
+  // hasGeoLocation: true,
   symbols,
   transformSearchRequest: getRequest,
   tokenCallback: getEsriToken,

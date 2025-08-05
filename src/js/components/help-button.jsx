@@ -5,7 +5,7 @@ import Tooltip from './tooltip.jsx'
 export default function HelpButton ({ helpBtnRef }) {
   const { options, dispatch, mode, activePanel, isMobile } = useApp()
   const { id } = options
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   if (!isQueryMode) {
     return null

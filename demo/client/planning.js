@@ -482,6 +482,7 @@ const fm = new FloodMap('map', {
     keyLabel: 'Report area',
     // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
+    drawTools: ['square', 'polygon'],
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,

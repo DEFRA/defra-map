@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app'
 
 export default function Exit () {
   const { options, mode, isPage, isBack, handleExit, isDesktop } = useApp()
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   const isFixed = options?.legend.display !== 'inset' && isDesktop
   const hasButton = !isQueryMode && isPage

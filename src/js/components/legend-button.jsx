@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app'
 
 export default function LegendButton ({ legendBtnRef }) {
   const { dispatch, mode, legend, isDesktop, activePanel } = useApp()
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
   const isLegendInset = legend?.display === 'inset'
 
   if (!(legend && !isQueryMode && !(isDesktop && !isLegendInset))) {

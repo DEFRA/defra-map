@@ -168,9 +168,6 @@ export default function Container () {
                   <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
               )}
-              {activePanel === 'HELP' && (
-                <Panel className='help' label={queryArea.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryArea.html} isModal />
-              )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
                   <Styles />

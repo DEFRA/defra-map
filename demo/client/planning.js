@@ -185,6 +185,7 @@ const fm = new FloodMap('map', {
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
   backgroundColor: 'default: #f5f5f0, dark: #060606',
+  helpURL: 'https://www.google.co.uk',
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
@@ -478,7 +479,6 @@ const fm = new FloodMap('map', {
     heading: 'Get a boundary report',
     summary: 'Add or edit site boundary',
     submitLabel: 'Get site report',
-    helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
     // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',

@@ -12,7 +12,7 @@ export default function HelpButton ({ helpBtnRef }) {
   }
 
   const handleClick = () => {
-    dispatch({ type: 'OPEN', payload: 'HELP' })
+    console.log('Open link in new tab')
   }
 
   const button = () => {

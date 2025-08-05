@@ -46,11 +46,6 @@ export class Draw {
     if (feature && drawMode === 'default') {
       this.addGraphic(this.oGraphic)
     }
-
-    // Start new
-    if (!feature) {
-      this.add(drawMode, shape)
-    }
   }
 
   add (drawMode, shape) {
@@ -67,7 +62,7 @@ export class Draw {
       setTimeout(() => sketchViewModel.create(shape, {
         drawMode: 'click',
         polygonSymbol: this.createPolygonSymbol(isDark)
-      }), 0)
+      }), 100)
     }
   }
 
@@ -77,7 +72,7 @@ export class Draw {
     this.shape = shape
     this.drawMode = drawMode
 
-    // Disabel sketchViewModel
+    // Disable sketchViewModel
     sketchViewModel.cancel()
     sketchViewModel.layer = emptyLayer
 
@@ -99,13 +94,16 @@ export class Draw {
       sketchViewModel.layer = graphicsLayer
 
       // Another timeout hack
-      setTimeout(() => sketchViewModel.update([graphic], {
-        tool: 'reshape',
-        enableRotation: false,
-        enableScaling: false,
-        preserveAspectRatio: false,
-        toggleToolOnClick: false
-      }), 0)
+      setTimeout(() => {
+        const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+        sketchViewModel.update([graphic], {
+          tool: 'reshape',
+          enableRotation: false,
+          enableScaling: false,
+          preserveAspectRatio: false,
+          toggleToolOnClick: false
+        })
+      }, 100)
     }
   }
 

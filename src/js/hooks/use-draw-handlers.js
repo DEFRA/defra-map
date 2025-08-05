@@ -8,17 +8,19 @@ export function useDrawHandlers () {
   const { dispatch: viewportDispatch, size, style } = useViewport()
   const { styles, minZoom, maxZoom } = queryArea || {}
 
-  const handleAddClick = ({ shapeId, interfaceType }) => {
+  const handleAddClick = async ({ shapeId, interfaceType }) => {
     if (!provider.map) {
       return
     }
     const drawMode = drawTools.find(m => m.id === shapeId)?.drawMode || 'frame'
-    provider.draw?.add(drawMode, shapeId, interfaceType)
-    dispatch({ type: 'SET_MODE', payload: { value: drawMode, shape: shapeId, query } })
-    viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })
-    activeRef.current = viewportRef.current
-    activeRef.current?.focus()
+    provider.initDraw({ ...queryArea, drawMode, shapeId, interfaceType }, () => {
+      dispatch({ type: 'SET_MODE', payload: { value: drawMode, shape: shapeId, query } })
+      viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
+      provider.draw.add(drawMode, shapeId, interfaceType)
+      eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })
+      activeRef.current = viewportRef.current
+      activeRef.current?.focus()
+    })
   }
 
   const handleEditClick = ({ shapeId, interfaceType }) => {
@@ -26,7 +28,7 @@ export function useDrawHandlers () {
       return
     }
     const drawMode = drawTools.find(m => m.id === shapeId)?.drawMode || 'frame'
-    provider.draw?.edit(drawMode, shapeId, interfaceType)
+    provider.draw.edit(drawMode, shapeId, interfaceType)
     dispatch({ type: 'SET_MODE', payload: { value: drawMode, shape: shapeId, query } })
     viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode, style, size, segments, layers })

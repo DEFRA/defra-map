@@ -21,7 +21,7 @@ export default function Actions () {
       return
     }
     const feature = provider.draw.finish(shape)
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: feature, shape } })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape, query: feature } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: feature })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
@@ -31,7 +31,7 @@ export default function Actions () {
   const handleCancelClick = () => {
     provider.draw.cancel()
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query } })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape, query } })
     viewportDispatch({ type: 'SWAP_STYLES' })
     eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()

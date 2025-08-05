@@ -293,9 +293,9 @@ export default function Viewport () {
     }
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
 
-    // Initialise draw
+  // Initialise draw if we have an existing feature
   useEffect(() => {
-    if (provider.map && !provider.draw && (mode !== 'default' || queryArea?.feature)) {
+    if (provider.map && !provider.draw && queryArea?.feature) {
       provider.initDraw({ ...queryArea, mode, shape, interfaceType })
     }
   }, [provider.map, mode])

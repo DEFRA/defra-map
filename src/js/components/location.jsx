@@ -10,7 +10,7 @@ export default function Location () {
   const { id } = options
   const appDispatch = useApp().dispatch
   const viewportDispatch = useViewport().dispatch
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   if (!(options.hasGeoLocation && !isQueryMode)) {
     return null

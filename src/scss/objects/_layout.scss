@@ -20,7 +20,7 @@
 .fm-o-container {
     position:fixed;
     box-sizing: border-box;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     justify-content: space-between;
     z-index: 999;
@@ -32,6 +32,15 @@
     background-color:var(--background-colour);
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x pan-y;
+    
+    p, dd, dt {
+        color: var(--foreground-colour);
+    }
+}
+
+.fm-tablet.fm-o-container,
+.fm-desktop.fm-o-container {
+    flex-direction: row;
 }
 
 // MediaQuery (from tablet)
@@ -62,6 +71,9 @@
     z-index: 3;
     background-color: var(--background-colour);
     flex-shrink: 0;
+}
+
+.fm-desktop .fm-o-side {
     clip-path: inset(0 -1px 0 0);
     box-shadow: $panel-shadow;
 }
@@ -347,7 +359,7 @@
 }
 
 // Side panel
-.fm-o-side .fm-c-panel {
+.fm-desktop .fm-o-side .fm-c-panel {
     background-color: transparent;
     box-shadow: none;
     min-height: 0;

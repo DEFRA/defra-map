@@ -15,6 +15,7 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 export default function Actions () {
   const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
   const { dispatch: viewportDispatch, size, } = useViewport()
+  const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
 
   const handleUpdateClick = () => {
     if (!provider.map) {
@@ -52,7 +53,7 @@ export default function Actions () {
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
  
   return (
-    <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
+    <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
       <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...isDefaultMode && { style: { display: 'none' } }}>
         <span>{`${query ? 'Done' : 'Finish'}`}</span>
       </button>

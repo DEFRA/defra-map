@@ -150,7 +150,8 @@
 }
 
 .fm-o-inner > .fm-c-panel--legend,
-.fm-o-inner > .fm-c-panel--help {
+.fm-o-inner > .fm-c-panel--help,
+.fm-o-inner > .fm-c-panel--edit {
     clip-path: inset(0 -20px 0 0);
     height: 100%;
 }
@@ -427,6 +428,20 @@
     top: $margin;
     right: calc(40px + ($margin * 2));
     bottom: auto;
+}
+
+// Edit panel
+.fm-tablet .fm-o-middle .fm-c-panel--edit,
+.fm-desktop .fm-o-middle .fm-c-panel--edit {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+}
+
+.fm-c-panel--edit {
+    top: auto;
+    bottom: 0;
 }
 
 // Keyboard panel

@@ -176,6 +176,11 @@ export default function Container () {
                   <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
               )}
+              {activePanel === 'INSPECTOR' && !isMobile && !isDesktop && (
+                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isModal>
+                  <Inspector />
+                </Panel>
+              )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>
                   <Styles />

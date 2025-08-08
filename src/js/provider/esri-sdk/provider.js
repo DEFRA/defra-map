@@ -1,6 +1,7 @@
-import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleStationary } from './events'
+import { handleBaseTileLayerLoaded, handleStyleChange, handleMoveStart, handleMove, handleStationary } from './events'
 import { getDetail } from './query'
 import { debounce } from '../../lib/debounce'
+import { throttle } from '../../lib/throttle.js'
 import { getFocusPadding } from '../../lib/viewport.js'
 import { capabilities } from '../../lib/capabilities.js'
 import { defaults } from './constants'
@@ -41,7 +42,7 @@ class Provider extends EventTarget {
   async addMap (modules, options) {
     const { container, paddingBox, bounds, maxExtent, center, zoom, minZoom, maxZoom, style, locationLayers, callBack } = options
     const [esriConfig, EsriMap, MapView, Extent, Point, VectorTileLayer, FeatureLayer, GraphicsLayer, TileInfo] = modules.slice(0, 9).map(m => m.default)
-    const reactiveWatch = modules[9].watch
+    const { watch: reactiveWatch, when: reactiveWhen } = modules[9]
     esriConfig.apiKey = (await this.tokenCallback()).token
 
     // Add intercepors
@@ -93,24 +94,41 @@ class Provider extends EventTarget {
     // Map ready event (first load)
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
-    // Movestart
-    let isMoving = false
-    reactiveWatch(() => [view.center, view.zoom, view.stationary], ([_center, _zoom, stationary]) => {
-      if (!isMoving && !stationary) {
-        handleMoveStart(this)
-        isMoving = true
-      }
+    // Throttle move 100ms
+    const throttleMove = throttle(() => {
+      handleMove.bind(this)()
+    }, defaults.THROTTLE)
+
+    // Movestart / Move
+    let isMove = false
+    reactiveWhen(() => view.ready, () => {
+      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], ([newZoom, newX, newY], [oldZoom, oldX, oldY]) => {
+        const zoomChanged = newZoom !== oldZoom
+        const centerChanged = newX !== oldX || newY !== oldY
+        if (!(zoomChanged || centerChanged)) {
+          return
+        }
+        if (!isMove) {
+          handleMoveStart(this)
+          isMove = true
+        }
+        throttleMove()
+      })
     })
 
-    // All changes. Must debounce, min 300ms
+    // Debounce update 500ms
     const debounceStationary = debounce(() => {
-      isMoving = false
       handleStationary(this)
     }, defaults.DELAY)
 
     reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
-      if (stationary) {
+      if (this.isStationary && stationary) {
         debounceStationary()
+      }
+      // Address event firing twice on page load
+      if (stationary) {
+        isMove = false
+        this.isStationary = true
       }
     })
 

@@ -1,19 +1,10 @@
 import React from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
-// import { drawTools } from '../store/constants.js'
-// import Tooltip from './tooltip.jsx'
 
 export default function Inspector () {
-  const { provider, shape } = useApp()
+  const { shape } = useApp()
   const { dimensions } = useViewport()
-  // const { id } = options
-
-  // const handlePolygonSelect = (id) => {
-  //   const value = drawTools.find(m => m.id === id).drawMode
-  //   provider.draw.editPolygon()
-  //   dispatch({ type: 'SET_MODE', payload: { value, shape: id } })
-  // }
 
   return (
     <div className='fm-c-form'>

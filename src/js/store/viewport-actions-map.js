@@ -1,4 +1,4 @@
-import { getDescription, getStatus, getPlace } from '../lib/viewport'
+import { getDescription, getStatus, getPlace, parseDimensions } from '../lib/viewport'
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
@@ -9,6 +9,7 @@ const update = (state, payload) => {
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
+  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
   return {
     ...state,
@@ -21,7 +22,8 @@ const update = (state, payload) => {
     status,
     isUpdate,
     isMoving: false,
-    action: null
+    action: null,
+    dimensions
   }
 }
 

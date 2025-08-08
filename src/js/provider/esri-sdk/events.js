@@ -1,4 +1,4 @@
-import { getDetail } from './query'
+import { getDetail, getDimensions } from './query'
 import { reColourMarkers } from './marker'
 
 export const handleBaseTileLayerLoaded = (provider) => {
@@ -30,8 +30,12 @@ export const handleStationary = async (provider) => {
   const point = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)]
   provider.isUserInitiated = false
   const detail = await getDetail(provider, point)
+  const dimensions = getDimensions(provider)
   provider.dispatchEvent(new CustomEvent('update', {
-    detail
+    detail: {
+      ...detail,
+      dimensions
+    }
   }))
 }
 
@@ -39,6 +43,15 @@ export const handleMoveStart = (provider) => {
   provider.dispatchEvent(new CustomEvent('movestart', {
     detail: {
       isUserInitiated: provider.isUserInitiated
+    }
+  }))
+}
+
+export const handleMove = (provider) => {
+  const dimensions = getDimensions?.(provider)
+  provider.dispatchEvent(new CustomEvent('move', {
+    detail: {
+      dimensions
     }
   }))
 }

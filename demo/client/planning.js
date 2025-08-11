@@ -483,6 +483,7 @@ const fm = new FloodMap('map', {
     // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     drawTools: ['square', 'polygon'],
+    maxArea: 1000000, // Square metres
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,

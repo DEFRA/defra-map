@@ -175,6 +175,11 @@ export default function Viewport () {
     }
   }
 
+  // Get is min or max zoom during animation
+  const handleMove = e => {
+    viewportDispatch({ type: 'MOVE', payload: { ...e.detail } })
+  }
+
   // Get new bounds after map has moved
   const handleUpdate = e => {
     viewportDispatch({ type: 'UPDATE', payload: e.detail })
@@ -215,6 +220,7 @@ export default function Viewport () {
 
       provider.addEventListener('load', handleMapLoad)
       provider.addEventListener('update', handleUpdate)
+      provider.addEventListener('move', handleMove)
       provider.addEventListener('mapquery', handleMapQuery)
     }
 
@@ -226,6 +232,7 @@ export default function Viewport () {
     return () => {
       provider.removeEventListener('load', handleMapLoad)
       provider.removeEventListener('update', handleUpdate)
+      provider.removeEventListener('move', handleMove)
       provider.removeEventListener('mapquery', handleMapQuery)
       provider?.remove()
     }

@@ -28,6 +28,7 @@ import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import EditButton from './edit-button.jsx'
 import Inspector from './inspector.jsx'
+import DrawConstraint from './draw-constraint.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -118,6 +119,9 @@ export default function Container () {
         <div className='fm-o-main' data-fm-main>
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
+            <div className='fm-o-banner'>
+              {isMobile && isQueryMode && <DrawConstraint />}
+            </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 <Exit />
@@ -146,8 +150,8 @@ export default function Container () {
                 )}
               </div>
               <div className='fm-o-top__column'>
+                {!isMobile && isQueryMode && <DrawConstraint />}
                 <ViewportLabel />
-                {/* <DrawEdit /> */}
               </div>
               <div className='fm-o-top__column'>
                 {isMobile && (

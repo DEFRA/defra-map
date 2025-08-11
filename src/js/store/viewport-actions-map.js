@@ -11,6 +11,7 @@ const update = (state, payload) => {
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
+  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),
@@ -23,7 +24,8 @@ const update = (state, payload) => {
     isUpdate,
     isMoving: false,
     action: null,
-    dimensions
+    dimensions,
+    isDrawValid
   }
 }
 
@@ -48,6 +50,17 @@ const moveStart = (state, payload) => {
     isUserInitiated: payload,
     isStatusVisuallyHidden: true,
     hasShortcuts: true
+  }
+}
+
+const move = (state, payload) => {
+  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
+  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
+
+  return {
+    ...state,
+    dimensions,
+    isDrawValid
   }
 }
 
@@ -134,7 +147,9 @@ const swapStyles = (state, payload = {}) => {
     minZoom: minZoom || state.originalMinZoom,
     maxZoom: maxZoom || state.originalMaxZoom,
     styles: styles || state.originalStyles,
-    style
+    style,
+    dimensions: {},
+    isDrawValid: !state.drawMaxArea
   }
 }
 
@@ -200,6 +215,7 @@ export const actionsMap = {
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
   MOVE_START: moveStart,
+  MOVE: move,
   RESET: reset,
   SEARCH: search,
   GEOLOC: geoloc,

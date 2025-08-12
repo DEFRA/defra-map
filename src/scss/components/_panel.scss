@@ -99,7 +99,7 @@
     width: auto;
     border-radius: $button-radius;
     text-align: center;
-    padding: 10px;
+    // padding: 10px;
 }
 
 .fm-c-panel--draw-constraint {
@@ -114,6 +114,10 @@
         margin-right: 5px;
         flex-shrink: 0;
     }
+}
+
+.fm-c-panel--draw-constraint:not(:empty) {
+    padding: 10px;
 }
 
 .fm-mobile .fm-c-panel--draw-constraint {

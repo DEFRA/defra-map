@@ -6,7 +6,6 @@ export default function DrawConstraint () {
   const { isDrawValid, dimensions, drawMaxArea } = useViewport()
   const message = `Current area ${dimensions?.areaDisplay} (Max ${squareMetresToKm(drawMaxArea)})`
 
-  console.log(isDrawValid, dimensions, drawMaxArea)
   return (
     <div className={`${isDrawValid ? 'fm-u-visually-hidden' : 'fm-c-panel fm-c-panel--draw-constraint'}`} role='status'>
       <svg width='20' height='20' viewBox='0 0 20 20'>

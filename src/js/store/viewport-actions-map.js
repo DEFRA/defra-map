@@ -12,6 +12,7 @@ const update = (state, payload) => {
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
   const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
+
   return {
     ...state,
     ...(['INIT', 'GEOLOC'].includes(action) && original),

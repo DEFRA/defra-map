@@ -14,11 +14,11 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 
 export default function Actions () {
   const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
-  const { dispatch: viewportDispatch, size, } = useViewport()
+  const { dispatch: viewportDispatch, size, isDrawValid } = useViewport()
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
 
   const handleUpdateClick = () => {
-    if (!provider.map) {
+    if (!provider.map || !isDrawValid) {
       return
     }
     const feature = provider.draw.finish(shape)
@@ -54,7 +54,7 @@ export default function Actions () {
  
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...isDefaultMode && { style: { display: 'none' } }}>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...!isDrawValid && {'aria-disabled' : true }} {...isDefaultMode && { style: { display: 'none' } }}>
         <span>{`${query ? 'Done' : 'Finish'}`}</span>
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...isDefaultMode && { style: { display: 'none' } }}>

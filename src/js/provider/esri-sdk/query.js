@@ -68,8 +68,7 @@ export const getFeatures = async (provider, point) => {
 }
 
 export function getDimensions (provider) {
-  const { draw } = provider
-  if (draw?.drawMode) {
-    return draw.getDimensions()
+  if (['frame', 'vertex'].includes(provider?.draw?.drawMode)) {
+    return provider.draw.getDimensions()
   }
 }

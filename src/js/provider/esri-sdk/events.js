@@ -48,8 +48,8 @@ export const handleMoveStart = (provider) => {
 }
 
 export const handleMove = (provider) => {
-  const dimensions = getDimensions?.(provider)
-  provider.dispatchEvent(new CustomEvent('move', {
+  const dimensions = getDimensions(provider)
+  provider?.dispatchEvent(new CustomEvent('move', {
     detail: {
       dimensions
     }

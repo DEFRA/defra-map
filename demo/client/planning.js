@@ -198,7 +198,7 @@ const fm = new FloodMap('map', {
   search: {
     country: 'england',
     isAutocomplete: true,
-    errorText: 'No results available. Enter a town or postcode'
+    warningText: 'No results available. Enter a town or postcode'
   },
   legend: {
     width: '280px',
@@ -210,7 +210,7 @@ const fm = new FloodMap('map', {
     segments: [
       {
         heading: 'Datasets',
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             id: 'fz',
@@ -399,7 +399,7 @@ const fm = new FloodMap('map', {
       {
         heading: 'Map features',
         parentIds: ['fz'],
-        collapse: 'collapse',
+        // collapse: 'collapse',
         items: [
           {
             label: 'Flood zone 1',
@@ -480,10 +480,17 @@ const fm = new FloodMap('map', {
     summary: 'Add or edit site boundary',
     submitLabel: 'Get site report',
     keyLabel: 'Report area',
-    // collapse: 'collapse',
+    collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     drawTools: ['square', 'polygon'],
-    maxArea: 1000000, // Square metres
+    // constraintPosition: 'top|bottom',
+    onShapeUpdate: ({ area }) => {
+      const isValid = area <= 1000000
+      return {
+        warningText: !isValid ? `Area too big ${area}, max: 1000000` : null,
+        allowShape: true
+      }
+    },
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,

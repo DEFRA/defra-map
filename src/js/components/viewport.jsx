@@ -177,12 +177,16 @@ export default function Viewport () {
 
   // Get is min or max zoom during animation
   const handleMove = e => {
-    viewportDispatch({ type: 'MOVE', payload: { ...e.detail } })
+    const areaValidation = queryArea?.onShapeUpdate ? queryArea?.onShapeUpdate(e.detail.dimensions || {}) : { warningText: null }
+    const dimensions = { ...e.detail?.dimensions, ...areaValidation }
+    viewportDispatch({ type: 'MOVE', payload: { ...e.detail, dimensions }})
   }
 
   // Get new bounds after map has moved
   const handleUpdate = e => {
-    viewportDispatch({ type: 'UPDATE', payload: e.detail })
+    const areaValidation = queryArea?.onShapeUpdate ? queryArea?.onShapeUpdate(e.detail.dimensions || {}) : { warningText: null }
+    const dimensions = { ...e.detail?.dimensions, ...areaValidation }
+    viewportDispatch({ type: 'UPDATE', payload: { ...e.detail, dimensions } })
   }
 
   // Map query

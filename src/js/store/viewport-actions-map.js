@@ -11,7 +11,6 @@ const update = (state, payload) => {
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
-  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
 
   return {
     ...state,
@@ -25,8 +24,7 @@ const update = (state, payload) => {
     isUpdate,
     isMoving: false,
     action: null,
-    dimensions,
-    isDrawValid
+    dimensions
   }
 }
 
@@ -56,12 +54,10 @@ const moveStart = (state, payload) => {
 
 const move = (state, payload) => {
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
-  const isDrawValid = state.drawMaxArea ? payload.dimensions?.area <= state.drawMaxArea : true
 
   return {
     ...state,
-    dimensions,
-    isDrawValid
+    dimensions
   }
 }
 
@@ -149,8 +145,7 @@ const swapStyles = (state, payload = {}) => {
     maxZoom: maxZoom || state.originalMaxZoom,
     styles: styles || state.originalStyles,
     style,
-    dimensions: {},
-    isDrawValid: !state.drawMaxArea
+    dimensions: {}
   }
 }
 

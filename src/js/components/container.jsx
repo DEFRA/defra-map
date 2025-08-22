@@ -28,7 +28,7 @@ import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
 import EditButton from './edit-button.jsx'
 import Inspector from './inspector.jsx'
-import DrawConstraint from './draw-constraint.jsx'
+import WarningPanel from './warningPanel.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -36,7 +36,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error, warningPosition } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -119,8 +119,8 @@ export default function Container () {
         <div className='fm-o-main' data-fm-main>
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
-            <div className='fm-o-banner'>
-              {isMobile && isQueryMode && <DrawConstraint />}
+            <div className='fm-o-warning'>
+              {isMobile && warningPosition === 'top' && <WarningPanel />}
             </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
@@ -150,7 +150,7 @@ export default function Container () {
                 )}
               </div>
               <div className='fm-o-top__column'>
-                {!isMobile && isQueryMode && <DrawConstraint />}
+                {!isMobile && warningPosition === 'top' && <WarningPanel />}
                 <ViewportLabel />
               </div>
               <div className='fm-o-top__column'>
@@ -202,6 +202,9 @@ export default function Container () {
               )}
             </div>
             <div className='fm-o-bottom'>
+              <div className='fm-o-warning'>
+                {warningPosition === 'bottom' && <WarningPanel />}
+              </div>
               <div className='fm-o-footer'>
                 <div className='fm-o-logo'>
                   <Logo />

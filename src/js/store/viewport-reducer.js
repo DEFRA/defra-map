@@ -30,7 +30,6 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
   center = !bounds ? getCentre(cz, center, srid) : undefined
   zoom = getZoom(cz, zoom, minZoom, maxZoom)
   const dimensions = {
-    warningText: !queryArea?.onShapeUpdate,
     allowShape: !queryArea?.onShapeUpdate
   }
   return {

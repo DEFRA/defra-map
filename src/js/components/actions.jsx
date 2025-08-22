@@ -13,10 +13,10 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible, warningText } = useApp()
   const { dispatch: viewportDispatch, size, dimensions } = useViewport()
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
-  const isValid = !dimensions?.warningText || !dimensions?.allowShape
+  const isValid = !warningText || dimensions?.allowShape
 
   const handleUpdateClick = () => {
     if (!provider.map || !isValid) {

@@ -92,7 +92,7 @@
 
 // Viewport keyboard shortcuts label
 .fm-c-panel--viewport-label,
-.fm-c-panel--draw-constraint {
+.fm-c-panel--warning-panel {
     display: none;
     position: relative;
     margin: 0 auto 5px;
@@ -102,7 +102,7 @@
     // padding: 10px;
 }
 
-.fm-c-panel--draw-constraint {
+.fm-c-panel--warning-panel {
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
@@ -116,16 +116,16 @@
     }
 }
 
-.fm-c-panel--draw-constraint:not(:empty) {
+.fm-c-panel--warning-panel:not(:empty) {
     padding: 10px;
 }
 
-.fm-mobile .fm-c-panel--draw-constraint {
+.fm-mobile .fm-c-panel--warning-panel {
     margin: $margin $margin 0;
 }
 
-.fm-tablet .fm-c-panel--draw-constraint,
-.fm-desktop .fm-c-panel--draw-constraint {
+.fm-tablet .fm-c-panel--warning-panel,
+.fm-desktop .fm-c-panel--warning-panel {
     max-width: 400px;
 }
 

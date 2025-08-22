@@ -164,6 +164,13 @@ const toggleViewportLabel = (state, payload) => {
   }
 }
 
+const setWarningText = (state, payload) => {
+  return {
+    ...state,
+    warningText: payload
+  }
+}
+
 export const actionsMap = {
   CONTAINER_READY: containerReady,
   SET_AVAILABILITY: setSearch,
@@ -180,5 +187,6 @@ export const actionsMap = {
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
   TOGGLE_DRAW_EXPANDED: toggleDrawExpanded,
-  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
+  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel,
+  SET_WARNING_TEXT: setWarningText
 }

@@ -280,7 +280,7 @@
     display: flex;
     position: relative;
     flex-direction: row;
-    flex-grow: 1;
+    flex-shrink: 1;
     align-items: end;
     justify-content: space-between;
     padding: 0 calc($margin - 5px) calc($margin - 5px);
@@ -413,6 +413,16 @@
     width: $panel-width;
 }
 
+// Draw constraint
+.fm-mobile .fm-o-bottom .fm-c-panel--warning-panel {
+    margin-bottom: $margin;
+}
+
+.fm-tablet .fm-c-panel--warning-panel,
+.fm-desktop .fm-c-panel--warning-panel {
+    width: $panel-width;
+}
+
 // Panel full height
 .fm-o-middle .fm-c-panel--legend,
 .fm-o-middle .fm-c-panel--help {
@@ -425,7 +435,6 @@
 
 // Mobile bottom panels
 .fm-mobile .fm-o-bottom .fm-c-panel {
-    width: 100%;
     min-height: 0;
 }
 

@@ -186,6 +186,7 @@ const fm = new FloodMap('map', {
   // geocodeProvider: 'esri-world-geocoder',
   backgroundColor: 'default: #f5f5f0, dark: #060606',
   helpURL: 'https://www.google.co.uk',
+  warningPosition: 'top',
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
@@ -483,12 +484,11 @@ const fm = new FloodMap('map', {
     collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     drawTools: ['square', 'polygon'],
-    // constraintPosition: 'top|bottom',
     onShapeUpdate: ({ area }) => {
       const isValid = area <= 1000000
       return {
-        warningText: !isValid ? `Area too big ${area}, max: 1000000` : null,
-        allowShape: true
+        warningText: !isValid ? 'Area too big' : null,
+        allowShape: false
       }
     },
     styles: [{

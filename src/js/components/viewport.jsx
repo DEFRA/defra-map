@@ -38,7 +38,7 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style.name)
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -180,7 +180,7 @@ export default function Viewport () {
   const handleMove = e => {
     const areaValidation = queryArea?.onShapeUpdate?.(e.detail.dimensions || {})
     const dimensions = { ...e.detail?.dimensions, ...areaValidation }
-    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && areaValidation?.warningText })
+    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && dimensions.area && areaValidation?.warningText })
     viewportDispatch({ type: 'MOVE', payload: { ...e.detail, dimensions }})
   }
 
@@ -188,7 +188,7 @@ export default function Viewport () {
   const handleUpdate = e => {
     const areaValidation = queryArea?.onShapeUpdate?.(e.detail.dimensions || {})
     const dimensions = { ...e.detail?.dimensions, ...areaValidation }
-    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && areaValidation?.warningText })
+    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && dimensions.area && areaValidation?.warningText })
     viewportDispatch({ type: 'UPDATE', payload: { ...e.detail, dimensions } })
   }
 

@@ -16,7 +16,7 @@ export default function Actions () {
   const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible, warningText } = useApp()
   const { dispatch: viewportDispatch, size, dimensions } = useViewport()
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
-  const isValid = !warningText || dimensions?.allowShape
+  const isValid = dimensions.area && (!warningText || dimensions.allowShape !== false)
 
   const handleUpdateClick = () => {
     if (!provider.map || !isValid) {

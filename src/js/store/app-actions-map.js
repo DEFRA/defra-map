@@ -103,7 +103,8 @@ const setMode = (state, payload) => {
     shape: payload.shape,
     activePanel: null,
     featureId: null,
-    targetMarker: null
+    targetMarker: null,
+    warningText: null
   }
 }
 

@@ -106,6 +106,17 @@ const setMode = (state, payload) => {
   }
 }
 
+const setModal = (state, payload) => {
+  return {
+    ...state,
+    activePanel: payload ? 'MODAL' : state.previousPanel,
+    activePanelHasFocus: true,
+    modal: payload
+      ? { width: payload.width, label: payload.label, html: payload.html }
+      : null
+  }
+}
+
 const setIsDarkMode = (state, payload) => {
   const { style, colourScheme } = payload
   const { hasAutoMode } = state
@@ -171,5 +182,6 @@ export const actionsMap = {
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
-  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
+  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel,
+  SET_MODAL: setModal
 }

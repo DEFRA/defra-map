@@ -258,4 +258,11 @@ export class FloodMap extends EventTarget {
     }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
   }
+
+  setModal (value) {
+    if (!this.isReady) {
+      return
+    }
+    eventBus.dispatch(this.props.parent, events.SET_MODAL, value)
+  }
 }

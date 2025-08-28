@@ -508,6 +508,14 @@ fm.addEventListener('ready', e => {
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
   })
+  fm.setModal({
+    width: '500px',
+    label: 'Test',
+    html: 'Some html and a <a href="">hyperlink</a>'
+  })
+  // setTimeout(() => {
+  //   fm.setModal(null)
+  // }, 3000)
 })
 
 // Listen for actions

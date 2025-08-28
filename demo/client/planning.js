@@ -205,6 +205,7 @@ const fm = new FloodMap('map', {
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',
+    htmlAfter: 'Some text and a <a href="">hyperlink</a>',
     // keyDisplay: 'min',
     segments: [
       {

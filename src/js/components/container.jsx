@@ -100,7 +100,7 @@ export default function Container () {
           <div className='fm-o-side'>
             <Exit />
             {!isQueryMode && (
-              <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
+              <Panel className='legend' label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
                 {queryArea && (
                   <div className='fm-c-menu'>
                     <Draw />
@@ -136,7 +136,7 @@ export default function Container () {
                   <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
-                  <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                  <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                     {queryArea && (
                       <div className='fm-c-menu'>
                         <Draw />
@@ -170,7 +170,7 @@ export default function Container () {
             </div>
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
-                <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                   {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />
@@ -216,7 +216,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
-                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
                   {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />

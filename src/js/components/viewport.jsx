@@ -177,7 +177,7 @@ export default function Viewport () {
 
   // Get new bounds after map has moved
   const handleUpdate = e => {
-    viewportDispatch({ type: 'UPDATE', payload: e.detail })
+    viewportDispatch({ type: 'UPDATE', payload: { ...e.detail, units: queryArea.areaUnits } })
   }
 
   // Map query

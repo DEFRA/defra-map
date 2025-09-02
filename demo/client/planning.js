@@ -484,6 +484,7 @@ const fm = new FloodMap('map', {
     collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     drawTools: ['square', 'polygon'],
+    areaUnits: 'hectares',
     onShapeUpdate: ({ area, geometry }) => {
       const isValid = area <= 1000000
       return {

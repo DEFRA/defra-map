@@ -9,7 +9,7 @@ const update = (state, payload) => {
   const original = { oBbox: bounds, oCentre: center, rZoom: zoom, originalZoom, oPlace: place }
   const isPanZoom = !(isSame(state.center, center) && isSame(state.zoom, zoom))
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
-  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
+  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions, payload?.units) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
 
   return {

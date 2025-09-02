@@ -320,9 +320,25 @@ export const squareMetresToKm = (metres) => {
   }
 }
 
-export const parseDimensions = (dimensions) => {
+function displayArea(area, units) {
+  units = units?.toLowerCase() || 'hectares'
+
+  if (units === 'm2' || units === 'km2' || units === 'auto') {
+    if (area >= 100_000) {
+      return `${(area / 1_000_000).toFixed(2)} km²`
+    } else {
+      return `${Math.round(area)} m²`
+    }
+  } else if (units === 'hectares' || units === 'hectare') {
+    return `${(area / 10_000).toFixed(2)} ha`
+  } else {
+    throw new Error(`Unsupported unit: ${units}. Choose from 'm2', 'km2', 'auto', 'hectares'.`)
+  }
+}
+
+export const parseDimensions = (dimensions, units) => {
   const { area, center, width, radius } = dimensions
-  const areaDisplay = area ? squareMetresToKm(area) : null
+  const areaDisplay = area ? displayArea(area, units) : null
   const centerDisplay = center ? center.map(c => Math.round(c)).join(', ') : null
   const widthDisplay = width ? metresToKilometres(width) : null
   const radiusDisplay = radius ? metresToKilometres(radius) : null

@@ -38,6 +38,22 @@ describe('Panel', () => {
     expect(screen.getByRole('region')).toHaveClass('fm-c-panel--test-class')
   })
 
+  it('should render the panel with the correct header class names', () => {
+    const { container } = render(<Panel className='test-class' />)
+    const div = container.querySelector('div div div')
+    const h2 = div.querySelector('h2')
+    expect(div.className).toEqual('fm-c-panel__header')
+    expect(h2.className).toEqual('fm-c-panel__heading govuk-heading-s')
+  })
+
+  it('should render the panel with the correct header class names when isHideHeading is true', () => {
+    const { container } = render(<Panel className='test-class' isHideHeading />)
+    const div = container.querySelector('div div div')
+    const h2 = div.querySelector('h2')
+    expect(div.className).toEqual('fm-c-panel__header fm-c-panel__header--collapse')
+    expect(h2.className).toEqual('fm-u-visually-hidden')
+  })
+
   it('should render the panel with the correct role based on instigatorRef', () => {
     const instigatorRef = { current: document.createElement('div') }
     render(<Panel instigatorRef={instigatorRef} />)
@@ -95,19 +111,36 @@ describe('Panel', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'CLOSE' })
   })
 
-  it('should call handleClose when pressing the Escape key', () => {
+  it.each([['Escape'], ['Esc']])('should call handleClose when pressing the %s key', (key) => {
     const instigatorRef = { current: document.createElement('div') }
     render(<Panel instigatorRef={instigatorRef} />)
-    fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Escape' })
+    fireEvent.keyUp(screen.getByRole('dialog'), { key })
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'CLOSE' })
+  })
+
+  it('should not call handleClose when pressing the Enter key', () => {
+    const instigatorRef = { current: document.createElement('div') }
+    render(<Panel instigatorRef={instigatorRef} />)
+    fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Enter' })
+    expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'CLOSE' })
   })
 
   it('should toggle inert elements on focus', () => {
     const { toggleInert } = require('../../src/js/lib/dom')
     const instigatorRef = { current: document.createElement('div') }
     render(<Panel instigatorRef={instigatorRef} />)
+    expect(toggleInert).toHaveBeenCalledTimes(1)
     fireEvent.focus(screen.getByRole('dialog'))
-    expect(toggleInert).toHaveBeenCalled()
+    expect(toggleInert).toHaveBeenCalledTimes(2) // Expect a 2nd call
+  })
+
+  it('should not toggle inert elements on focusing on a different element', () => {
+    const { toggleInert } = require('../../src/js/lib/dom')
+    const instigatorRef = { current: document.createElement('div') }
+    render(<> <div>Different Target</div><Panel instigatorRef={instigatorRef} /> </>)
+    expect(toggleInert).toHaveBeenCalledTimes(1)
+    fireEvent.focus(screen.getByText('Different Target'), { target: screen.getByRole('dialog') })
+    expect(toggleInert).toHaveBeenCalledTimes(1)
   })
 
   it('should constrain focus on key down', () => {

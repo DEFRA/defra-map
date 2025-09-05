@@ -217,7 +217,6 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
-                  <div>DUMMY</div>
                   {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />

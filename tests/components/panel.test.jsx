@@ -96,6 +96,11 @@ describe('Panel', () => {
     expect(document.querySelector('.fm-c-panel-mask')).toBeInTheDocument()
   })
 
+  it('should render additional html when htmlAfter is passed', () => {
+    render(<Panel htmlAfter='<div>Injected HTML</div>' />)
+    expect(screen.getByText('Injected HTML')).toBeInTheDocument()
+  })
+
   it('should call handleClose when the close button is clicked', () => {
     const instigatorRef = { current: document.createElement('div') }
     render(<Panel instigatorRef={instigatorRef} />)

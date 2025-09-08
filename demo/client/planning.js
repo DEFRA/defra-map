@@ -514,9 +514,6 @@ fm.addEventListener('ready', e => {
     label: 'Test',
     html: 'Some html and a <a href="">hyperlink</a>'
   })
-  // setTimeout(() => {
-  //   fm.setModal(null)
-  // }, 3000)
 })
 
 // Listen for actions

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { ViewportProvider } from '../store/viewport-provider.jsx'
 import { useApp } from '../store/use-app'
-import { defaults, events, settings } from '../store/constants'
+import { events, settings } from '../store/constants'
 import { updateTitle, toggleInert, constrainFocus } from '../lib/dom'
 import eventBus from '../lib/eventbus'
 import Viewport from './viewport.jsx'
@@ -34,7 +34,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, modal, search, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, modal, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -45,15 +45,15 @@ export default function Container () {
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
-  const behaviour = settings.container[options.behaviour || defaults.CONTAINER_TYPE].CLASS
+  const behaviour = settings.container[options.behaviour].CLASS
   const height = (isPage || options.container) ? '100%' : options.height || settings.container[options.behaviour].HEIGHT
   const legend = options.legend
   const isLegendInset = legend?.display === 'inset'
   const isLegendFixed = isDesktop && !isLegendInset
   const isLegendModal = !isLegendFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
-  const hasLengedHeading = !(legend.display === 'inset' || (isLegendFixed && isPage))
+  const hasLegendHeading = !(legend.display === 'inset' || (isLegendFixed && isPage))
   const isQueryMode = ['frame', 'draw'].includes(mode)
-  const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
+  const hasButtons = !(isMobile && activePanel === 'SEARCH')
 
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
@@ -101,7 +101,7 @@ export default function Container () {
           <div className='fm-o-side'>
             <Exit />
             {!isQueryMode && (
-              <Panel className='legend' label={legend.title} width={legend.width} isFixed={isLegendFixed} isHideHeading={!hasLengedHeading}>
+              <Panel className='legend' label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} isFixed={isLegendFixed} isHideHeading={!hasLegendHeading}>
                 {queryArea && (
                   <div className='fm-c-menu'>
                     <Draw />
@@ -137,7 +137,7 @@ export default function Container () {
                   <Panel className='info' label={info.label} width={info.width} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
-                  <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                  <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
                     {queryArea && (
                       <div className='fm-c-menu'>
                         <Draw />
@@ -171,7 +171,7 @@ export default function Container () {
             </div>
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
-                <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
                   {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />
@@ -195,7 +195,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'MODAL' && (
-                <Panel className='modal' label={modal.label} width={modal.width} html={modal.html} instigatorRef={viewportRef} isModal={true} isInset isNotObscure />
+                <Panel className='modal' label={modal.label} width={modal.width} html={modal.html} instigatorRef={viewportRef} isModal isInset isNotObscure />
               )}
               {activePanel === 'ERROR' && (
                 <Panel className='error' maxWidth='300px' label={error.label} instigatorRef={viewportRef} isModal isInset>
@@ -220,7 +220,7 @@ export default function Container () {
                 </Panel>
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
-                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
+                <Panel className='legend' isNotObscure label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
                   {queryArea && (
                     <div className='fm-c-menu'>
                       <Draw />

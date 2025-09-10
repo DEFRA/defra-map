@@ -68,9 +68,10 @@ jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
 
-jest.mock('../../src/js/components/panel.jsx', () => ({ label, children }) => (
+jest.mock('../../src/js/components/panel.jsx', () => ({ label, children, html }) => (
   <div className='mock-panel'>
     <div>{label}</div>
+    <div {...{ dangerouslySetInnerHTML: { __html: html } }} />
     {children}
   </div>
 ))
@@ -187,6 +188,17 @@ describe('Container', () => {
     mockUseApp.activePanel = 'ERROR'
     render(<Container />)
     expect(screen.getByText('Error')).toBeInTheDocument()
+  })
+
+  it('renders the Modal panel when activePanel is MODAL', () => {
+    mockUseApp.activePanel = 'MODAL'
+    mockUseApp.modal = {
+      width: '500px',
+      html: '<div>Modal Contents</div>',
+      label: 'Modal Title'
+    }
+    render(<Container />)
+    expect(screen.getByText('Modal Contents')).toBeInTheDocument()
   })
 
   it('sets the correct type based on options and defaults', () => {

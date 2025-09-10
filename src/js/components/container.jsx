@@ -34,7 +34,7 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, modal, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
@@ -64,6 +64,7 @@ export default function Container () {
   useEffect(() => {
     eventBus.on(parent, events.SET_INFO, data => { dispatch({ type: 'SET_INFO', payload: data }) })
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
+    eventBus.on(parent, events.SET_MODAL, data => { dispatch({ type: 'SET_MODAL', payload: data }) })
 
     // Dark mode media query
     if (options.hasAutoMode) {
@@ -192,6 +193,9 @@ export default function Container () {
                 <Panel className='keyboard' width='500px' maxWidth='500px' label='Keyboard' instigatorRef={viewportRef} isModal isInset>
                   <Keyboard />
                 </Panel>
+              )}
+              {activePanel === 'MODAL' && (
+                <Panel className='modal' label={modal.label} width={modal.width} html={modal.html} instigatorRef={viewportRef} isModal isInset isNotObscure />
               )}
               {activePanel === 'ERROR' && (
                 <Panel className='error' maxWidth='300px' label={error.label} instigatorRef={viewportRef} isModal isInset>

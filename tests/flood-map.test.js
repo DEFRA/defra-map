@@ -972,6 +972,7 @@ describe('FloodMap', () => {
     expect(floodMap._selected).toEqual({ id: '123', name: 'test selection' })
     expect(eventBus.dispatch).not.toHaveBeenCalled()
   })
+
   it('should handle setSelected method when ready', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -992,6 +993,7 @@ describe('FloodMap', () => {
       { id: '123', name: 'test selection' }
     )
   })
+
   it('should handle setSelected method when not ready', () => {
     const props = { parent: 'test-parent' }
     floodMap = new FloodMap('test-id', props)
@@ -1007,6 +1009,25 @@ describe('FloodMap', () => {
 
     // Verify event was NOT dispatched
     expect(eventBus.dispatch).not.toHaveBeenCalled()
+  })
+
+  describe('setModal', () => {
+    const modalValues = { width: '500px', html: '<div>Modal Contents</div>', label: 'Modal Title' }
+    it('should handle setModal method when ready', () => {
+      const props = { parent: 'test-parent' }
+      floodMap = new FloodMap('test-id', props)
+      floodMap.isReady = true
+      floodMap.setModal(modalValues)
+      expect(eventBus.dispatch).toHaveBeenCalledWith(props.parent, events.SET_MODAL, modalValues)
+    })
+
+    it('should handle setModal method when when not ready', () => {
+      const props = { parent: 'test-parent' }
+      floodMap = new FloodMap('test-id', props)
+      floodMap.isReady = false
+      floodMap.setModal(modalValues)
+      expect(eventBus.dispatch).not.toHaveBeenCalled()
+    })
   })
 })
 

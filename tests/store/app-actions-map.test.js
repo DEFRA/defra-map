@@ -1,3 +1,4 @@
+// 49-50,112-114
 import { actionsMap } from '../../src/js/store/app-actions-map'
 
 describe('store/app-actions-map - containerReady', () => {
@@ -120,6 +121,24 @@ describe('store/app-actions-map - setInfo', () => {
     expect(result.previousPanel).toEqual('KEY')
     expect(result.info).toEqual({ data: 'key info' })
     expect(result.hasViewportLabel).toEqual(false)
+  })
+})
+
+describe('store/app-actions-map - setModal', () => {
+  it('should return a new state with updated properties based on the payload', () => {
+    const state = { key: 'value', activePanelHasFocus: true }
+    const html = 'Some html and a <a href="">hyperlink</a>'
+    const payload = {
+      width: '500px',
+      label: 'Test',
+      html: 'Some html and a <a href="">hyperlink</a>'
+    }
+    const result = actionsMap.SET_MODAL(state, payload)
+    expect(result.activePanel).toEqual('MODAL')
+    expect(result.modal.width).toEqual('500px')
+    expect(result.modal.label).toEqual('Test')
+    expect(result.modal.html).toEqual(html)
+    expect(result.key).toEqual('value')
   })
 })
 

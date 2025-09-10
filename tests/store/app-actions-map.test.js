@@ -493,6 +493,26 @@ describe('store/app-actions-map - setMode', () => {
     expect(result.targetMarker).toEqual(null)
     expect(result.key).toEqual('Value')
   })
+
+  it('should use the state query if payload query is not provided', () => {
+    const state = {
+      key: 'Value',
+      mode: 'default',
+      query: 'oldQuery',
+      activePanel: 'INFO',
+      featureId: 'feature123',
+      targetMarker: 'marker1'
+    }
+    const payload = { }
+    const result = actionsMap.SET_MODE(state, payload)
+
+    expect(result.mode).toEqual('default')
+    expect(result.query).toEqual('oldQuery')
+    expect(result.activePanel).toEqual(null)
+    expect(result.featureId).toEqual(null)
+    expect(result.targetMarker).toEqual(null)
+    expect(result.key).toEqual('Value')
+  })
 })
 
 describe('store/app-actions-map - setIsDarkMode', () => {

@@ -304,6 +304,23 @@ describe('store/app-actions-map - setNextSelected', () => {
     expect(result.activePanel).toEqual(null)
   })
 
+  it('should handle a features array item without an id', () => {
+    const state = { featureId: 'feature1', activePanel: 'INFO' }
+
+    const payload = {
+      key: 'PageDown',
+      features: [
+        { id: 'feature1', name: 'Feature 1' },
+        { name: 'Not Selectable' }
+      ]
+    }
+
+    const result = actionsMap.SET_NEXT_SELECTED(state, payload)
+
+    expect(result.featureId).toEqual('feature1')
+    expect(result.activePanel).toEqual(null)
+  })
+
   it('should handle undefined featureId in state', () => {
     const state = {
       activePanel: 'INFO'

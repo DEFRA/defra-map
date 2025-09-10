@@ -45,8 +45,7 @@ const setNextSelected = (state, payload) => {
     const total = features.length
     const down = current === total - 1 ? 0 : current + 1
     const up = current > 0 ? current - 1 : total - 1
-    let nextIndex = key === 'PageDown' ? down : up
-    nextIndex = nextIndex < features.length ? nextIndex : 0
+    const nextIndex = key === 'PageDown' ? down : up
     featureId = features[nextIndex]?.id || features[0]?.id
   }
   return {

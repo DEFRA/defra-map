@@ -1,4 +1,3 @@
-// 49-50,112-114
 import { actionsMap } from '../../src/js/store/app-actions-map'
 
 describe('store/app-actions-map - containerReady', () => {
@@ -138,6 +137,13 @@ describe('store/app-actions-map - setModal', () => {
     expect(result.modal.width).toEqual('500px')
     expect(result.modal.label).toEqual('Test')
     expect(result.modal.html).toEqual(html)
+    expect(result.key).toEqual('value')
+  })
+
+  it('should return to previousPanel if payload not set', () => {
+    const state = { key: 'value', activePanelHasFocus: true, previousPanel: 'SEARCH' }
+    const result = actionsMap.SET_MODAL(state)
+    expect(result.activePanel).toEqual('SEARCH')
     expect(result.key).toEqual('value')
   })
 })

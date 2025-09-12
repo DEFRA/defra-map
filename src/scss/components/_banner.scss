@@ -1,0 +1,23 @@
+.fm-c-banner {
+    &__inner {
+        padding: 10px;
+        margin: 5px 5px 0;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow;
+        border-radius: $panel-radius;
+        @include body-font(16px, 400);
+        pointer-events: auto;
+        color: var(--foreground-colour);
+        display: flex;
+        align-items: flex-start;
+    }
+
+    svg {
+        flex-shrink: 0;
+        margin: 2px 7px 2px 0;
+    }
+
+    a {
+        color: var(--foreground-colour);
+    }
+}

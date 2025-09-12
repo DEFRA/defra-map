@@ -19,7 +19,7 @@ const getActivePanel = (info, featureId, targetMarker, legend) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, queryArea, hasAutoMode } = options
+  const { styles, legend, search, info, banner, queryArea, hasAutoMode } = options
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
@@ -30,6 +30,7 @@ export const initialState = (options) => {
     search,
     legend,
     info,
+    banner,
     queryArea,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),

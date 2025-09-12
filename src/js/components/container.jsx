@@ -27,6 +27,7 @@ import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
+import Banner from './banner.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -64,6 +65,7 @@ export default function Container () {
   useEffect(() => {
     eventBus.on(parent, events.SET_INFO, data => { dispatch({ type: 'SET_INFO', payload: data }) })
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
+    eventBus.on(parent, events.SET_BANNER, data => { dispatch({ type: 'SET_BANNER', payload: data }) })
 
     // Dark mode media query
     if (options.hasAutoMode) {
@@ -115,6 +117,9 @@ export default function Container () {
         <div className='fm-o-main' data-fm-main>
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
+            <div className='fm-o-banner'>
+              <Banner />
+            </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 <Exit />

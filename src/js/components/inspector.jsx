@@ -20,17 +20,17 @@ export default function Inspector () {
           </div>
         </div>
         {['circle', 'square'].includes(shape) && (
-        <div className='fm-c-form-group'>
-          <span className='fm-c-form-group__label' htmlFor='top-left'>
-            {shape === 'circle' ? 'Radius' : 'Side'}
-          </span>
-          <div className='fm-c-form-group__wrapper'>
-            <div className='fm-c-form-group__read-only'>
-              {shape === 'circle' ? dimensions?.radiusDisplay || '-' : ''}
-              {shape === 'square' ? dimensions?.widthDisplay || '-' : ''}
+          <div className='fm-c-form-group'>
+            <span className='fm-c-form-group__label' htmlFor='top-left'>
+              {shape === 'circle' ? 'Radius' : 'Side'}
+            </span>
+            <div className='fm-c-form-group__wrapper'>
+              <div className='fm-c-form-group__read-only'>
+                {shape === 'circle' ? dimensions?.radiusDisplay || '-' : ''}
+                {shape === 'square' ? dimensions?.widthDisplay || '-' : ''}
+              </div>
             </div>
           </div>
-        </div>
         )}
       </div>
     </div>

@@ -176,7 +176,7 @@ export default function Container () {
             <div className='fm-o-middle'>
               {activePanel === 'LEGEND' && !isLegendFixed && !isLegendInset && (
                 <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
-                   {queryArea && <Draw />}
+                  {queryArea && <Draw />}
                   <Segments />
                   <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
@@ -226,7 +226,7 @@ export default function Container () {
               )}
               {activePanel === 'LEGEND' && isMobile && isLegendInset && (
                 <Panel className='legend' isNotObscure label={legend.title} width={legend.width} html={legend.html} htmlAfter={legend.htmlAfter} instigatorRef={legendBtnRef} isInset={isLegendInset} isFixed={isLegendFixed} isModal={isLegendModal} isHideHeading={!hasLegendHeading}>
-                   {queryArea && <Draw />}
+                  {queryArea && <Draw />}
                   <Segments />
                   <Layers hasSymbols hasInputs />
                 </Panel>

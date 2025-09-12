@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
@@ -55,7 +55,7 @@ export default function Actions () {
 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...!isValid && {'aria-disabled' : true }} {...isDefaultMode && { style: { display: 'none' } }}>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...!isValid && { 'aria-disabled': true }} {...isDefaultMode && { style: { display: 'none' } }}>
         <span>{`${query ? 'Done' : 'Finish'}`}</span>
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...isDefaultMode && { style: { display: 'none' } }}>

@@ -320,7 +320,7 @@ export const squareMetresToKm = (metres) => {
   }
 }
 
-function displayArea(area, units) {
+function displayArea (area, units) {
   units = units?.toLowerCase() || 'hectares'
 
   if (units === 'm2' || units === 'km2' || units === 'auto') {

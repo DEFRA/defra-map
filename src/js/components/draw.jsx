@@ -41,7 +41,7 @@ export default function Draw () {
             </h3>
             )
           : (
-            <h3  id={`${id}-tools-menu`} className='fm-c-menu__heading'>{queryArea?.heading}</h3>
+            <h3 id={`${id}-tools-menu`} className='fm-c-menu__heading'>{queryArea?.heading}</h3>
             )}
 
         <div className='fm-c-menu__items' {...!isDrawMenuExpanded ? { style: { display: 'none' } } : {}}>
@@ -62,7 +62,7 @@ export default function Draw () {
                   }
                 }}
               >
-                <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor' dangerouslySetInnerHTML={{__html: tool.svg}}/>
+                <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor' dangerouslySetInnerHTML={{ __html: tool.svg }} />
                 <span className='fm-c-btn__label'>
                   {drawTools.includes(tool) ? `Add ${tool.id}` : `${tool.name} shape`}
                 </span>

@@ -181,7 +181,7 @@ export default function Viewport () {
     const areaValidation = queryArea?.onShapeUpdate?.(e.detail.dimensions || {})
     const dimensions = { ...e.detail?.dimensions, ...areaValidation }
     appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && dimensions.area && areaValidation?.warningText })
-    viewportDispatch({ type: 'MOVE', payload: { ...e.detail, dimensions }})
+    viewportDispatch({ type: 'MOVE', payload: { ...e.detail, dimensions } })
   }
 
   // Get new bounds after map has moved

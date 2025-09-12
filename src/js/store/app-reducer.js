@@ -56,7 +56,6 @@ export const initialState = (options) => {
     previousPanel: null,
     activePanel,
     activePanelHasFocus: false,
-    previousPanel: null,
     hasViewportLabel: false,
     mode: 'default',
     drawTools: parseDrawTools(drawTools, defaultDrawTools),
@@ -65,7 +64,7 @@ export const initialState = (options) => {
     isTargetVisible: false,
     query: queryArea?.feature,
     warningText: null,
-    warningPosition, 
+    warningPosition,
     hash: null
   }
 }

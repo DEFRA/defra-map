@@ -84,7 +84,8 @@ const open = (state, payload) => {
     hasViewportLabel: false,
     targetMarker: payload === 'SEARCH' && null,
     featureId: payload === 'INFO' ? state.featureId : '',
-    hash: Date.now()
+    hash: Date.now(),
+    banner: null
   }
 }
 

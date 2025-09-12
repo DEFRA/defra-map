@@ -205,6 +205,7 @@ const fm = new FloodMap('map', {
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',
+    htmlAfter: 'Some text and a <a href="">hyperlink</a>',
     // keyDisplay: 'min',
     segments: [
       {
@@ -511,6 +512,11 @@ fm.addEventListener('ready', e => {
   fm.setBanner({
     message: 'Test message',
     isDismissable: true
+  })
+  fm.setModal({
+    width: '500px',
+    label: 'Test',
+    html: 'Some html and a <a href="">hyperlink</a>'
   })
 })
 

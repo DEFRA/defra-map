@@ -52,8 +52,7 @@ const setNextSelected = (state, payload) => {
     const total = features.length
     const down = current === total - 1 ? 0 : current + 1
     const up = current > 0 ? current - 1 : total - 1
-    let nextIndex = key === 'PageDown' ? down : up
-    nextIndex = nextIndex < features.length ? nextIndex : 0
+    const nextIndex = key === 'PageDown' ? down : up
     featureId = features[nextIndex]?.id || features[0]?.id
   }
   return {
@@ -111,6 +110,17 @@ const setMode = (state, payload) => {
     activePanel: null,
     featureId: null,
     targetMarker: null
+  }
+}
+
+const setModal = (state, payload) => {
+  return {
+    ...state,
+    activePanel: payload ? 'MODAL' : state.previousPanel,
+    activePanelHasFocus: true,
+    modal: payload
+      ? { width: payload.width, label: payload.label, html: payload.html }
+      : null
   }
 }
 
@@ -180,5 +190,6 @@ export const actionsMap = {
   TOGGLE_SEGMENTS: toggleSegments,
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
-  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
+  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel,
+  SET_MODAL: setModal
 }

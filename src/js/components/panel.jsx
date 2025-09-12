@@ -18,7 +18,7 @@ const getProps = (id, className, isFixed, isMobile, isInset, instigatorRef, widt
   return { panelId, hasCloseBtn, hasWidth }
 }
 
-export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, children }) {
+export default function Panel ({ className, label, isInset, isFixed, isNotObscure, isHideHeading, isModal, instigatorRef, width, maxWidth, html, htmlAfter, children }) {
   const { options, isMobile, dispatch, obscurePanelRef, activeRef, activePanelHasFocus } = useApp()
   const { id } = options
 
@@ -122,6 +122,9 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
             <div className='fm-c-panel__content' {...({ dangerouslySetInnerHTML: { __html: html } })} />
           )}
           {children}
+          {htmlAfter && (
+            <div {...({ dangerouslySetInnerHTML: { __html: htmlAfter } })} />
+          )}
         </div>
       </div>
       {isModal && (

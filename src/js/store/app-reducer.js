@@ -31,6 +31,7 @@ export const initialState = (options) => {
     legend,
     info,
     banner,
+    modal: null,
     queryArea,
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),

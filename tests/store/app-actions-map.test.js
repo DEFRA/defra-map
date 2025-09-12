@@ -123,6 +123,31 @@ describe('store/app-actions-map - setInfo', () => {
   })
 })
 
+describe('store/app-actions-map - setModal', () => {
+  it('should return a new state with updated properties based on the payload', () => {
+    const state = { key: 'value', activePanelHasFocus: true }
+    const html = 'Some html and a <a href="">hyperlink</a>'
+    const payload = {
+      width: '500px',
+      label: 'Test',
+      html: 'Some html and a <a href="">hyperlink</a>'
+    }
+    const result = actionsMap.SET_MODAL(state, payload)
+    expect(result.activePanel).toEqual('MODAL')
+    expect(result.modal.width).toEqual('500px')
+    expect(result.modal.label).toEqual('Test')
+    expect(result.modal.html).toEqual(html)
+    expect(result.key).toEqual('value')
+  })
+
+  it('should return to previousPanel if payload not set', () => {
+    const state = { key: 'value', activePanelHasFocus: true, previousPanel: 'SEARCH' }
+    const result = actionsMap.SET_MODAL(state)
+    expect(result.activePanel).toEqual('SEARCH')
+    expect(result.key).toEqual('value')
+  })
+})
+
 describe('store/app-actions-map - setSelected', () => {
   it('should return a new state with updated properties based on the payload', () => {
     const state = { key: 'value', activePanelHasFocus: true }
@@ -276,6 +301,23 @@ describe('store/app-actions-map - setNextSelected', () => {
       key: 'PageDown',
       features: [
         { id: 'feature1', name: 'Feature 1' }
+      ]
+    }
+
+    const result = actionsMap.SET_NEXT_SELECTED(state, payload)
+
+    expect(result.featureId).toEqual('feature1')
+    expect(result.activePanel).toEqual(null)
+  })
+
+  it('should handle a features array item without an id', () => {
+    const state = { featureId: 'feature1', activePanel: 'INFO' }
+
+    const payload = {
+      key: 'PageDown',
+      features: [
+        { id: 'feature1', name: 'Feature 1' },
+        { name: 'Not Selectable' }
       ]
     }
 
@@ -446,6 +488,26 @@ describe('store/app-actions-map - setMode', () => {
 
     expect(result.mode).toEqual('default')
     expect(result.query).toEqual('newQuery')
+    expect(result.activePanel).toEqual(null)
+    expect(result.featureId).toEqual(null)
+    expect(result.targetMarker).toEqual(null)
+    expect(result.key).toEqual('Value')
+  })
+
+  it('should use the state query if payload query is not provided', () => {
+    const state = {
+      key: 'Value',
+      mode: 'default',
+      query: 'oldQuery',
+      activePanel: 'INFO',
+      featureId: 'feature123',
+      targetMarker: 'marker1'
+    }
+    const payload = { }
+    const result = actionsMap.SET_MODE(state, payload)
+
+    expect(result.mode).toEqual('default')
+    expect(result.query).toEqual('oldQuery')
     expect(result.activePanel).toEqual(null)
     expect(result.featureId).toEqual(null)
     expect(result.targetMarker).toEqual(null)

@@ -170,9 +170,9 @@
 
 .fm-o-top__column:first-child > .fm-c-panel {
     position: absolute;
-    left: $margin;
-    top: calc(40px + ($margin * 2));
-    max-height: calc(100% - (110px + $margin));
+    top: calc(40px + $margin);
+    max-width: none;
+    max-height: none;
 }
 
 .fm-o-inner--inset > .fm-c-panel--legend { 
@@ -192,6 +192,7 @@
 
     &__column:first-child {
         display: flex;
+        position: relative;
         flex-direction: row;
         flex-wrap: nowrap;
         flex-grow: 1;

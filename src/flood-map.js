@@ -13,6 +13,7 @@ export class FloodMap extends EventTarget {
   _search
   _info
   _selected
+  _banner
 
   constructor (id, props, callBack) {
     super()
@@ -112,6 +113,7 @@ export class FloodMap extends EventTarget {
       // Need to call these after the component is ready
       if (this._info) { eventBus.dispatch(this.props.parent, events.SET_INFO, this._info) }
       if (this._selected) { eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected) }
+      if (this._banner) { eventBus.dispatch(this.props.parent, events.SET_BANNER, this._banner) }
     })
 
     // Change, eg segment, layer or style
@@ -237,6 +239,7 @@ export class FloodMap extends EventTarget {
     this.root = null
     this._selected = null
     this._info = null
+    this._banner = null
     updateTitle()
     toggleInert()
   }
@@ -257,6 +260,14 @@ export class FloodMap extends EventTarget {
       return
     }
     eventBus.dispatch(this.props.parent, events.SET_SELECTED, this._selected)
+  }
+
+  setBanner (value) {
+    this._banner = value
+    if (!this.isReady) {
+      return
+    }
+    eventBus.dispatch(this.props.parent, events.SET_BANNER, this._banner)
   }
 
   setModal (value) {

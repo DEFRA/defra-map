@@ -269,7 +269,7 @@ export class FloodMap extends EventTarget {
     }
     eventBus.dispatch(this.props.parent, events.SET_BANNER, this._banner)
   }
-  
+
   setModal (value) {
     if (!this.isReady) {
       return

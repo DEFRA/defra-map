@@ -56,7 +56,7 @@ jest.mock('../../src/js/components/keyboard.jsx', () => () => <div>Keyboard Mock
 jest.mock('../../src/js/components/legend-button.jsx', () => () => <div>LegendButton Mock</div>)
 jest.mock('../../src/js/components/key-button.jsx', () => () => <div>KeyButton Mock</div>)
 jest.mock('../../src/js/components/search-button.jsx', () => () => <div>SearchButton Mock</div>)
-jest.mock('../../src/js/components/styles-button.jsx', () => () => <div>StylesButton Mock</div>)
+jest.mock('../../src/js/components/styles-button.jsx', () => () => <div id='test-styles-button'>StylesButton Mock</div>)
 jest.mock('../../src/js/components/zoom.jsx', () => () => <div>Zoom Mock</div>)
 jest.mock('../../src/js/components/reset.jsx', () => () => <div>Reset Mock</div>)
 jest.mock('../../src/js/components/location.jsx', () => () => <div>Location Mock</div>)
@@ -68,9 +68,10 @@ jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
 
-jest.mock('../../src/js/components/panel.jsx', () => ({ label, children }) => (
+jest.mock('../../src/js/components/panel.jsx', () => ({ label, children, html }) => (
   <div className='mock-panel'>
     <div>{label}</div>
+    <div {...{ dangerouslySetInnerHTML: { __html: html } }} />
     {children}
   </div>
 ))
@@ -89,12 +90,11 @@ describe('Container', () => {
     useApp.mockReset()
     mockUseApp = {
       activePanel: 'LEGEND',
-      isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
       queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
       isLegendFixed: false,
       isMobile: false,
-      hasLengedHeading: true,
+      hasLegendHeading: true,
       provider: {},
       options: { behaviour: 'default', legend: { title: 'Legend Title', display: 'fixed' }, hasAutoMode: true },
       dispatch: jest.fn(),
@@ -132,8 +132,6 @@ describe('Container', () => {
   it('renders the Legend panel when activePanel is LEGEND', () => {
     // Set mock values to satisfy rendering conditions
     mockUseApp.activePanel = 'LEGEND'
-    mockUseApp.isLegendInset = false
-    mockUseApp.legend = { title: 'Legend Title', width: '300px', display: true }
     mockUseApp.queryArea = { helpLabel: 'Help', html: '<p>Help content</p>' }
 
     // Mock the hook to return these values
@@ -141,6 +139,22 @@ describe('Container', () => {
 
     render(<Container />)
 
+    // Validate that "Legend Title" is rendered
+    expect(screen.getByText('Legend Title')).toBeInTheDocument()
+  })
+
+  it('renders the Legend panel when activePanel is LEGEND and isMobile and legend.display is inset', () => {
+    // Mock the hook to return these values
+    useApp.mockReturnValue({
+      ...mockUseApp,
+      activePanel: 'LEGEND',
+      isMobile: true,
+      options: {
+        ...mockUseApp.options,
+        legend: { title: 'Legend Title', width: '300px', display: 'inset' }
+      }
+    })
+    render(<Container />)
     // Validate that "Legend Title" is rendered
     expect(screen.getByText('Legend Title')).toBeInTheDocument()
   })
@@ -174,6 +188,17 @@ describe('Container', () => {
     mockUseApp.activePanel = 'ERROR'
     render(<Container />)
     expect(screen.getByText('Error')).toBeInTheDocument()
+  })
+
+  it('renders the Modal panel when activePanel is MODAL', () => {
+    mockUseApp.activePanel = 'MODAL'
+    mockUseApp.modal = {
+      width: '500px',
+      html: '<div>Modal Contents</div>',
+      label: 'Modal Title'
+    }
+    render(<Container />)
+    expect(screen.getByText('Modal Contents')).toBeInTheDocument()
   })
 
   it('sets the correct type based on options and defaults', () => {
@@ -401,13 +426,12 @@ describe('Container', () => {
   it('does not render side panel when legend display is inset', () => {
     mockUseApp = {
       activePanel: 'LEGEND',
-      isLegendInset: false,
       error: { label: 'Error', message: 'Error message' },
       queryArea: { helpLabel: 'Help', html: '<p>Help content</p>' },
       isLegendFixed: false,
       isMobile: false,
       isDesktop: true, // Add this as we need it
-      hasLengedHeading: true,
+      hasLegendHeading: true,
       provider: {},
       options: {
         behaviour: 'default',
@@ -567,5 +591,49 @@ describe('Container', () => {
 
     const { container } = render(<Container />)
     expect(container.querySelector('.key')).not.toBeInTheDocument()
+  })
+
+  describe('classNames', () => {
+    it('has expected classNames', async () => {
+      const { container } = render(<Container />)
+      const div = container.querySelector('div div div')
+      expect(div.className).toEqual('fm-o-container fm-tablet default-class')
+    })
+
+    it('has expected classNames in DarkMode', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div div div')
+      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class')
+    })
+
+    it('has expected classNames in draw mode', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'draw' })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div div div')
+      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class fm-draw')
+    })
+
+    it('has expected classNames in draw mode', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'draw' })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div div div')
+      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class fm-draw')
+    })
+  })
+
+  describe('buttons', () => {
+    it('has should have buttons', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'draw' })
+      render(<Container />)
+      expect(screen.getByText('StylesButton Mock')).toBeInTheDocument()
+    })
+
+    it('has should not have buttons on  a mobile when activePanel is "SEARCH"', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isMobile: true, activePanel: 'SEARCH' })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div#test-styles-button')
+      expect(div).toBeNull()
+    })
   })
 })

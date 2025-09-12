@@ -207,6 +207,7 @@ const fm = new FloodMap('map', {
     isVisible: true,
     title: 'Menu',
     keyWidth: '360px',
+    htmlAfter: 'Some text and a <a href="">hyperlink</a>',
     // keyDisplay: 'min',
     segments: [
       {
@@ -519,6 +520,11 @@ fm.addEventListener('ready', e => {
   isRamp = layers.includes('md')
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
+  })
+  fm.setModal({
+    width: '500px',
+    label: 'Test',
+    html: 'Some html and a <a href="">hyperlink</a>'
   })
 })
 

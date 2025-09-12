@@ -118,7 +118,7 @@ export default function Container () {
           <Viewport />
           <div className={`fm-o-inner${isLegendInset ? ' fm-o-inner--inset' : ''}`}>
             <div className='fm-o-banner'>
-              <Banner />
+              {!isDesktop && <Banner />}
             </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
@@ -153,6 +153,7 @@ export default function Container () {
                 )}
               </div>
               <div className='fm-o-top__column'>
+                {isDesktop && <Banner />}
                 <ViewportLabel />
                 <DrawEdit />
               </div>

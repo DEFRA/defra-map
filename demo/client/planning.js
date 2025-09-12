@@ -508,7 +508,7 @@ fm.addEventListener('ready', e => {
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
   })
-  // setTimeout(() => fm.setBanner('Test message'), 2000)
+  fm.setBanner({ message: 'Test message', isDismissable: true })
 })
 
 // Listen for actions

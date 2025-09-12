@@ -30,7 +30,7 @@ export const defaults = {
 export const settings = {
   breakpoints: {
     MAX_MOBILE: '640px',
-    MIN_DESKTOP: '835px'
+    MIN_DESKTOP: '1024px'
   },
   container: {
     buttonFirst: {

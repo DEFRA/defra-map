@@ -30,6 +30,7 @@ import EditButton from './edit-button.jsx'
 import Inspector from './inspector.jsx'
 import WarningPanel from './warningPanel.jsx'
 import Banner from './banner.jsx'
+import ScaleBar from './scale-bar.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -220,7 +221,9 @@ export default function Container () {
                   <Logo />
                 </div>
                 {!isMobile && <Actions />}
-                <div className='fm-o-scale' />
+                <div className='fm-o-scale'>
+                  <ScaleBar />
+                </div>
               </div>
               {info && activePanel === 'INFO' && isMobile && (
                 <Panel className='info' label={info.label} html={info.html} instigatorRef={viewportRef} isModal={false} isInset isNotObscure />

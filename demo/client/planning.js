@@ -187,6 +187,7 @@ const fm = new FloodMap('map', {
   backgroundColor: 'default: #f5f5f0, dark: #060606',
   helpURL: 'https://www.google.co.uk',
   warningPosition: 'top',
+  scaleBar: 'imperial',
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
@@ -521,15 +522,15 @@ fm.addEventListener('ready', e => {
   addLayers(layers).then(() => {
     toggleVisibility(null, mode, segments, layers)
   })
-  fm.setBanner({
-    message: 'Test message',
-    isDismissable: true
-  })
-  fm.setModal({
-    width: '500px',
-    label: 'Test',
-    html: 'Some html and a <a href="">hyperlink</a>'
-  })
+  // fm.setBanner({
+  //   message: 'Test message',
+  //   isDismissable: true
+  // })
+  // fm.setModal({
+  //   width: '500px',
+  //   label: 'Test',
+  //   html: 'Some html and a <a href="">hyperlink</a>'
+  // })
 })
 
 // Listen for actions

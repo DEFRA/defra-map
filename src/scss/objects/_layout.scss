@@ -307,6 +307,18 @@
     flex-basis: 0;
 }
 
+.fm-o-scale {
+    flex: 0 0 auto;
+    width: 120px;
+    align-self: flex-end;
+    margin: 0 5px 5px auto;
+    text-align: right;
+}
+
+.fm-tablet .fm-o-scale, .fm-desktop .fm-o-scale {
+    margin-bottom: calc($margin + 10px);
+}
+
 .fm-o-actions {
     .fm-c-btn {
         margin: calc($margin / 2);

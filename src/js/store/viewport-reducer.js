@@ -33,6 +33,7 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
     bounds,
     center,
     zoom,
+    resolution: null,
     originalMinZoom: minZoom,
     originalMaxZoom: maxZoom,
     minZoom,
@@ -56,7 +57,8 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
     isUserInitiated: false,
     hasShortcuts: true,
     padding: null,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    isReady: false,
   }
 }
 

@@ -3,6 +3,7 @@ import { reColourMarkers } from './marker'
 
 export const handleBaseTileLayerLoaded = (provider) => {
   const { framework, modules } = provider
+
   provider.isLoaded = true
   provider.dispatchEvent(new CustomEvent('load', {
     detail: {
@@ -24,17 +25,19 @@ export const handleStyleChange = async (provider) => {
 }
 
 export const handleStationary = async (provider) => {
-  const { paddingBox } = provider
+  const { paddingBox, view } = provider
   const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = paddingBox
   const { offsetTop: parentOffsetTop, offsetLeft: parentOffsetLeft } = paddingBox.parentNode
   const point = [offsetLeft + parentOffsetLeft + (offsetWidth / 2), offsetTop + parentOffsetTop + (offsetHeight / 2)]
   provider.isUserInitiated = false
   const detail = await getDetail(provider, point)
   const dimensions = getDimensions(provider)
+  const resolution = view.resolution
   provider.dispatchEvent(new CustomEvent('update', {
     detail: {
       ...detail,
-      dimensions
+      dimensions,
+      resolution
     }
   }))
 }
@@ -48,10 +51,14 @@ export const handleMoveStart = (provider) => {
 }
 
 export const handleMove = (provider) => {
+  const { view } = provider
   const dimensions = getDimensions(provider)
+  const resolution = view.resolution
+
   provider?.dispatchEvent(new CustomEvent('move', {
     detail: {
-      dimensions
+      dimensions,
+      resolution
     }
   }))
 }

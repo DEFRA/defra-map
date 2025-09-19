@@ -56,7 +56,7 @@ export default function Container () {
   const isLegendFixed = isDesktop && !isLegendInset
   const isLegendModal = !isLegendFixed && (!isLegendInset || (isLegendInset && isKeyExpanded))
   const hasLegendHeading = !(legend.display === 'inset' || (isLegendFixed && isPage))
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
   const hasButtons = !(isMobile && activePanel === 'SEARCH')
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
 

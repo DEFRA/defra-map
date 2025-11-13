@@ -121,13 +121,13 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 }
 
 export default [
-  // Core - now treats Preact as external
+  // Core - uses UMD-specific entry that bundles Preact inside and exports it
   createConfig(
-    { 'defra-map': './src/defraMap.js' },
+    { 'defra-map': './src/defraMap.umd.js' },
     'DefraMap',
     true
   ),
-  // Plugins
+  // Plugins - use Preact from defra.DefraMap
   createConfig(
     { 'maplibre-provider': './src/providers/maplibre/index.js' },
     'maplibreProvider'

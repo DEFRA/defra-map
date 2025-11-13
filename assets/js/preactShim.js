@@ -63,16 +63,4 @@
   // but CDN creates jsxRuntime
   window.preactJsxRuntime = jsxRuntimeExports
   window.jsxRuntime = jsxRuntimeExports
-  
-  console.log('Preact shim applied successfully:', {
-    'preactCompat type': typeof window.preactCompat,
-    'preactCompat.default': typeof window.preactCompat.default,
-    'preactCompat.useState': typeof window.preactCompat.useState,
-    'preactCompat.createElement': typeof window.preactCompat.createElement,
-    'preactCompat.createRoot': typeof window.preactCompat.createRoot,
-    'jsxRuntime type': typeof window.jsxRuntime,
-    'preactJsxRuntime type': typeof window.preactJsxRuntime,
-    'preactJsxRuntime.jsx': typeof window.preactJsxRuntime.jsx,
-    'preactJsxRuntime.default': typeof window.preactJsxRuntime.default
-  })
 })()

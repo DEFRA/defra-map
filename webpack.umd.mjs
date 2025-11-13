@@ -67,7 +67,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
       globalObject: 'this',
       chunkFilename: '[name].js',
       // CRITICAL: Tell webpack where to find externals for chunks
-      chunkLoadingGlobal: 'webpackChunkdefra_AccessibleMap'
+      chunkLoadingGlobal: 'webpackChunkdefra_DefraMap'
     },
     // CRITICAL: Set externalsType for proper external resolution
     externalsType: 'var',
@@ -123,8 +123,8 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 export default [
   // Core - now treats Preact as external
   createConfig(
-    { 'accessible-map': './src/accessibleMap.js' },
-    'AccessibleMap',
+    { 'defra-map': './src/defraMap.js' },
+    'DefraMap',
     true
   ),
   // Plugins

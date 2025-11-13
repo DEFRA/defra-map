@@ -6,7 +6,7 @@
 
 {% block head %}
   <link href="/public/stylesheets/application.css" rel="stylesheet" type="text/css">
-  <link href="/plugin-assets/%40defra%2Fdefra-map/dist/css/accessible-map.css" rel="stylesheet" type="text/css">
+  <link href="/plugin-assets/%40defra%2Fdefra-map/dist/css/defra-map.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block bodyStart %}
@@ -30,10 +30,10 @@
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
-  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/accessible-map.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/defra-map.js"></script>
   <script>
     console.log(window)
-    const am = new defra.AccessibleMap('map', {
+    const am = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,
       behaviour: 'hybrid',
       mapLabel: 'Ambleside',

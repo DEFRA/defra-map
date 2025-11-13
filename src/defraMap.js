@@ -12,7 +12,7 @@ import { createInterfaceDetector, getInterfaceType } from './utils/detectInterfa
 import { createReverseGeocode } from './services/reverseGeocode.js'
 import eventBus from './services/eventBus.js'
 
-export default class AccessibleMap {
+export default class DefraMap {
   _openButton = null
   _root = null // keep react root internally
 

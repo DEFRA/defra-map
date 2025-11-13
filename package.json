@@ -2,11 +2,11 @@
   "name": "@defra/defra-map",
   "version": "2.0.0",
   "description": "An accessbile map component",
-  "main": "dist/umd/accessible-map.js",
-  "module": "dist/esm/accessible-map.js",
+  "main": "dist/umd/defra-map.js",
+  "module": "dist/esm/defra-map.js",
   "exports": {
-    "import": "./dist/esm/accessible-map.js",
-    "require": "./dist/umd/accessible-map.js"
+    "import": "./dist/esm/defra-map.js",
+    "require": "./dist/umd/defra-map.js"
   },
   "type": "module",
   "scripts": {

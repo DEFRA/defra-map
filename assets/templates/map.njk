@@ -35,12 +35,18 @@
 {% endblock %}
 
 {% block pageScripts %}
+  <!-- CRITICAL: Load in this exact order -->
+  <script src="https://unpkg.com/preact@10.19.3/dist/preact.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/hooks/dist/hooks.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/compat/dist/compat.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/jsx-runtime/dist/jsxRuntime.umd.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/assets/js/preactShim.js"></script>
+
   <!-- Defra library scripts -->
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/defra-map.js"></script>
-  
   <script>
     const am = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,

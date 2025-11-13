@@ -18,20 +18,22 @@ describe('createButton', () => {
   })
 
   it('creates button with correct attributes and inserts before rootEl', () => {
-    button = createButton({ id: 'map', buttonText: 'View Map' }, rootEl, onClick)
+    const config = { id: 'map', buttonText: 'View Map', buttonClass: 'custom-btn' }
+    button = createButton(config, rootEl, onClick)
 
     const expectedHref = new URL(window.location.href)
     expectedHref.searchParams.set(defaults.mapViewParamKey, 'map')
 
     expect(button.getAttribute('href')).toBe(expectedHref.toString())
-    expect(button.className).toBe('am-c-btn-tertiary')
+    expect(button.className).toBe('custom-btn') // updated to reflect buttonClass
     expect(button.getAttribute('role')).toBe('button')
     expect(button.textContent).toContain('View Map')
     expect(button.nextElementSibling).toBe(rootEl)
   })
 
   it('prevents default and calls pushState and onClick on click', () => {
-    button = createButton({ id: 'map', buttonText: 'View Map' }, rootEl, onClick)
+    const config = { id: 'map', buttonText: 'View Map', buttonClass: 'custom-btn' }
+    button = createButton(config, rootEl, onClick)
 
     const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
     const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault')
@@ -51,7 +53,8 @@ describe('createButton', () => {
   })
 
   it('appends map view param without removing existing query params', () => {
-    button = createButton({ id: 'map', buttonText: 'View Map' }, rootEl, onClick)
+    const config = { id: 'map', buttonText: 'View Map', buttonClass: 'custom-btn' }
+    button = createButton(config, rootEl, onClick)
 
     const url = new URL(button.getAttribute('href'))
     expect(url.searchParams.get('foo')).toBe('bar') // original param preserved

@@ -27,5 +27,8 @@
 @use '../core/components/LocationMarkers/LocationMarkers.module';
 @use '../core/components/Actions/Actions.module';
 
+// Components that dont have a corresponding React Component
+@use 'components';
+
 // Utilities: utilities and helper classes with ability to override anything which goes before
 @use 'utilities';

@@ -12,7 +12,6 @@ export const MapButton = ({
   showLabel,
   isDisabled,
   isExpanded,
-  expanded,
   isOpen,
   variant,
   onClick,

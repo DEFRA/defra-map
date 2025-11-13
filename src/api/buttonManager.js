@@ -15,16 +15,16 @@
 import defaults from '../config/defaults.js'
 
 export function createButton(config, rootEl, onClick) {
-  const { id, buttonText } = config
+  const { id, buttonText, buttonClass } = config
 
   const buttonHTML = `
-    <a class="am-c-btn-tertiary" role="button">
+    <a class="${buttonClass}" role="button">
       <svg focusable='false' aria-hidden='true' width='16' height='20' viewBox='0 0 16 20' fillRule='evenodd'>
         <path d='M15 7.5c.009 3.778-4.229 9.665-7.5 12.5C4.229 17.165-.009 11.278 0 7.5a7.5 7.5 0 1 1 15 0z'/>
         <path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/>
       </svg>
       <span>${buttonText}</span>
-      <span class='fm-u-visually-hidden'>(Visual only)</span>
+      <span class='am-u-visually-hidden'> (Visual only)</span>
     </a>
   `
 

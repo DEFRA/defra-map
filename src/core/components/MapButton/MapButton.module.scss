@@ -1,0 +1,180 @@
+@use '../../../scss/tools/index' as tools;
+
+// ===================================================
+// Component: ButtonWrapper
+// ===================================================
+
+// 1. Base styles
+.am-c-button-wrapper {
+    position: relative;
+}
+
+.am-c-button-wrapper .am-c-panel {
+    position: absolute;
+    right: calc(100% + var(--divider-gap));
+    top: 0;
+}
+
+// ===================================================
+// Component: ButtonGroup
+// ===================================================
+
+// 1. Base styles
+.am-c-button-group {
+    display: flex;
+}
+
+// 2. Elements
+
+// 3. Modifiers
+
+// 4. State styles
+.am-o-app__right .am-c-button-group {
+    flex-direction: column;
+}
+
+.am-o-app__right .am-c-button-group > *:first-child button,
+.am-o-app__right .am-c-button-group > *:first-child {
+    @include tools.border-focus-corner-override($corners: 'top');
+}
+
+.am-o-app__right .am-c-button-group > *:not(:first-child):not(:last-child) button,
+.am-o-app__right .am-c-button-group > *:not(:first-child):not(:last-child) {
+    @include tools.border-focus-corner-override($corners: 'top bottom');
+}
+
+.am-o-app__right .am-c-button-group > *:last-child button,
+.am-o-app__right .am-c-button-group > *:last-child {
+    @include tools.border-focus-corner-override($corners: 'bottom');
+}
+
+.am-o-app__top .am-c-button-group {
+    flex-direction: row;
+}
+
+.am-o-app__top .am-c-button-group > *:first-child button,
+.am-o-app__top .am-c-button-group > *:first-child {
+    @include tools.border-focus-corner-override($corners: 'left');
+}
+
+.am-o-app__top .am-c-button-group > *:not(:first-child):not(:last-child) button,
+.am-o-app__top .am-c-button-group > *:not(:first-child):not(:last-child) {
+    @include tools.border-focus-corner-override($corners: 'left right');
+}
+
+.am-o-app__top .am-c-button-group > *:last-child button,
+.am-o-app__top .am-c-button-group > *:last-child {
+    @include tools.border-focus-corner-override($corners: 'right');
+}
+
+// ===================================================
+// Component: MapButton
+// ===================================================
+
+// 1. Base styles
+.am-c-map-button {
+    @include tools.border-focus-base(
+        // $is-inset: true,
+        $type: button
+    );
+
+    & {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        padding-left: var(--button-padding);
+        padding-right: var(--button-padding);
+
+        pointer-events: auto;
+        color: var(--foreground-color);
+        background-color: var(--button-background-color);
+
+        min-height: var(--button-size);
+        min-width: var(--button-size);
+
+        user-select: none;
+        cursor: pointer;
+    }
+}
+
+.am-c-map-button svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
+
+    flex-shrink: 0;
+}
+
+.am-c-map-button svg + span {
+    margin-left: var(--button-label-offset);
+
+    white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .am-c-map-button:hover {
+        @media (prefers-reduced-motion: no-preference) {
+            transition: background-color var(--duration) ease;
+        }
+
+        & {
+            background-color: var(--button-hover-color);
+        }
+    }
+}
+
+// 2. Elements
+
+// 3. Modifiers
+
+.am-c-map-button--primary {
+    color: var(--background-color);
+    background-color: var(--primary-button-color);
+    span {
+        white-space: nowrap;
+        padding: 0px 5px;
+    }
+    svg + span {
+        padding-left: 0;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .am-c-map-button--primary:hover {
+        background-color: var(--primary-button-hover-color);
+    }
+}
+
+.am-c-map-button--primary::before {
+    box-shadow: none;
+}
+
+.am-c-map-button--tertiary {
+    border: 1px solid var(--secondary-button-border-color);
+    span {
+        white-space: nowrap;
+        padding: 0px 5px;
+    }
+    svg + span {
+        padding-left: 0;
+    }
+}
+
+.am-c-map-button--tertiary::before {
+    box-shadow: none;
+}
+
+// 4. State styles
+.am-c-map-button[aria-disabled="true"]:not(.am-c-map-button--primary, .am-c-map-button--tertiary) {
+    svg, span {
+        opacity: var(--disabled-button-opacity);
+    }
+}
+
+.am-c-map-button {
+    &--primary[aria-disabled="true"], &--tertiary[aria-disabled="true"] {
+        opacity: var(--disabled-button-opacity);
+    }
+}
+
+// 5. Responsive tweaks

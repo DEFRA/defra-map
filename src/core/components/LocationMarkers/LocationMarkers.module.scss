@@ -1,0 +1,9 @@
+.am-c-location-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: -17px 0 0 -19px;
+  pointer-events: none;
+
+  color: var(--map-overlay-foreground-color);
+}

@@ -1,0 +1,73 @@
+import React from 'react'
+import { render } from '@testing-library/react'
+import { SlotRenderer } from './SlotRenderer.jsx'
+import { getSlotItems } from './slotAggregator'
+import { useApp } from '../store/appContext'
+import { useConfig } from '../store/configContext'
+
+jest.mock('./slotAggregator', () => ({
+  getSlotItems: jest.fn()
+}))
+jest.mock('../store/appContext', () => ({
+  useApp: jest.fn()
+}))
+jest.mock('../store/configContext', () => ({
+  useConfig: jest.fn()
+}))
+
+describe('SlotRenderer', () => {
+  const mockConfig = { id: 'testId' }
+  const mockApp = {
+    breakpoint: 'desktop',
+    mode: 'view',
+    openPanels: {},
+    dispatch: jest.fn(),
+    disabledButtons: new Set()
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    useConfig.mockReturnValue(mockConfig)
+    useApp.mockReturnValue(mockApp)
+  })
+
+  it('renders nothing if no slot items', () => {
+    getSlotItems.mockReturnValue([])
+    const { container } = render(<SlotRenderer slot='header' />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('wraps slot items in <Actions> for actions-inset slot', () => {
+    const items = [{ element: <div key="1">Item1</div> }]
+    getSlotItems.mockReturnValue(items)
+
+    const { getByText } = render(<SlotRenderer slot="actions-inset" />)
+    expect(getByText('Item1')).toBeInTheDocument()
+  })
+
+  it('renders slot items elements if present', () => {
+    const items = [
+      { element: <div key='1'>Item1</div> },
+      { element: <span key='2'>Item2</span> }
+    ]
+    getSlotItems.mockReturnValue(items)
+
+    const { getByText } = render(<SlotRenderer slot='header' />)
+    expect(getByText('Item1')).toBeInTheDocument()
+    expect(getByText('Item2')).toBeInTheDocument()
+  })
+
+  it('calls getSlotItems with correct args', () => {
+    getSlotItems.mockReturnValue([])
+    render(<SlotRenderer slot='sidebar' />)
+    expect(getSlotItems).toHaveBeenCalledWith({
+      id: 'testId',
+      slot: 'sidebar',
+      breakpoint: 'desktop',
+      mode: 'view',
+      openPanels: {},
+      dispatch: mockApp.dispatch,
+      disabledButtons: mockApp.disabledButtons
+    })
+  })
+})

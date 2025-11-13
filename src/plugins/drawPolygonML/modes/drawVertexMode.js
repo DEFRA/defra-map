@@ -1,0 +1,202 @@
+import DrawPolygon from '/node_modules/@mapbox/mapbox-gl-draw/src/modes/draw_polygon.js'
+import createVertex from '/node_modules/@mapbox/mapbox-gl-draw/src/lib/create_vertex.js'
+import { isValidClick } from '../utils.js'
+
+export const DrawVertexMode = {
+  ...DrawPolygon,
+
+  onSetup(options) {
+    const { map } = this
+    map.fire('draw.modechange', { mode: 'draw_vertex' })
+
+    const state = {
+      ...DrawPolygon.onSetup.call(this, options),
+      ...options
+    }
+
+    const { container, interfaceType, vertexMarkerId } = state
+    const vertexMarker = container.querySelector(`#${vertexMarkerId}`)
+    vertexMarker.style.display = ['touch', 'keyboard'].includes(interfaceType) ? 'block' : 'none'
+    state.vertexMarker = vertexMarker
+
+    // Bind all handlers once
+    const bind = (name, fn) => (this[name] = fn.bind(this, state))
+    const handlers = {
+      keydownHandler: this.onKeydown,
+      keyupHandler: this.onKeyup,
+      focusHandler: this.onFocus,
+      blurHandler: this.onBlur,
+      createHandler: this.onCreate,
+      moveHandler: this.onMove,
+      pointerdownHandler: this.onPointerdown,
+      pointermoveHandler: this.onPointermove,
+      pointerupHandler: this.onPointerup,
+      vertexButtonClickHandler: this.onVertexButtonClick
+    }
+    Object.entries(handlers).forEach(([k, fn]) => bind(k, fn))
+
+    // Register events
+    this._listeners = [
+      [window, 'keydown', this.keydownHandler],
+      [window, 'keyup', this.keyupHandler],
+      [window, 'click', this.vertexButtonClickHandler],
+      [container, 'focus', this.focusHandler],
+      [container, 'blur', this.blurHandler],
+      [container, 'pointermove', this.pointermoveHandler],
+      [container, 'pointerup', this.pointerupHandler],
+      [map, 'pointerdown', this.pointerdownHandler],
+      [map, 'draw.create', this.createHandler],
+      [map, 'move', this.moveHandler]
+    ]
+    this._listeners.forEach(([t, e, h]) => t.addEventListener ? t.addEventListener(e, h) : t.on(e, h))
+
+    return state
+  },
+
+  onClick(state, e) {
+    if (e.originalEvent.button > 0) {
+      return
+    }
+    DrawPolygon.onClick.call(this, state, e)
+  },
+
+  onTap() {
+    return
+  },
+
+  doClick(state) {
+    const coords = state.polygon.coordinates
+    this.dispatchVertexChange(coords[0])
+    if (!isValidClick(coords)) {
+      return
+    }
+    this._simulateMouse('click', DrawPolygon.onClick, state)
+  },
+
+  dispatchVertexChange(coords) {
+    this.map.fire('draw.vertexchange', {
+      numVertecies: coords.length
+    })
+  },
+
+  _simulateMouse(type, fn, state) {
+    const { map } = this
+    const center = map.getCenter()
+    const point = map.project(center)
+    fn.call(this, state, {
+      lngLat: center,
+      point,
+      originalEvent: new MouseEvent(type, {
+        clientX: point.x,
+        clientY: point.y,
+        bubbles: true,
+        cancelable: true
+      })
+    })
+    this._ctx.store.render()
+  },
+
+  _setInterface(state, type, show = true) {
+    state.interfaceType = type
+    if (show) {
+      state.vertexMarker.style.display = 'block'
+    }
+  },
+
+  onCreate(state, e) {
+    const draw = this._ctx.api
+    const feature = e.features[0]
+    draw.delete(feature.id)
+    feature.id = state.featureId
+    draw.add(feature)
+  },
+
+  onVertexButtonClick(state, e) {
+    if (e.target.closest(`#${state.addVertexButtonId}`)) {
+      this.doClick(state)
+    }
+  },
+
+  onTouchStart(state, e) {
+    this._setInterface(state, 'touch')
+    this.onMove(state, e)
+  },
+
+  onTouchEnd(state, e) {
+    this._setInterface(state, 'touch')
+    this.onMove(state, e)
+  },
+
+  onKeydown(state, e) {
+    if (e.key === 'Escape') {
+      return e.preventDefault()
+    }
+    if (e.key === 'Enter') {
+      state.isActive = true
+    }
+    this._setInterface(state, 'keyboard')
+    this.onMove(state, e)
+  },
+
+  onKeyup(state, e) {
+    if (e.key === 'Escape') {
+      return
+    }
+    this._setInterface(state, 'keyboard')
+    this.onMove(state, e)
+    if (e.key === 'Enter' && state.isActive) {
+      this.doClick(state)
+    }
+  },
+
+  onFocus(state) {
+    const { vertexMarker, interfaceType } = state
+    vertexMarker.style.display = ['touch', 'keyboard'].includes(interfaceType) ? 'block' : 'none'
+  },
+
+  onBlur(state, e) {
+    if (e.target !== state.container) {
+      state.vertexMarker.style.display = 'none'
+    }
+  },
+
+  onMove(state) {
+    if (['touch', 'keyboard'].includes(state.interfaceType)) {
+      this._simulateMouse('mousemove', DrawPolygon.onMouseMove, state)
+    }
+  },
+
+  onPointerdown(state, e) {
+    if (e.pointerType !== 'touch') {
+      this._setInterface(state, 'pointer', false)
+    }
+  },
+
+  onPointermove(state, e) {
+    if (e.pointerType !== 'touch') {
+      state.vertexMarker.style.display = 'none'
+    }
+  },
+  
+  onPointerup(state) {
+    this.dispatchVertexChange(state.polygon.coordinates[0])
+  },
+
+  toDisplayFeatures(state, geojson, display) {
+    DrawPolygon.toDisplayFeatures.call(this, state, geojson, display)
+
+    // Create vertex
+    if (geojson.geometry.type === 'Polygon') {
+      const ring = geojson.geometry.coordinates[0]
+      for (let i = 1; i < ring.length - 2; i++) {
+        display(createVertex(geojson.id, ring[i], `0.${i}`))
+      }
+    }
+  },
+
+  onStop(state) {
+    DrawPolygon.onStop.call(this, state)
+    this._listeners.forEach(([t, e, h]) => t.removeEventListener ? t.removeEventListener(e, h) : t.off(e, h))
+    state.vertexMarker.style.display = 'none'
+  }
+}

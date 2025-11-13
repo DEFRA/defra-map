@@ -1,0 +1,40 @@
+.am-c-draw-polygon {
+    display: flex;
+    justify-content: center;
+    gap: var(--divider-gap);
+
+    .am-c-map-button--draw-polygon-done,
+    .am-c-map-button--draw-polygon-add-point,
+    .am-c-map-button--draw-polygon-cancel {
+        min-width: auto;
+        flex: 1 1 auto;
+        text-wrap: nowrap;
+    }
+
+    .am-c-map-button--draw-polygon-undo,
+    .am-c-map-button--draw-polygon-finish,
+    .am-c-map-button--draw-polygon-delete,
+    .am-c-map-button--draw-polygon-snap {
+        flex: 0;
+        width: 40px;
+    }
+
+    // mapbox-gl-draw custom mode specific
+    .touch-vertex-target {
+        fill: var(--map-overlay-foreground-color);
+
+        path {
+            fill: var(--map-overlay-halo-color);
+        }
+    }
+}
+
+// Maplibre custom mode
+.touch-vertex-target {
+    circle {
+        fill: var(--map-overlay-foreground-color);
+    }
+    path {
+        fill: var(--map-overlay-halo-color);
+    }
+}

@@ -1,0 +1,8 @@
+.am-c-search-close-button {
+  &:before {
+    box-shadow: none;
+  }
+  &[data-focus-visible="true"] {
+    z-index: 1;
+  }
+}

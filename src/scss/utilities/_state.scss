@@ -1,0 +1,28 @@
+// Avoid screen flicker on refresh
+.am-is-loading {
+    visibility: hidden;
+}
+
+.am-has-js {
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.am-is-fullscreen {
+    height: 100%;
+    overflow-y: visible;
+    overscroll-behavior-y: none;
+
+    body {
+        position: fixed;
+        overflow: hidden;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}

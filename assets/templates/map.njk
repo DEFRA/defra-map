@@ -1,0 +1,56 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Map demo – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block head %}
+  <link href="/public/stylesheets/application.css" rel="stylesheet" type="text/css">
+  <link href="/plugin-assets/%40defra%2Fdefra-map/dist/css/accessible-map.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block bodyStart %}
+  <script>document.body.classList.add('am-is-loading')</script>
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">A basic map</h1>
+  <div id="map" data-zoom="12" data-center="[-2.968, 54.425]"></div>
+{% endblock %}
+
+{% block pageScripts %}
+  <!-- CRITICAL: Load in this exact order -->
+  <script src="https://unpkg.com/preact@10.19.3/dist/preact.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/hooks/dist/hooks.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/compat/dist/compat.umd.js"></script>
+  <script src="https://unpkg.com/preact@10.19.3/jsx-runtime/dist/jsxRuntime.umd.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/assets/js/preactShim.js"></script>
+
+  <!-- Defra library scripts -->
+  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/accessible-map.js"></script>
+  <script>
+    console.log(window)
+    const am = new defra.AccessibleMap('map', {
+      mapProvider: defra.maplibreProvider,
+      behaviour: 'hybrid',
+      mapLabel: 'Ambleside',
+      minZoom: 6,
+      maxZoom: 18,
+      containerHeight: '650px',
+      mapStyle: {
+        url: 'https://tiles.openfreemap.org/styles/liberty',
+        attribution: 'OpenFreeMap © OpenMapTiles Data from OpenStreetMap',
+        backgroundColor: '#f5f5f0'
+      },
+      plugins: [
+        defra.zoomControlsPlugin(),
+        defra.scaleBarPlugin({
+			    units: 'metric'
+		    })
+      ]
+    })
+  </script>
+{% endblock %}

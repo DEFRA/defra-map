@@ -1,0 +1,101 @@
+{
+  "name": "@defra/defra-map",
+  "version": "2.0.0",
+  "description": "An accessbile map component",
+  "main": "dist/umd/accessible-map.js",
+  "module": "dist/esm/accessible-map.js",
+  "exports": {
+    "import": "./dist/esm/accessible-map.js",
+    "require": "./dist/umd/accessible-map.js"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "webpack serve --config webpack.dev.mjs",
+    "prod": "webpack serve --config webpack.prod.mjs",
+    "build": "webpack --config webpack.umd.mjs",
+    "prepare": "npm run build",
+    "type-check": "tsc --noEmit",
+    "lint": "npm run lint:js && npm run lint:scss",
+    "lint:js": "standard \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:scss": "stylelint src/**/*.{css,scss}",
+    "lint:fix": "npm run lint:js:fix && npm run lint:scss:fix",
+    "lint:js:fix": "standard \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "lint:scss:fix": "stylelint src/**/*.{css,scss} --fix",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "report": "webpack --profile --json --config webpack.prod.mjs > stats.json && webpack-bundle-analyzer --host 0.0.0.0 --port 8888 ./stats.json ./public"
+  },
+  "standard": {
+    "envs": [
+      "browser",
+      "es2021",
+      "jest"
+    ],
+    "ignore": [
+      "demo",
+      "dist",
+      "node_modules"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@mapbox/mapbox-gl-draw": "^1.5.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "babel-loader": "^10.0.0",
+    "compression-webpack-plugin": "^11.1.0",
+    "css-loader": "^7.1.2",
+    "dotenv": "^17.2.0",
+    "event-target-polyfill": "^0.0.4",
+    "express-static-gzip": "^3.0.0",
+    "geodesy": "^2.4.0",
+    "html-webpack-plugin": "^5.6.3",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "mini-css-extract-plugin": "^2.9.2",
+    "node-fetch": "^3.3.2",
+    "prettier": "^3.6.2",
+    "proj4": "^2.19.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "remove-files-webpack-plugin": "^1.5.0",
+    "resize-observer": "^1.0.4",
+    "sass": "^1.89.2",
+    "sass-loader": "^16.0.5",
+    "standard": "^17.1.2",
+    "style-loader": "^4.0.0",
+    "stylelint": "^16.21.1",
+    "stylelint-config-gds": "^2.0.0",
+    "stylelint-scss": "^6.12.1",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.100.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2",
+    "webpack-merge": "^6.0.1",
+    "webpack-remove-empty-scripts": "^1.1.1"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "webpack"
+  ],
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@turf/area": "^7.2.0",
+    "@turf/boolean-valid": "^7.2.0",
+    "@turf/helpers": "^7.2.0",
+    "core-js": "^3.44.0",
+    "lucide-react": "^0.534.0",
+    "maplibre-gl": "^5.12.0",
+    "maplibre-gl-legacy": "npm:maplibre-gl@1.15.3",
+    "preact": "^10.27.2"
+  }
+}

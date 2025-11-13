@@ -1,0 +1,78 @@
+import { useEffect } from 'react'
+import { keyboardMappings } from '../controls/keyboardMappings.js'
+import { createKeyboardActions } from '../controls/keyboardActions.js'
+import { useConfig } from '../store/configContext.js'
+import { useApp } from '../store/appContext.js'
+import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
+
+export function useKeyboardShortcuts (containerRef) {
+  const { mapProvider, reverseGeocode, panDelta, nudgePanDelta, zoomDelta, nudgeZoomDelta } = useConfig()
+  const { interfaceType, dispatch } = useApp()
+  const { targetMarker } = useMap()
+  const { announce } = useService()
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || interfaceType !== 'keyboard') {
+      return
+    }
+
+    const actions = createKeyboardActions(mapProvider, announce, {
+      containerRef,
+      dispatch,
+      panDelta,
+      nudgePanDelta,
+      zoomDelta,
+      nudgeZoomDelta,
+      targetMarker: reverseGeocode?.showMarker ? targetMarker : null
+    })
+
+    const normalizeKey = (e) => {
+      let key
+
+      // Use e.code for letters to avoid 'dead' keys with Alt/AltGr
+      if (/^Key[A-Z]$/.test(e.code)) {
+        key = e.code.slice(3) // "KeyI" -> "I"
+      } else {
+        key = e.key // works for arrows, numpad, punctuation
+      }
+
+      // Normalize numpad add/subtract to symbols
+      if (key === 'Add' || key === 'NumpadAdd') {
+        key = '+'
+      } else if (key === 'Subtract' || key === 'NumpadSubtract') {
+        key = '-'
+      }
+
+      return e.altKey ? `Alt+${key}` : key
+    }
+
+    const handle = (type) => (e) => {
+      const actionName = keyboardMappings[type][normalizeKey(e)]
+      if (actionName && actions[actionName]) {
+        actions[actionName](e)
+        e.preventDefault()
+      }
+    }
+
+    const handleKeyDown = handle('keydown')
+    const handleKeyUp = handle('keyup')
+
+    el.addEventListener('keydown', handleKeyDown)
+    el.addEventListener('keyup', handleKeyUp)
+
+    return () => {
+      el.removeEventListener('keydown', handleKeyDown)
+      el.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [
+    containerRef,
+    interfaceType,
+    mapProvider,
+    panDelta,
+    nudgePanDelta,
+    zoomDelta,
+    nudgeZoomDelta
+  ])
+}

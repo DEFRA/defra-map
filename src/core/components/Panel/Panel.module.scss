@@ -1,0 +1,90 @@
+// ===================================================
+// Component: Panel
+// ===================================================
+
+@use '../../../scss/tools/index' as tools;
+
+// 1. Base styles
+.am-c-panel {
+    @include tools.border-focus-base(
+        $is-inset: false,
+        $type: panel
+    );
+
+    & {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(var(--button-size) + (var(--panel-close-button-gap) * 2));
+        max-height: 100vh;
+        pointer-events: auto;
+        background-color: var(--background-color);
+    }
+}
+
+// 2. Elements
+.am-c-panel__heading {
+    display: flex;
+    padding-top: var(--panel-heading-margin-top);
+    padding-right: calc((var(--panel-close-button-gap) * 2) + var(--button-size));
+    padding-left: var(--panel-margin);
+
+    color: var(--foreground-color);
+}
+
+.am-c-panel__close {
+    @include tools.border-focus-base(
+        $is-inset: false,
+        $type: button
+    );
+
+    & {
+        border: 0;
+        position: absolute;
+        top: var(--panel-close-button-gap);
+        right: var(--panel-close-button-gap);
+
+        padding-left: var(--button-padding);
+        padding-right: var(--button-padding);
+
+        min-height: var(--button-size);
+        min-width: var(--button-size);
+
+        color: var(--foreground-color);
+        background-color: transparent;
+        cursor: pointer;
+    }
+}
+
+.am-c-panel__body {
+    padding: var(--panel-margin);
+    overflow: auto;
+}
+
+.am-c-panel__close::before {
+    content: none;
+}
+
+.am-c-panel__close:hover {
+    @media (prefers-reduced-motion: no-preference) {
+        transition: background-color var(--duration) ease;
+    }
+
+    & {
+        background-color: var(--button-hover-color);
+    }
+}
+
+// 3. Modifiers
+.am-c-panel--drawer {
+    @include tools.border-focus-base(
+        $is-inset: true,
+        $type: panel
+    );
+    @include tools.border-focus-corner-override(
+        $corners: 'top'
+    );
+}
+
+// 4. State styles
+
+// 5. Responsive tweaks

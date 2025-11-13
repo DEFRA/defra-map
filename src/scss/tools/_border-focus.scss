@@ -1,0 +1,189 @@
+@use 'sass:string';
+
+/// Applies the base border, shadow, focus ring, and consistent border-radius styles.
+/// 
+/// @param {Number} $is-inset (true or false)  
+///   If true the focus ring pseudo-element is offset.
+/// @param {Number} $type (null, panel or button)  
+///   If set then applies applies appropriate dimensions to border and shadows.
+/// Usage:
+/// ```scss
+/// @include border-focus-base($offset: -1px, $border: panel, $box-shadow: panel);
+/// ```
+@mixin border-focus-base($type: null, $is-inset: null) {
+  position: relative;
+  border: 0;
+  
+  // Border radius
+  $border-radius: 0px;
+
+  @if $type == panel {
+    $border-radius: var(--panel-border-radius);
+  } @else if $type == button {
+    $border-radius: var(--button-border-radius);
+  }
+
+  border-radius: $border-radius;
+
+  // Box shadow
+  &::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    border-radius: calc($border-radius);  // default radius on focus ring
+
+    @if $type == panel {
+      box-shadow: var(--panel-box-shadow);
+    } @else if $type == button {
+      box-shadow: var(--button-box-shadow);
+    } @else {
+      box-shadow: null;
+    }
+  }
+
+  // Offset
+  $offset: -1px;
+
+  @if $is-inset == true {
+    $offset: var(--focus-border-width);
+  }
+
+  &:focus {
+    outline: 0;
+  }
+
+  &[data-focus-visible="true"] {
+    outline: 3px solid transparent;
+  }
+
+  &::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    z-index: 99;
+    top: $offset;
+    right: $offset;
+    bottom: $offset;
+    left: $offset;
+    border: var(--focus-border-width) solid var(--focus-border-color);
+    outline: var(--focus-outline-width) solid var(--focus-outline-color);
+    border-radius: calc($border-radius - 2px);  // default radius on focus ring
+    opacity: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity var(--duration) ease;
+    }
+  }
+
+  &[data-focus-visible="true"]::after {
+    opacity: 1;
+  }
+}
+
+/// Overrides border-radius on corners *not* included in `$corners`, resetting them to zero.
+///
+/// This mixin assumes that the base `border-focus-base` mixin has already applied a default
+/// border radius to all corners. Use this to override and selectively round specific sides.
+///
+/// @param {String|null} $corners
+///   A single keyword indicating which side should keep its rounded corners.
+///   Accepted values: `'top'`, `'bottom'`, `'left'`, `'right'`.
+/// @example scss
+///   // Keep only top corners rounded
+///   @include border-focus-corner-override('top');
+///
+///   // Keep only left corners rounded
+///   @include border-focus-corner-override('left');
+///
+@mixin border-focus-corner-override($corners: null) {
+  $has-top: $corners != null and string.index($corners, 'top') != null;
+  $has-bottom: $corners != null and string.index($corners, 'bottom') != null;
+  $has-left: $corners != null and string.index($corners, 'left') != null;
+  $has-right: $corners != null and string.index($corners, 'right') != null;
+
+  // Check if multiple opposing sides are specified
+  $has-top-bottom: $has-top and $has-bottom;
+  $has-left-right: $has-left and $has-right;
+
+  &,
+  &::before,
+  &::after {
+    // Top-left corner
+    @if not ($has-top or $has-left) or $has-top-bottom or $has-left-right {
+      border-top-left-radius: 0;
+    }
+
+    // Top-right corner
+    @if not ($has-top or $has-right) or $has-top-bottom or $has-left-right {
+      border-top-right-radius: 0;
+    }
+
+    // Bottom-left corner
+    @if not ($has-bottom or $has-left) or $has-top-bottom or $has-left-right {
+      border-bottom-left-radius: 0;
+    }
+
+    // Bottom-right corner
+    @if not ($has-bottom or $has-right) or $has-top-bottom or $has-left-right {
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  // Apply clip-path only to ::before for the shadow
+  &::before {
+    $clip-top: if($has-bottom, 0, -20px);
+    $clip-right: if($has-left, 0, -20px);
+    $clip-bottom: if($has-top, 0, -20px);
+    $clip-left: if($has-right, 0, -20px);
+
+    clip-path: inset(#{$clip-top} #{$clip-right} #{$clip-bottom} #{$clip-left});
+  }
+}
+
+/// Stripped-down focus style mixin.
+/// Immediately applies a border-radius and a `::after` focus ring.
+/// No shadows, no before-element.
+///
+/// @param {String|null} $type (null)
+///   Accepts `panel`, `button`, or null.  
+///   If set, applies the appropriate border radius.
+/// @param {Boolean} $is-inset (false)  
+///   If true, offsets the ring inward by the focus border width.
+@mixin focus-base($type: null, $is-inset: false) {
+  position: relative;
+
+  // Border radius
+  $border-radius: 0px;
+
+  @if $type == panel {
+    $border-radius: var(--panel-border-radius);
+  } @else if $type == button {
+    $border-radius: var(--button-border-radius);
+  }
+
+  border-radius: $border-radius;
+
+  // Offset
+  $offset: -1px;
+  @if $is-inset == true {
+    $offset: var(--focus-border-width);
+  }
+
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  z-index: 99;
+  top: $offset;
+  right: $offset;
+  bottom: $offset;
+  left: $offset;
+  border: var(--focus-border-width) solid var(--focus-border-color);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  border-radius: calc(#{$border-radius} - 2px);
+}
+

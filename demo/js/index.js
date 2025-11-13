@@ -1,0 +1,126 @@
+import AccessibleMap from '../../src/accessibleMap.js'
+import { openMapStyles, psMapStyles } from './mapStyles.js'
+import { dataLayers } from './dataLayers.js'
+import { searchCustomDatasets } from './searchCustomDatasets.js'
+import { transformGeocodeRequest, transformTileRequest, transformDataRequest } from './request.js'
+// Providers
+import maplibreProvider from '../../src/providers/maplibre/index.js'
+import openNamesProvider from '../../src/providers/open-names/index.js'
+// Plugins
+import zoomControlsPlugin from '../../src/plugins/zoomControls/index.js'
+import mapStylesPlugin from '../../src/plugins/mapStyles/index.js'
+import menuDataLayersPlugin from '../../src/plugins/menuDataLayers/index.js'
+import dataLayersPlugin from '../../src/plugins/dataLayersML/index.js'
+import drawPolygonPlugin from '../../src/plugins/drawPolygonML/index.js'
+import scaleBarPlugin from '../../src/plugins/scaleBar/index.js'
+import searchPlugin from '../../src/plugins/search/index.js'
+import selectPlugin from '../../src/plugins/select/index.js'
+
+const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
+
+const am = new AccessibleMap('map', {
+	behaviour: 'hybrid',
+	mapProvider: maplibreProvider,
+	reverseGeocode: {
+		provider: openNamesProvider,
+		transformRequest: transformGeocodeRequest,
+		// showMarker: true
+	},
+	// maxMobileWidth: 700,
+	// minDesktopWidth: 960,
+	mapLabel: 'Map showing Carlisle',
+	// zoom: 14,
+	minZoom: 6,
+	maxZoom: 20,
+	autoColorScheme: true,
+	// centre: [-2.938769, 54.893806],
+	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+	containerHeight: '650px',
+	transformRequest: transformTileRequest,
+	markers: [{
+		id: 'location',
+		coords: [-2.9592267, 54.9045977],
+		color: 'outdoor:#ff0000,dark:#00ff00'
+	}],
+	mapStyle: {
+		url: process.env.OUTDOOR_URL,
+		logo: '/images/os-logo.svg',
+		logoAltText: 'Ordnance survey logo',
+		attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+		backgroundColor: '#f5f5f0'
+	},
+	plugins: [
+		mapStylesPlugin({
+			mapStyles: psMapStyles
+		}),
+		scaleBarPlugin({
+			units: 'metric'
+		}),
+		selectPlugin({
+			dataLayers: [{
+				layerId: 'field-parcels',
+				idProperty: 'ID',
+				selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+			},{
+				layerId: 'linked-parcels',
+				idProperty: 'ID',
+				selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+			}],
+			selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+			// multiSelect: true
+		}),
+		searchPlugin({
+			transformRequest: transformGeocodeRequest,
+			osNamesURL: process.env.OS_NAMES_URL,
+			customDatasets: searchCustomDatasets,
+			width: '300px',
+			showMarker: true,
+			excludeModes: ['circle', 'square', 'polygon']
+		}),
+		// menuDataLayersPlugin({
+		// 	dataLayers: [],
+		// 	excludeModes: ['circle', 'square', 'polygon']
+		// }),
+		dataLayersPlugin({
+			transformRequest: transformDataRequest,
+			layers: dataLayers
+		}),
+		zoomControlsPlugin(),
+		// drawPolygonPlugin({
+		// 	includeModes: ['polygon'],
+		// 	featureId: 'test1234',
+		// 	featureGeoJSON: featureGeoJSON
+		// })
+		// drawPolygonPlugin({
+		// 	featureId: 'test1234',
+		// 	// featureGeoJSON: featureGeoJSON
+		// })
+	]
+	// search
+})
+
+am.on('map:ready', (e) => {
+	// console.log('Map ready')
+})
+
+am.on('select:done', (e) => {
+	console.log(e)
+})
+
+// Update selected feature
+am.on('search:match', (e) => {
+	if (e.type !== 'parcel') {
+		return
+	}
+	// console.log(am.emit)
+	am.emit('select:selectFeatures', {
+		featureId: e.id,
+		layerId: 'field-parcels',
+		idProperty: 'ID'
+	})
+})
+
+// Hide selected feature
+am.on('search:clear', () => {
+	// console.log('Search clear')
+})

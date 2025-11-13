@@ -1,0 +1,22 @@
+%am-e-heading {
+    margin: 0;
+    font-weight: 600;
+}
+
+.am-e-heading-l {
+  @extend %am-e-heading;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.am-e-heading-m {
+  @extend %am-e-heading;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.am-e-heading-s {
+  @extend %am-e-heading;
+  font-size: 1rem;
+  line-height: 1.25;
+}

@@ -1,0 +1,9 @@
+node_modules
+coverage
+demo
+tests
+README.md
+jest.config.mjs
+stylelint.config.js
+babel.config.json
+.*

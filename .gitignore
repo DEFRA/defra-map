@@ -1,0 +1,44 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Launch file
+.vscode/launch.json
+
+# Ignore local editor
+.project
+.settings
+.idea
+*.swp
+tags
+nbproject/*
+.vscode
+.env
+
+# Windows
+Thumbs.db
+
+# Debugging related
+npm-debug.log
+
+# Dependency packages files
+node_modules/
+
+# Output
+dist
+plugin
+coverage
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Webpack bundle analyser
+stats.json

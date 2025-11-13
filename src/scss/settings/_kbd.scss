@@ -1,0 +1,28 @@
+// KBD (Keyboard input)
+
+:root {
+    // Font
+    --kbd-font-family: monospace;
+
+    // Colors
+    --kbd-background-color: var(--background-color);
+    --kbd-foreground-color: var(--tooltip-background-color);
+
+    // General
+    --kbd-border: 2px solid #e7e7e7;
+    --kbd-border-radius: 4px;
+    --kbd-font-size: .825rem;
+    --kbd-padding: 2px 4px;
+
+    // Tooltip overide
+    --kbd-tooltip-border: none;
+}
+
+:root .am-o-app--dark-app {
+
+    // Colors
+    --kbd-background-color: var(--background-color);
+    --kbd-foreground-color: var(--tooltip-foreground-color);
+    --kbd-tooltip-border: 2px solid #505a5f;
+    --kbd-border: 2px solid #505a5f;
+}

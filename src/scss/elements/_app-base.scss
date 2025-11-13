@@ -1,0 +1,27 @@
+.am-o-app {
+  visibility: visible;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  color: var(--foreground-color);
+  background-color:var(--background-color);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+.am-is-fullscreen .am-o-app {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.am-o-app__overlay,
+.am-o-app__modal {
+  pointer-events: none;
+}

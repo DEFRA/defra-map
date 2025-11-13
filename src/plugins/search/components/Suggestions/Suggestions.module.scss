@@ -1,0 +1,72 @@
+@use '../../../../scss/tools/index' as tools;
+
+// Suggestions
+.am-c-search-suggestions {
+    max-height: calc(100vh - 66px);
+    overflow-y: auto;
+    scroll-padding: 0;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    list-style: none;
+}
+
+.am-c-search-suggestions__item {
+    margin: 0;
+    padding: calc(var(--divider-gap) + 2px) var(--primary-gap);
+    position: relative;
+    color: var(--secondary-text-color);
+    border-top: 1px solid var(--button-hover-color);
+    cursor: pointer;
+
+    mark {
+        font-weight: bold;
+        color: var(--foreground-color);
+        background-color: transparent;
+        pointer-events: none;
+    }
+
+    &:hover:not([aria-selected="true"]) {
+        @media (hover: hover) and (pointer: fine) {
+            background-color: var(--button-hover-color);
+        }
+    }
+
+    &[aria-selected="true"] {
+        background-color: var(--button-hover-color);
+    }
+
+    &[aria-selected="true"] mark {
+        color: var(--fixed-foreground-color);
+    }
+
+    &:hover:not([aria-selected="true"]) .am-c-search-suggestions__label {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        text-decoration-thickness: 2px;
+        text-decoration-color: var(--foreground-color);
+        text-decoration-skip-ink: none;
+    }
+
+    &[aria-selected="true"] .am-c-search-suggestions__label {
+        @include tools.link-focus();
+    }
+}
+
+.am-c-search-suggestions__label {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+// 3. Modifiers
+.am-o-app--tablet .am-c-search-suggestions,
+.am-o-app--desktop .am-c-search-suggestions {
+    border-bottom-left-radius: var(--button-border-radius);
+    border-bottom-right-radius: var(--button-border-radius);
+
+    &__item {
+        padding: var(--divider-gap) calc(var(--divider-gap) + 2px);
+    }
+}

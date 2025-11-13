@@ -1,0 +1,22 @@
+// MapLibre
+.maplibregl-canvas-container canvas {
+    image-rendering: pixelated;
+    outline: 0;
+}
+
+.maplibregl-control-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+
+    * {
+        pointer-events: auto;
+    }
+}
+
+.maplibregl-symbols {
+    display: none;
+}

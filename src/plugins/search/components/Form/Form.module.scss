@@ -1,0 +1,27 @@
+.am-c-search-form {
+  display: none;
+  padding: 0;
+  min-height: auto;
+  border-radius: 0;
+  
+  &:before {
+    border-radius: 0;
+  }
+}
+
+.am-o-app--mobile .am-c-search-form {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: auto;
+}
+
+.am-o-app--tablet .am-c-search-form,
+.am-o-app--desktop .am-c-search-form {
+  border-radius: var(--button-border-radius);
+
+  &:before {
+    border-radius: var(--button-border-radius);
+  }
+}

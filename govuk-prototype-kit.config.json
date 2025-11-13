@@ -1,0 +1,15 @@
+{
+  "templates": [
+    {
+      "name": "Map demo",
+      "path": "/assets/templates/map.njk",
+      "type": "nunjucks"
+    }
+  ],
+  "assets": [
+    "/assets/",
+    "/dist/css/",
+    "/dist/esm/",
+    "/dist/umd/"
+  ]
+}

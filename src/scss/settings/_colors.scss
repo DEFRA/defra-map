@@ -1,0 +1,69 @@
+:root {
+    --foreground-color: #282c34;
+    --background-color: #ffffff;
+
+    // Button and panel focus colors
+    --focus-border-color: #282c34;
+    --focus-outline-color: #ffdd00;
+
+    // MapButtons
+    --button-background-color: #ffffff;
+    --button-hover-color: #f3f2f1;
+    --primary-button-color: #00703c;
+    --primary-button-hover-color: #005a30;
+    --secondary-button-border-color: #b1b4b6;
+    --disabled-button-opacity: 0.4;
+
+    // Tooltips
+    --tooltip-background-color: #383F43;
+    --tooltip-foreground-color: #ffffff;
+
+    // Modals
+    --modal-background-color: #282c34;
+    --modal-backdrop-opacity: 0.4;
+
+    // Content
+    --app-border-color: #b1b4b6;
+    --content-border-color: #f3f2f1;
+    --secondary-text-color: #505a5f;
+    --image-placeholder-color: #b1b4b6;
+
+    // Attributions
+    --attributions-foreground-color: #282c34;
+    --attributions-background-color: #ffffff80;
+
+    // Map overlays, such as scale bar, target marker etc
+    --map-overlay-foreground-color: #282c34;
+    --map-overlay-halo-color: #ffffff;
+
+    // Fixed colours (Dont chnage with dark mode)
+    --fixed-foreground-color: #282c34;
+
+}
+
+:root .am-o-app--dark-app {
+    --foreground-color: #ffffff;
+    --background-color: #383F43;
+
+    // Button and panel focus colors
+    --focus-border-color: #282c34;
+    --focus-outline-color: #ffdd00;
+
+    // MapButtons
+    --button-background-color: #383F43;
+    --button-hover-color: #505a5f;
+    --primary-button-color: #ffffff;
+    --primary-button-hover-color: #b1b4b6;
+    --secondary-button-border-color: #b1b4b6;
+    --disabled-button-opacity: 0.4;
+
+    // Content
+    --content-border-color: #505a5f;
+    --secondary-text-color: #f3f2f1;
+}
+
+// Map color scheme specific overrides
+:root .am-o-app--dark-map {
+  --map-overlay-foreground-color: #ffffff;
+  --map-overlay-halo-color: #282c34;
+}

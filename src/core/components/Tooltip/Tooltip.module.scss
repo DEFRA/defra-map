@@ -1,0 +1,125 @@
+// ===================================================
+// Component: Tooltip wrapper
+// ===================================================
+
+// 1. Base styles
+.am-c-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+.am-c-tooltip-wrapper:hover,
+.am-c-tooltip-wrapper--has-focus {
+    z-index: 2;
+}
+
+// ===================================================
+// Component: Tooltip
+// ===================================================
+
+// 1. Base styles
+.am-c-tooltip {
+    position: absolute;
+    z-index: 10;
+    visibility: hidden;
+    pointer-events: none;
+
+    opacity: 0;
+
+    color: var(--tooltip-foreground-color);
+    background-color: var(--tooltip-background-color);
+    border-radius: var(--tooltip-border-radius);
+
+    white-space: nowrap;
+
+    padding: var(--tooltip-padding);
+    font-size: var(--tooltip-font-size);
+    line-height: 1;
+
+    @media (prefers-reduced-motion: no-preference) {
+        transition: opacity var(--duration) ease, visibility var(--duration) ease;
+    }
+}
+
+.am-c-tooltip::after {
+    content: "";
+    position: absolute;
+    box-sizing: border-box;
+    z-index: -1;
+    width: var(--tooltip-arrow-size);
+    height: var(--tooltip-arrow-size);
+    color: var(--tooltip-background-color);
+    border: calc(var(--tooltip-arrow-size) / 2) solid currentcolor;
+}
+
+// 2. Elements
+
+// 3. Modifiers
+.am-c-tooltip--is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+// Prevent tooltip from breaking page width when it doesnt have a position
+.am-c-tooltip--hidden {
+    width: 0;
+    overflow: hidden;
+}
+
+// Left and right position
+.am-c-tooltip--left {
+    top: 50%;
+    transform: translateY(-50%);
+    left: auto;
+    right: calc(100% + var(--tooltip-offset));
+}
+
+.am-c-tooltip--left::after {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    right: calc((var(--tooltip-arrow-size) / 2) * -1);
+}
+
+.am-c-tooltip--right {
+    top: 50%;
+    transform: translateY(-50%);
+    right: auto;
+    left: calc(100% + var(--tooltip-offset));
+}
+
+.am-c-tooltip--right::after {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    left: calc((var(--tooltip-arrow-size) / 2) * -1);
+}
+
+// Top and bottom position
+.am-c-tooltip--bottom {
+    top: calc(100% + var(--tooltip-offset));
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.am-c-tooltip--bottom::after {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    top: calc((var(--tooltip-arrow-size) / 2) * -1);
+}
+
+.am-c-tooltip--top {
+    bottom: calc(100% + var(--tooltip-offset));
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.am-c-tooltip--top::after {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    bottom: calc((var(--tooltip-arrow-size) / 2) * -1);
+}
+
+// 4. State styles
+
+// 5. Responsive tweaks

@@ -1,0 +1,42 @@
+:root {
+    // Gaps
+    --primary-gap: 15px;
+    --divider-gap: 10px;
+    --panel-close-button-gap: 4px;
+
+    // Button size
+    --button-size: 40px;
+    --icon-size: 24px;
+    --button-padding: 8px;
+    --button-label-offset: 6px;
+    --action-button-padding: 12px;
+
+    // Borders and focus
+    --app-border-width: 1px;
+    --button-border-radius: 4px;
+    --panel-border-radius: 8px;
+    --focus-border-width: 3px;
+    --focus-outline-width: 3px;
+
+    // Modal offset placeholders (These are set with JS)
+    --modal-offset-top: 0px;
+    --modal-offset-right: 0px;
+
+    // Tooltips
+    --tooltip-padding: 10px;
+    --tooltip-offset: 10px;
+    --tooltip-arrow-size: 8px;
+    --tooltip-font-size: 14px;
+    --tooltip-border-radius: 3px;
+
+    // Panels
+    --panel-heading-margin-top: 12px;
+    --panel-margin: 15px;
+
+    // Action bar (Needs to fit evently if tools are in right hand column)
+    --action-bar-max-width: calc(100% - (var(--button-size) * 2) - (var(--primary-gap) * 4));
+
+    // Attributions
+    --attributions-padding: 2px 5px;
+    --attributions-font-size: 12px;
+}

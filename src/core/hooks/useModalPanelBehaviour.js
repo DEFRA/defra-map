@@ -1,0 +1,124 @@
+import { useEffect } from 'react'
+import { useResizeObserver } from './useResizeObserver.js'
+import { constrainKeyboardFocus } from '../../utils/constrainKeyboardFocus.js'
+import { toggleInertElements } from '../../utils/toggleInertElements.js'
+
+export function useModalPanelBehavior ({
+  mainRef,
+  panelRef,
+  isModal,
+  isAside,
+  rootEl,
+  buttonContainerEl,
+  handleClose
+}) {
+  // === Escape and Tab key handling === //
+  useEffect(() => {
+    if (!isModal) {
+      return
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        e.preventDefault()
+        handleClose()
+      }
+
+      if (e.key === 'Tab' && panelRef.current) {
+        constrainKeyboardFocus(panelRef.current, e)
+      }
+    }
+
+    const current = panelRef.current
+    current?.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      current?.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isModal, panelRef, handleClose])
+
+  // === Set absolute offset positions and recalculate on mainRef resize === //
+  const root = document.documentElement
+  const dividerGap = parseInt(getComputedStyle(root).getPropertyValue('--divider-gap'), 10)
+
+  useResizeObserver([mainRef], () => {
+    if (!isModal || !buttonContainerEl || !mainRef.current) {
+      return
+    }
+    const mainRect = mainRef.current.getBoundingClientRect()
+    const buttonRect = buttonContainerEl.getBoundingClientRect()
+    const offsetTop = buttonRect.top - mainRect.top
+    const offsetRight = Math.round(mainRect.right - buttonRect.right + buttonRect.width + dividerGap)
+    root.style.setProperty('--modal-inset', `${offsetTop}px ${offsetRight}px auto auto`)
+  })
+
+  // === Click on modal backdrop to close === //
+  useEffect(() => {
+    if (!isModal) {
+      return
+    }
+
+    const handleClick = (e) => {
+      const backdropEl = e.target.closest('.am-o-app__modal-backdrop')
+      if (rootEl && backdropEl && rootEl.contains(backdropEl)) {
+        handleClose()
+      }
+    }
+
+    document.addEventListener('click', handleClick)
+    return () => {
+      document.removeEventListener('click', handleClick)
+    }
+  }, [isModal, rootEl, handleClose])
+
+  // === Inert everything outside the panel but within the app === //
+  useEffect(() => {
+    if (!isModal || !panelRef.current || !rootEl) {
+      return
+    }
+
+    toggleInertElements({
+      containerEl: panelRef.current,
+      isFullscreen: true, // Treat modal as fullscreen
+      boundaryEl: rootEl
+    })
+
+    return () => {
+      toggleInertElements({
+        containerEl: panelRef.current,
+        isFullscreen: false,
+        boundaryEl: rootEl
+      })
+    }
+  }, [isModal, panelRef, rootEl])
+
+  // === Redirect focus into the panel if it enters the app === //
+  useEffect(() => {
+    if (!isModal) {
+      return
+    }
+
+    const handleFocusIn = (e) => {
+      const focusedEl = e.target
+      const panelEl = panelRef.current
+
+      if (!focusedEl || !panelEl || !rootEl) {
+        return
+      }
+
+      const isInsideApp = rootEl.contains(focusedEl)
+      const isInsidePanel = panelEl.contains(focusedEl)
+
+      if (isInsideApp && !isInsidePanel) {
+        panelEl.focus()
+      }
+    }
+
+    document.addEventListener('focusin', handleFocusIn)
+    
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn)
+    }
+  }, [isModal, panelRef, rootEl])
+}

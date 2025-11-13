@@ -1,0 +1,9 @@
+.am-c-attributions {
+    color: var(--attributions-foreground-color);
+    background-color: var(--attributions-background-color);
+    padding: var(--attributions-padding);
+    font-size: var(--attributions-font-size);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,31 @@
+// https://itcss.io/
+
+// Settings: globally used variables, such as colors, fonts, dimensions, etc
+@use 'settings';
+
+// Tools: globally used mixins and functions
+@use 'tools';
+
+// Generic: reset and/or normalize styles, box-sizing definition, etc
+@use 'generic';
+
+// Elements: styling for bare HTML elements eg h1, a, etc
+@use 'elements';
+
+// Objects: class-based selectors which define undecorated design patterns
+@use '../core/layout/layout.module';
+
+// Components: specific UI components. Using 'CSS in Component' pattern
+@use '../core/components/KeyboardHelp/KeyboardHelp.module';
+@use '../core/components/MapButton/MapButton.module';
+@use '../core/components/Panel/Panel.module';
+@use '../core/components/Viewport/Viewport.module';
+@use '../core/components/Tooltip/Tooltip.module';
+@use '../core/components/Attributions/Attributions.module';
+@use '../core/components/Logo/Logo.module';
+@use '../core/components/TargetMarker/TargetMarker.module';
+@use '../core/components/LocationMarkers/LocationMarkers.module';
+@use '../core/components/Actions/Actions.module';
+
+// Utilities: utilities and helper classes with ability to override anything which goes before
+@use 'utilities';

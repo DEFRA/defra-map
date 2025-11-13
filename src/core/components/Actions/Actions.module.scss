@@ -1,0 +1,27 @@
+.am-c-actions-inset,
+.am-c-actions-bottom {
+  display: flex;
+  justify-content: center;
+  gap: var(--divider-gap);
+  padding: var(--panel-margin);
+
+  .am-c-button-group {
+    display: flex;
+    justify-content: center;
+    gap: var(--divider-gap);
+  }
+
+  .am-c-button-wrapper--wide {
+    display: flex;
+    flex: 1 1 0;
+  }
+
+  .am-c-map-button--primary,
+  .am-c-map-button--tertiary {
+    width: 100%;
+  }
+}
+
+.am-c-actions-inset {
+  min-width: 280px;
+}

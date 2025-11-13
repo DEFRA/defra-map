@@ -1,0 +1,358 @@
+// ===================================================
+// Object: am-o-app
+// ===================================================
+
+@use '../../scss/tools/index' as tools;
+
+// 1. Base styles
+.am-o-app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// 2. Elements
+.am-o-app__overlay {
+  position: absolute;
+  box-sizing: border-box;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  visibility: visible;
+  opacity: 1;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--duration) ease-in;
+  }
+}
+
+.am-o-app__side {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.am-o-app__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  flex-wrap: nowrap;
+  padding: var(--primary-gap);
+}
+
+.am-o-app__drawer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+// ---------------------------------------------------
+// Top: Includes a panel and buttons in colums
+// ---------------------------------------------------
+
+.am-o-app__top {
+  display: flex;
+  margin-bottom: auto;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--divider-gap);
+}
+
+.am-o-app__top-col {
+  display: flex;
+  flex: 1 1 auto;
+  gap: var(--divider-gap);
+}
+
+.am-o-app__top-col:not(:empty) {
+  padding-bottom: var(--divider-gap);
+}
+
+.am-o-app__top-col:first-child,
+.am-o-app__top-col:last-child {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: var(--top-col-width, 100%);
+}
+
+.am-o-app__top-col:first-child {
+  justify-content: flex-start;
+  min-width: auto;
+}
+
+.am-o-app__top-col:last-child {
+  justify-content: flex-end;
+  min-width: auto;
+}
+
+.am-o-app__top-col:nth-child(2) {
+  justify-content: center;
+}
+
+// ---------------------------------------------------
+// Inset:
+// ---------------------------------------------------
+
+.am-o-app__inset {
+  position: absolute;
+  top: var(--inset-offset-top);
+}
+
+.am-o-app__inset .am-c-panel {
+  height: 100%;
+  max-height: var(--inset-max-height);
+}
+
+// ---------------------------------------------------
+// Middle:
+// ---------------------------------------------------
+
+.am-o-app__middle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// ---------------------------------------------------
+// Right: Buttons and inset panel
+// ---------------------------------------------------
+
+.am-o-app__right {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  right: var(--primary-gap);
+  top: var(--right-offset-top);
+  bottom: var(--right-offset-bottom);
+}
+
+.am-o-app__right-top {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: var(--divider-gap);
+}
+
+.am-o-app__right-bottom {
+  margin-top: auto;
+}
+
+// ---------------------------------------------------
+// Bottom:
+// ---------------------------------------------------
+
+.am-o-app__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-left: var(--offset-left);
+}
+
+.am-o-app__bottom-col {
+  display: flex;
+  flex-direction: column;
+  min-width: auto;
+}
+
+.am-o-app__bottom-col:first-child {
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.am-o-app__bottom-col:last-child {
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  text-align: right;
+  min-width: 0;
+}
+
+// ---------------------------------------------------
+// Attributions:
+// ---------------------------------------------------
+
+.am-o-app__attributions:not(:empty) {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  padding-top: var(--divider-gap);
+  margin-bottom: calc(var(--primary-gap) * -1);
+  margin-right: calc(var(--primary-gap) * -1);
+}
+
+// ---------------------------------------------------
+// Actions:
+// ---------------------------------------------------
+
+.am-o-app__actions-inset,
+.am-o-app__actions-bottom {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  text-align: center;
+
+  .am-c-panel__body {
+    overflow: visible;
+  }
+}
+
+.am-o-app__actions-inset {
+  margin-left: var(--offset-left);
+  padding-bottom: var(--divider-gap);
+  
+  .am-c-panel {
+    max-width: var(--action-bar-max-width);
+  }
+}
+
+.am-o-app__actions-bottom {
+  margin: var(--primary-gap) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1);
+
+  .am-c-panel {
+    width: 100%;
+
+    @include tools.border-focus-corner-override(
+      $corners: 'none'
+    );
+  }
+}
+
+// ---------------------------------------------------
+// Side: Panels only
+// ---------------------------------------------------
+
+.am-o-app__side .am-c-panel {
+  @include tools.border-focus-base(
+    $is-inset: true,
+    $type: panel
+  );
+
+  @include tools.border-focus-corner-override(
+    $corners: 'none'
+  );
+
+  & {
+    height: 100%;
+  }
+}
+
+// ---------------------------------------------------
+// Modal:
+// ---------------------------------------------------
+
+.am-o-app__modal {
+  display: flex;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+
+  // Panel overrides
+  .am-c-panel {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1000;
+  }
+
+  .am-c-panel + .am-o-app__modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-background-color);
+    opacity: var(--modal-backdrop-opacity);
+    pointer-events: auto;
+  }
+
+  .am-c-panel--side {
+    @include tools.border-focus-base(
+      $is-inset: true,
+      $type: panel
+    );
+    @include tools.border-focus-corner-override(
+      $corners: 'none'
+    );
+  }
+
+  .am-c-panel--inset {
+    top: var(--inset-offset-top);
+    left: var(--primary-gap);
+    max-width: calc(100% - (var(--primary-gap) * 2));
+    max-height: calc(100% - var(--inset-offset-top) - var(--primary-gap));
+  }
+
+  .am-c-panel--middle {
+    position: relative;
+    margin: auto;
+    width: 100%;
+    max-width: calc(100% - (var(--primary-gap) * 2));
+    max-height: calc(100% - (var(--primary-gap) * 2));
+  }
+
+  .am-c-panel--drawer {
+    top: auto;
+    bottom: 0;
+    max-height: 85%;
+  }
+
+  [class*="am-c-panel--"][class*="-button"] { // Adjacent to button
+    inset: var(--modal-inset);
+  }
+}
+
+// 3. Modifiers
+
+// Inline border
+.am-o-app--inline {
+  border: var(--app-border-width) solid var(--app-border-color);
+}
+
+// Hide containers when keyboard hint is visible
+.am-o-app__main--keyboard-hint-visible {
+  .am-o-app__top-col,
+  .am-o-app__right,
+  .am-o-app__right-bottom {
+    visibility: hidden;
+  }
+}
+
+// Avoid refresh jump if layout clacs are not ready
+.am-o-app__overlay--not-ready {
+  visibility: hidden;
+  opacity: 0;
+}
+
+// 4. State styles
+
+// 5. Responsive tweaks
+
+.am-o-app--mobile .am-o-app__side {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  pointer-events: none;
+}

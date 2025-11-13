@@ -1,7 +1,7 @@
 {% extends "layouts/main.html" %}
 
 {% block pageTitle %}
-  Map demo – GOV.UK Prototype Kit
+  DefraMap page template – GOV.UK Prototype Kit
 {% endblock %}
 
 {% block head %}
@@ -13,9 +13,27 @@
   <script>document.body.classList.add('am-is-loading')</script>
 {% endblock %}
 
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "javascript:window.history.back()"
+  }) }}
+{% endblock %}
+
 {% block content %}
-  <h1 class="govuk-heading-l">A basic map</h1>
-  <div id="map" data-zoom="12" data-center="[-2.968, 54.425]"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">
+      A basic DefraMap component
+    </h1>
+
+    <h1 class="govuk-heading-l">A basic map</h1>
+
+    <div id="map" data-zoom="12" data-center="[-2.968, 54.425]"></div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block pageScripts %}
@@ -32,7 +50,6 @@
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/defra-map.js"></script>
   <script>
-    console.log(window)
     const am = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,
       behaviour: 'hybrid',

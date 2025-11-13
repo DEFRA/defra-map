@@ -1,7 +1,7 @@
 {
   "templates": [
     {
-      "name": "Map demo",
+      "name": "Map page",
       "path": "/assets/templates/map.njk",
       "type": "nunjucks"
     }

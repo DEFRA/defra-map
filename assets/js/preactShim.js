@@ -10,7 +10,7 @@
   
   // Add React 18 createRoot compatibility
   if (!window.preactCompat.createRoot) {
-    window.preactCompat.createRoot = function(container, options) {
+    window.preactCompat.createRoot = function(container) {
       return {
         render: function(vnode) {
           window.preact.render(vnode, container)
@@ -28,7 +28,7 @@
   // Babel's automatic runtime needs jsx, jsxs, jsxDEV, Fragment
   // Map them to Preact's h function
   
-  function createJsxFunction(isStatic) {
+  function createJsxFunction() {
     return function(type, props, key) {
       const finalProps = props || {}
       if (key !== undefined) {

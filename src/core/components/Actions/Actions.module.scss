@@ -1,5 +1,4 @@
-.am-c-actions-inset,
-.am-c-actions-bottom {
+.am-c-actions {
   display: flex;
   justify-content: center;
   gap: var(--divider-gap);
@@ -22,6 +21,8 @@
   }
 }
 
-.am-c-actions-inset {
-  min-width: 280px;
+.am-o-app--tablet, .am-o-app--desktop {
+  .am-c-actions {
+    min-width: 280px;
+  }
 }

@@ -19,7 +19,7 @@ export const SlotRenderer = ({ slot }) => {
 
   return (
     <>
-      {['actions-inset', 'actions-bottom'].includes(slot) ? (
+      {slot === 'actions' ? (
         <Actions slot={slot}>
           {slotItems.map(item => item.element)}
         </Actions>

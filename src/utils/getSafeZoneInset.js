@@ -3,23 +3,20 @@ export const getSafeZoneInset = ({
     insetRef,
     rightRef,
     bottomRef,
-    actionsInsetRef,
-    actionsBottomRef,
-    drawerRef
+    actionsRef
   }) => {
 
 	const main = mainRef.current
 	const inset = insetRef.current
 	const right = rightRef.current
 	const bottom = bottomRef.current
-	const actionsInset = actionsInsetRef.current
-	const actionsBottom = actionsBottomRef.current
+	const actions = actionsRef.current
 
 	const root = document.documentElement
 	const dividerGap = parseInt(getComputedStyle(root).getPropertyValue('--divider-gap'), 10)
 
 	// === Safe area logic ===
-	const bottomOffsetTop = Math.min(bottom.offsetTop, actionsInset.offsetTop, actionsBottom.offsetTop)
+	const bottomOffsetTop = Math.min(bottom.offsetTop, actions.offsetTop)
 	const availableHeight = bottomOffsetTop - inset.offsetTop - dividerGap
 	const rightOffset = inset.offsetLeft + right.offsetWidth + dividerGap
 	const availableWidth = main.offsetWidth - rightOffset * 2

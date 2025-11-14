@@ -67,9 +67,6 @@ export const Layout = () => {
           <div className='am-o-app__middle'>
             <SlotRenderer slot={layoutSlots.MIDDLE} />
           </div>
-          <div className='am-o-app__actions-inset' ref={layoutRefs.actionsInsetRef}>
-            <SlotRenderer slot={layoutSlots.ACTIONS_INSET} />
-          </div>
           <div className='am-o-app__bottom' ref={layoutRefs.bottomRef}>
             <div className='am-o-app__bottom-col'>
               <Logo />
@@ -81,8 +78,8 @@ export const Layout = () => {
               </div>
             </div>
           </div>
-          <div className='am-o-app__actions-bottom' ref={layoutRefs.actionsBottomRef}>
-            <SlotRenderer slot={layoutSlots.ACTIONS_BOTTOM} />
+          <div className='am-o-app__actions' ref={layoutRefs.actionsRef}>
+            <SlotRenderer slot={layoutSlots.ACTIONS} />
           </div>
         </div>
         <div className='am-o-app__drawer' ref={layoutRefs.drawerRef}>

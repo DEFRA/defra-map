@@ -37,11 +37,11 @@ describe('SlotRenderer', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('wraps slot items in <Actions> for actions-inset slot', () => {
+  it('wraps slot items in <Actions> for actions slot', () => {
     const items = [{ element: <div key="1">Item1</div> }]
     getSlotItems.mockReturnValue(items)
 
-    const { getByText } = render(<SlotRenderer slot="actions-inset" />)
+    const { getByText } = render(<SlotRenderer slot="actions" />)
     expect(getByText('Item1')).toBeInTheDocument()
   })
 

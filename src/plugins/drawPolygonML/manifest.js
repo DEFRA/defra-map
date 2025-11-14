@@ -4,17 +4,11 @@ import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
 import { DrawPolygonInit } from './DrawPolygonInit.jsx'
 
-const buttonSlotsDefault = {
-  mobile:  { slot: 'actions-bottom', showLabel: false },
-  tablet:  { slot: 'actions-inset',  showLabel: false },
-  desktop: { slot: 'actions-inset',  showLabel: false }
-}
-
-const buttonSlotsLabels = {
-  mobile:  { ...buttonSlotsDefault.mobile,  showLabel: true },
-  tablet:  { ...buttonSlotsDefault.tablet,  showLabel: true },
-  desktop: { ...buttonSlotsDefault.desktop, showLabel: true }
-}
+const createButtonSlots = (showLabel) => ({
+  mobile:  { slot: 'actions', showLabel },
+  tablet:  { slot: 'actions', showLabel },
+  desktop: { slot: 'actions', showLabel }
+})
 
 export const manifest = {
   reducer: {
@@ -30,20 +24,20 @@ export const manifest = {
     variant: 'primary',
     hiddenWhen: ({ appState, pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode) || appState.interfaceType === 'mouse'),
     enableWhen: ({ pluginState }) => pluginState.featureGeoJSON,
-    ...buttonSlotsLabels
+    ...createButtonSlots(true)
   },{
     id: 'drawPolygonAddPoint',
     label: 'Add point',
     variant: 'primary',
     hiddenWhen: ({ appState, pluginState }) => pluginState.mode !== 'draw_vertex' || appState.interfaceType === 'mouse',
-    ...buttonSlotsLabels
+    ...createButtonSlots(true)
   },{
     id: 'drawPolygonUndo',
     label: 'Undo',
     iconId: 'undo',
     variant: 'tertiary',
     enableWhen: ({ pluginState }) => pluginState.numVertecies >= 1,
-    ...buttonSlotsDefault
+    ...createButtonSlots(false)
   },{
     id: 'drawPolygonFinish',
     label: 'Close shape',
@@ -51,7 +45,7 @@ export const manifest = {
     variant: 'tertiary',
     hiddenWhen: ({ pluginState }) => pluginState.mode !== 'draw_vertex',
     enableWhen: ({ pluginState }) => pluginState.numVertecies > 3,
-    ...buttonSlotsDefault
+    ...createButtonSlots(false)
   },{
     id: 'drawPolygonDeletePoint',
     label: 'Delete point',
@@ -59,19 +53,19 @@ export const manifest = {
     variant: 'tertiary',
     enableWhen: ({ pluginState }) => pluginState.selectedVertexIndex >= 0 && pluginState.numVertecies > 3,
     hiddenWhen: ({ pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode)),
-    ...buttonSlotsDefault
+    ...createButtonSlots(false)
   },{
     id: 'drawPolygonSnap',
     label: 'Snap to point',
     iconId: 'magnet',
     variant: 'tertiary',
-    ...buttonSlotsDefault
+    ...createButtonSlots(false)
   },{
     id: 'drawPolygonCancel',
     label: 'Cancel',
     variant: 'tertiary',
     hiddenWhen: ({ appState }) => !appState.isFullscreen,
-    ...buttonSlotsLabels
+    ...createButtonSlots(true)
   }],
 
   keyboardShortcuts: [{

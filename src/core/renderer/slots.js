@@ -10,8 +10,7 @@ export const layoutSlots = Object.freeze({
   RIGHT_BOTTOM: 'right-bottom',
   MIDDLE: 'middle',
   BOTTOM_RIGHT: 'bottom-right',
-  ACTIONS_INSET: 'actions-inset',
-  ACTIONS_BOTTOM: 'actions-bottom',
+  ACTIONS: 'actions',
   DRAWER: 'drawer',
   MODAL: 'modal' // internal only
 })
@@ -22,7 +21,7 @@ export const allowedSlots = Object.freeze({
     layoutSlots.TOP_RIGHT,
     layoutSlots.BOTTOM_RIGHT,
     layoutSlots.ACTIONS_INSET,
-    layoutSlots.ACTIONS_BOTTOM
+    layoutSlots.ACTIONS
   ],
   panel: [
     layoutSlots.SIDE,
@@ -30,7 +29,7 @@ export const allowedSlots = Object.freeze({
     layoutSlots.INSET,
     layoutSlots.MIDDLE,
     layoutSlots.ACTIONS_INSET,
-    layoutSlots.ACTIONS_BOTTOM,
+    layoutSlots.ACTIONS,
     layoutSlots.DRAWER,
     layoutSlots.MODAL
   ],
@@ -41,6 +40,6 @@ export const allowedSlots = Object.freeze({
     layoutSlots.RIGHT_TOP,
     layoutSlots.RIGHT_BOTTOM,
     layoutSlots.ACTIONS_INSET,
-    layoutSlots.ACTIONS_BOTTOM
+    layoutSlots.ACTIONS
   ]
 })

@@ -39,9 +39,8 @@ describe('Layout', () => {
     topRightColRef: React.createRef(),
     insetRef: React.createRef(),
     rightRef: React.createRef(),
-    actionsInsetRef: React.createRef(),
     bottomRef: React.createRef(),
-    actionsBottomRef: React.createRef(),
+    actionsRef: React.createRef(),
     drawerRef: React.createRef()
   }
 

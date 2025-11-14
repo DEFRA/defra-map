@@ -4,14 +4,14 @@ import { Actions } from './Actions.jsx'
 
 describe('Actions component', () => {
   it('renders the correct slot-based class', () => {
-    render(<Actions slot="actions-inset">Content</Actions>)
+    render(<Actions slot="actions">Content</Actions>)
     const container = screen.getByText('Content').closest('div')
-    expect(container).toHaveClass('am-c-actions-inset', 'am-c-panel')
+    expect(container).toHaveClass('am-c-actions', 'am-c-panel')
   })
 
   it('renders children correctly', () => {
     render(
-      <Actions slot="actions-bottom">
+      <Actions slot="actions">
         <div data-testid="child">Child Content</div>
       </Actions>
     )

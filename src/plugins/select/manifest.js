@@ -19,15 +19,15 @@ export const manifest = {
     variant: 'primary',
     enableWhen: ({ mapState, pluginState }) => !!mapState.locationMarkers.items.find(m => m.id === 'location') || !!pluginState.selectionBounds,
     mobile: {
-      slot: 'actions-bottom',
+      slot: 'actions',
       showLabel: true
     },
     tablet: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     },
     desktop: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     }
   },{
@@ -36,15 +36,15 @@ export const manifest = {
     variant: 'tertiary',
     hiddenWhen: ({ appState }) => !['touch', 'keyboard'].includes(appState.interfaceType),
     mobile: {
-      slot: 'actions-bottom',
+      slot: 'actions',
       showLabel: true
     },
     tablet: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     },
     desktop: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     }
   },{
@@ -53,15 +53,15 @@ export const manifest = {
     variant: 'tertiary',
     hiddenWhen: ({ appState}) => !appState.isFullscreen,
     mobile: {
-      slot: 'actions-bottom',
+      slot: 'actions',
       showLabel: true
     },
     tablet: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     },
     desktop: {
-      slot: 'actions-inset',
+      slot: 'actions',
       showLabel: true
     }
   }],

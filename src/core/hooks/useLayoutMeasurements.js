@@ -15,8 +15,7 @@ export function useLayoutMeasurements () {
     topRightColRef,
     insetRef,
     bottomRef,
-    actionsInsetRef,
-    actionsBottomRef
+    actionsRef
   } = layoutRefs
 
   // -----------------------------
@@ -29,8 +28,7 @@ export function useLayoutMeasurements () {
     const topRightCol = topRightColRef.current
     const inset = insetRef.current
     const bottom = bottomRef.current
-    const actionsInset = actionsInsetRef.current
-    const actionsBottom = actionsBottomRef.current
+    const actions = actionsRef.current
 
     if (!main || !top || !inset || !bottom) {
       return
@@ -47,7 +45,7 @@ export function useLayoutMeasurements () {
 
     // === Bottom left offset ===
     const insetBottom = inset.offsetHeight + insetOffsetTop
-    const bottomOffsetTop = Math.min(bottom.offsetTop, actionsInset.offsetTop, actionsBottom.offsetTop)
+    const bottomOffsetTop = Math.min(bottom.offsetTop, actions.offsetTop)
     const bottomOffsetLeft = bottomOffsetTop - dividerGap > insetBottom ? 0 : inset.offsetLeft + inset.offsetWidth
     root.style.setProperty('--offset-left', `${bottomOffsetLeft}px`)
 
@@ -80,7 +78,7 @@ export function useLayoutMeasurements () {
   // --------------------------------
   // 3. Recaluclate CSS vars when elements resize
   // --------------------------------
-  useResizeObserver([topRightColRef, mainRef, insetRef, actionsInsetRef, actionsBottomRef], () => {
+  useResizeObserver([topRightColRef, mainRef, insetRef, actionsRef], () => {
     requestAnimationFrame(() => {
       calculateLayout()
     })

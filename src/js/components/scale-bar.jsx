@@ -95,7 +95,7 @@ export default function ScaleBar () {
     return
   }
 
-  console.log(style)
+  // console.log(style)
   return (
     <>
       {isVisible && (

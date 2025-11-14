@@ -13,6 +13,7 @@ function updateHighlightedFeatures({ LngLatBounds, map, selectedFeatures, styles
   // Group features by source
   selectedFeatures?.forEach(({ featureId, layerId, idProperty }) => {
     const layer = map.getLayer(layerId)
+
     if (!layer) {
       return
     }

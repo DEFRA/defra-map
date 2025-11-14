@@ -7,7 +7,7 @@ import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 
 export function useKeyboardShortcuts (containerRef) {
-  const { mapProvider, reverseGeocode, panDelta, nudgePanDelta, zoomDelta, nudgeZoomDelta } = useConfig()
+  const { mapProvider, reverseGeocode, panDelta, nudgePanDelta, zoomDelta, nudgeZoomDelta, readMapText } = useConfig()
   const { interfaceType, dispatch } = useApp()
   const { targetMarker } = useMap()
   const { announce } = useService()
@@ -25,7 +25,8 @@ export function useKeyboardShortcuts (containerRef) {
       nudgePanDelta,
       zoomDelta,
       nudgeZoomDelta,
-      targetMarker: reverseGeocode?.showMarker ? targetMarker : null
+      targetMarker: reverseGeocode?.showMarker ? targetMarker : null,
+      readMapText
     })
 
     const normalizeKey = (e) => {

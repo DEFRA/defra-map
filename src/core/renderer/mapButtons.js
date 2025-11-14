@@ -6,7 +6,7 @@ import { allowedSlots } from './slots.js'
 /**
  * Pure function to parse and group buttons
  */
-function getButtonGroups ({ buttonConfig, slot, breakpoint, mode, openPanels }) {
+function getButtonGroups ({ buttonConfig, slot, breakpoint, mode }) {
   if (!buttonConfig) {
     return []
   }
@@ -46,7 +46,7 @@ function getButtonGroups ({ buttonConfig, slot, breakpoint, mode, openPanels }) 
 /**
  * Render a single MapButton
  */
-function renderButton ([buttonId, config], breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, idPrefix) {
+function renderButton ([buttonId, config], breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, idPrefix) {
   const bpconfig = config[breakpoint]
   const isOpen = config.panelId ? openPanels[config.panelId] : false
 
@@ -75,6 +75,7 @@ function renderButton ([buttonId, config], breakpoint, openPanels, dispatch, dis
       showLabel={bpconfig.showLabel}
       isDisabled={disabledButtons.has(buttonId)}
       isHidden={hiddenButtons.has(buttonId)}
+      isPressed={config.pressedWhen ? pressedButtons.has(buttonId) : undefined}
       isOpen={isOpen}
       onClick={handleClick}
       panelId={config.panelId}
@@ -86,7 +87,7 @@ function renderButton ([buttonId, config], breakpoint, openPanels, dispatch, dis
 /**
  * React hook wrapper using useMemo
  */
-function mapButtons ({ slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, id }) {
+function mapButtons ({ slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, id }) {
   const buttonConfig = getButtonConfig()
 
   return useMemo(() => {
@@ -104,7 +105,7 @@ function mapButtons ({ slot, breakpoint, mode, openPanels, dispatch, disabledBut
           order: Math.min(...group.buttons.map(([_, config]) => config[breakpoint]?.order ?? 0)),
           element: (
             <div key={`group-${groupId}`} className='am-c-button-group'>
-              {group.buttons.map(btn => renderButton(btn, breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, id))}
+              {group.buttons.map(btn => renderButton(btn, breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, id))}
             </div>
           )
         }
@@ -115,10 +116,10 @@ function mapButtons ({ slot, breakpoint, mode, openPanels, dispatch, disabledBut
         id: buttonId,
         type: 'button',
         order: config[breakpoint]?.order ?? 0,
-        element: renderButton(group.buttons[0], breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, id)
+        element: renderButton(group.buttons[0], breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, id)
       }
     })
-  }, [buttonConfig, slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, id])
+  }, [buttonConfig, slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, id])
 }
 
 export {

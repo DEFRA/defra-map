@@ -59,6 +59,7 @@ export const manifest = {
     label: 'Snap to point',
     iconId: 'magnet',
     variant: 'tertiary',
+    pressedWhen: ({ pluginState }) => pluginState.snap,
     ...createButtonSlots(false)
   },{
     id: 'drawPolygonCancel',

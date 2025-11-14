@@ -56,6 +56,23 @@ export function useButtonStateEvaluator() {
             console.warn(`hiddenWhen error for button ${btn.id}:`, err)
           }
         }
+
+        // Determine if the button should be pressed
+        if (typeof btn.pressedWhen === 'function') {
+          try {
+            const shouldBePressed = btn.pressedWhen(combinedState)
+            const currentlyPressed = appState.pressedButtons.has(btn.id)
+
+            if (shouldBePressed !== currentlyPressed) {
+              dispatch({
+                type: 'TOGGLE_BUTTON_PRESSED',
+                payload: { id: btn.id, isPressed: shouldBePressed }
+              })
+            }
+          } catch (err) {
+            console.warn(`hiddenWhen error for button ${btn.id}:`, err)
+          }
+        }
       })
     })
   }, [appState, mapState, pluginContext])

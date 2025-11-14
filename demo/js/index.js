@@ -37,14 +37,14 @@ const am = new DefraMap('map', {
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
-	markers: [{
-		id: 'location',
-		coords: [-2.9592267, 54.9045977],
-		color: 'outdoor:#ff0000,dark:#00ff00'
-	}],
+	// markers: [{
+	// 	id: 'location',
+	// 	coords: [-2.9592267, 54.9045977],
+	// 	color: 'outdoor:#ff0000,dark:#00ff00'
+	// }],
 	mapStyle: {
 		url: process.env.OUTDOOR_URL,
-		logo: '/images/os-logo.svg',
+		logo: '/assets/images/os-logo.svg',
 		logoAltText: 'Ordnance survey logo',
 		attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
 		backgroundColor: '#f5f5f0'
@@ -53,48 +53,49 @@ const am = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: psMapStyles
 		}),
+		zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
-		}),
-		selectPlugin({
-			dataLayers: [{
-				layerId: 'field-parcels',
-				idProperty: 'ID',
-				selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-			},{
-				layerId: 'linked-parcels',
-				idProperty: 'ID',
-				selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-			}],
-			selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
-			// multiSelect: true
 		}),
 		searchPlugin({
 			transformRequest: transformGeocodeRequest,
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: true,
+			showMarker: false,
 			excludeModes: ['circle', 'square', 'polygon']
 		}),
-		// menuDataLayersPlugin({
-		// 	dataLayers: [],
-		// 	excludeModes: ['circle', 'square', 'polygon']
+		// dataLayersPlugin({
+		// 	transformRequest: transformDataRequest,
+		// 	layers: dataLayers
 		// }),
-		dataLayersPlugin({
-			transformRequest: transformDataRequest,
-			layers: dataLayers
-		}),
-		zoomControlsPlugin(),
+		// selectPlugin({
+		// 	dataLayers: [{
+		// 		layerId: 'field-parcels',
+		// 		idProperty: 'ID',
+		// 		selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+		// 	},{
+		// 		layerId: 'linked-parcels',
+		// 		idProperty: 'ID',
+		// 		selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+		// 	}],
+		// 	markerColor: 'outdoor:#ff0000,dark:#00ff00',
+		// 	selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+		// 	// multiSelect: true
+		// }),
+		drawPolygonPlugin({
+			featureId: 'test1234',
+			// featureGeoJSON: featureGeoJSON
+		})
 		// drawPolygonPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',
 		// 	featureGeoJSON: featureGeoJSON
 		// })
-		// drawPolygonPlugin({
-		// 	featureId: 'test1234',
-		// 	// featureGeoJSON: featureGeoJSON
-		// })
+		// menuDataLayersPlugin({
+		// 	dataLayers: [],
+		// 	excludeModes: ['circle', 'square', 'polygon']
+		// }),
 	]
 	// search
 })

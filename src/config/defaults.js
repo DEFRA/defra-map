@@ -20,7 +20,10 @@ const defaults = {
   panDelta: 100,
   nudgePanDelta: 5,
   mapProvider: null,
-  reverseGeocode: null
+  reverseGeocode: null,
+  markerShape: 'teardrop',
+  markerColor: '#ff0000',
+  readMapText: true
 }
 
 export default defaults

@@ -11,6 +11,8 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
 
   const { featureGeoJSON } = pluginState
 
+  // Button events
+
   const handleDone = () => {
     console.log('Done')
     eventBus.emit('app:polygondone', featureGeoJSON)
@@ -23,6 +25,13 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
   }
   drawPolygonCancel.onClick = handleCancel
 
+  const handleSnap = () => {
+    pluginState.dispatch({ type: 'TOGGLE_SNAP' })
+  }
+  drawPolygonSnap.onClick = handleSnap
+
+  // Plugin events
+
   const handlePolygonModeChange = (e) => pluginState.dispatch({ type: 'SET_MODE', payload: e.mode })
   eventBus.on('drawpolygon:modechange', handlePolygonModeChange)
 
@@ -31,6 +40,8 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
 
   const handlePolygonVertexSelection = (e) => pluginState.dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
   eventBus.on('drawpolygon:vertexselection', handlePolygonVertexSelection)
+
+  // Map events
 
   const handleStyleData = (map) => {
     const layers = map.getStyle().layers || []

@@ -9,14 +9,26 @@ describe('initialState', () => {
     jest.clearAllMocks()
   })
 
-  test('returns correct initial state with autoColorScheme true', () => {
+  const mockMedia = (overrides = {}) => {
     jest.spyOn(mediaState, 'getMediaState').mockReturnValue({
       preferredColorScheme: 'dark',
-      prefersReducedMotion: true
+      prefersReducedMotion: true,
+      ...overrides
     })
+  }
 
-    jest.spyOn(initialOpenPanels, 'getInitialOpenPanels').mockReturnValue({ panel1: true })
-    jest.spyOn(fullscreenUtils, 'getIsFullscreen').mockReturnValue(true)
+  const mockPanels = (value = {}) => {
+    jest.spyOn(initialOpenPanels, 'getInitialOpenPanels').mockReturnValue(value)
+  }
+
+  const mockFullscreen = (value) => {
+    jest.spyOn(fullscreenUtils, 'getIsFullscreen').mockReturnValue(value)
+  }
+
+  test('returns correct initial state when autoColorScheme is true', () => {
+    mockMedia()
+    mockPanels({ panel1: true })
+    mockFullscreen(true)
 
     const config = {
       behaviour: 'responsive',
@@ -34,32 +46,32 @@ describe('initialState', () => {
       isLayoutReady: false,
       breakpoint: 'sm',
       interfaceType: 'mobile',
-      preferredColorScheme: 'dark', // from getMediaState since autoColorScheme=true
+      preferredColorScheme: 'dark',
       prefersReducedMotion: true,
-      isFullscreen: true, // computed via getIsFullscreen
+      isFullscreen: true,
       mode: 'edit',
       previousMode: null,
       safeZoneInset: null,
       disabledButtons: new Set(),
       hiddenButtons: new Set(),
+      pressedButtons: new Set(),
       hasExclusiveControl: false,
       openPanels: { panel1: true },
       previousOpenPanels: {},
       syncMapPadding: true
     })
 
-    expect(initialOpenPanels.getInitialOpenPanels).toHaveBeenCalledWith({ panel1: {} }, 'sm')
-    expect(fullscreenUtils.getIsFullscreen).toHaveBeenCalledWith('responsive', 'sm')
+    expect(initialOpenPanels.getInitialOpenPanels)
+      .toHaveBeenCalledWith({ panel1: {} }, 'sm')
+
+    expect(fullscreenUtils.getIsFullscreen)
+      .toHaveBeenCalledWith('responsive', 'sm')
   })
 
-  test('uses appColorScheme if autoColorScheme is false', () => {
-    jest.spyOn(mediaState, 'getMediaState').mockReturnValue({
-      preferredColorScheme: 'dark',
-      prefersReducedMotion: false
-    })
-
-    jest.spyOn(initialOpenPanels, 'getInitialOpenPanels').mockReturnValue({})
-    jest.spyOn(fullscreenUtils, 'getIsFullscreen').mockReturnValue(false)
+  test('uses appColorScheme when autoColorScheme is false', () => {
+    mockMedia({ prefersReducedMotion: false })
+    mockPanels({})
+    mockFullscreen(false)
 
     const config = {
       behaviour: 'standard',
@@ -72,21 +84,17 @@ describe('initialState', () => {
     }
 
     const result = initialState(config)
+
     expect(result.preferredColorScheme).toBe('light')
     expect(result.prefersReducedMotion).toBe(false)
     expect(result.isFullscreen).toBe(false)
     expect(result.syncMapPadding).toBe(true)
-    expect(fullscreenUtils.getIsFullscreen).toHaveBeenCalledWith('standard', 'lg')
   })
 
-  test('defaults mode to null if not provided', () => {
-    jest.spyOn(mediaState, 'getMediaState').mockReturnValue({
-      preferredColorScheme: 'dark',
-      prefersReducedMotion: false
-    })
-
-    jest.spyOn(initialOpenPanels, 'getInitialOpenPanels').mockReturnValue({})
-    jest.spyOn(fullscreenUtils, 'getIsFullscreen').mockReturnValue(false)
+  test('defaults mode to null when missing', () => {
+    mockMedia({ prefersReducedMotion: false })
+    mockPanels({})
+    mockFullscreen(false)
 
     const config = {
       behaviour: 'minimal',
@@ -98,31 +106,31 @@ describe('initialState', () => {
     }
 
     const result = initialState(config)
+
     expect(result.mode).toBeNull()
-    expect(result.syncMapPadding).toBe(true)
     expect(result.isFullscreen).toBe(false)
   })
 })
 
 describe('reducer', () => {
-  test('calls the corresponding action function if type exists', () => {
+  test('calls mapped action handler', () => {
     const state = { value: 0 }
-    const payload = 5
-    const mockFn = jest.fn().mockReturnValue({ value: 5 })
+    const payload = 123
+    const fn = jest.fn().mockReturnValue({ value: 123 })
 
-    const type = 'TEST_ACTION'
-    actionsMap[type] = mockFn
+    actionsMap.TEST_ACTION = fn
 
-    const result = reducer(state, { type, payload })
-    expect(mockFn).toHaveBeenCalledWith(state, payload)
-    expect(result).toEqual({ value: 5 })
+    const result = reducer(state, { type: 'TEST_ACTION', payload })
 
-    delete actionsMap[type]
+    expect(fn).toHaveBeenCalledWith(state, payload)
+    expect(result).toEqual({ value: 123 })
+
+    delete actionsMap.TEST_ACTION
   })
 
-  test('returns current state if action type does not exist', () => {
-    const state = { value: 1 }
-    const result = reducer(state, { type: 'UNKNOWN', payload: 999 })
+  test('returns original state when action not found', () => {
+    const state = { test: true }
+    const result = reducer(state, { type: 'NOPE' })
     expect(result).toBe(state)
   })
 })

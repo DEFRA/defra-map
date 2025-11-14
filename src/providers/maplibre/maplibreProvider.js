@@ -36,7 +36,7 @@ export default class MapLibreProvider {
     // Disable rotation
     map.touchZoomRotate.disableRotation()
     
-    map.showPadding = true
+    // map.showPadding = true
 
     this.map = map
     this.map.setPadding(padding)

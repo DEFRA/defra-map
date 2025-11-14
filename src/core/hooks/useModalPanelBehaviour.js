@@ -3,11 +3,10 @@ import { useResizeObserver } from './useResizeObserver.js'
 import { constrainKeyboardFocus } from '../../utils/constrainKeyboardFocus.js'
 import { toggleInertElements } from '../../utils/toggleInertElements.js'
 
-export function useModalPanelBehavior ({
+export function useModalPanelBehaviour ({
   mainRef,
   panelRef,
   isModal,
-  isAside,
   rootEl,
   buttonContainerEl,
   handleClose

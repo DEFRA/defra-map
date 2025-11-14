@@ -3,7 +3,7 @@ import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
 import { getIconRegistry } from '../../registry/iconRegistry.js'
-import { useModalPanelBehavior } from '../../hooks/useModalPanelBehaviour.js'
+import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
 
 export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) => {
   const { id } = useConfig()
@@ -31,7 +31,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
     dispatch({ type: 'CLOSE_PANEL', payload: panelId })
   }
 
-  useModalPanelBehavior({mainRef, panelRef, isModal, isAside, rootEl, buttonContainerEl, handleClose })
+  useModalPanelBehaviour({mainRef, panelRef, isModal, isAside, rootEl, buttonContainerEl, handleClose })
   
   useEffect(() => {
     if (shouldFocus) {

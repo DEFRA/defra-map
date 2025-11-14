@@ -106,7 +106,7 @@
 }
 
 .am-c-map-button svg + span {
-    margin-left: var(--button-label-offset);
+    margin-left: var(--button-icon-label-offset);
 
     white-space: nowrap;
 }
@@ -127,12 +127,17 @@
 
 // 3. Modifiers
 
+.am-c-map-button--with-label {
+    padding-left: var(--label-button-padding);
+    padding-right: var(--label-button-padding);
+}
+
 .am-c-map-button--primary {
     color: var(--background-color);
     background-color: var(--primary-button-color);
     span {
         white-space: nowrap;
-        padding: 0px 5px;
+        padding: 0px var(--button-icon-label-offset);
     }
     svg + span {
         padding-left: 0;
@@ -175,6 +180,12 @@
     &--primary[aria-disabled="true"], &--tertiary[aria-disabled="true"] {
         opacity: var(--disabled-button-opacity);
     }
+}
+
+.am-o-app__actions .am-c-map-button[aria-pressed="true"] {
+    color: var(--pressed-button-foreground-color);
+    border-color: var(--pressed-button-border-color);
+    background-color: var(--pressed-button-background-color);
 }
 
 // 5. Responsive tweaks

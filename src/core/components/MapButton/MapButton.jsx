@@ -12,12 +12,13 @@ export const MapButton = ({
   showLabel,
   isDisabled,
   isExpanded,
+  isPressed,
+  isHidden,
   isOpen,
   variant,
   onClick,
   panelId,
-  idPrefix,
-  isHidden
+  idPrefix
 }) => {
   const { id: appId } = useConfig()
   const Icon = getIconRegistry()[iconId]
@@ -25,7 +26,8 @@ export const MapButton = ({
   const classNames = [
     'am-c-map-button',
     buttonId && `am-c-map-button--${stringToKebab(buttonId)}`,
-    variant && `am-c-map-button--${variant}`
+    variant && `am-c-map-button--${variant}`,
+    showLabel && `am-c-map-button--with-label`
   ].filter(Boolean).join(' ')
 
   const buttonEl = (
@@ -36,10 +38,9 @@ export const MapButton = ({
       aria-disabled={isDisabled || undefined}
       aria-expanded={typeof isExpanded === 'boolean' ? isExpanded : undefined}
       onClick={onClick}
-      aria-pressed={panelId ? (isOpen ? 'true' : 'false') : undefined}
-      aria-controls={
-        panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined
-      }
+      // If button controls a panel then that takes priority
+      aria-pressed={panelId ? (isOpen ? 'true' : 'false') : isPressed}
+      aria-controls={panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined}
     >
       {Icon && <Icon aria-hidden='true' focusable='false' />}
       {showLabel && <span>{label}</span>}

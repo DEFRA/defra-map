@@ -16,6 +16,7 @@ export const useHighlightSync = ({
   selectedFeatures,
   selectionBounds,
   dispatch,
+  eventBus
 }) => {
   // Memoize stylesMap so it only recalculates when style or layers change
   const stylesMap = useMemo(() => {
@@ -25,12 +26,8 @@ export const useHighlightSync = ({
     return buildStylesMap(dataLayers, mapStyle)
   }, [dataLayers, mapStyle])
 
-  useEffect(() => {
-    if (!mapProvider || !selectedFeatures || !stylesMap) {
-      return
-    }
-
-    // Force re-application of all selected features
+  // Force re-application of all selected features
+  const updateHighlightedFeatures = () => {
     const bounds = mapProvider.updateHighlightedFeatures(selectedFeatures, stylesMap)
 
     if (!areBoundsEqual(bounds, selectionBounds)) {
@@ -39,5 +36,19 @@ export const useHighlightSync = ({
         payload: { bounds }
       })
     }
+  }
+
+  useEffect(() => {
+    if (!mapProvider || !selectedFeatures || !stylesMap) {
+      return
+    }
+
+    // Update updateHighlightedFeatures on interaction
+    updateHighlightedFeatures()
+
+    // Update updateHighlightedFeatures on style data change
+    eventBus.on('map:styledata', updateHighlightedFeatures)
+
+    return () => eventBus.off('map:styledata', updateHighlightedFeatures)
   }, [selectedFeatures, mapProvider, stylesMap])
 }

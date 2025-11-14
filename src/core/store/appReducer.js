@@ -37,6 +37,7 @@ export const initialState = (config) => {
     safeZoneInset: null,
     disabledButtons: new Set(),
     hiddenButtons: new Set(),
+    pressedButtons: new Set(),
     hasExclusiveControl: false,
     openPanels,
     previousOpenPanels: {},

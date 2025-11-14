@@ -16,7 +16,7 @@ describe('mapButtons module', () => {
     btn2: { iconId: 'icon2', label: 'Button 2', desktop: { slot: 'header', order: 2, showLabel: false }, includeModes: ['view'], group: 'group1', panelId: 'panel1', onClick: jest.fn() }
   }
 
-  const commonProps = { slot: 'header', breakpoint: 'desktop', mode: 'view', openPanels: { panel1: true }, dispatch: jest.fn(), disabledButtons: new Set(['btn1']), hiddenButtons: new Set(), id: 'test' }
+  const commonProps = { slot: 'header', breakpoint: 'desktop', mode: 'view', openPanels: { panel1: true }, dispatch: jest.fn(), disabledButtons: new Set(['btn1']), hiddenButtons: new Set(), pressedButtons: new Set(), id: 'test' }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -69,28 +69,40 @@ describe('mapButtons module', () => {
   // ---------------- renderButton ----------------
   describe('renderButton', () => {
     it('renders with correct props', () => {
-      const btn = renderButton(['btn1', buttonConfig.btn1], 'desktop', commonProps.openPanels, commonProps.dispatch, commonProps.disabledButtons, commonProps.hiddenButtons, 'test')
+      const btn = renderButton(['btn1', buttonConfig.btn1], 'desktop', commonProps.openPanels, commonProps.dispatch, commonProps.disabledButtons, commonProps.hiddenButtons, commonProps.pressedButtons, 'test')
       expect(btn.props).toMatchObject({ buttonId: 'btn1', isDisabled: true, isOpen: false })
     })
 
     it('calls onClick if provided', () => {
-      const btn = renderButton(['btn2', buttonConfig.btn2], 'desktop', commonProps.openPanels, commonProps.dispatch, new Set(), new Set(), 'test')
+      const btn = renderButton(['btn2', buttonConfig.btn2], 'desktop', commonProps.openPanels, commonProps.dispatch, new Set(), new Set(), new Set(), 'test')
       btn.props.onClick()
       expect(buttonConfig.btn2.onClick).toHaveBeenCalled()
     })
 
     it('dispatches OPEN_PANEL and CLOSE_PANEL correctly', () => {
       const dispatch = jest.fn()
-      renderButton(['btn2', { ...buttonConfig.btn2, onClick: undefined }], 'desktop', { panel1: false }, dispatch, new Set(), new Set(), 'test').props.onClick()
+      renderButton(['btn2', { ...buttonConfig.btn2, onClick: undefined }], 'desktop', { panel1: false }, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
       expect(dispatch).toHaveBeenCalledWith({ type: 'OPEN_PANEL', payload: { panelId: 'panel1', props: { triggeringElement: document.activeElement } } })
-      renderButton(['btn1', { ...buttonConfig.btn1, panelId: 'panel1', onClick: undefined }], 'desktop', { panel1: true }, dispatch, new Set(), new Set(), 'test').props.onClick()
+      renderButton(['btn1', { ...buttonConfig.btn1, panelId: 'panel1', onClick: undefined }], 'desktop', { panel1: true }, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
       expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'panel1' })
     })
 
     it('does nothing if no panelId or onClick', () => {
       const dispatch = jest.fn()
-      renderButton(['btn1', { ...buttonConfig.btn1, panelId: undefined, onClick: undefined }], 'desktop', {}, dispatch, new Set(), new Set(), 'test').props.onClick()
+      renderButton(['btn1', { ...buttonConfig.btn1, panelId: undefined, onClick: undefined }], 'desktop', {}, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
       expect(dispatch).not.toHaveBeenCalled()
+    })
+
+    // ---------------- pressedButtons ----------------
+    it('isPressed undefined if pressedWhen not present', () => {
+      const btn = renderButton(['btn1', buttonConfig.btn1], 'desktop', {}, jest.fn(), new Set(), new Set(), new Set(['btn1']), 'test')
+      expect(btn.props.isPressed).toBeUndefined()
+    })
+
+    it('isPressed true if pressedWhen present and button is in pressedButtons', () => {
+      const cfg = { ...buttonConfig.btn1, pressedWhen: true }
+      const btn = renderButton(['btn1', cfg], 'desktop', {}, jest.fn(), new Set(), new Set(), new Set(['btn1']), 'test')
+      expect(btn.props.isPressed).toBe(true)
     })
   })
 

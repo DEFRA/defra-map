@@ -1,9 +1,20 @@
+import { markerSvgPaths } from '../../../config/appConfig'
 import { useLocationMarkers } from '../../hooks/useLocationMarkersAPI'
 import { useConfig } from '../../store/configContext'
+import { useMap } from '../../store/mapContext'
+import { parseColor } from '../../../utils/parseColor.js'
+import { stringToKebab } from '../../../utils/stringToKebab.js'
 
 export const LocationMarkers = () => {
-  const { id } = useConfig()
+  const { id, markerShape, markerColor } = useConfig()
+  const { mapStyle } = useMap()
   const { locationMarkers, markerRef } = useLocationMarkers()
+
+  if (!mapStyle) {
+    return
+  }
+
+  const defaultSvgPaths = markerSvgPaths.find(m => m.shape === markerShape)
 
   return (
     <>
@@ -12,15 +23,21 @@ export const LocationMarkers = () => {
           key={marker.id}
           ref={markerRef(marker.id)} // Single callback ref, just like useTargetMarker
           id={`${id}-location-marker-${marker.id}`}
-          className="am-c-location-marker"
+          className={`am-c-location-marker am-c-location-marker--${marker.markerShape || stringToKebab(markerShape)}`}
           width="38"
           height="38"
           viewBox="0 0 38 38"
-          fillRule="evenodd"
-          fill="currentColor"
           style={{ display: 'none'}}
         >
-          <path d="M31 16.001c0 7.489-8.308 15.289-11.098 17.698-.533.4-1.271.4-1.803 0C15.309 31.29 7 23.49 7 16.001c0-6.583 5.417-12 12-12s12 5.417 12 12zm-12-5c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.241 5-5-2.24-5-5-5z" />
+          <path
+            className="am-c-location-marker__background"
+            d={defaultSvgPaths.backgroundPath}
+            fill={parseColor(marker.color || markerColor, mapStyle.id)}
+            />
+          <path 
+            className="am-c-location-marker__graphic"
+            d={defaultSvgPaths.graphicPath}
+            />
         </svg>
       ))}
     </>

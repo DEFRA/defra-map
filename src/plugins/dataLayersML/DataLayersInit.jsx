@@ -22,7 +22,7 @@ export function DataLayersInit ({ pluginConfig, pluginState, appState, mapState,
       // appState.dispatch({ type: 'RESTORE_PREVIOUS_PANELS' })
     })
 
-    const dataLayers = createDataLayers({
+    createDataLayers({
 			mapStyleId: mapState.mapStyle.id,
       layersConfig: pluginConfig, 
 			mapSize: mapState.mapSize,

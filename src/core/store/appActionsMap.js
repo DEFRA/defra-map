@@ -136,6 +136,22 @@ const toggleButtonHidden = (state, payload) => {
   }
 }
 
+const toggleButtonPressed = (state, payload) => {
+  const { id, isPressed } = payload
+  const updated = new Set(state.pressedButtons)
+
+  if (isPressed) {
+    updated.add(id)
+  } else {
+    updated.delete(id)
+  }
+
+  return {
+    ...state,
+    pressedButtons: updated
+  }
+}
+
 export const actionsMap = {
   SET_BREAKPOINT: setBreakpoint,
   SET_MEDIA: setMedia,
@@ -149,5 +165,6 @@ export const actionsMap = {
   RESTORE_PREVIOUS_PANELS: restorePreviousPanels,
   TOGGLE_HAS_EXCLUSIVE_CONTROL: toggleHasExclusiveControl,
   TOGGLE_BUTTON_DISABLED: toggleButtonDisabled,
-  TOGGLE_BUTTON_HIDDEN: toggleButtonHidden
+  TOGGLE_BUTTON_HIDDEN: toggleButtonHidden,
+  TOGGLE_BUTTON_PRESSED: toggleButtonPressed
 }

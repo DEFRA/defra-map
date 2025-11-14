@@ -20,7 +20,8 @@ describe('actionsMap', () => {
       isLayoutReady: false,
       syncMapPadding: true,
       disabledButtons: new Set(['btn1']),
-      hiddenButtons: new Set(['btn3'])
+      hiddenButtons: new Set(['btn3']),
+      pressedButtons: new Set(['btn5'])
     }
     jest.spyOn(panelRegistry, 'getPanelConfig').mockReturnValue({ panel1: {} })
     jest.spyOn(getInitialOpenPanelsModule, 'getInitialOpenPanels').mockImplementation(() => ({ panel1: { props: {} } }))
@@ -96,7 +97,6 @@ describe('actionsMap', () => {
     expect(result.previousOpenPanels).toBe(localState.openPanels)
   })
 
-
   test('TOGGLE_HAS_EXCLUSIVE_CONTROL sets hasExclusiveControl', () => {
     expect(actionsMap.TOGGLE_HAS_EXCLUSIVE_CONTROL(state, true).hasExclusiveControl).toBe(true)
   })
@@ -126,6 +126,14 @@ describe('actionsMap', () => {
     test('adds or removes button from hiddenButtons', () => {
       expect(actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn4', isHidden: true }).hiddenButtons.has('btn4')).toBe(true)
       expect(actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn3', isHidden: false }).hiddenButtons.has('btn3')).toBe(false)
+    })
+  })
+
+  // ---------------- TOGGLE_BUTTON_PRESSED ----------------
+  describe('TOGGLE_BUTTON_PRESSED', () => {
+    test('adds or removes button from pressedButtons', () => {
+      expect(actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn6', isPressed: true }).pressedButtons.has('btn6')).toBe(true)
+      expect(actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn5', isPressed: false }).pressedButtons.has('btn5')).toBe(false)
     })
   })
 })

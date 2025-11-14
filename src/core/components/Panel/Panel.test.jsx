@@ -4,7 +4,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react'
 import { Panel } from './Panel'
 import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
-import { useModalPanelBehavior } from '../../hooks/useModalPanelBehaviour.js'
+import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
 
 jest.mock('../../store/configContext', () => ({ useConfig: jest.fn() }))
 jest.mock('../../store/appContext', () => ({ useApp: jest.fn() }))
@@ -12,7 +12,7 @@ jest.mock('../../../utils/stringToKebab', () => ({ stringToKebab: (str) => str.t
 jest.mock('../../registry/iconRegistry.js', () => ({
   getIconRegistry: jest.fn(() => ({ close: (props) => <svg data-testid="close-icon" {...props} /> }))
 }))
-jest.mock('../../hooks/useModalPanelBehaviour.js', () => ({ useModalPanelBehavior: jest.fn() }))
+jest.mock('../../hooks/useModalPanelBehaviour.js', () => ({ useModalPanelBehaviour: jest.fn() }))
 
 describe('Panel', () => {
   let dispatch, layoutRefs

@@ -1,9 +1,27 @@
+// ===================================================
+// Component: LocationMarkers
+// ===================================================
+
+// 1. Base styles
 .am-c-location-marker {
   position: absolute;
   left: 0;
   top: 0;
   margin: -17px 0 0 -19px;
   pointer-events: none;
+}
 
-  color: var(--map-overlay-foreground-color);
+// 2. Elements
+.am-c-location-marker__background {
+  // stroke: var(--map-overlay-halo-color);
+  // stroke-width: 1;
+}
+
+.am-c-location-marker__graphic {
+  fill: var(--map-overlay-halo-color);
+}
+
+// 3. Modifiers
+.am-c-location-marker--teardrop .am-c-location-marker__graphic {
+  filter: opacity(50%) brightness(0.25);
 }

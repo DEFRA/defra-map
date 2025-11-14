@@ -8,8 +8,6 @@ export const keyboardMappings = {
     '=': 'zoomIn',
     '-': 'zoomOut',
     _: 'zoomOut'
-    // PageUp: 'cycleFeaturesForward',
-    // PageDown: 'cycleFeaturesBackward'
   },
 
   keyup: {
@@ -23,8 +21,5 @@ export const keyboardMappings = {
     'Alt+i': 'getInfo',
     'Alt+I': 'getInfo',
     Escape: 'clearSelection'
-    // Enter: 'selectFeature',
-    // ' ': 'selectFeature',
-    // Esc: 'clearSelection'
   }
 }

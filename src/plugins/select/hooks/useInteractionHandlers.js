@@ -1,20 +1,15 @@
 import { useCallback } from 'react'
-import {
-  getFeaturesAtPoint,
-  findMatchingFeature,
-  buildLayerConfigMap,
-} from '../utils/featureQueries.js'
+import { getFeaturesAtPoint, findMatchingFeature, buildLayerConfigMap } from '../utils/featureQueries.js'
 
 export const useInteractionHandlers = ({
-  appState,
   mapState,
   pluginConfig,
   pluginState,
   services,
   mapProvider,
 }) => {
-  const { interfaceType } = appState
-  const { dataLayers, selectionMode = 'marker', multiSelect } = pluginConfig
+  const { locationMarkers } = mapState
+  const { dataLayers, selectionMode = 'marker', multiSelect, markerColor } = pluginConfig
   const { dispatch } = pluginState
   const { eventBus } = services
 
@@ -32,7 +27,7 @@ export const useInteractionHandlers = ({
           : null
 
       if (match) {
-        mapState.locationMarkers.remove('location')
+        locationMarkers.remove('location')
 
         const { feature, config } = match
         const featureId = feature.properties?.[config.idProperty]
@@ -61,7 +56,10 @@ export const useInteractionHandlers = ({
       // Marker mode
       if (selectionMode === 'marker' || (selectionMode === 'auto' && hasDataLayers)) {
         dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
-        mapState.locationMarkers.add('location', coords)
+        locationMarkers.add('location', {
+          color: markerColor,
+          coords
+        })
 
         eventBus.emit('select:confirm', { coords, allFeatures })
       }
@@ -72,7 +70,7 @@ export const useInteractionHandlers = ({
       multiSelect,
       eventBus,
       dispatch,
-      mapState.locationMarkers
+      locationMarkers
     ]
   )
 

@@ -30,6 +30,7 @@ export const SelectInit = ({
     mapProvider,
   })
 
+  // Highlight feaytures and sync state selectedBounds from mapProvider
   useHighlightSync({
     mapProvider,
     mapStyle,
@@ -37,6 +38,7 @@ export const SelectInit = ({
     selectedFeatures,
     selectionBounds,
     dispatch,
+    eventBus
   })
 
   // Toggle target marker visibility

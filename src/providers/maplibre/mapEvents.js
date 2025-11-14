@@ -41,9 +41,7 @@ export function attachMapEvents (map, eventBus, { getCenter, getZoom, getBounds,
   map.on('render', () => emitEvent('map:render'))
 
   // Feature changes (debounced)
-  map.on('styledata', debounce(() => {
-    // Placeholder for future feature handling
-  }, DEBOUNCE_IDLE_TIME))
+  map.on('styledata', debounce(() => emitEvent('map:styledata', getMapState()), DEBOUNCE_IDLE_TIME))
 
   // Map style change
   map.on('style.load', () => emitEvent('map:stylechange'))

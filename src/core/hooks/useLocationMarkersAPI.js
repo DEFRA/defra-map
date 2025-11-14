@@ -28,9 +28,9 @@ export const useLocationMarkers = () => {
 
     locationMarkers.markerRefs = markerRefs.current
 
-    locationMarkers.add = (id, coords) => {
-      const { x, y } = projectCoords(coords)
-      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { id, coords, x, y, isVisible: true }})
+    locationMarkers.add = (id, marker) => {
+      const { x, y } = projectCoords(marker.coords)
+      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { ...marker, id, x, y, isVisible: true }})
     }
 
     locationMarkers.remove = (id) => {

@@ -7,10 +7,10 @@ import { Actions } from '../components/Actions/Actions'
 
 export const SlotRenderer = ({ slot }) => {
   const { id } = useConfig()
-  const { breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, interfaceType } = useApp()
+  const { breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons } = useApp()
 
   const slotItems = getSlotItems({
-    id, slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons
+    id, slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons
   })
 
   if (!slotItems.length) {

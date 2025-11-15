@@ -2,7 +2,6 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { TargetMarker } from './TargetMarker.jsx'
 import { useTargetMarker } from '../../hooks/useTargetMarkerAPI.js'
-import { useConfig } from '../../store/configContext'
 
 jest.mock('../../hooks/useTargetMarkerAPI', () => ({ useTargetMarker: jest.fn() }))
 jest.mock('../../store/configContext', () => ({ useConfig: jest.fn(() => ({ id: 'testApp' })) }))

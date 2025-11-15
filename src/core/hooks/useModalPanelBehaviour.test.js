@@ -10,19 +10,21 @@ jest.mock('../../utils/constrainKeyboardFocus.js')
 jest.mock('../../utils/toggleInertElements.js')
 
 describe('useModalPanelBehaviour', () => {
-  let mainRef, panelRef, buttonContainerEl, rootEl, handleClose
+  let refs, elements, handleClose
 
   beforeEach(() => {
-    mainRef = { current: document.createElement('div') }
-    panelRef = { current: document.createElement('div') }
-    buttonContainerEl = document.createElement('div')
-    rootEl = document.createElement('div')
-    rootEl.appendChild(panelRef.current)
-    document.body.appendChild(rootEl)
+    refs = {
+      main: { current: document.createElement('div') },
+      panel: { current: document.createElement('div') }
+    }
+    elements = {
+      buttonContainer: document.createElement('div'),
+      root: document.createElement('div')
+    }
+    elements.root.appendChild(refs.panel.current)
+    document.body.appendChild(elements.root)
     handleClose = jest.fn()
     jest.clearAllMocks()
-
-    // Reset CSS variable
     document.documentElement.style.setProperty('--modal-inset', '')
   })
 
@@ -30,112 +32,140 @@ describe('useModalPanelBehaviour', () => {
     document.body.innerHTML = ''
   })
 
-  function TestComponent({ isModal = true }) {
+  const TestComponent = ({ isModal = true }) => {
     useModalPanelBehaviour({
-      mainRef,
-      panelRef,
+      mainRef: refs.main,
+      panelRef: refs.panel,
       isModal,
-      isAside: false,
-      rootEl,
-      buttonContainerEl,
+      rootEl: elements.root,
+      buttonContainerEl: elements.buttonContainer,
       handleClose
     })
     return null
   }
 
+  const dispatchFocusIn = (target) => {
+    const event = new FocusEvent('focusin', { bubbles: true })
+    Object.defineProperty(event, 'target', { value: target, enumerable: true })
+    document.dispatchEvent(event)
+  }
+
   it('handles Escape and Tab keys', () => {
     render(<TestComponent />)
-    const eventEscape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })
-    panelRef.current.dispatchEvent(eventEscape)
+    
+    fireEvent.keyDown(refs.panel.current, { key: 'Escape' })
     expect(handleClose).toHaveBeenCalled()
 
-    const eventTab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true })
-    panelRef.current.dispatchEvent(eventTab)
-    expect(constrainFocusModule.constrainKeyboardFocus).toHaveBeenCalledWith(panelRef.current, eventTab)
+    fireEvent.keyDown(refs.panel.current, { key: 'Tab' })
+    expect(constrainFocusModule.constrainKeyboardFocus).toHaveBeenCalledWith(
+      refs.panel.current, 
+      expect.any(Object)
+    )
   })
 
   it('updates --modal-inset on resize', () => {
     useResizeObserverModule.useResizeObserver.mockImplementation((_, cb) => cb())
-    Object.defineProperty(mainRef.current, 'getBoundingClientRect', {
-      value: () => ({ top: 0, right: 100, bottom: 50, left: 0, width: 100, height: 50 }),
+    Object.defineProperty(refs.main.current, 'getBoundingClientRect', {
+      value: () => ({ top: 0, right: 100, bottom: 50, left: 0, width: 100, height: 50 })
     })
-    Object.defineProperty(buttonContainerEl, 'getBoundingClientRect', {
-      value: () => ({ top: 10, right: 80, bottom: 40, left: 20, width: 60, height: 30 }),
+    Object.defineProperty(elements.buttonContainer, 'getBoundingClientRect', {
+      value: () => ({ top: 10, right: 80, bottom: 40, left: 20, width: 60, height: 30 })
     })
+    
     render(<TestComponent />)
+    
     const inset = getComputedStyle(document.documentElement).getPropertyValue('--modal-inset')
     expect(inset).toContain('10px')
   })
 
-  it('clicking backdrop calls handleClose', () => {
-    const backdrop = document.createElement('div')
-    backdrop.className = 'am-o-app__modal-backdrop'
-    rootEl.appendChild(backdrop)
+  describe('backdrop clicks', () => {
+    const createBackdrop = (appendTo) => {
+      const backdrop = document.createElement('div')
+      backdrop.className = 'am-o-app__modal-backdrop'
+      appendTo.appendChild(backdrop)
+      return backdrop
+    }
 
-    render(<TestComponent />)
-    fireEvent.click(backdrop)
-    expect(handleClose).toHaveBeenCalled()
+    it('calls handleClose when backdrop inside rootEl is clicked', () => {
+      const backdrop = createBackdrop(elements.root)
+      render(<TestComponent />)
+      fireEvent.click(backdrop)
+      expect(handleClose).toHaveBeenCalled()
+    })
+
+    it('does not call handleClose when backdrop outside rootEl is clicked', () => {
+      const backdrop = createBackdrop(document.body)
+      render(<TestComponent />)
+      fireEvent.click(backdrop)
+      expect(handleClose).not.toHaveBeenCalled()
+    })
+
+    it('does not call handleClose when non-backdrop element is clicked', () => {
+      elements.root.appendChild(document.createElement('div'))
+      render(<TestComponent />)
+      fireEvent.click(elements.root.firstChild)
+      expect(handleClose).not.toHaveBeenCalled()
+    })
   })
 
   it('toggles inert elements on mount and cleanup', () => {
     const { unmount } = render(<TestComponent />)
+    
     expect(toggleInertModule.toggleInertElements).toHaveBeenCalledWith({
-      containerEl: panelRef.current,
+      containerEl: refs.panel.current,
       isFullscreen: true,
-      boundaryEl: rootEl
+      boundaryEl: elements.root
     })
+    
     unmount()
+    
     expect(toggleInertModule.toggleInertElements).toHaveBeenCalledWith({
-      containerEl: panelRef.current,
+      containerEl: refs.panel.current,
       isFullscreen: false,
-      boundaryEl: rootEl
+      boundaryEl: elements.root
     })
   })
 
-  it('redirects focus into panel if focus leaves it', () => {
-    const focusMock = jest.fn()
-    panelRef.current.focus = focusMock
+  describe('focus management', () => {
+    it('redirects focus into panel when focus enters app but outside panel', () => {
+      refs.panel.current.focus = jest.fn()
+      render(<TestComponent />)
 
-    render(<TestComponent />)
+      const outsideEl = document.createElement('input')
+      elements.root.appendChild(outsideEl)
+      dispatchFocusIn(outsideEl)
 
-    // Focus an element inside rootEl but outside panelRef
-    const outsideEl = document.createElement('input')
-    rootEl.appendChild(outsideEl)
-    outsideEl.focus()
+      expect(refs.panel.current.focus).toHaveBeenCalled()
+    })
 
-    const event = new FocusEvent('focusin', { target: outsideEl, bubbles: true })
-    document.dispatchEvent(event)
+    it('does not redirect focus when focus is already inside panel', () => {
+      refs.panel.current.focus = jest.fn()
+      render(<TestComponent />)
 
-    expect(focusMock).toHaveBeenCalled()
+      const insideEl = document.createElement('input')
+      refs.panel.current.appendChild(insideEl)
+      dispatchFocusIn(insideEl)
+
+      expect(refs.panel.current.focus).not.toHaveBeenCalled()
+    })
+
+    it('handles edge cases gracefully', () => {
+      render(<TestComponent />)
+      
+      dispatchFocusIn(null)
+      
+      refs.panel.current = null
+      dispatchFocusIn(document.body)
+      
+      expect(true).toBe(true) // No errors thrown
+    })
   })
 
-  it('does nothing if not modal', () => {
+  it('does nothing when isModal is false', () => {
     render(<TestComponent isModal={false} />)
-    fireEvent.keyDown(panelRef.current, { key: 'Escape' })
+    
+    fireEvent.keyDown(refs.panel.current, { key: 'Escape' })
     expect(handleClose).not.toHaveBeenCalled()
+    expect(toggleInertModule.toggleInertElements).not.toHaveBeenCalled()
   })
-
-  it('does nothing if focusedEl, panelRef, or rootEl is missing', () => {
-    // Focus event with null target triggers the "if (!focusedEl)" branch
-    render(<TestComponent />)
-    const event = new FocusEvent('focusin', { target: null, bubbles: true })
-    document.dispatchEvent(event)
-
-    // Temporarily remove panelRef.current to hit "!panelEl" branch
-    const originalPanel = panelRef.current
-    panelRef.current = null
-    const event2 = new FocusEvent('focusin', { target: document.body, bubbles: true })
-    document.dispatchEvent(event2)
-    panelRef.current = originalPanel
-
-    // Temporarily remove rootEl to hit "!rootEl" branch
-    const originalRoot = rootEl
-    rootEl = null
-    const event3 = new FocusEvent('focusin', { target: document.body, bubbles: true })
-    document.dispatchEvent(event3)
-    rootEl = originalRoot
-
-    // The test passes if no errors are thrown
-  })
-
 })

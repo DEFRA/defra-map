@@ -62,13 +62,13 @@ const am = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: false,
+			showMarker: true,
 			excludeModes: ['circle', 'square', 'polygon']
 		}),
-		// dataLayersPlugin({
-		// 	transformRequest: transformDataRequest,
-		// 	layers: dataLayers
-		// }),
+		dataLayersPlugin({
+			transformRequest: transformDataRequest,
+			layers: dataLayers
+		}),
 		// selectPlugin({
 		// 	dataLayers: [{
 		// 		layerId: 'field-parcels',

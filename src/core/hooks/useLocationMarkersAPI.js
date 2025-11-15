@@ -4,23 +4,21 @@ import { useMap } from '../store/mapContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import eventBus from '../../services/eventBus.js'
 
+// Pure function - easier to test
+export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {
+  if (!mapProvider || !isMapReady) {
+    return { x: 0, y: 0 }
+  }
+  const { x, y } = mapProvider.getPointFromCoords(coords)
+  return { x: x * scaleFactor[mapSize], y: y * scaleFactor[mapSize] - 19 }
+}
+
 export const useLocationMarkers = () => {
   const { mapProvider } = useConfig()
   const { locationMarkers, dispatch, mapSize, isMapReady } = useMap()
-
-  // Map of DOM refs by marker id
   const markerRefs = useRef(new Map())
 
-  // Convert map coords to scaled screen coordinates
-  const projectCoords = useCallback((coords) => {
-    if (!mapProvider || !isMapReady) {
-      return { x: 0, y: 0 }
-    }
-    const { x, y } = mapProvider.getPointFromCoords(coords)
-    return { x: x * scaleFactor[mapSize], y: y * scaleFactor[mapSize] - 19 }
-  }, [mapProvider, mapSize, isMapReady])
-
-  // --- API: Attach methods to locationMarkers obect ---
+  // --- API: Attach methods to locationMarkers object ---
   useEffect(() => {
     if (!isMapReady || !mapProvider) {
       return
@@ -28,9 +26,9 @@ export const useLocationMarkers = () => {
 
     locationMarkers.markerRefs = markerRefs.current
 
-    locationMarkers.add = (id, marker) => {
-      const { x, y } = projectCoords(marker.coords)
-      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { ...marker, id, x, y, isVisible: true }})
+    locationMarkers.add = (id, coords, options) => {
+      const { x, y } = projectCoords(coords, mapProvider, mapSize, isMapReady)
+      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { id, coords, ...options, x, y, isVisible: true }})
     }
 
     locationMarkers.remove = (id) => {
@@ -41,7 +39,7 @@ export const useLocationMarkers = () => {
       return locationMarkers.items.find(marker => marker.id === id)
     }
 
-  }, [isMapReady, mapProvider, locationMarkers, projectCoords, dispatch])
+  }, [isMapReady, mapProvider, locationMarkers, dispatch, mapSize])
 
   // Single ref callback for each marker
   const markerRef = useCallback((id) => (el) => {
@@ -51,43 +49,43 @@ export const useLocationMarkers = () => {
     }
     markerRefs.current.set(id, el)
 
-    // Update marker positions on map render
-    const handleRender = () => {
+    const updateMarkers = () => {
       if (!isMapReady || !mapProvider) {
         return
       }
+      
       locationMarkers.items.forEach(marker => {
         const ref = markerRefs.current.get(marker.id)
         if (!ref || !marker.coords) {
           return
         }
-        const { x, y } = projectCoords(marker.coords)
+        
+        const { x, y } = projectCoords(marker.coords, mapProvider, mapSize, isMapReady)
         ref.style.transform = `translate(${x}px, ${y}px)`
         ref.style.display = 'block'
       })
     }
 
-    eventBus.on('map:render', handleRender)
-    return () => eventBus.off('map:render', handleRender)
-  }, [locationMarkers, projectCoords, mapProvider, isMapReady])
+    eventBus.on('map:render', updateMarkers)
+    return () => eventBus.off('map:render', updateMarkers)
+  }, [locationMarkers, mapProvider, isMapReady, mapSize])
 
   // Update all markers on map resize
   useEffect(() => {
     if (!isMapReady || !mapProvider) {
       return
     }
+    
     locationMarkers.items.forEach(marker => {
       const ref = markerRefs.current.get(marker.id)
       if (!ref || !marker.coords) {
         return
       }
-      const { x, y } = projectCoords(marker.coords)
+      
+      const { x, y } = projectCoords(marker.coords, mapProvider, mapSize, isMapReady)
       ref.style.transform = `translate(${x}px, ${y}px)`
     })
-  }, [mapSize, locationMarkers.items, projectCoords, mapProvider, isMapReady])
+  }, [mapSize, locationMarkers.items, mapProvider, isMapReady])
 
-  return {
-    locationMarkers,
-    markerRef
-  }
+  return { locationMarkers, markerRef }
 }

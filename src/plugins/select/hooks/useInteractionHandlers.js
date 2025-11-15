@@ -56,10 +56,7 @@ export const useInteractionHandlers = ({
       // Marker mode
       if (selectionMode === 'marker' || (selectionMode === 'auto' && hasDataLayers)) {
         dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
-        locationMarkers.add('location', {
-          color: markerColor,
-          coords
-        })
+        locationMarkers.add('location', coords, { color: markerColor })
 
         eventBus.emit('select:confirm', { coords, allFeatures })
       }

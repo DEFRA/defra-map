@@ -10,7 +10,7 @@ export const useTargetMarker = () => {
   const { safeZoneInset } = useApp()
   const { targetMarker, dispatch, mapSize } = useMap()
 
-  const updatePosition = (el, x, y, state) => {
+  const updatePosition = (el, x, y) => {
     if (!safeZoneInset) {
       return
     }

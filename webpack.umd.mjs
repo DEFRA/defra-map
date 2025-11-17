@@ -105,6 +105,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 
   // Core bundle: include Preact, no externals
   if (isCore) {
+    // Don't externalize anything - bundle Preact
     config.externals = {}
   } else {
     // Plugins: use external Preact from window (set by core bundle)

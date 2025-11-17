@@ -1,70 +1,60 @@
-// Import Preact and its modules
+// Import Preact modules - these will be bundled into the output
 import * as preact from 'preact'
 import * as preactCompat from 'preact/compat'
 import * as preactHooks from 'preact/hooks'
 import * as preactJsxRuntime from 'preact/jsx-runtime'
 
-// Set up global references BEFORE importing your library
-if (typeof window !== 'undefined') {
-  window.preact = preact
-  window.preactHooks = preactHooks
-  window.preactJsxRuntime = preactJsxRuntime
-  
-  // Set up preactCompat with all necessary properties
-  window.preactCompat = preactCompat
-  
-  // Ensure preactCompat works as a default export
-  if (!window.preactCompat.default) {
-    window.preactCompat.default = window.preactCompat
-  }
-  
-  // Add React 18 createRoot compatibility if not present
-  if (!window.preactCompat.createRoot) {
-    window.preactCompat.createRoot = function(container) {
-      return {
-        render: function(vnode) {
-          preact.render(vnode, container)
-        },
-        unmount: function() {
-          preact.render(null, container)
-        }
-      }
+// Immediately set up window globals for plugins to use
+window.preact = preact
+window.preactHooks = preactHooks
+window.preactCompat = preactCompat
+window.preactJsxRuntime = preactJsxRuntime
+
+// Ensure preactCompat has a default export
+window.preactCompat.default = window.preactCompat
+
+// Add React 18 createRoot compatibility
+window.preactCompat.createRoot = function(container) {
+  return {
+    render: function(vnode) {
+      window.preact.render(vnode, container)
+    },
+    unmount: function() {
+      window.preact.render(null, container)
     }
   }
-  
-  // Create jsx runtime functions
-  function createJsxFunction() {
-    return function(type, props, key) {
-      const finalProps = props || {}
-      if (key !== undefined) {
-        finalProps.key = key
-      }
-      
-      const children = finalProps.children
-      delete finalProps.children
-      
-      if (children !== undefined) {
-        return preact.h(type, finalProps, children)
-      }
-      return preact.h(type, finalProps)
-    }
-  }
-  
-  // Enhance jsxRuntime with additional properties
-  const jsxRuntimeExports = {
-    ...preactJsxRuntime,
-    jsx: createJsxFunction(false),
-    jsxs: createJsxFunction(true),
-    jsxDEV: createJsxFunction(false),
-    Fragment: preact.Fragment
-  }
-  
-  jsxRuntimeExports.default = jsxRuntimeExports
-  window.preactJsxRuntime = jsxRuntimeExports
-  window.jsxRuntime = jsxRuntimeExports
 }
 
-// Now import and export your actual library
+// Set up jsx runtime shim
+function createJsxFunction() {
+  return function(type, props, key) {
+    const finalProps = props || {}
+    if (key !== undefined) {
+      finalProps.key = key
+    }
+    
+    const children = finalProps.children
+    delete finalProps.children
+    
+    if (children !== undefined) {
+      return window.preact.h(type, finalProps, children)
+    }
+    return window.preact.h(type, finalProps)
+  }
+}
+
+const jsxRuntimeShim = {
+  jsx: createJsxFunction(),
+  jsxs: createJsxFunction(),
+  jsxDEV: createJsxFunction(),
+  Fragment: window.preact.Fragment
+}
+jsxRuntimeShim.default = jsxRuntimeShim
+
+window.preactJsxRuntime = jsxRuntimeShim
+window.jsxRuntime = jsxRuntimeShim
+
+// Now import and export your library
 import DefraMap from './index.js'
 
 export default DefraMap

@@ -1,93 +1,65 @@
-// This new entry point replaces the need for the 5 separate Preact and shim script tags.
-//
-// ASSUMPTION: You must configure Webpack for this entry point to:
-// 1. NOT treat 'preact', 'preact/hooks', 'preact/compat', and 'preact/jsx-runtime' as externals,
-//    so they are bundled inside this file.
-// 2. Wrap the output in a UMD format that exports the `defra` object.
+// --- PREACT CORE ---
+import * as preact from 'preact';
+import * as preactHooks from 'preact/hooks';
+import * as preactCompat from 'preact/compat';
+import * as preactJsxRuntime from 'preact/jsx-runtime';
 
-// Define the global object, using `self` or `window` for browser environments
-const globalScope = typeof self !== 'undefined' ? self : window;
+// --- YOUR ACTUAL LIBRARY ---
+import DefraMap from './index.js';
 
-// Define the core exports object first, ensuring it exists globally before any dependent code runs
-const defra = globalScope.defra || {};
-globalScope.defra = defra;
+// --- EXPOSE TO WINDOW (same names as old CDN scripts) ---
 
-// This IIFE wraps the dependency setup and core import, ensuring the globals
-// are defined synchronously before the main module logic (DefraMap) is attached.
+// Ensure global object
+const g = (typeof window !== 'undefined' ? window : globalThis);
+
+// 1. Same globals as CDN UMD builds
+g.preact = preact;
+g.preactHooks = preactHooks;
+g.preactCompat = preactCompat;
+g.preactJsxRuntime = preactJsxRuntime;
+
+// 2. Apply your shim logic exactly as before
 (function() {
-    // --- 1. Import all necessary Preact components using require() ---
-    // This forces synchronous loading/resolution within the IIFE.
-    // If Webpack is bundling these, they should be available here.
-    const preact = require('preact');
-    const preactHooks = require('preact/hooks'); // Often implicitly available via compat, but included for robustness
-    const preactCompat = require('preact/compat');
-    const preactJsxRuntime = require('preact/jsx-runtime');
+  // Ensure default export exists
+  if (!g.preactCompat.default) g.preactCompat.default = g.preactCompat;
 
-    // --- 2. Expose the Preact modules globally (CRITICAL TIMING FIX) ---
-    // This must happen immediately so the core library's internal modules
-    // (which expect a global 'preact' since they were originally externals) can find them.
-    globalScope.preact = preact;
-    globalScope.preactHooks = preactHooks;
-    globalScope.preactCompat = preactCompat;
-    globalScope.jsxRuntime = preactJsxRuntime;
-    globalScope.preactJsxRuntime = preactJsxRuntime; // Add both names for compatibility
+  // createRoot shim
+  if (!g.preactCompat.createRoot) {
+    g.preactCompat.createRoot = function(container) {
+      return {
+        render(vnode) { g.preact.render(vnode, container); },
+        unmount() { g.preact.render(null, container); }
+      };
+    };
+  }
 
-    // --- 3. Execute the custom shim logic ---
-    // CRITICAL FIX: Ensure preactCompat works as a default export
-    if (!globalScope.preactCompat.default) {
-        globalScope.preactCompat.default = globalScope.preactCompat
-    }
+  function createJsxFunction() {
+    return function(type, props, key) {
+      const p = props || {};
+      if (key !== undefined) p.key = key;
 
-    // Add React 18 createRoot compatibility
-    if (!globalScope.preactCompat.createRoot) {
-        globalScope.preactCompat.createRoot = function(container) {
-            return {
-                render: function(vnode) {
-                    globalScope.preact.render(vnode, container)
-                },
-                unmount: function() {
-                    globalScope.preact.render(null, container)
-                }
-            }
-        }
-    }
+      const children = p.children;
+      delete p.children;
 
-    // Babel's automatic runtime needs jsx, jsxs, jsxDEV, Fragment
-    function createJsxFunction(isShorthand) {
-        return function(type, props, key) {
-            const finalProps = props || {}
-            if (key !== undefined) {
-                finalProps.key = key
-            }
-            
-            const children = finalProps.children
-            delete finalProps.children
-            
-            const restChildren = children === undefined ? [] : Array.isArray(children) ? children : [children];
+      return children !== undefined
+        ? g.preact.h(type, p, children)
+        : g.preact.h(type, p);
+    };
+  }
 
-            return globalScope.preact.h(type, finalProps, ...restChildren)
-        }
-    }
-    
-    // Update the global jsxRuntime with the correct functions
-    const jsxRuntimeExports = globalScope.jsxRuntime;
+  const jsxExports = {
+    jsx: createJsxFunction(),
+    jsxs: createJsxFunction(),
+    jsxDEV: createJsxFunction(),
+    Fragment: g.preact.Fragment,
+    default: null
+  };
 
-    jsxRuntimeExports.jsx = createJsxFunction(false);
-    jsxRuntimeExports.jsxs = createJsxFunction(true);
-    jsxRuntimeExports.jsxDEV = createJsxFunction(false);
-    jsxRuntimeExports.Fragment = globalScope.preact.Fragment;
-    jsxRuntimeExports.default = jsxRuntimeExports;
+  jsxExports.default = jsxExports;
 
-    // --- 4. Import and attach DefraMap to the shared export object ---
-    // This is the local core file that doesn't need external access to 'preact'
-    // but its internal components might.
-    const DefraMap = require('./DefraMap/DefraMap.js').default;
-    defra.DefraMap = DefraMap;
-
+  g.preactJsxRuntime = jsxExports;
+  g.jsxRuntime = jsxExports;
 })();
 
-// Return the `defra` object for UMD compatibility
-export default defra;
-
-// Note: In a Webpack UMD build, the bundler will automatically wrap this
-// and ensure the final 'defra' object is correctly attached globally.
+// Export DefraMap as usual
+export default DefraMap;

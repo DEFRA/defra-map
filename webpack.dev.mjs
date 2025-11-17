@@ -1,7 +1,7 @@
 import webpack from 'webpack'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { setupMiddlewares } from './server/main.js'
+import { setupMiddlewares } from './demo/server/main.js'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import dotenv from 'dotenv'
 

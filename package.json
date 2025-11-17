@@ -7,11 +7,6 @@
     "require": "./dist/umd/index.js"
   },
   "type": "module",
-  "files": [
-    "dist",
-    "src",
-    "README.md"
-  ],
   "scripts": {
     "dev": "webpack serve --config webpack.dev.mjs",
     "prod": "webpack serve --config webpack.prod.mjs",

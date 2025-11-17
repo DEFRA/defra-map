@@ -3,7 +3,6 @@ import { fileURLToPath } from 'url'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 import RemoveFilesPlugin from 'remove-files-webpack-plugin'
-import webpack from 'webpack'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -104,13 +103,47 @@ const createConfig = (entry, libraryPath, isCore = false) => {
     },
   }
 
-  // IMPORTANT: Both core and plugins should NOT externalize when bundling
-  // But after bundling, we set up globals for runtime
+  // KEY CHANGE: Core bundles Preact but ALSO externalizes it for src/index.js
   if (isCore) {
-    // Core: Bundle everything including Preact
-    config.externals = {}
+    // The wrapper (index.umd.js) bundles preact/hooks/compat
+    // But we want to externalize them when webpack processes src/index.js
+    // So we use a custom external function
+    config.externals = [
+      function({ request }, callback) {
+        // Bundle these in index.umd.js
+        if (request === 'preact' || 
+            request === 'preact/hooks' || 
+            request === 'preact/compat' ||
+            request === 'preact/jsx-runtime') {
+          // If we're in index.umd.js, bundle it
+          if (this.context && this.context.includes('index.umd.js')) {
+            return callback()
+          }
+          // If we're in any other file (like index.js), externalize it
+          const externals = {
+            'preact': 'preact',
+            'preact/hooks': 'preactHooks',
+            'preact/compat': 'preactCompat',
+            'preact/jsx-runtime': 'preactJsxRuntime'
+          }
+          return callback(null, externals[request])
+        }
+        // For react aliases, always externalize
+        if (request.startsWith('react')) {
+          const externals = {
+            'react': 'preactCompat',
+            'react-dom': 'preactCompat',
+            'react-dom/client': 'preactCompat',
+            'react/jsx-runtime': 'preactJsxRuntime',
+            'react/jsx-dev-runtime': 'preactJsxRuntime'
+          }
+          return callback(null, externals[request])
+        }
+        callback()
+      }
+    ]
   } else {
-    // Plugins: Expect Preact on window
+    // Plugins: always use external Preact
     config.externals = {
       'react': 'preactCompat',
       'react-dom': 'preactCompat',
@@ -128,7 +161,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 }
 
 export default [
-  // Core - bundle Preact, use index.umd.js entry point
+  // Core - bundle Preact in wrapper, externalize for library code
   createConfig(
     { 'index': './src/index.umd.js' },
     'DefraMap',

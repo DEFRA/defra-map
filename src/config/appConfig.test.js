@@ -2,7 +2,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { appConfig } from './appConfig'
-import { KeyboardHelp } from '../core/components/KeyboardHelp/KeyboardHelp.jsx'
 
 describe('appConfig', () => {
   test('render function should render KeyboardHelp component', () => {

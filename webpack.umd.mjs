@@ -123,49 +123,49 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 export default [
   // Core
   createConfig(
-    { 'defra-map': './src/defraMap.js' },
+    { 'defra-map': './src/index.js' },
     'DefraMap',
     true
   ),
   // Plugins
   createConfig(
-    { 'maplibre-provider': './src/providers/maplibre/index.js' },
+    { 'maplibre-provider': './providers/maplibre/src/index.js' },
     'maplibreProvider'
   ),
   createConfig(
-    { 'open-names-provider': './src/providers/open-names/index.js' },
+    { 'open-names-provider': './providers/open-names/src/index.js' },
     'openNamesProvider'
   ),
   createConfig(
-    { 'draw-polygon-ml-plugin': './src/plugins/drawPolygonML/index.js' },
+    { 'draw-polygon-ml-plugin': './plugins/drawPolygonML/src/index.js' },
     'drawPolygonMLPlugin'
   ),
   createConfig(
-    { 'search-plugin': './src/plugins/search/index.js' },
+    { 'search-plugin': './plugins/search/src/index.js' },
     'searchPlugin'
   ),
   createConfig(
-    { 'select-plugin': './src/plugins/select/index.js' },
+    { 'select-plugin': './plugins/select/src/index.js' },
     'selectPlugin'
   ),
   createConfig(
-    { 'data-layers-ml-plugin': './src/plugins/dataLayersML/index.js' },
+    { 'data-layers-ml-plugin': './plugins/dataLayersML/src/index.js' },
     'dataLayersMLPlugin'
   ),
   createConfig(
-    { 'menu-data-layers-plugin': './src/plugins/menuDataLayers/index.js' },
+    { 'menu-data-layers-plugin': './plugins/menuDataLayers/src/index.js' },
     'menuDataLayersPlugin'
   ),
   createConfig(
-    { 'map-styles-plugin': './src/plugins/mapStyles/index.js' },
+    { 'map-styles-plugin': './plugins/mapStyles/src/index.js' },
     'mapStylesPlugin'
   ),
   createConfig(
-    { 'zoom-controls-plugin': './src/plugins/zoomControls/index.js' },
+    { 'zoom-controls-plugin': './plugins/zoomControls/src/index.js' },
     'zoomControlsPlugin'
   ),
   createConfig(
-    { 'scale-bar-plugin': './src/plugins/scaleBar/index.js' },
+    { 'scale-bar-plugin': './plugins/scaleBar/src/index.js' },
     'scaleBarPlugin'
   ),
 ]

@@ -1,0 +1,87 @@
+@use '/src/scss/tools/index' as tools;
+
+
+// Components, using 'CSS in Component' pattern
+@use './components/Form/Form.module';
+@use './components/CloseButton/CloseButton.module';
+@use './components/Suggestions/Suggestions.module';
+
+// ===================================================
+// Component: Search
+// ===================================================
+
+// 1. Base styles
+.am-c-search {
+  // To follow...
+}
+
+// 2. Elements
+.am-c-search__input-container {
+  display: flex;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: auto;
+  height: var(--button-size);
+
+  &:before {
+    content: '';
+    z-index: 1;
+    position: absolute;
+    inset: -1px;
+    border-radius: var(--button-border-radius);
+    border: 2px solid var(--foreground-color);
+    pointer-events: none;
+  }
+
+  &:after {
+    @include tools.focus-base($type: 'button');
+    opacity: 0;
+    
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity var(--duration) ease;
+    }
+  }
+}
+
+.am-c-search__input {
+  width: 100%;
+  border: 0;
+  padding: var(--divider-gap) calc(var(--divider-gap) + 2px);
+  color: var(--foreground-color);
+  background-color: transparent;
+  outline: 0;
+
+  &::placeholder {
+    color: var(--foreground-color);
+  }
+
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  &::-moz-search-clear {
+    display: none;
+  }
+}
+
+.am-c-search__hint {
+  display: none;
+}
+
+// 3. Modifiers
+.am-o-app--mobile.am-o-app--exclusive-control {
+  .am-o-app__top .am-c-button-wrapper, .am-o-app__right .am-c-button-wrapper {
+    opacity: 0;
+    z-index: -1;
+  }
+}
+
+.am-o-app--mobile .am-c-search__input-container {
+  margin: var(--primary-gap);
+}
+
+.am-c-search__input-container--keyboard-focus-within:after {
+  opacity: 1;
+}

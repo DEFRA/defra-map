@@ -1,4 +1,4 @@
-import { KeyboardHelp } from '../core/components/KeyboardHelp/KeyboardHelp.jsx'
+import { KeyboardHelp } from '../App/components/KeyboardHelp/KeyboardHelp.jsx'
 
 const breakpointDefinition = {
   slot: 'middle',

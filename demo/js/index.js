@@ -1,20 +1,20 @@
-import DefraMap from '../../src/defraMap.js'
+import DefraMap from '../../src/index.js'
 import { openMapStyles, psMapStyles } from './mapStyles.js'
 import { dataLayers } from './dataLayers.js'
 import { searchCustomDatasets } from './searchCustomDatasets.js'
 import { transformGeocodeRequest, transformTileRequest, transformDataRequest } from './request.js'
 // Providers
-import maplibreProvider from '../../src/providers/maplibre/index.js'
-import openNamesProvider from '../../src/providers/open-names/index.js'
+import maplibreProvider from '/providers/maplibre/src/index.js'
+import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
-import zoomControlsPlugin from '../../src/plugins/zoomControls/index.js'
-import mapStylesPlugin from '../../src/plugins/mapStyles/index.js'
-import menuDataLayersPlugin from '../../src/plugins/menuDataLayers/index.js'
-import dataLayersPlugin from '../../src/plugins/dataLayersML/index.js'
-import drawPolygonPlugin from '../../src/plugins/drawPolygonML/index.js'
-import scaleBarPlugin from '../../src/plugins/scaleBar/index.js'
-import searchPlugin from '../../src/plugins/search/index.js'
-import selectPlugin from '../../src/plugins/select/index.js'
+import zoomControlsPlugin from '/plugins/zoomControls/src/index.js'
+import mapStylesPlugin from '/plugins/mapStyles/src/index.js'
+import menuDataLayersPlugin from '/plugins/menuDataLayers/src/index.js'
+import dataLayersPlugin from '/plugins/dataLayersML/src/index.js'
+import drawPolygonPlugin from '/plugins/drawPolygonML/src/index.js'
+import scaleBarPlugin from '/plugins/scaleBar/src/index.js'
+import searchPlugin from '/plugins/search/src/index.js'
+import selectPlugin from '/plugins/select/src/index.js'
 
 const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
 
@@ -40,7 +40,7 @@ const defraMap = new DefraMap('map', {
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],
-	// 	color: 'outdoor:#ff0000,dark:#00ff00'
+	// 	color: { outdoor: '#ff0000', dark: '#00ff00' }
 	// }],
 	mapStyle: {
 		url: process.env.OUTDOOR_URL,

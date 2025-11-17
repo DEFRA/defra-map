@@ -13,19 +13,19 @@
 @use 'elements';
 
 // Objects: class-based selectors which define undecorated design patterns
-@use '../core/layout/layout.module';
+@use '../App/layout/layout.module';
 
 // Components: specific UI components. Using 'CSS in Component' pattern
-@use '../core/components/KeyboardHelp/KeyboardHelp.module';
-@use '../core/components/MapButton/MapButton.module';
-@use '../core/components/Panel/Panel.module';
-@use '../core/components/Viewport/Viewport.module';
-@use '../core/components/Tooltip/Tooltip.module';
-@use '../core/components/Attributions/Attributions.module';
-@use '../core/components/Logo/Logo.module';
-@use '../core/components/TargetMarker/TargetMarker.module';
-@use '../core/components/LocationMarkers/LocationMarkers.module';
-@use '../core/components/Actions/Actions.module';
+@use '../App/components/KeyboardHelp/KeyboardHelp.module';
+@use '../App/components/MapButton/MapButton.module';
+@use '../App/components/Panel/Panel.module';
+@use '../App/components/Viewport/Viewport.module';
+@use '../App/components/Tooltip/Tooltip.module';
+@use '../App/components/Attributions/Attributions.module';
+@use '../App/components/Logo/Logo.module';
+@use '../App/components/TargetMarker/TargetMarker.module';
+@use '../App/components/LocationMarkers/LocationMarkers.module';
+@use '../App/components/Actions/Actions.module';
 
 // Components that dont have a corresponding React Component
 @use 'components';

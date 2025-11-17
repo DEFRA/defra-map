@@ -47,9 +47,12 @@
   <!-- Defra library scripts -->
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/index.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
+  <!--
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
+  -->
   <script>
+    console.log(window)
     const am = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,
       behaviour: 'hybrid',
@@ -63,10 +66,7 @@
         backgroundColor: '#f5f5f0'
       },
       plugins: [
-        defra.zoomControlsPlugin(),
-        defra.scaleBarPlugin({
-			    units: 'metric'
-		    })
+
       ]
     })
   </script>

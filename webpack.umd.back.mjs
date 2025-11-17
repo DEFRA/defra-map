@@ -52,7 +52,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
     ? ['defra', ...libraryPath]
     : ['defra', libraryPath]
 
-  const config = {
+  return {
     mode: 'production',
     entry,
     output: {
@@ -66,13 +66,29 @@ const createConfig = (entry, libraryPath, isCore = false) => {
       },
       globalObject: 'this',
       chunkFilename: '[name].js',
+      // CRITICAL: Tell webpack where to find externals for chunks
       chunkLoadingGlobal: 'webpackChunkdefra_DefraMap'
     },
+    // CRITICAL: Set externalsType for proper external resolution
     externalsType: 'var',
     externalsPresets: { web: true },
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
+      // NO aliases - we use external Preact for everything
       alias: {}
+    },
+    // Make Preact external for ALL bundles (core and plugins)
+    // Using 'var' type means: 'react' becomes window.preactCompat
+    externals: {
+      'react': 'preactCompat',
+      'react-dom': 'preactCompat',
+      'react-dom/client': 'preactCompat',
+      'react/jsx-runtime': 'preactJsxRuntime',
+      'react/jsx-dev-runtime': 'preactJsxRuntime',
+      'preact': 'preact',
+      'preact/compat': 'preactCompat',
+      'preact/hooks': 'preactHooks',
+      'preact/jsx-runtime': 'preactJsxRuntime'
     },
     module: {
       rules: [
@@ -102,36 +118,16 @@ const createConfig = (entry, libraryPath, isCore = false) => {
       removeEmptyChunks: true
     },
   }
-
-  // Core bundle: include Preact, no externals
-  if (isCore) {
-    config.externals = {}
-  } else {
-    // Plugins: use external Preact from window (set by core bundle)
-    config.externals = {
-      'react': 'preactCompat',
-      'react-dom': 'preactCompat',
-      'react-dom/client': 'preactCompat',
-      'react/jsx-runtime': 'preactJsxRuntime',
-      'react/jsx-dev-runtime': 'preactJsxRuntime',
-      'preact': 'preact',
-      'preact/compat': 'preactCompat',
-      'preact/hooks': 'preactHooks',
-      'preact/jsx-runtime': 'preactJsxRuntime'
-    }
-  }
-
-  return config
 }
 
 export default [
-  // Core - bundle Preact, use index.umd.js entry point
+  // Core
   createConfig(
-    { 'index': './src/index.umd.js' },
+    { 'index': './src/index.js' },
     'DefraMap',
     true
   ),
-  // Plugins - use external Preact
+  // Plugins
   createConfig(
     { 'maplibre-provider': './providers/maplibre/src/index.js' },
     'maplibreProvider'

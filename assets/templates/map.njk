@@ -46,6 +46,16 @@
 
   <!-- Defra library scripts -->
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/index.js"></script>
+  <script>
+    // Debug what's on window after core loads
+    console.log('After core loaded:', {
+      preact: window.preact,
+      preactHooks: window.preactHooks,
+      useState: window.preactHooks?.useState,
+      preactCompat: window.preactCompat,
+      hasHooksOnCompat: !!window.preactCompat?.useState
+    })
+  </script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>

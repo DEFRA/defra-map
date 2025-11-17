@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 import RemoveFilesPlugin from 'remove-files-webpack-plugin'
+import webpack from 'webpack'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -103,12 +104,13 @@ const createConfig = (entry, libraryPath, isCore = false) => {
     },
   }
 
-  // Core bundle: include Preact, no externals
+  // IMPORTANT: Both core and plugins should NOT externalize when bundling
+  // But after bundling, we set up globals for runtime
   if (isCore) {
-    // Don't externalize anything - bundle Preact
+    // Core: Bundle everything including Preact
     config.externals = {}
   } else {
-    // Plugins: use external Preact from window (set by core bundle)
+    // Plugins: Expect Preact on window
     config.externals = {
       'react': 'preactCompat',
       'react-dom': 'preactCompat',

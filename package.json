@@ -1,14 +1,17 @@
 {
   "name": "@defra/defra-map",
-  "version": "2.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "An accessbile map component",
-  "main": "dist/umd/defra-map.js",
-  "module": "dist/esm/defra-map.js",
+  "main": "dist/umd/index.js",
   "exports": {
-    "import": "./dist/esm/defra-map.js",
-    "require": "./dist/umd/defra-map.js"
+    "require": "./dist/umd/index.js"
   },
   "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "dev": "webpack serve --config webpack.dev.mjs",
     "prod": "webpack serve --config webpack.prod.mjs",

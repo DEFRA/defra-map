@@ -123,7 +123,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 export default [
   // Core
   createConfig(
-    { 'defra-map': './src/index.js' },
+    { 'index': './src/index.js' },
     'DefraMap',
     true
   ),

@@ -123,7 +123,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
 export default [
   // Core
   createConfig(
-    { 'index': './src/index.js' },
+    { 'index': './src/index.umd.js' },
     'DefraMap',
     true
   ),

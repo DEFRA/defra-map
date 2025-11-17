@@ -6,7 +6,11 @@ import RemoveFilesPlugin from 'remove-files-webpack-plugin'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const createConfig = (entry, libraryPath, isCore = false) => {
+/**
+ * externalPreact = true  → plugins use globals (original behaviour)
+ * externalPreact = false → core UMD bundles preact
+ */
+const createConfig = (entry, libraryPath, isCore = false, externalPreact = true) => {
   const plugins = [
     new RemoveEmptyScriptsPlugin(),
     new MiniCssExtractPlugin({
@@ -27,7 +31,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
           test: [
             {
               folder: path.resolve(__dirname, 'dist/css'),
-              method: (p) => p.endsWith('-full.css')
+              method: p => p.endsWith('-full.css')
             }
           ]
         }
@@ -40,7 +44,7 @@ const createConfig = (entry, libraryPath, isCore = false) => {
           test: [
             {
               folder: path.resolve(__dirname, 'dist/css'),
-              method: (p) => p.endsWith('-full.css')
+              method: p => p.endsWith('-full.css')
             }
           ]
         }
@@ -66,30 +70,32 @@ const createConfig = (entry, libraryPath, isCore = false) => {
       },
       globalObject: 'this',
       chunkFilename: '[name].js',
-      // CRITICAL: Tell webpack where to find externals for chunks
       chunkLoadingGlobal: 'webpackChunkdefra_DefraMap'
     },
-    // CRITICAL: Set externalsType for proper external resolution
+
     externalsType: 'var',
     externalsPresets: { web: true },
+
+    // ⬇⬇⬇ KEY FIX – only plugins externalise preact
+    externals: externalPreact
+      ? {
+          'react': 'preactCompat',
+          'react-dom': 'preactCompat',
+          'react-dom/client': 'preactCompat',
+          'react/jsx-runtime': 'preactJsxRuntime',
+          'react/jsx-dev-runtime': 'preactJsxRuntime',
+          'preact': 'preact',
+          'preact/compat': 'preactCompat',
+          'preact/hooks': 'preactHooks',
+          'preact/jsx-runtime': 'preactJsxRuntime'
+        }
+      : {},
+
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
-      // NO aliases - we use external Preact for everything
       alias: {}
     },
-    // Make Preact external for ALL bundles (core and plugins)
-    // Using 'var' type means: 'react' becomes window.preactCompat
-    externals: {
-      'react': 'preactCompat',
-      'react-dom': 'preactCompat',
-      'react-dom/client': 'preactCompat',
-      'react/jsx-runtime': 'preactJsxRuntime',
-      'react/jsx-dev-runtime': 'preactJsxRuntime',
-      'preact': 'preact',
-      'preact/compat': 'preactCompat',
-      'preact/hooks': 'preactHooks',
-      'preact/jsx-runtime': 'preactJsxRuntime'
-    },
+
     module: {
       rules: [
         {
@@ -100,15 +106,17 @@ const createConfig = (entry, libraryPath, isCore = false) => {
         {
           test: /\.tsx?$/,
           loader: 'ts-loader',
-          exclude: /node_modules/,
+          exclude: /node_modules/
         },
         {
           test: /\.s[ac]ss$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-        },
-      ],
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        }
+      ]
     },
+
     plugins,
+
     optimization: {
       splitChunks: {
         chunks() {
@@ -116,18 +124,24 @@ const createConfig = (entry, libraryPath, isCore = false) => {
         }
       },
       removeEmptyChunks: true
-    },
+    }
   }
 }
 
 export default [
-  // Core
+  // ===========================================================
+  // CORE UMD BUILD (bundles Preact + shim + DefraMap)
+  // ===========================================================
   createConfig(
     { 'index': './src/index.umd.js' },
     'DefraMap',
-    true
+    true,
+    false              // ⬅⬅⬅ THE FIX: do NOT externalise preact here
   ),
-  // Plugins
+
+  // ===========================================================
+  // PLUGINS (still externalise Preact exactly as before)
+  // ===========================================================
   createConfig(
     { 'maplibre-provider': './providers/maplibre/src/index.js' },
     'maplibreProvider'
@@ -167,5 +181,5 @@ export default [
   createConfig(
     { 'scale-bar-plugin': './plugins/scaleBar/src/index.js' },
     'scaleBarPlugin'
-  ),
+  )
 ]

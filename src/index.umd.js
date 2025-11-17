@@ -1,29 +1,27 @@
-// --- PREACT CORE ---
+// src/index.umd.js
+// Bundles Preact + hooks + compat + jsx-runtime and exposes the same globals as your CDN + shim
+
 import * as preact from 'preact';
 import * as preactHooks from 'preact/hooks';
 import * as preactCompat from 'preact/compat';
 import * as preactJsxRuntime from 'preact/jsx-runtime';
 
-// --- YOUR ACTUAL LIBRARY ---
-import DefraMap from './index.js';
+import DefraMap from './index.js'; // your existing core entry
 
-// --- EXPOSE TO WINDOW (same names as old CDN scripts) ---
+const g = (typeof window !== 'undefined') ? window : globalThis;
 
-// Ensure global object
-const g = (typeof window !== 'undefined' ? window : globalThis);
-
-// 1. Same globals as CDN UMD builds
+// Expose direct globals (ensure properties exist)
 g.preact = preact;
 g.preactHooks = preactHooks;
 g.preactCompat = preactCompat;
 g.preactJsxRuntime = preactJsxRuntime;
 
-// 2. Apply your shim logic exactly as before
+// The shim logic (keeps behaviour identical to your current preactShim.js)
 (function() {
-  // Ensure default export exists
+  // Ensure default export exists for preact/compat
   if (!g.preactCompat.default) g.preactCompat.default = g.preactCompat;
 
-  // createRoot shim
+  // createRoot shim if missing
   if (!g.preactCompat.createRoot) {
     g.preactCompat.createRoot = function(container) {
       return {
@@ -33,21 +31,24 @@ g.preactJsxRuntime = preactJsxRuntime;
     };
   }
 
+  // Build jsx runtime helpers that call preact.h
   function createJsxFunction() {
     return function(type, props, key) {
-      const p = props || {};
-      if (key !== undefined) p.key = key;
+      const finalProps = props || {};
+      if (key !== undefined) finalProps.key = key;
 
-      const children = p.children;
-      delete p.children;
+      // Handle children prop
+      const children = finalProps.children;
+      delete finalProps.children;
 
-      return children !== undefined
-        ? g.preact.h(type, p, children)
-        : g.preact.h(type, p);
+      if (children !== undefined) {
+        return g.preact.h(type, finalProps, children);
+      }
+      return g.preact.h(type, finalProps);
     };
   }
 
-  const jsxExports = {
+  const jsxRuntimeExports = {
     jsx: createJsxFunction(),
     jsxs: createJsxFunction(),
     jsxDEV: createJsxFunction(),
@@ -55,11 +56,12 @@ g.preactJsxRuntime = preactJsxRuntime;
     default: null
   };
 
-  jsxExports.default = jsxExports;
+  jsxRuntimeExports.default = jsxRuntimeExports;
 
-  g.preactJsxRuntime = jsxExports;
-  g.jsxRuntime = jsxExports;
+  // Provide both names used earlier by your shim/CDN builds
+  g.preactJsxRuntime = jsxRuntimeExports;
+  g.jsxRuntime = jsxRuntimeExports;
 })();
 
-// Export DefraMap as usual
+// Finally export DefraMap as the default UMD export
 export default DefraMap;

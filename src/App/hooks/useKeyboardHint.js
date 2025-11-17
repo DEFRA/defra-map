@@ -10,7 +10,9 @@ export function useKeyboardHint ({
   const showHint = keyboardHintVisible
 
   useEffect(() => {
-    if (!showHint || !containerRef.current) return
+    if (!showHint || !containerRef.current) {
+      return
+    }
 
     const containerEl = containerRef.current
 
@@ -21,10 +23,6 @@ export function useKeyboardHint ({
     }
 
     const handleMouseDown = (e) => {
-      if (!containerEl) {
-        return
-      }
-
       const clickedInsideViewport = containerEl.contains(e.target)
       const clickedInsideHint = keyboardHintRef.current?.contains(e.target)
 

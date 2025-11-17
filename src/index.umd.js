@@ -10,17 +10,26 @@ window.preactHooks = preactHooks
 window.preactCompat = preactCompat
 window.preactJsxRuntime = preactJsxRuntime
 
-// Ensure preactCompat has a default export
-window.preactCompat.default = window.preactCompat
+// Check if default exists and is a getter, if not add it
+if (!window.preactCompat.default) {
+  try {
+    window.preactCompat.default = window.preactCompat
+  } catch (e) {
+    // If it fails (readonly), it means default already exists as a getter
+    // which is fine - it should point to preactCompat anyway
+  }
+}
 
-// Add React 18 createRoot compatibility
-window.preactCompat.createRoot = function(container) {
-  return {
-    render: function(vnode) {
-      window.preact.render(vnode, container)
-    },
-    unmount: function() {
-      window.preact.render(null, container)
+// Add React 18 createRoot compatibility if it doesn't exist
+if (!window.preactCompat.createRoot) {
+  window.preactCompat.createRoot = function(container) {
+    return {
+      render: function(vnode) {
+        window.preact.render(vnode, container)
+      },
+      unmount: function() {
+        window.preact.render(null, container)
+      }
     }
   }
 }

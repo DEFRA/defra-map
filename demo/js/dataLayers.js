@@ -3,7 +3,7 @@ export const dataLayers = [{
   label: 'Field parcels',
   filter: ['!=', ['get', 'SBI'], '106223377'],
   url: process.env.WFS_DATA_URL,
-  stroke: 'outdoor:#b1b4b6,dark:#28a197,aerial:rgba(40,161,151,0.8),black-and-white:#28a197',
+  stroke: { outdoor: '#b1b4b6', dark: '#28a197', aerial: 'rgba(40,161,151,0.8)', 'black-and-white': '#28a197' },
   strokeWidth: 2,
   // strokeDashArray: [1, 2],
   fill: 'transparent',

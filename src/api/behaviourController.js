@@ -21,8 +21,8 @@ function shouldLoadComponent (config) {
   const hasViewParam = getQueryParam(defaults.mapViewParamKey) === id
 
   return ['mapOnly', 'inline'].includes(behaviour) ||
-         (behaviour === 'hybrid' && breakpoint !== 'mobile') ||
-         hasViewParam
+    (behaviour === 'hybrid' && breakpoint !== 'mobile') ||
+    hasViewParam
 }
 
 /**

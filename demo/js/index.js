@@ -18,7 +18,7 @@ import selectPlugin from '../../src/plugins/select/index.js'
 
 const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
 
-const am = new DefraMap('map', {
+const defraMap = new DefraMap('map', {
 	behaviour: 'hybrid',
 	mapProvider: maplibreProvider,
 	reverseGeocode: {
@@ -69,24 +69,24 @@ const am = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		// selectPlugin({
-		// 	dataLayers: [{
-		// 		layerId: 'field-parcels',
-		// 		idProperty: 'ID',
-		// 		selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-		// 	},{
-		// 		layerId: 'linked-parcels',
-		// 		idProperty: 'ID',
-		// 		selectedFeatureStyle: { stroke: 'outdoor:#ff0000,dark:#00ff00', strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-		// 	}],
-		// 	markerColor: 'outdoor:#ff0000,dark:#00ff00',
-		// 	selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
-		// 	// multiSelect: true
-		// }),
-		drawPolygonPlugin({
-			featureId: 'test1234',
-			// featureGeoJSON: featureGeoJSON
-		})
+		selectPlugin({
+			dataLayers: [{
+				layerId: 'field-parcels',
+				idProperty: 'ID',
+				selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+			},{
+				layerId: 'linked-parcels',
+				idProperty: 'ID',
+				selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+			}],
+			markerColor: { outdoor: '#ff0000', dark: '#00ff00' },
+			selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+			// multiSelect: true
+		}),
+		// drawPolygonPlugin({
+		// 	featureId: 'test1234',
+		// 	// featureGeoJSON: featureGeoJSON
+		// })
 		// drawPolygonPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',
@@ -100,21 +100,21 @@ const am = new DefraMap('map', {
 	// search
 })
 
-am.on('map:ready', (e) => {
+defraMap.on('map:ready', (e) => {
 	// console.log('Map ready')
 })
 
-am.on('select:done', (e) => {
+defraMap.on('select:done', (e) => {
 	console.log(e)
 })
 
 // Update selected feature
-am.on('search:match', (e) => {
+defraMap.on('search:match', (e) => {
 	if (e.type !== 'parcel') {
 		return
 	}
 	// console.log(am.emit)
-	am.emit('select:selectFeatures', {
+	defraMap.emit('select:selectFeatures', {
 		featureId: e.id,
 		layerId: 'field-parcels',
 		idProperty: 'ID'
@@ -122,6 +122,6 @@ am.on('search:match', (e) => {
 })
 
 // Hide selected feature
-am.on('search:clear', () => {
+defraMap.on('search:clear', () => {
 	// console.log('Search clear')
 })

@@ -57,7 +57,7 @@ function updateDOMState (mapInstance) {
 
   // Set container height
   const height = !isFullscreen &&
-                 (behaviour === 'buttonFirst' || (behaviour === 'hybrid' && isMobile))
+    (behaviour === 'buttonFirst' || (behaviour === 'hybrid' && isMobile))
     ? 'auto'
     : containerHeight
   rootEl.style.height = isFullscreen ? '100%' : height

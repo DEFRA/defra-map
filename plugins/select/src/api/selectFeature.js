@@ -8,5 +8,5 @@ export const selectFeature = (
   { pluginConfig, pluginState },
   { featureId, dataLayerId, idProperty }
 ) => {
-  console.log('Select featuree to follow')
+  console.log('Select feature to follow')
 }

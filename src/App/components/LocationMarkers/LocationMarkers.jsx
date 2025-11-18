@@ -27,7 +27,7 @@ export const LocationMarkers = () => {
           width="38"
           height="38"
           viewBox="0 0 38 38"
-          style={{ display: 'none'}}
+          style={{ display: marker.isVisible ? 'block' : 'none' }}
         >
           <path
             className="am-c-location-marker__background"

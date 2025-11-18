@@ -1,16 +1,16 @@
-// sanitiseConfig.test.js
-import { sanitiseConfig } from './sanitiseConfig'
+// mergeConfig.test.js
+import { mergeConfig } from './mergeConfig.js'
 import defaults from './defaults.js'
 
-describe('sanitiseConfig', () => {
+describe('mergeConfig', () => {
   it('returns defaults when no userConfig is provided', () => {
-    const result = sanitiseConfig()
+    const result = mergeConfig()
     expect(result).toEqual(defaults)
   })
 
   it('merges defaults with userConfig', () => {
     const userConfig = { customKey: 'customValue' }
-    const result = sanitiseConfig(userConfig)
+    const result = mergeConfig(userConfig)
     // should include everything from defaults, plus userConfig override
     expect(result).toMatchObject({ ...defaults, customKey: 'customValue' })
   })
@@ -18,7 +18,7 @@ describe('sanitiseConfig', () => {
   it('overrides defaults when keys overlap', () => {
     // Assume defaults has a key "theme"
     const userConfig = { theme: 'dark' }
-    const result = sanitiseConfig(userConfig)
+    const result = mergeConfig(userConfig)
     expect(result.theme).toBe('dark')
   })
 })

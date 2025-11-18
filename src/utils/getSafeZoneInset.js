@@ -2,14 +2,14 @@ export const getSafeZoneInset = ({
     mainRef,
     insetRef,
     rightRef,
-    bottomRef,
+    footerRef,
     actionsRef
   }) => {
 
 	const main = mainRef.current
 	const inset = insetRef.current
 	const right = rightRef.current
-	const bottom = bottomRef.current
+	const bottom = footerRef.current
 	const actions = actionsRef.current
 
 	const root = document.documentElement

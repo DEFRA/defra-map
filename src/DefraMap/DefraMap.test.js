@@ -25,7 +25,7 @@ jest.mock('./behaviourController.js', () => ({
 }))
 jest.mock('./domStateManager.js', () => ({ updateDOMState: jest.fn(), removeLoadingState: jest.fn() }))
 jest.mock('./renderError.js', () => ({ renderError: jest.fn() }))
-jest.mock('../config/sanitiseConfig.js', () => ({ sanitiseConfig: jest.fn(cfg => cfg) }))
+jest.mock('../config/mergeConfig.js', () => ({ mergeConfig: jest.fn(cfg => cfg) }))
 jest.mock('../utils/detectBreakpoint.js', () => ({ createBreakpointDetector: jest.fn(), getBreakpoint: jest.fn(() => 'desktop') }))
 jest.mock('../utils/detectInterfaceType.js', () => ({ createInterfaceDetector: jest.fn(), getInterfaceType: jest.fn(() => 'keyboard') }))
 jest.mock('../services/reverseGeocode.js', () => ({ createReverseGeocode: jest.fn() }))

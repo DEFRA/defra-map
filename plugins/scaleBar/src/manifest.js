@@ -7,13 +7,13 @@ export const manifest = {
     id: 'scaleBar',
     label: 'Scale bar',
     mobile: {
-      slot: 'bottom-right'
+      slot: 'footer-right'
     },
     tablet: {
-      slot: 'bottom-right'
+      slot: 'footer-right'
     },
     desktop: {
-      slot: 'bottom-right'
+      slot: 'footer-right'
     },
     render: ScaleBar
   }]

@@ -160,28 +160,27 @@
 }
 
 // ---------------------------------------------------
-// Bottom:
+// Footer: Logo, scalebar, copyright etc
 // ---------------------------------------------------
 
-.am-o-app__bottom {
+.am-o-app__footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-left: var(--offset-left);
 }
 
-.am-o-app__bottom-col {
+.am-o-app__footer-col {
   display: flex;
   flex-direction: column;
   min-width: auto;
 }
 
-.am-o-app__bottom-col:first-child {
+.am-o-app__footer-col:first-child {
   justify-content: flex-start;
   flex-shrink: 0;
 }
 
-.am-o-app__bottom-col:last-child {
+.am-o-app__footer-col:last-child {
   flex: 1 1 auto;
   justify-content: flex-end;
   text-align: right;
@@ -339,6 +338,7 @@
 }
 
 // Corners removed when placed at the bottom
+.am-o-app--mobile .am-o-app__bottom,
 .am-o-app--mobile .am-o-app__actions {
   margin: var(--primary-gap) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1);
 

@@ -6,7 +6,7 @@ import { createButton } from './buttonManager.js'
 import { setupBehavior, shouldLoadComponent } from './behaviourController.js'
 import { updateDOMState, removeLoadingState } from './domStateManager.js'
 import { renderError } from './renderError.js'
-import { sanitiseConfig } from '../config/sanitiseConfig.js'
+import { mergeConfig } from '../config/mergeConfig.js'
 import { createBreakpointDetector, getBreakpoint } from '../utils/detectBreakpoint.js'
 import { createInterfaceDetector, getInterfaceType } from '../utils/detectInterfaceType.js'
 import { createReverseGeocode } from '../services/reverseGeocode.js'
@@ -58,7 +58,7 @@ export default class DefraMap {
 
   _buildConfig (props) {
     const parsedDataset = parseDataProperties(this.rootEl)
-    return sanitiseConfig({
+    return mergeConfig({
       id: this.id,
       title: document.title,
       ...parsedDataset,

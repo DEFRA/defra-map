@@ -29,7 +29,7 @@ const createRefs = (overrides = {}) => ({
   topLeftColRef: { current: createEl(overrides.topLeftCol) },
   topRightColRef: { current: createEl(overrides.topRightCol) },
   insetRef: { current: createEl(overrides.inset) },
-  bottomRef: { current: createEl(overrides.bottom) },
+  footerRef: { current: createEl(overrides.bottom) },
   actionsRef: { current: createEl(overrides.actions) }
 })
 

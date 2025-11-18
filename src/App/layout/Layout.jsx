@@ -67,16 +67,19 @@ export const Layout = () => {
           <div className='am-o-app__middle'>
             <SlotRenderer slot={layoutSlots.MIDDLE} />
           </div>
-          <div className='am-o-app__bottom' ref={layoutRefs.bottomRef}>
-            <div className='am-o-app__bottom-col'>
+          <div className='am-o-app__footer' ref={layoutRefs.footerRef}>
+            <div className='am-o-app__footer-col'>
               <Logo />
             </div>
-            <div className='am-o-app__bottom-col'>
-              <SlotRenderer slot={layoutSlots.BOTTOM_RIGHT} />
+            <div className='am-o-app__footer-col'>
+              <SlotRenderer slot={layoutSlots.FOOTER_RIGHT} />
               <div className='am-o-app__attributions'>
                 <Attributions />
               </div>
             </div>
+          </div>
+          <div className='am-o-app__bottom'>
+            <SlotRenderer slot={layoutSlots.BOTTOM} />
           </div>
           <div className='am-o-app__actions' ref={layoutRefs.actionsRef}>
             <SlotRenderer slot={layoutSlots.ACTIONS} />

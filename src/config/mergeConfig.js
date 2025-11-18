@@ -1,6 +1,6 @@
 import defaults from './defaults.js'
 
-export const sanitiseConfig = (userConfig = {}) => {
+export const mergeConfig = (userConfig = {}) => {
   // Merge defaultConfig with userConfig
   const config = {
     ...defaults,

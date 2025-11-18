@@ -14,7 +14,7 @@ export function useLayoutMeasurements () {
     topLeftColRef,
     topRightColRef,
     insetRef,
-    bottomRef,
+    footerRef,
     actionsRef
   } = layoutRefs
 
@@ -27,7 +27,7 @@ export function useLayoutMeasurements () {
     const topLeftCol = topLeftColRef.current
     const topRightCol = topRightColRef.current
     const inset = insetRef.current
-    const bottom = bottomRef.current
+    const bottom = footerRef.current
     const actions = actionsRef.current
 
     if (!main || !top || !inset || !bottom) {

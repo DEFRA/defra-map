@@ -10,6 +10,8 @@
     "/assets/",
     "/dist/css/",
     "/dist/umd/",
+    "/providers/maplibre/dist",
+    "/providers/open-names/dist",
     "/plugins/data-layers-ml/dist",
     "/plugins/data-polygon-ml/dist",
     "/plugins/map-styles/dist",

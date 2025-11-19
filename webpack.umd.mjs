@@ -1,5 +1,6 @@
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
@@ -10,6 +11,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = false, externalPreact = true) => {
   const distRoot = path.resolve(__dirname, outDir, '..')
   const cssFolder = path.resolve(__dirname, outDir, '../css') // Plugin-specific CSS folder
+
+  // Ensure CSS folder exists before Webpack runs
+  if (!fs.existsSync(cssFolder)) {
+    fs.mkdirSync(cssFolder, { recursive: true })
+  }
 
   const plugins = [
     new RemoveEmptyScriptsPlugin(),

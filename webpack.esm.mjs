@@ -1,5 +1,7 @@
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
+
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 import RemoveFilesPlugin from 'remove-files-webpack-plugin'
@@ -7,6 +9,12 @@ import RemoveFilesPlugin from 'remove-files-webpack-plugin'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
+  // Ensure plugin CSS folder exists
+  const cssFolder = path.resolve(__dirname, outDir, '../css')
+  if (!fs.existsSync(cssFolder)) {
+    fs.mkdirSync(cssFolder, { recursive: true })
+  }
+
   const plugins = [
     new RemoveEmptyScriptsPlugin(),
 
@@ -22,7 +30,7 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
     })
   ]
 
-  // ⭐ Core must also clean the shared dist/css BEFORE **anything**
+  // Core must also clean the shared dist/css BEFORE **anything**
   if (isCore) {
     // Insert cleanup BEFORE all other plugins
     plugins.unshift(
@@ -33,7 +41,7 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
       })
     )
 
-    // Core removes `-full.css` afterwards (your existing rule)
+    // Core removes `-full.css` afterwards
     plugins.push(
       new RemoveFilesPlugin({
         after: {

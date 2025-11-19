@@ -8,12 +8,16 @@ import RemoveFilesPlugin from 'remove-files-webpack-plugin'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
+const ensureFolder = folder => {
+  if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true })
+}
+
+/**
+ * Create ESM config for a single entry
+ */
 const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
-  // Ensure plugin CSS folder exists
   const cssFolder = path.resolve(__dirname, outDir, '../css')
-  if (!fs.existsSync(cssFolder)) {
-    fs.mkdirSync(cssFolder, { recursive: true })
-  }
+  ensureFolder(cssFolder)
 
   const plugins = [
     new RemoveEmptyScriptsPlugin(),
@@ -22,26 +26,21 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
       filename: '../css/[name].css'
     }),
 
-    // Clean ONLY this plugin's esm folder before build
+    // Clean only this plugin's ESM folder before build
     new RemoveFilesPlugin({
-      before: {
-        include: [path.resolve(__dirname, outDir)]
-      }
+      before: { include: [path.resolve(__dirname, outDir)] }
     })
   ]
 
-  // Core must also clean the shared dist/css BEFORE **anything**
   if (isCore) {
-    // Insert cleanup BEFORE all other plugins
+    // Core: clean shared dist/css before build
     plugins.unshift(
       new RemoveFilesPlugin({
-        before: {
-          include: [path.resolve(__dirname, 'dist/css')]
-        }
+        before: { include: [path.resolve(__dirname, 'dist/css')] }
       })
     )
 
-    // Core removes `-full.css` afterwards
+    // Remove -full.css after build
     plugins.push(
       new RemoveFilesPlugin({
         after: {
@@ -58,21 +57,14 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
 
   return {
     mode: 'production',
-
-    entry: { [entryName]: entryPath },
-
+    entry: { [entryName]: entryPath }, // ✅ keep entryName as "index"
     experiments: { outputModule: true },
-
     output: {
       path: path.resolve(__dirname, outDir, '../css'),
-
-      // JS goes into dist/esm
       filename: '../esm/[name].js',
       chunkFilename: '../esm/[name].js',
-
       library: { type: 'module' }
     },
-
     resolve: {
       extensions: ['.js', '.jsx'],
       alias: isCore
@@ -83,7 +75,6 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
           }
         : {}
     },
-
     externals: isCore
       ? {}
       : {
@@ -95,16 +86,13 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
           'preact/hooks': 'preact/hooks',
           'preact/jsx-runtime': 'preact/jsx-runtime'
         },
-
     module: {
       rules: [
         { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules/ },
         { test: /\.s[ac]ss$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'] }
       ]
     },
-
     plugins,
-
     optimization: {
       chunkIds: 'named',
       moduleIds: 'named',
@@ -113,21 +101,33 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
   }
 }
 
-export default [
-  // Core ESM
-  createESMConfig('index', './src/index.js', 'dist/esm', true),
+// === All builds ===
+const ALL_BUILDS = [
+  // Core
+  { entryPath: './src/index.js', outDir: 'dist/esm', isCore: true },
 
   // Providers
-  createESMConfig('index', './providers/maplibre/src/index.js', 'providers/maplibre/dist/esm'),
-  createESMConfig('index', './providers/open-names/src/index.js', 'providers/open-names/dist/esm'),
+  { entryPath: './providers/maplibre/src/index.js', outDir: 'providers/maplibre/dist/esm' },
+  { entryPath: './providers/open-names/src/index.js', outDir: 'providers/open-names/dist/esm' },
 
   // Plugins
-  createESMConfig('index', './plugins/scale-bar/src/index.js', 'plugins/scale-bar/dist/esm'),
-  createESMConfig('index', './plugins/zoom-controls/src/index.js', 'plugins/zoom-controls/dist/esm'),
-  createESMConfig('index', './plugins/search/src/index.js', 'plugins/search/dist/esm'),
-  createESMConfig('index', './plugins/select/src/index.js', 'plugins/select/dist/esm'),
-  createESMConfig('index', './plugins/data-layers-ml/src/index.js', 'plugins/data-layers-ml/dist/esm'),
-  createESMConfig('index', './plugins/menu-data-layers/src/index.js', 'plugins/menu-data-layers/dist/esm'),
-  createESMConfig('index', './plugins/map-styles/src/index.js', 'plugins/map-styles/dist/esm'),
-  createESMConfig('index', './plugins/draw-polygon-ml/src/index.js', 'plugins/draw-polygon-ml/dist/esm')
+  { entryPath: './plugins/scale-bar/src/index.js', outDir: 'plugins/scale-bar/dist/esm' },
+  { entryPath: './plugins/zoom-controls/src/index.js', outDir: 'plugins/zoom-controls/dist/esm' },
+  { entryPath: './plugins/search/src/index.js', outDir: 'plugins/search/dist/esm' },
+  { entryPath: './plugins/select/src/index.js', outDir: 'plugins/select/dist/esm' },
+  { entryPath: './plugins/data-layers-ml/src/index.js', outDir: 'plugins/data-layers-ml/dist/esm' },
+  { entryPath: './plugins/menu-data-layers/src/index.js', outDir: 'plugins/menu-data-layers/dist/esm' },
+  { entryPath: './plugins/map-styles/src/index.js', outDir: 'plugins/map-styles/dist/esm' },
+  { entryPath: './plugins/draw-polygon-ml/src/index.js', outDir: 'plugins/draw-polygon-ml/dist/esm' }
 ]
+
+// === Filter via environment variable ===
+const BUILD_TARGET = process.env.BUILD_TARGET // e.g., 'scale-bar' or 'core'
+const buildsToRun = BUILD_TARGET
+  ? ALL_BUILDS.filter(b => b.outDir.includes(BUILD_TARGET))
+  : ALL_BUILDS
+
+// === Export final config ===
+export default buildsToRun.map(b =>
+  createESMConfig('index', b.entryPath, b.outDir, b.isCore || false)
+)

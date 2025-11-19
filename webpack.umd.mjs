@@ -118,21 +118,33 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
   }
 }
 
-export default [
+// === All builds ===
+const ALL_BUILDS = [
   // Core UMD
-  createUMDConfig('index', './src/index.umd.js', 'DefraMap', 'dist/umd', true, false),
+  { entryPath: './src/index.umd.js', libraryPath: 'DefraMap', outDir: 'dist/umd', isCore: true, externalPreact: false },
 
   // Providers
-  createUMDConfig('index', './providers/maplibre/src/index.js', 'maplibreProvider', 'providers/maplibre/dist/umd'),
-  createUMDConfig('index', './providers/open-names/src/index.js', 'openNamesProvider', 'providers/open-names/dist/umd'),
+  { entryPath: './providers/maplibre/src/index.js', libraryPath: 'maplibreProvider', outDir: 'providers/maplibre/dist/umd' },
+  { entryPath: './providers/open-names/src/index.js', libraryPath: 'openNamesProvider', outDir: 'providers/open-names/dist/umd' },
 
   // Plugins
-  createUMDConfig('index', './plugins/scale-bar/src/index.js', 'scaleBarPlugin', 'plugins/scale-bar/dist/umd'),
-  createUMDConfig('index', './plugins/zoom-controls/src/index.js', 'zoomControlsPlugin', 'plugins/zoom-controls/dist/umd'),
-  createUMDConfig('index', './plugins/search/src/index.js', 'searchPlugin', 'plugins/search/dist/umd'),
-  createUMDConfig('index', './plugins/select/src/index.js', 'selectPlugin', 'plugins/select/dist/umd'),
-  createUMDConfig('index', './plugins/data-layers-ml/src/index.js', 'dataLayersMLPlugin', 'plugins/data-layers-ml/dist/umd'),
-  createUMDConfig('index', './plugins/menu-data-layers/src/index.js', 'menuDataLayersPlugin', 'plugins/menu-data-layers/dist/umd'),
-  createUMDConfig('index', './plugins/map-styles/src/index.js', 'mapStylesPlugin', 'plugins/map-styles/dist/umd'),
-  createUMDConfig('index', './plugins/draw-polygon-ml/src/index.js', 'drawPolygonMLPlugin', 'plugins/draw-polygon-ml/dist/umd')
+  { entryPath: './plugins/scale-bar/src/index.js', libraryPath: 'scaleBarPlugin', outDir: 'plugins/scale-bar/dist/umd' },
+  { entryPath: './plugins/zoom-controls/src/index.js', libraryPath: 'zoomControlsPlugin', outDir: 'plugins/zoom-controls/dist/umd' },
+  { entryPath: './plugins/search/src/index.js', libraryPath: 'searchPlugin', outDir: 'plugins/search/dist/umd' },
+  { entryPath: './plugins/select/src/index.js', libraryPath: 'selectPlugin', outDir: 'plugins/select/dist/umd' },
+  { entryPath: './plugins/data-layers-ml/src/index.js', libraryPath: 'dataLayersMLPlugin', outDir: 'plugins/data-layers-ml/dist/umd' },
+  { entryPath: './plugins/menu-data-layers/src/index.js', libraryPath: 'menuDataLayersPlugin', outDir: 'plugins/menu-data-layers/dist/umd' },
+  { entryPath: './plugins/map-styles/src/index.js', libraryPath: 'mapStylesPlugin', outDir: 'plugins/map-styles/dist/umd' },
+  { entryPath: './plugins/draw-polygon-ml/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/draw-polygon-ml/dist/umd' }
 ]
+
+// === Filter via environment variable ===
+const BUILD_TARGET = process.env.BUILD_TARGET // e.g., 'scale-bar', 'core'
+const buildsToRun = BUILD_TARGET
+  ? ALL_BUILDS.filter(b => b.outDir.includes(BUILD_TARGET))
+  : ALL_BUILDS
+
+// === Export final config ===
+export default buildsToRun.map(b =>
+  createUMDConfig('index', b.entryPath, b.libraryPath, b.outDir, b.isCore || false, b.externalPreact !== false)
+)

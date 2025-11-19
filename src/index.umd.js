@@ -19,6 +19,9 @@ g.preactCompat = React // maps to preact/compat
 g.preactJsxRuntime = JSXRuntime
 g.preactHooks = { useState }  // the act of importing keeps the module alive
 
+// Attach the main map
+g.defra.DefraMap = DefraMap
+
 // Ensure compat.default exists
 if (!g.preactCompat.default) {
   g.preactCompat.default = g.preactCompat

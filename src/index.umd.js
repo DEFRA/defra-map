@@ -41,12 +41,12 @@ if (!g.preactCompat.createRoot) {
   }
 }
 
-// Prevent tree-shaking
-export const __keep = {
-  React,
-  ReactDOM,
-  JSXRuntime,
-  useState
-}
+// *Prevent tree-shaking - might be needed?
+// export const __keep = {
+//   React,
+//   ReactDOM,
+//   JSXRuntime,
+//   useState
+// }
 
 export default DefraMap

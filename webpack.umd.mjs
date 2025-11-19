@@ -9,7 +9,6 @@ import RemoveFilesPlugin from 'remove-files-webpack-plugin'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = false, externalPreact = true) => {
-  const distRoot = path.resolve(__dirname, outDir, '..')
   const cssFolder = path.resolve(__dirname, outDir, '../css') // Plugin-specific CSS folder
 
   // Ensure CSS folder exists before Webpack runs

@@ -57,7 +57,7 @@ const createESMConfig = (entryName, entryPath, outDir, isCore = false) => {
 
   return {
     mode: 'production',
-    entry: { [entryName]: entryPath }, // ✅ keep entryName as "index"
+    entry: { [entryName]: entryPath }, // Keep entryName as "index"
     experiments: { outputModule: true },
     output: {
       path: path.resolve(__dirname, outDir, '../css'),

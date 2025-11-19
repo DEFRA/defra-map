@@ -10,7 +10,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
   const { id } = appConfig
   const { interfaceType, breakpoint } = appState
   const { customDatasets, osNamesURL, transformRequest } = pluginConfig
-  const { dispatch, isExpanded, hasKeyboardFocusWithin } = pluginState
+  const { dispatch, isExpanded } = pluginState
 
   const CloseIcon = iconRegistry['close']
   const SearchIcon = iconRegistry['search']

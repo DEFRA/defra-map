@@ -1,4 +1,6 @@
 // src/plugins/menuDataLayers/index.js
+import './menuDataLayers.scss'
+
 export default function createPlugin (options = {}) {
   return {
     ...options,

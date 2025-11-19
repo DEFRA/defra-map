@@ -1,17 +1,22 @@
 {
   "name": "@defra/defra-map",
   "version": "1.0.0-alpha.1",
-  "description": "An accessbile map component",
+  "description": "An accessible map component",
   "main": "dist/umd/index.js",
+  "module": "dist/esm/index.js",
   "exports": {
+    "import": "./dist/esm/index.js",
     "require": "./dist/umd/index.js"
   },
   "type": "module",
   "scripts": {
+    "clean": "rimraf dist",
     "dev": "webpack serve --config webpack.dev.mjs",
     "prod": "webpack serve --config webpack.prod.mjs",
-    "build": "webpack --config webpack.umd.mjs",
-    "prepare": "npm run build",
+    "build:umd": "webpack --config webpack.umd.mjs --mode production",
+    "build:esm": "webpack --config webpack.esm.mjs --mode production",
+    "build": "npm run clean && npm run build:umd && npm run build:esm",
+    "prepare": "npm run build || true",
     "type-check": "tsc --noEmit",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "standard \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -35,6 +40,18 @@
       "node_modules"
     ]
   },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
@@ -53,7 +70,7 @@
     "express-static-gzip": "^3.0.0",
     "geodesy": "^2.4.0",
     "html-webpack-plugin": "^5.6.3",
-    "jest": "^30.0.4",
+    "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.4",
     "mini-css-extract-plugin": "^2.9.2",
     "node-fetch": "^3.3.2",
@@ -63,6 +80,7 @@
     "react-dom": "^19.2.0",
     "remove-files-webpack-plugin": "^1.5.0",
     "resize-observer": "^1.0.4",
+    "rimraf": "^6.1.0",
     "sass": "^1.89.2",
     "sass-loader": "^16.0.5",
     "standard": "^17.1.2",

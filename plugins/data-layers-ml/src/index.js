@@ -1,4 +1,6 @@
 // src/plugins/dataLayers/index.js
+import './dataLayers.scss'
+
 export default function createPlugin (options = {}) {
   const plugin = {
     ...options,

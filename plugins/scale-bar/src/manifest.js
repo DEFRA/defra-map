@@ -1,5 +1,4 @@
 // src/plugins/scaleBar/manifest.js
-import './scaleBar.scss'
 import { ScaleBar } from './ScaleBar.jsx'
 
 export const manifest = {

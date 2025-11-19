@@ -1,5 +1,4 @@
 // src/plugins/dataLayers/manifest.js
-import './dataLayers.scss'
 import { initialState, actions } from './reducer.js'
 import { DataLayersInit } from './DataLayersInit.jsx'
 import { DataLayers } from './DataLayers.jsx'

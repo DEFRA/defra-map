@@ -7,12 +7,12 @@ import { transformGeocodeRequest, transformTileRequest, transformDataRequest } f
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
-import zoomControlsPlugin from '/plugins/zoomControls/src/index.js'
-import mapStylesPlugin from '/plugins/mapStyles/src/index.js'
-import menuDataLayersPlugin from '/plugins/menuDataLayers/src/index.js'
-import dataLayersPlugin from '/plugins/dataLayersML/src/index.js'
-import drawPolygonPlugin from '/plugins/drawPolygonML/src/index.js'
-import scaleBarPlugin from '/plugins/scaleBar/src/index.js'
+import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
+import mapStylesPlugin from '/plugins/map-styles/src/index.js'
+import menuDataLayersPlugin from '/plugins/menu-data-layers/src/index.js'
+import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
+import drawPolygonPlugin from '/plugins/draw-polygon-ml/src/index.js'
+import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import selectPlugin from '/plugins/select/src/index.js'
 

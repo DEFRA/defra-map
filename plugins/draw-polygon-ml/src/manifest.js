@@ -1,5 +1,4 @@
 // src/plugins/drawPolygonML/manifest.js
-import './drawPolygon.scss'
 import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
 import { DrawPolygonInit } from './DrawPolygonInit.jsx'

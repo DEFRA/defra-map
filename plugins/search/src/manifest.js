@@ -1,5 +1,4 @@
 // src/plugins/search/manifest.js
-import './search.scss'
 import { initialState, actions } from './reducer.js'
 import { Search as SearchIcon } from 'lucide-react'
 import { Search } from './Search.jsx'

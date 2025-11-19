@@ -1,4 +1,6 @@
 // src/plugins/scaleBar/index.js
+import './scaleBar.scss'
+
 export default function createPlugin ({ manifest, units = 'metric' } = {}) {
   return {
     id: 'scaleBar',

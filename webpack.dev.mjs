@@ -12,10 +12,10 @@ export default {
   mode: 'development',
   target: ['web', 'es5'],
   entry: {
-    index: [
-      path.join(__dirname, 'demo/js/index.js'),
-      path.join(__dirname, 'demo/scss/index.scss')
-    ]
+    // Main CSS entry: guarantees it is output first
+    main: path.join(__dirname, 'demo/scss/index.scss'),
+    // App entry: all JS and plugin dynamic imports
+    index: path.join(__dirname, 'demo/js/index.js')
   },
   output: {
     path: path.resolve(__dirname, 'public'),

@@ -1,4 +1,6 @@
 // src/plugins/search/index.js
+import './search.scss'
+
 export default function createPlugin (options = {}) {
   return {
     showMarker: true,

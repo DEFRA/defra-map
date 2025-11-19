@@ -1,4 +1,6 @@
 // src/plugins/select/index.js
+import './select.scss'
+
 export default function createPlugin (options = {}) {
   return {
     ...options,

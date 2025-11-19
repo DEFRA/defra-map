@@ -7,6 +7,8 @@
 {% block head %}
   <link href="/public/stylesheets/application.css" rel="stylesheet" type="text/css">
   <link href="/plugin-assets/%40defra%2Fdefra-map/dist/css/index.css" rel="stylesheet" type="text/css">
+  <link href="/plugin-assets/%40defra%2Fdefra-map/plugins/zoom-controls/dist/css/index.css" rel="stylesheet" type="text/css">
+  <link href="/plugin-assets/%40defra%2Fdefra-map/plugins/scale-bar/dist/css/index.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block bodyStart %}
@@ -37,9 +39,10 @@
 {% block pageScripts %}
   <!-- Defra library scripts -->
   <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/index.js"></script>
-  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/maplibre-provider.js"></script>
-  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/scale-bar-plugin.js"></script>
-  <script src="/plugin-assets/%40defra%2Fdefra-map/dist/umd/zoom-controls-plugin.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/providers/maplibre/dist/umd/index.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/plugins/scale-bar/dist/umd/index.js"></script>
+  <script src="/plugin-assets/%40defra%2Fdefra-map/plugins/zoom-controls/dist/umd/index.js"></script>
+  
   <script>
     const am = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,

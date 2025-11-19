@@ -11,6 +11,9 @@ import DefraMap from './index.js'
 
 const g = typeof window !== 'undefined' ? window : globalThis
 
+// Create `defra` namespace if missing
+g.defra = g.defra || {}
+
 // Expose globals exactly like CDN version
 g.preactCompat = React // maps to preact/compat
 g.preactJsxRuntime = JSXRuntime

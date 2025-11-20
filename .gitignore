@@ -30,6 +30,7 @@ node_modules/
 dist/
 plugin
 coverage
+public
 
 # Webpack bundle analyser
 stats.json

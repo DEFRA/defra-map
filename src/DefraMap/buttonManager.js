@@ -24,7 +24,7 @@ export function createButton(config, rootEl, onClick) {
         <path d='M7.5 12.961a5.46 5.46 0 1 0 0-10.922 5.46 5.46 0 1 0 0 10.922z' fill='#fff'/>
       </svg>
       <span>${buttonText}</span>
-      <span class='am-u-visually-hidden'> (Visual only)</span>
+      <span class='dm-u-visually-hidden'> (Visual only)</span>
     </a>
   `
 

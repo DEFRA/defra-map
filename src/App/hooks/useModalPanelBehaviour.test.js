@@ -81,7 +81,7 @@ describe('useModalPanelBehaviour', () => {
   describe('backdrop clicks', () => {
     const createBackdrop = (appendTo) => {
       const backdrop = document.createElement('div')
-      backdrop.className = 'am-o-app__modal-backdrop'
+      backdrop.className = 'dm-o-app__modal-backdrop'
       appendTo.appendChild(backdrop)
       return backdrop
     }

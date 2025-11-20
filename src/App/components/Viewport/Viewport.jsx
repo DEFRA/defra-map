@@ -53,9 +53,9 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
       return
     }
 
-    mainEl.classList.toggle('am-o-app__main--keyboard-hint-visible', showHint)
+    mainEl.classList.toggle('dm-o-app__main--keyboard-hint-visible', showHint)
 
-    return () => mainEl?.classList.remove('am-o-app__main--keyboard-hint-visible')
+    return () => mainEl?.classList.remove('dm-o-app__main--keyboard-hint-visible')
   }, [showHint])
 
   return (
@@ -63,7 +63,7 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
       <MapController mapContainerRef={mapContainerRef} />
       <div
         id={`${id}-viewport`}
-        className={`am-c-viewport am-c-viewport--${mapSize}`}
+        className={`dm-c-viewport dm-c-viewport--${mapSize}`}
         aria-label={mapLabel}
         role='application'
         tabIndex='0'
@@ -73,17 +73,17 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
       >
         {showHint && keyboardHintPortalRef?.current && createPortal(
           <div
-            className='am-c-viewport__keyboard-hint'
+            className='dm-c-viewport__keyboard-hint'
             aria-hidden='true'
             ref={keyboardHintRef}
             dangerouslySetInnerHTML={{ __html: keyboardHintText }}
           />,
           keyboardHintPortalRef.current
         )}
-        <div className='am-c-viewport__map-container' ref={mapContainerRef} />
-        <div className='am-c-viewport__features' />
+        <div className='dm-c-viewport__map-container' ref={mapContainerRef} />
+        <div className='dm-c-viewport__features' />
         <MapStatus />
-        <div className='am-c-viewport__safezone' style={safeZoneInset} ref={layoutRefs.safeZoneRef}>
+        <div className='dm-c-viewport__safezone' style={safeZoneInset} ref={layoutRefs.safeZoneRef}>
           <TargetMarker />
         </div>
         <LocationMarkers />

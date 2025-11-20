@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block bodyStart %}
-  <script>document.body.classList.add('am-is-loading')</script>
+  <script>document.body.classList.add('dm-is-loading')</script>
 {% endblock %}
 
 {% block beforeContent %}
@@ -43,7 +43,7 @@
   <script src="/plugin-assets/%40defra%2Fdefra-map/plugins/zoom-controls/dist/umd/index.js"></script>
   
   <script>
-    const am = new defra.DefraMap('map', {
+    const defra = new defra.DefraMap('map', {
       mapProvider: defra.maplibreProvider,
       behaviour: 'hybrid',
       mapLabel: 'Ambleside',

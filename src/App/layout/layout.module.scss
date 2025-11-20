@@ -1,11 +1,11 @@
 // ===================================================
-// Object: am-o-app
+// Object: dm-o-app
 // ===================================================
 
 @use '../../scss/tools/index' as tools;
 
 // 1. Base styles
-.am-o-app {
+.dm-o-app {
   position: relative;
   width: 100%;
   height: 100%;
@@ -14,7 +14,7 @@
 }
 
 // 2. Elements
-.am-o-app__overlay {
+.dm-o-app__overlay {
   position: absolute;
   box-sizing: border-box;
   flex-direction: row;
@@ -34,7 +34,7 @@
   }
 }
 
-.am-o-app__side {
+.dm-o-app__side {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -43,7 +43,7 @@
   height: 100%;
 }
 
-.am-o-app__main {
+.dm-o-app__main {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -55,7 +55,7 @@
   padding: var(--primary-gap);
 }
 
-.am-o-app__drawer {
+.dm-o-app__drawer {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -65,7 +65,7 @@
 // Top: Includes a panel and buttons in colums
 // ---------------------------------------------------
 
-.am-o-app__top {
+.dm-o-app__top {
   display: flex;
   margin-bottom: auto;
   justify-content: space-between;
@@ -74,34 +74,34 @@
   gap: var(--divider-gap);
 }
 
-.am-o-app__top-col {
+.dm-o-app__top-col {
   display: flex;
   flex: 1 1 auto;
   gap: var(--divider-gap);
 }
 
-.am-o-app__top-col:not(:empty) {
+.dm-o-app__top-col:not(:empty) {
   padding-bottom: var(--divider-gap);
 }
 
-.am-o-app__top-col:first-child,
-.am-o-app__top-col:last-child {
+.dm-o-app__top-col:first-child,
+.dm-o-app__top-col:last-child {
   flex: 1 1 0%;
   min-width: 0;
   max-width: var(--top-col-width, 100%);
 }
 
-.am-o-app__top-col:first-child {
+.dm-o-app__top-col:first-child {
   justify-content: flex-start;
   min-width: auto;
 }
 
-.am-o-app__top-col:last-child {
+.dm-o-app__top-col:last-child {
   justify-content: flex-end;
   min-width: auto;
 }
 
-.am-o-app__top-col:nth-child(2) {
+.dm-o-app__top-col:nth-child(2) {
   justify-content: center;
 }
 
@@ -109,12 +109,12 @@
 // Inset:
 // ---------------------------------------------------
 
-.am-o-app__inset {
+.dm-o-app__inset {
   position: absolute;
   top: var(--inset-offset-top);
 }
 
-.am-o-app__inset .am-c-panel {
+.dm-o-app__inset .dm-c-panel {
   height: 100%;
   max-height: var(--inset-max-height);
 }
@@ -123,7 +123,7 @@
 // Middle:
 // ---------------------------------------------------
 
-.am-o-app__middle {
+.dm-o-app__middle {
   position: absolute;
   top: 0;
   left: 0;
@@ -138,7 +138,7 @@
 // Right: Buttons and inset panel
 // ---------------------------------------------------
 
-.am-o-app__right {
+.dm-o-app__right {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -147,7 +147,7 @@
   bottom: var(--right-offset-bottom);
 }
 
-.am-o-app__right-top {
+.dm-o-app__right-top {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -155,7 +155,7 @@
   gap: var(--divider-gap);
 }
 
-.am-o-app__right-bottom {
+.dm-o-app__right-bottom {
   margin-top: auto;
 }
 
@@ -163,24 +163,24 @@
 // Footer: Logo, scalebar, copyright etc
 // ---------------------------------------------------
 
-.am-o-app__footer {
+.dm-o-app__footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
-.am-o-app__footer-col {
+.dm-o-app__footer-col {
   display: flex;
   flex-direction: column;
   min-width: auto;
 }
 
-.am-o-app__footer-col:first-child {
+.dm-o-app__footer-col:first-child {
   justify-content: flex-start;
   flex-shrink: 0;
 }
 
-.am-o-app__footer-col:last-child {
+.dm-o-app__footer-col:last-child {
   flex: 1 1 auto;
   justify-content: flex-end;
   text-align: right;
@@ -191,7 +191,7 @@
 // Attributions:
 // ---------------------------------------------------
 
-.am-o-app__attributions:not(:empty) {
+.dm-o-app__attributions:not(:empty) {
   display: flex;
   justify-content: flex-end;
   position: relative;
@@ -204,13 +204,13 @@
 // Actions:
 // ---------------------------------------------------
 
-.am-o-app__actions {
+.dm-o-app__actions {
   display: flex;
   flex-shrink: 0;
   justify-content: center;
   text-align: center;
 
-  .am-c-panel__body {
+  .dm-c-panel__body {
     overflow: visible;
   }
 }
@@ -219,7 +219,7 @@
 // Side: Panels only
 // ---------------------------------------------------
 
-.am-o-app__side .am-c-panel {
+.dm-o-app__side .dm-c-panel {
   @include tools.border-focus-base(
     $is-inset: true,
     $type: panel
@@ -238,7 +238,7 @@
 // Modal:
 // ---------------------------------------------------
 
-.am-o-app__modal {
+.dm-o-app__modal {
   display: flex;
   position: absolute;
   top: 0;
@@ -247,13 +247,13 @@
   z-index: 99;
 
   // Panel overrides
-  .am-c-panel {
+  .dm-c-panel {
     position: absolute;
     inset: 0 0 auto;
     z-index: 1000;
   }
 
-  .am-c-panel + .am-o-app__modal-backdrop {
+  .dm-c-panel + .dm-o-app__modal-backdrop {
     position: absolute;
     top: 0;
     left: 0;
@@ -264,7 +264,7 @@
     pointer-events: auto;
   }
 
-  .am-c-panel--side {
+  .dm-c-panel--side {
     @include tools.border-focus-base(
       $is-inset: true,
       $type: panel
@@ -274,14 +274,14 @@
     );
   }
 
-  .am-c-panel--inset {
+  .dm-c-panel--inset {
     top: var(--inset-offset-top);
     left: var(--primary-gap);
     max-width: calc(100% - (var(--primary-gap) * 2));
     max-height: calc(100% - var(--inset-offset-top) - var(--primary-gap));
   }
 
-  .am-c-panel--middle {
+  .dm-c-panel--middle {
     position: relative;
     margin: auto;
     width: 100%;
@@ -289,13 +289,13 @@
     max-height: calc(100% - (var(--primary-gap) * 2));
   }
 
-  .am-c-panel--drawer {
+  .dm-c-panel--drawer {
     top: auto;
     bottom: 0;
     max-height: 85%;
   }
 
-  [class*="am-c-panel--"][class*="-button"] { // Adjacent to button
+  [class*="dm-c-panel--"][class*="-button"] { // Adjacent to button
     inset: var(--modal-inset);
   }
 }
@@ -303,46 +303,46 @@
 // 3. Modifiers
 
 // Inline border
-.am-o-app--inline {
+.dm-o-app--inline {
   border: var(--app-border-width) solid var(--app-border-color);
 }
 
 // Hide containers when keyboard hint is visible
-.am-o-app__main--keyboard-hint-visible {
-  .am-o-app__top-col,
-  .am-o-app__right,
-  .am-o-app__right-bottom {
+.dm-o-app__main--keyboard-hint-visible {
+  .dm-o-app__top-col,
+  .dm-o-app__right,
+  .dm-o-app__right-bottom {
     visibility: hidden;
   }
 }
 
 // Avoid refresh jump if layout clacs are not ready
-.am-o-app__overlay--not-ready {
+.dm-o-app__overlay--not-ready {
   visibility: hidden;
   opacity: 0;
 }
 
 // Actions inset when width is greater
-.am-o-app--tablet, .am-o-app--desktop {
-  .am-o-app__actions {
+.dm-o-app--tablet, .dm-o-app--desktop {
+  .dm-o-app__actions {
     position: absolute;
     width: 100%;
     left: 0;
     bottom: calc(var(--primary-gap) * 2);
     padding-left: var(--offset-left);
     
-    .am-c-panel {
+    .dm-c-panel {
       max-width: var(--action-bar-max-width);
     }
   }
 }
 
 // Corners removed when placed at the bottom
-.am-o-app--mobile .am-o-app__bottom,
-.am-o-app--mobile .am-o-app__actions {
+.dm-o-app--mobile .dm-o-app__bottom,
+.dm-o-app--mobile .dm-o-app__actions {
   margin: var(--primary-gap) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1);
 
-  .am-c-panel {
+  .dm-c-panel {
     width: 100%;
 
     @include tools.border-focus-corner-override(
@@ -355,7 +355,7 @@
 
 // 5. Responsive tweaks
 
-.am-o-app--mobile .am-o-app__side {
+.dm-o-app--mobile .dm-o-app__side {
   position: absolute;
   left: 0;
   top: 0;

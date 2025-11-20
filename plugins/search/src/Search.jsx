@@ -70,7 +70,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
   }, [isExpanded, interfaceType])
 
   return (
-    <div className="am-c-search" ref={searchContainerRef}>
+    <div className="dm-c-search" ref={searchContainerRef}>
       <OpenButton
         id={id}
         isExpanded={isExpanded}

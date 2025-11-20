@@ -1,4 +1,4 @@
-.am-c-target-marker {
+.dm-c-target-marker {
 	position: absolute;
   top: 0;
 	left: 0;
@@ -6,7 +6,7 @@
 	margin: -19px 0 0 -19px;
 }
 
-.am-c-target-marker path {
+.dm-c-target-marker path {
 	stroke-width: 3;
 	stroke: var(--map-overlay-halo-color);
 	fill: var(--map-overlay-foreground-color);

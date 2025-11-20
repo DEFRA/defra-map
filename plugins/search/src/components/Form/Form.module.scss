@@ -1,4 +1,4 @@
-.am-c-search-form {
+.dm-c-search-form {
   display: none;
   padding: 0;
   min-height: auto;
@@ -9,7 +9,7 @@
   }
 }
 
-.am-o-app--mobile .am-c-search-form {
+.dm-o-app--mobile .dm-c-search-form {
   position: absolute;
   left: 0;
   top: 0;
@@ -17,8 +17,8 @@
   height: auto;
 }
 
-.am-o-app--tablet .am-c-search-form,
-.am-o-app--desktop .am-c-search-form {
+.dm-o-app--tablet .dm-c-search-form,
+.dm-o-app--desktop .dm-c-search-form {
   border-radius: var(--button-border-radius);
 
   &:before {

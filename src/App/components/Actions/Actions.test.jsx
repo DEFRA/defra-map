@@ -6,7 +6,7 @@ describe('Actions component', () => {
   it('renders the correct slot-based class', () => {
     render(<Actions slot="actions">Content</Actions>)
     const container = screen.getByText('Content').closest('div')
-    expect(container).toHaveClass('am-c-actions', 'am-c-panel')
+    expect(container).toHaveClass('dm-c-actions', 'dm-c-panel')
   })
 
   it('renders children correctly', () => {

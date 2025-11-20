@@ -23,17 +23,17 @@ describe('KeyboardHelp', () => {
     render(<KeyboardHelp />)
 
     // outer container
-    const container = document.querySelector('.am-c-keyboard-help')
+    const container = document.querySelector('.dm-c-keyboard-help')
     expect(container).toBeInTheDocument()
 
     // Navigation group contains its shortcuts
-    const navGroup = screen.getByText('Go Home').closest('.am-c-keyboard-help__group')
+    const navGroup = screen.getByText('Go Home').closest('.dm-c-keyboard-help__group')
     expect(navGroup).toBeInTheDocument()
     expect(within(navGroup).getByText('Search')).toBeInTheDocument()
     expect(within(navGroup).getByText('Go Home')).toBeInTheDocument()
 
     // Editing group contains its shortcut
-    const editGroup = screen.getByText('Copy').closest('.am-c-keyboard-help__group')
+    const editGroup = screen.getByText('Copy').closest('.dm-c-keyboard-help__group')
     expect(editGroup).toBeInTheDocument()
 
     // command HTML is injected
@@ -47,8 +47,8 @@ describe('KeyboardHelp', () => {
 
     render(<KeyboardHelp />)
 
-    const container = document.querySelector('.am-c-keyboard-help')
+    const container = document.querySelector('.dm-c-keyboard-help')
     expect(container).toBeInTheDocument()
-    expect(container.querySelectorAll('.am-c-keyboard-help__group')).toHaveLength(0)
+    expect(container.querySelectorAll('.dm-c-keyboard-help__group')).toHaveLength(0)
   })
 })

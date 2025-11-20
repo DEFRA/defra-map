@@ -26,7 +26,7 @@ describe('TargetMarker', () => {
     const svg = renderWith()
     const path = svg.querySelector('path')
 
-    expect(svg).toHaveClass('am-c-target-marker')
+    expect(svg).toHaveClass('dm-c-target-marker')
     expect(svg).toHaveStyle({
       position: 'absolute',
       left: 0,

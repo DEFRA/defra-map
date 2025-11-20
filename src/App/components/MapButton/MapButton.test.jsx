@@ -46,9 +46,9 @@ describe('MapButton', () => {
 
     const button = screen.getByRole('button', { name: 'Label' })
     expect(button).toHaveClass(
-      'am-c-map-button',
-      'am-c-map-button--my-button',
-      'am-c-map-button--primary'
+      'dm-c-map-button',
+      'dm-c-map-button--my-button',
+      'dm-c-map-button--primary'
     )
     expect(screen.getByTestId('icon')).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getByText('Label')).toBeInTheDocument()

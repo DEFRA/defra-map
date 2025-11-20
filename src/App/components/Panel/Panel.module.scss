@@ -5,7 +5,7 @@
 @use '../../../scss/tools/index' as tools;
 
 // 1. Base styles
-.am-c-panel {
+.dm-c-panel {
     @include tools.border-focus-base(
         $is-inset: false,
         $type: panel
@@ -22,7 +22,7 @@
 }
 
 // 2. Elements
-.am-c-panel__heading {
+.dm-c-panel__heading {
     display: flex;
     padding-top: var(--panel-heading-margin-top);
     padding-right: calc((var(--panel-close-button-gap) * 2) + var(--button-size));
@@ -31,7 +31,7 @@
     color: var(--foreground-color);
 }
 
-.am-c-panel__close {
+.dm-c-panel__close {
     @include tools.border-focus-base(
         $is-inset: false,
         $type: button
@@ -55,16 +55,16 @@
     }
 }
 
-.am-c-panel__body {
+.dm-c-panel__body {
     padding: var(--panel-margin);
     overflow: auto;
 }
 
-.am-c-panel__close::before {
+.dm-c-panel__close::before {
     content: none;
 }
 
-.am-c-panel__close:hover {
+.dm-c-panel__close:hover {
     @media (prefers-reduced-motion: no-preference) {
         transition: background-color var(--duration) ease;
     }
@@ -75,7 +75,7 @@
 }
 
 // 3. Modifiers
-.am-c-panel--drawer {
+.dm-c-panel--drawer {
     @include tools.border-focus-base(
         $is-inset: true,
         $type: panel

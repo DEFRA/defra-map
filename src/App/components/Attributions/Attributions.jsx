@@ -12,7 +12,7 @@ export const Attributions = () => {
 
   return (
     breakpoint !== 'mobile' && (
-      <div className='am-c-attributions' dangerouslySetInnerHTML={{ __html: mapStyle.attribution }} />
+      <div className='dm-c-attributions' dangerouslySetInnerHTML={{ __html: mapStyle.attribution }} />
     )
   )
 }

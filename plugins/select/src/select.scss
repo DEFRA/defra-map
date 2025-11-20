@@ -1,24 +1,24 @@
-.am-c-mark-location {
+.dm-c-mark-location {
     display: flex;
     justify-content: center;
     gap: var(--divider-gap);
 }
 
-.am-o-app--mobile .am-c-mark-location {
-    .am-c-button-wrapper, .am-c-map-button {
+.dm-o-app--mobile .dm-c-mark-location {
+    .dm-c-button-wrapper, .dm-c-map-button {
         flex: 1 1 auto;
         min-width: fit-content;
     }
 }
 
-.am-o-app--mouse.am-o-app--tablet,
-.am-o-app--mouse.am-o-app--desktop {
-    .am-c-mark-location .am-c-map-button {
+.dm-o-app--mouse.dm-o-app--tablet,
+.dm-o-app--mouse.dm-o-app--desktop {
+    .dm-c-mark-location .dm-c-map-button {
         min-width: 150px;
     }
 }
 
-.am-o-app--mobile .am-c-mark-location .am-c-map-button {
+.dm-o-app--mobile .dm-c-mark-location .dm-c-map-button {
     flex: 1 1 auto;
     min-width: fit-content;
 }

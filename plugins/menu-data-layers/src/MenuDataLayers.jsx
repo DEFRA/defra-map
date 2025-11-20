@@ -8,7 +8,7 @@ export const MenuDataLayers = ({ services }) => {
   }
 
   return (
-    <div className='am-c-menu-data-layers'>
+    <div className='dm-c-menu-data-layers'>
       Data layers
       <div>
         <button onClick={handleClick}>Set draw mode</button>

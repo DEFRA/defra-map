@@ -1,7 +1,7 @@
 @use '/src/scss/tools/index' as tools;
 
 // Suggestions
-.am-c-search-suggestions {
+.dm-c-search-suggestions {
     max-height: calc(100vh - 66px);
     overflow-y: auto;
     scroll-padding: 0;
@@ -11,7 +11,7 @@
     list-style: none;
 }
 
-.am-c-search-suggestions__item {
+.dm-c-search-suggestions__item {
     margin: 0;
     padding: calc(var(--divider-gap) + 2px) var(--primary-gap);
     position: relative;
@@ -40,7 +40,7 @@
         color: var(--fixed-foreground-color);
     }
 
-    &:hover:not([aria-selected="true"]) .am-c-search-suggestions__label {
+    &:hover:not([aria-selected="true"]) .dm-c-search-suggestions__label {
         text-decoration: underline;
         text-underline-offset: 2px;
         text-decoration-thickness: 2px;
@@ -48,12 +48,12 @@
         text-decoration-skip-ink: none;
     }
 
-    &[aria-selected="true"] .am-c-search-suggestions__label {
+    &[aria-selected="true"] .dm-c-search-suggestions__label {
         @include tools.link-focus();
     }
 }
 
-.am-c-search-suggestions__label {
+.dm-c-search-suggestions__label {
     display: block;
     overflow: hidden;
     white-space: nowrap;
@@ -61,8 +61,8 @@
 }
 
 // 3. Modifiers
-.am-o-app--tablet .am-c-search-suggestions,
-.am-o-app--desktop .am-c-search-suggestions {
+.dm-o-app--tablet .dm-c-search-suggestions,
+.dm-o-app--desktop .dm-c-search-suggestions {
     border-bottom-left-radius: var(--button-border-radius);
     border-bottom-right-radius: var(--button-border-radius);
 

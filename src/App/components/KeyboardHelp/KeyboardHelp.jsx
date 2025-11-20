@@ -10,15 +10,15 @@ export const KeyboardHelp = () => {
   }, {})
 
   return (
-    <div className='am-c-keyboard-help'>
+    <div className='dm-c-keyboard-help'>
       {Object.entries(groups).map(([groupName, items]) => (
-        <div key={groupName} className='am-c-keyboard-help__group'>
-          {/* <h3 className='am-c-keyboard-help__title'>{groupName}</h3> */}
-          <dl className='am-c-keyboard-help__list'>
+        <div key={groupName} className='dm-c-keyboard-help__group'>
+          {/* <h3 className='dm-c-keyboard-help__title'>{groupName}</h3> */}
+          <dl className='dm-c-keyboard-help__list'>
             {items.map((item) => (
-              <div key={item.id} className='am-c-keyboard-help__item'>
-                <dt className='am-c-keyboard-help__title'>{item.title}</dt>
-                <dd className='am-c-keyboard-help__description' dangerouslySetInnerHTML={{ __html: item.command }} />
+              <div key={item.id} className='dm-c-keyboard-help__item'>
+                <dt className='dm-c-keyboard-help__title'>{item.title}</dt>
+                <dd className='dm-c-keyboard-help__description' dangerouslySetInnerHTML={{ __html: item.command }} />
               </div>
             ))}
           </dl>

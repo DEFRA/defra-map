@@ -24,10 +24,10 @@ export const MapButton = ({
   const Icon = getIconRegistry()[iconId]
 
   const classNames = [
-    'am-c-map-button',
-    buttonId && `am-c-map-button--${stringToKebab(buttonId)}`,
-    variant && `am-c-map-button--${variant}`,
-    showLabel && `am-c-map-button--with-label`
+    'dm-c-map-button',
+    buttonId && `dm-c-map-button--${stringToKebab(buttonId)}`,
+    variant && `dm-c-map-button--${variant}`,
+    showLabel && `dm-c-map-button--with-label`
   ].filter(Boolean).join(' ')
 
   const buttonEl = (
@@ -48,7 +48,7 @@ export const MapButton = ({
   )
 
   return (
-    <div className={`am-c-button-wrapper${showLabel ? ' am-c-button-wrapper--wide' : ''}`} style={isHidden ? { display: 'none'} : undefined}>
+    <div className={`dm-c-button-wrapper${showLabel ? ' dm-c-button-wrapper--wide' : ''}`} style={isHidden ? { display: 'none'} : undefined}>
       {showLabel ? buttonEl : <Tooltip content={label}>{buttonEl}</Tooltip>}
       {panelId && <SlotRenderer slot={`${stringToKebab(buttonId)}-button`} />}
     </div>

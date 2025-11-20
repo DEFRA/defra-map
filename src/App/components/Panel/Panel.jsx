@@ -9,7 +9,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
   const { id } = useConfig()
   const { dispatch, breakpoint, layoutRefs } = useApp()
 
-  const rootEl = document.getElementById(`${id}-am-app`)
+  const rootEl = document.getElementById(`${id}-dm-app`)
   const bpConfig = panelConfig[breakpoint]
   const CloseIcon = getIconRegistry().close
   const newPanelId = `${id}-panel-${stringToKebab(panelId)}`
@@ -48,11 +48,11 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
       role={isDialog ? 'dialog' : isDismissable ? 'complementary' : 'region'}
       aria-modal={isDialog && isModal ? 'true' : undefined}
       style={bpConfig.width ? { width: bpConfig.width } : undefined}
-      className={`am-c-panel${isModal ? ` am-c-panel--${bpConfig.slot}` : ''}`}
+      className={`dm-c-panel${isModal ? ` dm-c-panel--${bpConfig.slot}` : ''}`}
     >
       <h2
         id={`${newPanelId}-label`}
-        className={panelConfig.showLabel ? 'am-c-panel__heading am-e-heading-m' : 'am-u-visually-hidden'}
+        className={panelConfig.showLabel ? 'dm-c-panel__heading dm-e-heading-m' : 'dm-u-visually-hidden'}
       >
         {panelConfig.label}
       </h2>
@@ -60,14 +60,14 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
       {isDismissable && (
         <button
           aria-label={`Close ${panelConfig.label}`}
-          className='am-c-panel__close'
+          className='dm-c-panel__close'
           onClick={handleClose}
         >
           <CloseIcon aria-hidden='true' focusable='false' />
         </button>
       )}
 
-      <div className='am-c-panel__body'>
+      <div className='dm-c-panel__body'>
         {WrappedChild ? <WrappedChild {...props} /> : children}
       </div>
     </div>

@@ -104,7 +104,7 @@ function mapButtons ({ slot, breakpoint, mode, openPanels, dispatch, disabledBut
           type: 'group',
           order: Math.min(...group.buttons.map(([_, config]) => config[breakpoint]?.order ?? 0)),
           element: (
-            <div key={`group-${groupId}`} className='am-c-button-group'>
+            <div key={`group-${groupId}`} className='dm-c-button-group'>
               {group.buttons.map(btn => renderButton(btn, breakpoint, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons, id))}
             </div>
           )

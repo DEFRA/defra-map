@@ -23,19 +23,19 @@ export const LocationMarkers = () => {
           key={marker.id}
           ref={markerRef(marker.id)} // Single callback ref, just like useTargetMarker
           id={`${id}-location-marker-${marker.id}`}
-          className={`am-c-location-marker am-c-location-marker--${marker.markerShape || stringToKebab(markerShape)}`}
+          className={`dm-c-location-marker dm-c-location-marker--${marker.markerShape || stringToKebab(markerShape)}`}
           width="38"
           height="38"
           viewBox="0 0 38 38"
           style={{ display: marker.isVisible ? 'block' : 'none' }}
         >
           <path
-            className="am-c-location-marker__background"
+            className="dm-c-location-marker__background"
             d={defaultSvgPaths.backgroundPath}
             fill={parseColor(marker.color || markerColor, mapStyle.id)}
             />
           <path 
-            className="am-c-location-marker__graphic"
+            className="dm-c-location-marker__graphic"
             d={defaultSvgPaths.graphicPath}
             />
         </svg>

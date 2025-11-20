@@ -36,8 +36,8 @@ describe('Tooltip', () => {
 
   it('renders with correct initial state', () => {
     const { tooltip } = renderTooltip()
-    expect(tooltip).toHaveClass('am-c-tooltip--hidden')
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).toHaveClass('dm-c-tooltip--hidden')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
     expect(tooltip).toHaveAttribute('aria-hidden', 'true')
   })
 
@@ -48,14 +48,14 @@ describe('Tooltip', () => {
       fireEvent.mouseEnter(button)
       jest.advanceTimersByTime(500)
     })
-    expect(tooltip).toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).toHaveClass('dm-c-tooltip--is-visible')
     expect(getTooltipPosition).toHaveBeenCalled()
 
     act(() => {
       fireEvent.mouseLeave(button)
       jest.advanceTimersByTime(0)
     })
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
   })
 
   it('cancels tooltip on mouse down or key down', () => {
@@ -69,7 +69,7 @@ describe('Tooltip', () => {
       jest.advanceTimersByTime(500)
     })
 
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
   })
 
   it('handles focus interactions for keyboard interface', () => {
@@ -79,15 +79,15 @@ describe('Tooltip', () => {
       fireEvent.focus(button)
       jest.advanceTimersByTime(500)
     })
-    expect(wrapper).toHaveClass('am-c-tooltip-wrapper--has-focus')
-    expect(tooltip).toHaveClass('am-c-tooltip--is-visible')
+    expect(wrapper).toHaveClass('dm-c-tooltip-wrapper--has-focus')
+    expect(tooltip).toHaveClass('dm-c-tooltip--is-visible')
 
     act(() => {
       fireEvent.blur(button)
       jest.advanceTimersByTime(0)
     })
-    expect(wrapper).not.toHaveClass('am-c-tooltip-wrapper--has-focus')
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(wrapper).not.toHaveClass('dm-c-tooltip-wrapper--has-focus')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
   })
 
   it('does not show tooltip on focus if interfaceType is mouse', () => {
@@ -97,7 +97,7 @@ describe('Tooltip', () => {
       fireEvent.focus(button)
       jest.advanceTimersByTime(500)
     })
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
   })
 
   it('hides tooltip on Escape key', () => {
@@ -108,7 +108,7 @@ describe('Tooltip', () => {
       jest.advanceTimersByTime(500)
       fireEvent.keyDown(window, { key: 'Escape' })
     })
-    expect(tooltip).not.toHaveClass('am-c-tooltip--is-visible')
+    expect(tooltip).not.toHaveClass('dm-c-tooltip--is-visible')
   })
 
   it('removes keydown listener on unmount', () => {

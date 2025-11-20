@@ -17,7 +17,7 @@ export const TargetMarker = () => {
     <svg
       id={`${id}-target-marker`}
       ref={markerRef}
-      className="am-c-target-marker"
+      className="dm-c-target-marker"
       width="38"
       height="38"
       viewBox="0 0 38 38"

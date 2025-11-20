@@ -11,12 +11,12 @@
 // ===================================================
 
 // 1. Base styles
-.am-c-search {
+.dm-c-search {
   // To follow...
 }
 
 // 2. Elements
-.am-c-search__input-container {
+.dm-c-search__input-container {
   display: flex;
   position: relative;
   flex: 1 1 auto;
@@ -43,7 +43,7 @@
   }
 }
 
-.am-c-search__input {
+.dm-c-search__input {
   width: 100%;
   border: 0;
   padding: var(--divider-gap) calc(var(--divider-gap) + 2px);
@@ -66,22 +66,22 @@
   }
 }
 
-.am-c-search__hint {
+.dm-c-search__hint {
   display: none;
 }
 
 // 3. Modifiers
-.am-o-app--mobile.am-o-app--exclusive-control {
-  .am-o-app__top .am-c-button-wrapper, .am-o-app__right .am-c-button-wrapper {
+.dm-o-app--mobile.dm-o-app--exclusive-control {
+  .dm-o-app__top .dm-c-button-wrapper, .dm-o-app__right .dm-c-button-wrapper {
     opacity: 0;
     z-index: -1;
   }
 }
 
-.am-o-app--mobile .am-c-search__input-container {
+.dm-o-app--mobile .dm-c-search__input-container {
   margin: var(--primary-gap);
 }
 
-.am-c-search__input-container--keyboard-focus-within:after {
+.dm-c-search__input-container--keyboard-focus-within:after {
   opacity: 1;
 }

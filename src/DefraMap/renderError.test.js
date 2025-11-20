@@ -6,7 +6,7 @@ describe('renderError', () => {
     
     renderError(rootEl, 'Something went wrong')
     
-    expect(rootEl.innerHTML).toBe('<div class="am-error">Something went wrong</div>')
+    expect(rootEl.innerHTML).toBe('<div class="dm-error">Something went wrong</div>')
   })
 
   it('replaces existing content', () => {
@@ -15,6 +15,6 @@ describe('renderError', () => {
     
     renderError(rootEl, 'Error occurred')
     
-    expect(rootEl.innerHTML).toBe('<div class="am-error">Error occurred</div>')
+    expect(rootEl.innerHTML).toBe('<div class="dm-error">Error occurred</div>')
   })
 })

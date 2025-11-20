@@ -1,4 +1,4 @@
-.am-o-app {
+.dm-o-app {
   visibility: visible;
   font-family: var(--font-family);
   font-size: var(--font-size);
@@ -11,7 +11,7 @@
   touch-action: pan-x pan-y;
 }
 
-.am-is-fullscreen .am-o-app {
+.dm-is-fullscreen .dm-o-app {
   position: fixed;
   z-index: 999;
   top: 0;
@@ -21,7 +21,7 @@
   width: 100%;
 }
 
-.am-o-app__overlay,
-.am-o-app__modal {
+.dm-o-app__overlay,
+.dm-o-app__modal {
   pointer-events: none;
 }

@@ -23,7 +23,7 @@ describe('Panel', () => {
     layoutRefs = { mainRef: { current: {} }, viewportRef: { current: { focus: jest.fn() } } }
     useConfig.mockReturnValue({ id: 'app' })
     useApp.mockReturnValue({ dispatch, breakpoint: 'desktop', layoutRefs })
-    document.body.innerHTML = `<div id="app-am-app"></div>`
+    document.body.innerHTML = `<div id="app-dm-app"></div>`
 
     jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => cb())
   })
@@ -38,13 +38,13 @@ describe('Panel', () => {
     renderPanel()
     const panel = screen.getByRole('region')
     expect(panel).toHaveAttribute('id', 'app-panel-settings')
-    expect(panel).toHaveClass('am-c-panel')
-    expect(screen.getByText('Test Panel')).toHaveClass('am-c-panel__heading', 'am-e-heading-m')
+    expect(panel).toHaveClass('dm-c-panel')
+    expect(screen.getByText('Test Panel')).toHaveClass('dm-c-panel__heading', 'dm-e-heading-m')
   })
 
   it('renders with visually hidden label when showLabel=false', () => {
     renderPanel({ panelConfig: { ...baseConfig, showLabel: false } })
-    expect(screen.getByText('Test Panel')).toHaveClass('am-u-visually-hidden')
+    expect(screen.getByText('Test Panel')).toHaveClass('dm-u-visually-hidden')
   })
 
   it('renders dialog and complementary roles', () => {
@@ -60,7 +60,7 @@ describe('Panel', () => {
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveAttribute('aria-modal', 'true')
     expect(dialog).toHaveAttribute('tabIndex', '-1')
-    expect(dialog).toHaveClass('am-c-panel am-c-panel--overlay')
+    expect(dialog).toHaveClass('dm-c-panel dm-c-panel--overlay')
   })
 
   it('applies width style', () => {

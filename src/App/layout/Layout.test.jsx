@@ -68,17 +68,17 @@ describe('Layout', () => {
   test('renders layout with correct class names, children and fullscreen=false', () => {
     render(<Layout />)
 
-    const root = document.getElementById('myApp-am-app')
+    const root = document.getElementById('myApp-dm-app')
     expect(root).toBeInTheDocument()
-    expect(root.className).toContain('am-o-app--desktop')
-    expect(root.className).toContain('am-o-app--map')
-    expect(root.className).toContain('am-o-app--inline')
-    expect(root.className).toContain('am-o-app--light-app')
-    expect(root.className).toContain('am-o-app--dark-map')
-    expect(root.className).toContain('am-o-app--exclusive-control')
+    expect(root.className).toContain('dm-o-app--desktop')
+    expect(root.className).toContain('dm-o-app--map')
+    expect(root.className).toContain('dm-o-app--inline')
+    expect(root.className).toContain('dm-o-app--light-app')
+    expect(root.className).toContain('dm-o-app--dark-map')
+    expect(root.className).toContain('dm-o-app--exclusive-control')
     expect(root.style.backgroundColor).toBe('pink')
 
-    const overlay = root.querySelector('.am-o-app__overlay')
+    const overlay = root.querySelector('.dm-o-app__overlay')
     expect(overlay.className).not.toContain('not-ready')
 
     expect(screen.getByTestId('viewport')).toBeInTheDocument()
@@ -104,10 +104,10 @@ describe('Layout', () => {
       isFullscreen: true
     })
     render(<Layout />)
-    const overlay = document.querySelector('.am-o-app__overlay')
+    const overlay = document.querySelector('.dm-o-app__overlay')
     expect(overlay.className).toContain('not-ready')
-    const root = document.getElementById('myApp-am-app')
-    expect(root.className).toContain('am-o-app--fullscreen')
+    const root = document.getElementById('myApp-dm-app')
+    expect(root.className).toContain('dm-o-app--fullscreen')
   })
 
   test('falls back to preferredColorScheme and default background when mapStyle is missing', () => {
@@ -124,9 +124,9 @@ describe('Layout', () => {
 
     render(<Layout />)
 
-    const root = document.getElementById('myApp-am-app')
-    expect(root.className).toContain('am-o-app--dark-app')
-    expect(root.className).toContain('am-o-app--light-map') // fallback
+    const root = document.getElementById('myApp-dm-app')
+    expect(root.className).toContain('dm-o-app--dark-app')
+    expect(root.className).toContain('dm-o-app--light-map') // fallback
     expect(root.style.backgroundColor).toBe('')
     expect(root.className).not.toContain('exclusive-control')
   })

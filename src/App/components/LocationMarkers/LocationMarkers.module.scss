@@ -3,7 +3,7 @@
 // ===================================================
 
 // 1. Base styles
-.am-c-location-marker {
+.dm-c-location-marker {
   position: absolute;
   left: 0;
   top: 0;
@@ -12,16 +12,16 @@
 }
 
 // 2. Elements
-.am-c-location-marker__background {
+.dm-c-location-marker__background {
   // stroke: var(--map-overlay-halo-color);
   // stroke-width: 1;
 }
 
-.am-c-location-marker__graphic {
+.dm-c-location-marker__graphic {
   fill: var(--map-overlay-halo-color);
 }
 
 // 3. Modifiers
-.am-c-location-marker--teardrop .am-c-location-marker__graphic {
+.dm-c-location-marker--teardrop .dm-c-location-marker__graphic {
   filter: opacity(50%) brightness(0.25);
 }

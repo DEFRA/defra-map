@@ -23,7 +23,7 @@ describe('updateDOMState', () => {
 
   afterEach(() => {
     document.body.innerHTML = ''
-    document.documentElement.classList.remove('am-is-fullscreen')
+    document.documentElement.classList.remove('dm-is-fullscreen')
   })
 
   it.each([
@@ -41,7 +41,7 @@ describe('updateDOMState', () => {
 
     updateDOMState(mapInstance)
 
-    expect(document.documentElement.classList.contains('am-is-fullscreen')).toBe(isFullscreen)
+    expect(document.documentElement.classList.contains('dm-is-fullscreen')).toBe(isFullscreen)
     expect(rootEl.style.height).toBe(height)
     if (titleUpdated) {
       expect(document.title).toBe('Map View: Original Title')
@@ -56,10 +56,10 @@ describe('updateDOMState', () => {
 })
 
 describe('removeLoadingState', () => {
-  it('removes am-is-loading class from body', () => {
-    document.body.classList.add('am-is-loading')
+  it('removes dm-is-loading class from body', () => {
+    document.body.classList.add('dm-is-loading')
     removeLoadingState()
-    expect(document.body.classList.contains('am-is-loading')).toBe(false)
+    expect(document.body.classList.contains('dm-is-loading')).toBe(false)
   })
 })
 
@@ -67,7 +67,7 @@ describe('renderError', () => {
   it('renders error message in root element', () => {
     const rootEl = document.createElement('div')
     renderError(rootEl, 'Something went wrong')
-    expect(rootEl.innerHTML).toBe('<div class="am-error">Something went wrong</div>')
+    expect(rootEl.innerHTML).toBe('<div class="dm-error">Something went wrong</div>')
   })
 
   it('handles null rootEl gracefully', () => {

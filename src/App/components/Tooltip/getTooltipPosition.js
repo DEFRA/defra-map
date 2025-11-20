@@ -6,7 +6,7 @@ export function getTooltipPosition (triggerEl, containerEl) {
   }
 
   if (!containerEl) {
-    containerEl = triggerEl.closest('.am-o-app__main')
+    containerEl = triggerEl.closest('.dm-o-app__main')
   }
 
   const triggerRect = triggerEl.getBoundingClientRect()

@@ -9,7 +9,7 @@ describe('appConfig', () => {
     const { container } = render(panel.render())
 
     // Check if a div with the expected class exists
-    expect(container.querySelector('.am-c-keyboard-help')).toBeInTheDocument()
+    expect(container.querySelector('.dm-c-keyboard-help')).toBeInTheDocument()
   })
 })
 

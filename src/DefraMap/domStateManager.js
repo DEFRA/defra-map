@@ -48,7 +48,7 @@ function updateDOMState (mapInstance) {
 
   if (['mapOnly', 'buttonFirst', 'hybrid'].includes(behaviour)) {
     toggleInertElements({ containerEl: rootEl, isFullscreen })
-    document.documentElement.classList.toggle('am-is-fullscreen', isFullscreen)
+    document.documentElement.classList.toggle('dm-is-fullscreen', isFullscreen)
   }
 
   if (['buttonFirst', 'hybrid'].includes(behaviour)) {
@@ -66,12 +66,12 @@ function updateDOMState (mapInstance) {
 /**
  * Remove the global "loading" state from the page.
  *
- * Removes the `am-is-loading` class from the document body.
+ * Removes the `dm-is-loading` class from the document body.
  *
  * @returns {void}
  */
 function removeLoadingState () {
-  document.body.classList.remove('am-is-loading')
+  document.body.classList.remove('dm-is-loading')
 }
 
 /**
@@ -83,7 +83,7 @@ function removeLoadingState () {
  */
 function renderError (rootEl, message) {
   if (rootEl) {
-    rootEl.innerHTML = `<div class="am-error">${message}</div>`
+    rootEl.innerHTML = `<div class="dm-error">${message}</div>`
   }
 }
 

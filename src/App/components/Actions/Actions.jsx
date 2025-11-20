@@ -2,7 +2,7 @@ import React from 'react'
 
 export const Actions = ({ slot, children }) => {
   return (
-    <div className={`am-c-${slot} am-c-panel`}>
+    <div className={`dm-c-${slot} dm-c-panel`}>
       {children}
     </div>
   )

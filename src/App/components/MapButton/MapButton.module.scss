@@ -5,11 +5,11 @@
 // ===================================================
 
 // 1. Base styles
-.am-c-button-wrapper {
+.dm-c-button-wrapper {
     position: relative;
 }
 
-.am-c-button-wrapper .am-c-panel {
+.dm-c-button-wrapper .dm-c-panel {
     position: absolute;
     right: calc(100% + var(--divider-gap));
     top: 0;
@@ -20,7 +20,7 @@
 // ===================================================
 
 // 1. Base styles
-.am-c-button-group {
+.dm-c-button-group {
     display: flex;
 }
 
@@ -29,41 +29,41 @@
 // 3. Modifiers
 
 // 4. State styles
-.am-o-app__right .am-c-button-group {
+.dm-o-app__right .dm-c-button-group {
     flex-direction: column;
 }
 
-.am-o-app__right .am-c-button-group > *:first-child button,
-.am-o-app__right .am-c-button-group > *:first-child {
+.dm-o-app__right .dm-c-button-group > *:first-child button,
+.dm-o-app__right .dm-c-button-group > *:first-child {
     @include tools.border-focus-corner-override($corners: 'top');
 }
 
-.am-o-app__right .am-c-button-group > *:not(:first-child):not(:last-child) button,
-.am-o-app__right .am-c-button-group > *:not(:first-child):not(:last-child) {
+.dm-o-app__right .dm-c-button-group > *:not(:first-child):not(:last-child) button,
+.dm-o-app__right .dm-c-button-group > *:not(:first-child):not(:last-child) {
     @include tools.border-focus-corner-override($corners: 'top bottom');
 }
 
-.am-o-app__right .am-c-button-group > *:last-child button,
-.am-o-app__right .am-c-button-group > *:last-child {
+.dm-o-app__right .dm-c-button-group > *:last-child button,
+.dm-o-app__right .dm-c-button-group > *:last-child {
     @include tools.border-focus-corner-override($corners: 'bottom');
 }
 
-.am-o-app__top .am-c-button-group {
+.dm-o-app__top .dm-c-button-group {
     flex-direction: row;
 }
 
-.am-o-app__top .am-c-button-group > *:first-child button,
-.am-o-app__top .am-c-button-group > *:first-child {
+.dm-o-app__top .dm-c-button-group > *:first-child button,
+.dm-o-app__top .dm-c-button-group > *:first-child {
     @include tools.border-focus-corner-override($corners: 'left');
 }
 
-.am-o-app__top .am-c-button-group > *:not(:first-child):not(:last-child) button,
-.am-o-app__top .am-c-button-group > *:not(:first-child):not(:last-child) {
+.dm-o-app__top .dm-c-button-group > *:not(:first-child):not(:last-child) button,
+.dm-o-app__top .dm-c-button-group > *:not(:first-child):not(:last-child) {
     @include tools.border-focus-corner-override($corners: 'left right');
 }
 
-.am-o-app__top .am-c-button-group > *:last-child button,
-.am-o-app__top .am-c-button-group > *:last-child {
+.dm-o-app__top .dm-c-button-group > *:last-child button,
+.dm-o-app__top .dm-c-button-group > *:last-child {
     @include tools.border-focus-corner-override($corners: 'right');
 }
 
@@ -72,7 +72,7 @@
 // ===================================================
 
 // 1. Base styles
-.am-c-map-button {
+.dm-c-map-button {
     @include tools.border-focus-base(
         // $is-inset: true,
         $type: button
@@ -98,21 +98,21 @@
     }
 }
 
-.am-c-map-button svg {
+.dm-c-map-button svg {
     width: var(--icon-size);
     height: var(--icon-size);
 
     flex-shrink: 0;
 }
 
-.am-c-map-button svg + span {
+.dm-c-map-button svg + span {
     margin-left: var(--button-icon-label-offset);
 
     white-space: nowrap;
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .am-c-map-button:hover {
+    .dm-c-map-button:hover {
         @media (prefers-reduced-motion: no-preference) {
             transition: background-color var(--duration) ease;
         }
@@ -127,12 +127,12 @@
 
 // 3. Modifiers
 
-.am-c-map-button--with-label {
+.dm-c-map-button--with-label {
     padding-left: var(--label-button-padding);
     padding-right: var(--label-button-padding);
 }
 
-.am-c-map-button--primary {
+.dm-c-map-button--primary {
     color: var(--background-color);
     background-color: var(--primary-button-color);
     span {
@@ -145,16 +145,16 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .am-c-map-button--primary:hover {
+    .dm-c-map-button--primary:hover {
         background-color: var(--primary-button-hover-color);
     }
 }
 
-.am-c-map-button--primary::before {
+.dm-c-map-button--primary::before {
     box-shadow: none;
 }
 
-.am-c-map-button--tertiary {
+.dm-c-map-button--tertiary {
     border: 1px solid var(--secondary-button-border-color);
     span {
         white-space: nowrap;
@@ -165,24 +165,24 @@
     }
 }
 
-.am-c-map-button--tertiary::before {
+.dm-c-map-button--tertiary::before {
     box-shadow: none;
 }
 
 // 4. State styles
-.am-c-map-button[aria-disabled="true"]:not(.am-c-map-button--primary, .am-c-map-button--tertiary) {
+.dm-c-map-button[aria-disabled="true"]:not(.dm-c-map-button--primary, .dm-c-map-button--tertiary) {
     svg, span {
         opacity: var(--disabled-button-opacity);
     }
 }
 
-.am-c-map-button {
+.dm-c-map-button {
     &--primary[aria-disabled="true"], &--tertiary[aria-disabled="true"] {
         opacity: var(--disabled-button-opacity);
     }
 }
 
-.am-o-app__actions .am-c-map-button[aria-pressed="true"] {
+.dm-o-app__actions .dm-c-map-button[aria-pressed="true"] {
     color: var(--pressed-button-foreground-color);
     border-color: var(--pressed-button-border-color);
     background-color: var(--pressed-button-background-color);

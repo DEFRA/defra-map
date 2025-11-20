@@ -75,10 +75,10 @@ describe('Viewport', () => {
 
   const renderViewport = () => {
     const { container, rerender, unmount } = render(<Viewport keyboardHintPortalRef={keyboardHintPortalRef} />)
-    const viewport = container.querySelector('.am-c-viewport')
-    const mapContainer = container.querySelector('.am-c-viewport__map-container')
-    const safeZone = container.querySelector('.am-c-viewport__safezone')
-    const keyboardHint = keyboardHintPortalRef.current.querySelector('.am-c-viewport__keyboard-hint')
+    const viewport = container.querySelector('.dm-c-viewport')
+    const mapContainer = container.querySelector('.dm-c-viewport__map-container')
+    const safeZone = container.querySelector('.dm-c-viewport__safezone')
+    const keyboardHint = keyboardHintPortalRef.current.querySelector('.dm-c-viewport__keyboard-hint')
     const targetMarker = container.querySelector('[data-testid="target-marker"]')
     const locationMarkers = container.querySelector('[data-testid="location-markers"]')
     return { viewport, mapContainer, safeZone, keyboardHint, targetMarker, locationMarkers, rerender, unmount }
@@ -96,7 +96,7 @@ describe('Viewport', () => {
   it('renders viewport with correct id and class based on mapSize', () => {
     const { viewport } = renderViewport()
     expect(viewport.id).toBe('test-map-viewport')
-    expect(viewport).toHaveClass('am-c-viewport--medium')
+    expect(viewport).toHaveClass('dm-c-viewport--medium')
   })
 
   it('renders keyboard hint when showHint is true', () => {
@@ -150,8 +150,8 @@ describe('Viewport', () => {
       safeZoneInset: {}
     })
     const { unmount } = renderViewport()
-    expect(mainEl.classList.contains('am-o-app__main--keyboard-hint-visible')).toBe(true)
+    expect(mainEl.classList.contains('dm-o-app__main--keyboard-hint-visible')).toBe(true)
     unmount()
-    expect(mainEl.classList.contains('am-o-app__main--keyboard-hint-visible')).toBe(false)
+    expect(mainEl.classList.contains('dm-o-app__main--keyboard-hint-visible')).toBe(false)
   })
 })

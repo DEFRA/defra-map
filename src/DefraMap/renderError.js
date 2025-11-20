@@ -10,5 +10,5 @@
  * @returns {void}
  */
 export function renderError (rootEl, message) {
-  rootEl.innerHTML = `<div class="am-error">${message}</div>`
+  rootEl.innerHTML = `<div class="dm-error">${message}</div>`
 }

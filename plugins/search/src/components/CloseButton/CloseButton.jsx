@@ -3,7 +3,7 @@ export const CloseButton = ({ onClick, CloseIcon }) => {
   return (
     <button
       aria-label="Close search"
-      className="am-c-map-button am-c-search-close-button"
+      className="dm-c-map-button dm-c-search-close-button"
       type="button"
       onClick={onClick}
     >

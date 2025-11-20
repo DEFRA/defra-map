@@ -1,28 +1,28 @@
-.am-c-actions {
+.dm-c-actions {
   display: flex;
   justify-content: center;
   gap: var(--divider-gap);
   padding: var(--panel-margin);
 
-  .am-c-button-group {
+  .dm-c-button-group {
     display: flex;
     justify-content: center;
     gap: var(--divider-gap);
   }
 
-  .am-c-button-wrapper--wide {
+  .dm-c-button-wrapper--wide {
     display: flex;
     flex: 1 1 0;
   }
 
-  .am-c-map-button--primary,
-  .am-c-map-button--tertiary {
+  .dm-c-map-button--primary,
+  .dm-c-map-button--tertiary {
     width: 100%;
   }
 }
 
-.am-o-app--tablet, .am-o-app--desktop {
-  .am-c-actions {
+.dm-o-app--tablet, .dm-o-app--desktop {
+  .dm-c-actions {
     min-width: 280px;
   }
 }

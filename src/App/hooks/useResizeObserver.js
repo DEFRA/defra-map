@@ -36,4 +36,6 @@ export function useResizeObserver (targetRefs, callback) {
       }
     }
   }, [targetRefs, callback])
+
+  return { frameRef }
 }

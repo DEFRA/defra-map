@@ -82,10 +82,11 @@ describe('useResizeObserver', () => {
 
   it('cancels animation frame on unmount if frameRef.current is set', () => {
     const ref = { current: {} }
+    // result.current now contains { frameRef }
     const { result, unmount } = renderHook(() => useResizeObserver(ref, callback))
 
-    // manually set frameRef.current to hit cleanup
-    result.current.frameRef = { current: 123 }
+    // ⬅️ CORRECTED: Access frameRef via result.current
+    result.current.frameRef.current = 123 
     unmount()
 
     expect(global.cancelAnimationFrame).toHaveBeenCalledWith(123)

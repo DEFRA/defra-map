@@ -8,13 +8,13 @@ const initialState = {
  * Structure of items in Set: { featureId: string, layerId: string, idProperty: string }
  */
 const toggleSelectedFeatures = (state, payload) => {
-  const { featureId, multiSelect, layerId, idProperty, addOnly } = payload
+  const { featureId, multiSelect, layerId, idProperty, addToExisting } = payload
   const set = new Set(state.selectedFeatures)
 
   const existing = [...set].find(f => f.featureId === featureId && f.layerId === layerId)
 
   // Add-only
-  if (addOnly) {
+  if (addToExisting && multiSelect) {
     if (!existing) {
       set.add({ featureId, layerId, idProperty })
     }

@@ -14,12 +14,27 @@ import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
 import drawPolygonPlugin from '/plugins/draw-polygon-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
-import selectPlugin from '/plugins/select/src/index.js'
+import createSelectPlugin from '/plugins/select/src/index.js'
 
 const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
 
+const selectPlugin = createSelectPlugin({
+	dataLayers: [{
+		layerId: 'field-parcels',
+		idProperty: 'ID',
+		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+	},{
+		layerId: 'linked-parcels',
+		idProperty: 'ID',
+		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
+	}],
+	markerColor: { outdoor: '#ff0000' },
+	selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+	// multiSelect: true
+})
+
 const defraMap = new DefraMap('map', {
-	behaviour: 'hybrid',
+	behaviour: 'mapOnly',
 	mapProvider: maplibreProvider,
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,
@@ -63,27 +78,14 @@ const defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: true,
-			excludeModes: ['circle', 'square', 'polygon']
+			showMarker: false,
+			// excludeModes: ['circle', 'square', 'polygon']
 		}),
 		dataLayersPlugin({
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		selectPlugin({
-			dataLayers: [{
-				layerId: 'field-parcels',
-				idProperty: 'ID',
-				selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-			},{
-				layerId: 'linked-parcels',
-				idProperty: 'ID',
-				selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
-			}],
-			markerColor: { outdoor: '#ff0000', dark: '#00ff00' },
-			selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
-			// multiSelect: true
-		}),
+		selectPlugin,
 		// drawPolygonPlugin({
 		// 	featureId: 'test1234',
 		// 	// featureGeoJSON: featureGeoJSON
@@ -111,14 +113,17 @@ defraMap.on('select:done', (e) => {
 
 // Update selected feature
 defraMap.on('search:match', (e) => {
+	defraMap.addLocationMarker('location', e.point, {
+		color: '#0000ff'
+	})
+	setTimeout(() => defraMap.removeLocationMarker('location'), 1000)
 	if (e.type !== 'parcel') {
 		return
 	}
-	// console.log(am.emit)
-	defraMap.emit('select:selectFeatures', {
+	selectPlugin.selectFeatures({
+		idProperty: 'ID',
 		featureId: e.id,
-		layerId: 'field-parcels',
-		idProperty: 'ID'
+		layerId: 'field-parcels'
 	})
 })
 

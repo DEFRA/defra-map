@@ -47,8 +47,8 @@ export const useHighlightSync = ({
     updateHighlightedFeatures()
 
     // Update updateHighlightedFeatures on style data change
-    eventBus.on('map:styledata', updateHighlightedFeatures)
+    eventBus.on('map:datachange', updateHighlightedFeatures)
 
-    return () => eventBus.off('map:styledata', updateHighlightedFeatures)
+    return () => eventBus.off('map:datachange', updateHighlightedFeatures)
   }, [selectedFeatures, mapProvider, stylesMap])
 }

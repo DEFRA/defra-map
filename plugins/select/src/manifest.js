@@ -2,7 +2,7 @@
 import { SelectInit } from './SelectInit.jsx'
 import { initialState, actions } from './reducer.js'
 import { Check, MousePointerClick } from 'lucide-react'
-import { selectFeature } from './api/selectFeature.js'
+import { selectFeatures } from './api/selectFeatures.js'
 
 export const manifest = {
   InitComponent: SelectInit,
@@ -81,6 +81,6 @@ export const manifest = {
   }],
 
   api: {
-    selectFeature
+    selectFeatures
   }
 }

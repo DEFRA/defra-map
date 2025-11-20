@@ -43,19 +43,6 @@ export default class DefraMap {
     this._initialize()
   }
 
-  // EventBus methods
-  on (...args) {
-    eventBus.on(...args)
-  }
-
-  off (...args) {
-    eventBus.off(...args)
-  }
-
-  emit (...args) {
-    eventBus.emit(...args)
-  }
-
   _buildConfig (props) {
     const parsedDataset = parseDataProperties(this.rootEl)
     return mergeConfig({
@@ -66,6 +53,7 @@ export default class DefraMap {
     })
   }
 
+  // Private methods
   _initialize () {
     if (['buttonFirst', 'hybrid'].includes(this.config.behaviour)) {
       this._openButton = createButton(this.config, this.rootEl, () => {
@@ -86,6 +74,7 @@ export default class DefraMap {
     this.loadComponent()
   }
 
+  // Public methods
   async loadComponent () {
     if (this._openButton) {
       this._openButton.style.display = 'none'
@@ -146,5 +135,27 @@ export default class DefraMap {
     }
 
     updateDOMState(this)
+  }
+
+  // API - EventBus methods
+  on (...args) {
+    eventBus.on(...args)
+  }
+
+  off (...args) {
+    eventBus.off(...args)
+  }
+
+  emit (...args) {
+    eventBus.emit(...args)
+  }
+
+  // API - location markers
+  addLocationMarker (id, coords, options) {
+    eventBus.emit('app:addlocationmarker', { id, coords, options })
+  }
+
+  removeLocationMarker (id) {
+    eventBus.emit('app:removelocationmarker', id)
   }
 }

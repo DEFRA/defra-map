@@ -41,7 +41,7 @@ export const useLocationMarkers = () => {
 
   }, [isMapReady, mapProvider, locationMarkers, dispatch, mapSize])
 
-  // Single ref callback for each marker
+  // Update marker position on map:render
   const markerRef = useCallback((id) => (el) => {
     if (!el) {
       markerRefs.current.delete(id)
@@ -65,9 +65,11 @@ export const useLocationMarkers = () => {
         ref.style.display = 'block'
       })
     }
-
     eventBus.on('map:render', updateMarkers)
-    return () => eventBus.off('map:render', updateMarkers)
+
+    return () => {
+      eventBus.off('map:render', updateMarkers)
+    }
   }, [locationMarkers, mapProvider, isMapReady, mapSize])
 
   // Update all markers on map resize
@@ -86,6 +88,31 @@ export const useLocationMarkers = () => {
       ref.style.transform = `translate(${x}px, ${y}px)`
     })
   }, [mapSize, locationMarkers.items, mapProvider, isMapReady])
+
+  // Respond to external API calls via eventBus
+  useEffect(() => {
+    const handleAddLocationMarker = (payload = {}) => {
+      if (!payload || !payload.id || !payload.coords) {
+        return
+      }
+      const { id, coords, options } = payload
+      locationMarkers.add(id, coords, options)
+    }
+    eventBus.on('app:addlocationmarker', handleAddLocationMarker)
+
+    const handleRemoveLocationMarker = (id) => {
+      if (!id) {
+        return
+      }
+      locationMarkers.remove(id)
+    }
+    eventBus.on('app:removelocationmarker', handleRemoveLocationMarker)
+
+    return () => {
+      eventBus.off('app:addlocationmarker', handleAddLocationMarker)
+      eventBus.off('app:removelocationmarker', handleRemoveLocationMarker)
+    }
+  }, [])
 
   return { locationMarkers, markerRef }
 }

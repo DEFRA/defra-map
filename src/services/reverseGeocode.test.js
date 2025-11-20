@@ -3,7 +3,7 @@ import { createReverseGeocode, reverseGeocode } from './reverseGeocode'
 
 describe('reverseGeocode module', () => {
   beforeEach(() => {
-    // Reset module state between tests
+    // Reset the internal reverseGeocodeFn by resetting the module
     jest.resetModules()
   })
 
@@ -11,33 +11,59 @@ describe('reverseGeocode module', () => {
     expect(() => reverseGeocode(10, [0, 0])).toThrow('ReverseGeocode not initialised')
   })
 
-  it('sets reverseGeocodeFn via createReverseGeocode', async () => {
+  it('sets reverseGeocodeFn via createReverseGeocode and calls providerFn correctly', async () => {
     const mockProviderFn = jest.fn().mockResolvedValue('result')
+
     const provider = {
       load: jest.fn().mockResolvedValue(mockProviderFn)
     }
-    const transformRequest = jest.fn()
+
+    const config = {
+      url: 'https://example.com',
+      transformRequest: jest.fn(),
+      load: provider.load
+    }
+
     const crs = 'EPSG:4326'
 
-    createReverseGeocode(provider, transformRequest, crs)
+    createReverseGeocode(config, crs)
 
     const result = await reverseGeocode(12, [1, 2])
 
     expect(provider.load).toHaveBeenCalled()
-    expect(mockProviderFn).toHaveBeenCalledWith(12, [1, 2], transformRequest, crs)
+
+    // providerFn(url, transformRequest, crs, zoom, coord)
+    expect(mockProviderFn).toHaveBeenCalledWith(
+      config.url,
+      config.transformRequest,
+      crs,
+      12,
+      [1, 2]
+    )
+
     expect(result).toBe('result')
   })
 
   it('supports multiple calls after initialisation', async () => {
     const mockProviderFn = jest.fn().mockResolvedValue('ok')
-    const provider = { load: jest.fn().mockResolvedValue(mockProviderFn) }
 
-    createReverseGeocode(provider, null, null)
+    const provider = {
+      load: jest.fn().mockResolvedValue(mockProviderFn)
+    }
+
+    const config = {
+      url: 'x',
+      transformRequest: null,
+      load: provider.load
+    }
+
+    createReverseGeocode(config, 'EPSG:3857')
 
     const r1 = await reverseGeocode(5, [10, 20])
     const r2 = await reverseGeocode(8, [30, 40])
 
     expect(mockProviderFn).toHaveBeenCalledTimes(2)
+
     expect(r1).toBe('ok')
     expect(r2).toBe('ok')
   })

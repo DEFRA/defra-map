@@ -96,10 +96,9 @@ export default class DefraMap {
       const [MapProvider, mapFramework] = await this.config.mapProvider.load()
 
       // Initialise reverseGeocode service if provided
-      if (this.config.reverseGeocode) {
+      if (this.config.reverseGeocodeProvider) {
         createReverseGeocode(
-          this.config.reverseGeocode.provider,
-          this.config.reverseGeocode.transformRequest,
+          this.config.reverseGeocodeProvider,
           this.config.mapProvider.crs
         )
       }

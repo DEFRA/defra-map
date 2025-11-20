@@ -1,9 +1,9 @@
 let reverseGeocodeFn = null
 
-export function createReverseGeocode (provider, transformRequest, crs) {
+export function createReverseGeocode ({ url, transformRequest, load }, crs) {
   reverseGeocodeFn = async (zoom, coord) => {
-    const providerFn = await provider.load()
-    return providerFn(zoom, coord, transformRequest, crs)
+    const providerFn = await load()
+    return providerFn(url, transformRequest, crs, zoom, coord)
   }
 }
 

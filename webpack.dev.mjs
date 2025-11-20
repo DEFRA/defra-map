@@ -48,6 +48,7 @@ export default {
         OS_CLIENT_SECRET: JSON.stringify(process.env.OS_CLIENT_SECRET),
         // OS Names API
         OS_NAMES_URL: JSON.stringify(process.env.OS_NAMES_URL),
+        OS_NEAREST_URL: JSON.stringify(process.env.OS_NEAREST_URL),
         // Gridref services
         GRIDREF_SERVICE_URL: JSON.stringify(process.env.GRIDREF_SERVICE_URL),
         // WFS services

@@ -21,11 +21,12 @@ const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinate
 const defraMap = new DefraMap('map', {
 	behaviour: 'hybrid',
 	mapProvider: maplibreProvider,
-	reverseGeocode: {
-		provider: openNamesProvider,
-		transformRequest: transformGeocodeRequest,
+	reverseGeocodeProvider: openNamesProvider({
+		url: process.env.OS_NEAREST_URL,
+		// url: '/api/os-nearest-proxy?query={query}',
+		transformRequest: transformGeocodeRequest
 		// showMarker: true
-	},
+	}),
 	// maxMobileWidth: 700,
 	// minDesktopWidth: 960,
 	mapLabel: 'Map showing Carlisle',

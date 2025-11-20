@@ -111,19 +111,17 @@ describe('DefraMap', () => {
     loadSpy.mockRestore()
   })
 
-	it('initializes reverseGeocode if config.reverseGeocode is provided', async () => {
-		const mapProviderMock = { load: jest.fn().mockResolvedValue([{}, {}]), crs: 'EPSG:3857' }
-		const configWithReverse = { behaviour: 'buttonFirst', mapProvider: mapProviderMock, reverseGeocode: { provider: 'testProvider', transformRequest: jest.fn() } }
-		const map = new DefraMap('map', configWithReverse)
-		// Mock initialiseApp to prevent full app load
-		initialiseApp.mockResolvedValue({ _root: {}, someApi: jest.fn() })
-		await map.loadComponent()
-		expect(createReverseGeocode).toHaveBeenCalledWith(
-			'testProvider',
-			configWithReverse.reverseGeocode.transformRequest,
-			mapProviderMock.crs
-		)
-	})
+	it('initializes reverseGeocode if reverseGeocodeProvider is provided', async () => {
+    const mapProviderMock = { load: jest.fn().mockResolvedValue([{}, {}]), crs: 'EPSG:3857' }
+    const configWithReverse = { behaviour: 'buttonFirst', mapProvider: mapProviderMock, reverseGeocodeProvider: { url: 'https://example.com', apiKey: '123' }}
+    const map = new DefraMap('map', configWithReverse)
+    initialiseApp.mockResolvedValue({ _root: {}, someApi: jest.fn() })
+    await map.loadComponent()
+    expect(createReverseGeocode).toHaveBeenCalledWith(
+      configWithReverse.reverseGeocodeProvider,
+      mapProviderMock.crs
+    )
+  })
 
   it('calls loadComponent if shouldLoadComponent returns true', async () => {
     shouldLoadComponent.mockReturnValue(true)

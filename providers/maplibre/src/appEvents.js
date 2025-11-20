@@ -1,9 +1,7 @@
-import { defaults } from './defaults.js'
-
 export function attachAppEvents (map, eventBus) {
   // App sets map style
   const handleSetMapStyle = (mapStyle) => {
-    map.setStyle(mapStyle.url)
+    map.setStyle(mapStyle.url, { diff: false })
   }
   eventBus.on('map:setmapstyle', handleSetMapStyle)
 

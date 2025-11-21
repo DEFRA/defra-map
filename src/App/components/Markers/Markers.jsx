@@ -1,14 +1,14 @@
-import { markerSvgPaths } from '../../../config/appConfig'
-import { useLocationMarkers } from '../../hooks/useLocationMarkersAPI'
-import { useConfig } from '../../store/configContext'
-import { useMap } from '../../store/mapContext'
+import { markerSvgPaths } from '../../../config/appConfig.js'
+import { useMarkers } from '../../hooks/useMarkersAPI.js'
+import { useConfig } from '../../store/configContext.js'
+import { useMap } from '../../store/mapContext.js'
 import { parseColor } from '../../../utils/parseColor.js'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
 
-export const LocationMarkers = () => {
+export const Markers = () => {
   const { id, markerShape, markerColor } = useConfig()
   const { mapStyle } = useMap()
-  const { locationMarkers, markerRef } = useLocationMarkers()
+  const { markers, markerRef } = useMarkers()
 
   if (!mapStyle) {
     return
@@ -18,24 +18,24 @@ export const LocationMarkers = () => {
 
   return (
     <>
-      {locationMarkers.items.map(marker => (
+      {markers.items.map(marker => (
         <svg
           key={marker.id}
           ref={markerRef(marker.id)} // Single callback ref, just like useTargetMarker
-          id={`${id}-location-marker-${marker.id}`}
-          className={`dm-c-location-marker dm-c-location-marker--${marker.markerShape || stringToKebab(markerShape)}`}
+          id={`${id}-marker-${marker.id}`}
+          className={`dm-c-marker dm-c-marker--${marker.markerShape || stringToKebab(markerShape)}`}
           width="38"
           height="38"
           viewBox="0 0 38 38"
           style={{ display: marker.isVisible ? 'block' : 'none' }}
         >
           <path
-            className="dm-c-location-marker__background"
+            className="dm-c-marker__background"
             d={defaultSvgPaths.backgroundPath}
             fill={parseColor(marker.color || markerColor, mapStyle.id)}
             />
           <path 
-            className="dm-c-location-marker__graphic"
+            className="dm-c-marker__graphic"
             d={defaultSvgPaths.graphicPath}
             />
         </svg>

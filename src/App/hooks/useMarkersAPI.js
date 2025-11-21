@@ -13,33 +13,33 @@ export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {
   return { x: x * scaleFactor[mapSize], y: y * scaleFactor[mapSize] - 19 }
 }
 
-export const useLocationMarkers = () => {
+export const useMarkers = () => {
   const { mapProvider } = useConfig()
-  const { locationMarkers, dispatch, mapSize, isMapReady } = useMap()
+  const { markers, dispatch, mapSize, isMapReady } = useMap()
   const markerRefs = useRef(new Map())
 
-  // --- API: Attach methods to locationMarkers object ---
+  // --- API: Attach methods to markers object ---
   useEffect(() => {
     if (!isMapReady || !mapProvider) {
       return
     }
 
-    locationMarkers.markerRefs = markerRefs.current
+    markers.markerRefs = markerRefs.current
 
-    locationMarkers.add = (id, coords, options) => {
+    markers.add = (id, coords, options) => {
       const { x, y } = projectCoords(coords, mapProvider, mapSize, isMapReady)
       dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { id, coords, ...options, x, y, isVisible: true }})
     }
 
-    locationMarkers.remove = (id) => {
+    markers.remove = (id) => {
       dispatch({ type: 'REMOVE_LOCATION_MARKER', payload: id })
     }
 
-    locationMarkers.getMarker = (id) => {
-      return locationMarkers.items.find(marker => marker.id === id)
+    markers.getMarker = (id) => {
+      return markers.items.find(marker => marker.id === id)
     }
 
-  }, [isMapReady, mapProvider, locationMarkers, dispatch, mapSize])
+  }, [isMapReady, mapProvider, markers, dispatch, mapSize])
 
   // Update marker position on map:render
   const markerRef = useCallback((id) => (el) => {
@@ -54,7 +54,7 @@ export const useLocationMarkers = () => {
         return
       }
       
-      locationMarkers.items.forEach(marker => {
+      markers.items.forEach(marker => {
         const ref = markerRefs.current.get(marker.id)
         if (!ref || !marker.coords) {
           return
@@ -70,7 +70,7 @@ export const useLocationMarkers = () => {
     return () => {
       eventBus.off('map:render', updateMarkers)
     }
-  }, [locationMarkers, mapProvider, isMapReady, mapSize])
+  }, [markers, mapProvider, isMapReady, mapSize])
 
   // Update all markers on map resize
   useEffect(() => {
@@ -78,7 +78,7 @@ export const useLocationMarkers = () => {
       return
     }
     
-    locationMarkers.items.forEach(marker => {
+    markers.items.forEach(marker => {
       const ref = markerRefs.current.get(marker.id)
       if (!ref || !marker.coords) {
         return
@@ -87,32 +87,32 @@ export const useLocationMarkers = () => {
       const { x, y } = projectCoords(marker.coords, mapProvider, mapSize, isMapReady)
       ref.style.transform = `translate(${x}px, ${y}px)`
     })
-  }, [mapSize, locationMarkers.items, mapProvider, isMapReady])
+  }, [mapSize, markers.items, mapProvider, isMapReady])
 
   // Respond to external API calls via eventBus
   useEffect(() => {
-    const handleAddLocationMarker = (payload = {}) => {
+    const handleAddMarker = (payload = {}) => {
       if (!payload || !payload.id || !payload.coords) {
         return
       }
       const { id, coords, options } = payload
-      locationMarkers.add(id, coords, options)
+      markers.add(id, coords, options)
     }
-    eventBus.on('app:addlocationmarker', handleAddLocationMarker)
+    eventBus.on('app:addmarker', handleAddMarker)
 
-    const handleRemoveLocationMarker = (id) => {
+    const handleRemoveMarker = (id) => {
       if (!id) {
         return
       }
-      locationMarkers.remove(id)
+      markers.remove(id)
     }
-    eventBus.on('app:removelocationmarker', handleRemoveLocationMarker)
+    eventBus.on('app:removemarker', handleRemoveMarker)
 
     return () => {
-      eventBus.off('app:addlocationmarker', handleAddLocationMarker)
-      eventBus.off('app:removelocationmarker', handleRemoveLocationMarker)
+      eventBus.off('app:addmarker', handleAddMarker)
+      eventBus.off('app:removemarker', handleRemoveMarker)
     }
   }, [])
 
-  return { locationMarkers, markerRef }
+  return { markers, markerRef }
 }

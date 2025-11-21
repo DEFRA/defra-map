@@ -46,7 +46,7 @@ describe('mapReducer', () => {
           isPinnedToMap: false,
           state: 'active'
         },
-        locationMarkers: {
+        markers: {
           items: [{ id: 1, name: 'Marker1' }]
         }
       })
@@ -63,11 +63,11 @@ describe('mapReducer', () => {
       expect(state.zoom).toBe(12)
     })
 
-    test('defaults locationMarkers.items to empty array when no markers are provided', () => {
+    test('defaults markers.items to empty array when no markers are provided', () => {
       const config = { ...baseConfig, markers: undefined }
       const state = initialState(config)
 
-      expect(state.locationMarkers.items).toEqual([])
+      expect(state.markers.items).toEqual([])
     })
   })
 

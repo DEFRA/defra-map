@@ -50,27 +50,27 @@ const updateTargetMarker = (state, payload) => {
   }
 }
 
-const upsertLocationMarker = (state, payload) => {
-  const map = new Map(state.locationMarkers.items.map(item => [item.id, item]))
+const upsertMarker = (state, payload) => {
+  const map = new Map(state.markers.items.map(item => [item.id, item]))
   map.set(payload.id, payload)
   const newItems = Array.from(map.values())
 
   return {
     ...state,
-    locationMarkers: {
-      ...state.locationMarkers,
+    markers: {
+      ...state.markers,
       items: newItems
     }
   }
 }
 
-const removeLocationMarker = (state, payload) => {
-  const newItems = state.locationMarkers.items.filter(item => item.id !== payload)
+const removeMarker = (state, payload) => {
+  const newItems = state.markers.items.filter(item => item.id !== payload)
 
   return {
     ...state,
-    locationMarkers: {
-      ...state.locationMarkers,
+    markers: {
+      ...state.markers,
       items: newItems
     }
   }
@@ -84,6 +84,6 @@ export const actionsMap = {
   SET_MAP_STYLE: setMapStyle,
   SET_MAP_SIZE: setMapSize,
   UPDATE_TARGET_MARKER: updateTargetMarker,
-  UPSERT_LOCATION_MARKER: upsertLocationMarker,
-  REMOVE_LOCATION_MARKER: removeLocationMarker
+  UPSERT_LOCATION_MARKER: upsertMarker,
+  REMOVE_LOCATION_MARKER: removeMarker
 }

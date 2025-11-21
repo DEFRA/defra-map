@@ -10,7 +10,7 @@ describe('actionsMap', () => {
       mapSize: { width: 100, height: 100 },
       targetMarker: { lat: 0, lng: 0 },
       otherProp: 'keep',
-      locationMarkers: {
+      markers: {
         items: [
           { id: 'm1', name: 'One', coords: [0, 0] },
           { id: 'm2', name: 'Two', coords: [1, 1] }
@@ -70,15 +70,15 @@ describe('actionsMap', () => {
     const result = actionsMap.UPSERT_LOCATION_MARKER(state, payload)
 
     // new items should have same length (replace m2)
-    expect(result.locationMarkers.items).toHaveLength(state.locationMarkers.items.length)
+    expect(result.markers.items).toHaveLength(state.markers.items.length)
 
     // find updated marker
-    const updated = result.locationMarkers.items.find(i => i.id === 'm2')
+    const updated = result.markers.items.find(i => i.id === 'm2')
     expect(updated).toEqual(payload)
 
     // original state must not be mutated
-    expect(state.locationMarkers.items.find(i => i.id === 'm2')).toEqual({ id: 'm2', name: 'Two', coords: [1, 1] })
-    expect(result.locationMarkers.items).not.toBe(state.locationMarkers.items)
+    expect(state.markers.items.find(i => i.id === 'm2')).toEqual({ id: 'm2', name: 'Two', coords: [1, 1] })
+    expect(result.markers.items).not.toBe(state.markers.items)
   })
 
   test('UPSERT_LOCATION_MARKER inserts a new marker if id not present', () => {
@@ -87,29 +87,29 @@ describe('actionsMap', () => {
     const result = actionsMap.UPSERT_LOCATION_MARKER(state, payload)
 
     // new items should be length +1
-    expect(result.locationMarkers.items).toHaveLength(state.locationMarkers.items.length + 1)
+    expect(result.markers.items).toHaveLength(state.markers.items.length + 1)
 
     // new marker present
-    const added = result.locationMarkers.items.find(i => i.id === 'm3')
+    const added = result.markers.items.find(i => i.id === 'm3')
     expect(added).toEqual(payload)
 
     // original state must not be mutated
-    expect(state.locationMarkers.items.find(i => i.id === 'm3')).toBeUndefined()
-    expect(result.locationMarkers.items).not.toBe(state.locationMarkers.items)
+    expect(state.markers.items.find(i => i.id === 'm3')).toBeUndefined()
+    expect(result.markers.items).not.toBe(state.markers.items)
   })
 
   test('REMOVE_LOCATION_MARKER removes the specified marker by id', () => {
     const result = actionsMap.REMOVE_LOCATION_MARKER(state, 'm1')
 
     // m1 should be removed
-    expect(result.locationMarkers.items.find(i => i.id === 'm1')).toBeUndefined()
+    expect(result.markers.items.find(i => i.id === 'm1')).toBeUndefined()
 
     // remaining items should still contain m2
-    expect(result.locationMarkers.items.find(i => i.id === 'm2')).toBeDefined()
-    expect(result.locationMarkers.items).toHaveLength(1)
+    expect(result.markers.items.find(i => i.id === 'm2')).toBeDefined()
+    expect(result.markers.items).toHaveLength(1)
 
     // original state must not be mutated
-    expect(state.locationMarkers.items.find(i => i.id === 'm1')).toBeDefined()
-    expect(result.locationMarkers.items).not.toBe(state.locationMarkers.items)
+    expect(state.markers.items.find(i => i.id === 'm1')).toBeDefined()
+    expect(result.markers.items).not.toBe(state.markers.items)
   })
 })

@@ -34,7 +34,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
       services,
       mapProvider,
       viewportRef: appState.layoutRefs.viewportRef,
-      locationMarkers: mapState.locationMarkers,
+      markers: mapState.markers,
       showMarker: pluginConfig.showMarker
     })
   }

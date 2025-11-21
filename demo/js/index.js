@@ -113,10 +113,6 @@ defraMap.on('select:done', (e) => {
 
 // Update selected feature
 defraMap.on('search:match', (e) => {
-	defraMap.addLocationMarker('location', e.point, {
-		color: '#0000ff'
-	})
-	setTimeout(() => defraMap.removeLocationMarker('location'), 1000)
 	if (e.type !== 'parcel') {
 		return
 	}

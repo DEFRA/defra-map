@@ -9,7 +9,7 @@ import { useKeyboardHint } from '../../hooks/useKeyboardHint.js'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts.js'
 import { useMapEvents } from '../../hooks/useMapEvents.js'
 import { TargetMarker } from '../TargetMarker/TargetMarker'
-import { LocationMarkers } from '../LocationMarkers/LocationMarkers'
+import { Markers } from '../Markers/Markers'
 
 // ---------------------------
 // Mock dependencies
@@ -22,7 +22,7 @@ jest.mock('../../hooks/useKeyboardShortcuts.js', () => ({ useKeyboardShortcuts: 
 jest.mock('../../hooks/useKeyboardHint.js', () => ({ useKeyboardHint: jest.fn() }))
 jest.mock('../../hooks/useMapEvents.js', () => ({ useMapEvents: jest.fn() }))
 jest.mock('../TargetMarker/TargetMarker', () => ({ TargetMarker: jest.fn(() => <div data-testid="target-marker" />) }))
-jest.mock('../LocationMarkers/LocationMarkers', () => ({ LocationMarkers: jest.fn(() => <div data-testid="location-markers" />) }))
+jest.mock('../Markers/Markers', () => ({ Markers: jest.fn(() => <div data-testid="markers" />) }))
 
 describe('Viewport', () => {
   let keyboardHintPortalRef
@@ -80,17 +80,17 @@ describe('Viewport', () => {
     const safeZone = container.querySelector('.dm-c-viewport__safezone')
     const keyboardHint = keyboardHintPortalRef.current.querySelector('.dm-c-viewport__keyboard-hint')
     const targetMarker = container.querySelector('[data-testid="target-marker"]')
-    const locationMarkers = container.querySelector('[data-testid="location-markers"]')
-    return { viewport, mapContainer, safeZone, keyboardHint, targetMarker, locationMarkers, rerender, unmount }
+    const markers = container.querySelector('[data-testid="markers"]')
+    return { viewport, mapContainer, safeZone, keyboardHint, targetMarker, markers, rerender, unmount }
   }
 
-  it('renders viewport, map container, safe zone, TargetMarker, and LocationMarkers', () => {
-    const { viewport, mapContainer, safeZone, targetMarker, locationMarkers } = renderViewport()
+  it('renders viewport, map container, safe zone, TargetMarker, and Markers', () => {
+    const { viewport, mapContainer, safeZone, targetMarker, markers } = renderViewport()
     expect(viewport).toBeInTheDocument()
     expect(mapContainer).toBeInTheDocument()
     expect(safeZone).toBeInTheDocument()
     expect(targetMarker).toBeInTheDocument()
-    expect(locationMarkers).toBeInTheDocument()
+    expect(markers).toBeInTheDocument()
   })
 
   it('renders viewport with correct id and class based on mapSize', () => {

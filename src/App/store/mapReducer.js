@@ -32,8 +32,8 @@ export const initialState = (config) => {
       state: 'active'
     },
 
-    // Location markers
-    locationMarkers: {
+    // Markers
+    markers: {
       items: markers || []
     }
   }

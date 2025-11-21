@@ -9,7 +9,7 @@ import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts.js'
 import { useMapEvents } from '../../hooks/useMapEvents.js'
 import { MapStatus } from './MapStatus.jsx'
 import { TargetMarker } from '../TargetMarker/TargetMarker'
-import { LocationMarkers } from '../LocationMarkers/LocationMarkers'
+import { Markers } from '../Markers/Markers'
 
 export const Viewport = ({ keyboardHintPortalRef }) => {
   const { id, mapProvider, mapLabel, keyboardHintText } = useConfig()
@@ -86,7 +86,7 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
         <div className='dm-c-viewport__safezone' style={safeZoneInset} ref={layoutRefs.safeZoneRef}>
           <TargetMarker />
         </div>
-        <LocationMarkers />
+        <Markers />
       </div>
     </>
   )

@@ -151,11 +151,11 @@ export default class DefraMap {
   }
 
   // API - location markers
-  addLocationMarker (id, coords, options) {
-    eventBus.emit('app:addlocationmarker', { id, coords, options })
+  addMarker (id, coords, options) {
+    eventBus.emit('app:addmarker', { id, coords, options })
   }
 
-  removeLocationMarker (id) {
-    eventBus.emit('app:removelocationmarker', id)
+  removeMarker (id) {
+    eventBus.emit('app:removemarker', id)
   }
 }

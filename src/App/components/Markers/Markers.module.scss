@@ -1,9 +1,9 @@
 // ===================================================
-// Component: LocationMarkers
+// Component: Markers
 // ===================================================
 
 // 1. Base styles
-.dm-c-location-marker {
+.dm-c-marker {
   position: absolute;
   left: 0;
   top: 0;
@@ -12,16 +12,16 @@
 }
 
 // 2. Elements
-.dm-c-location-marker__background {
+.dm-c-marker__background {
   // stroke: var(--map-overlay-halo-color);
   // stroke-width: 1;
 }
 
-.dm-c-location-marker__graphic {
+.dm-c-marker__graphic {
   fill: var(--map-overlay-halo-color);
 }
 
 // 3. Modifiers
-.dm-c-location-marker--teardrop .dm-c-location-marker__graphic {
+.dm-c-marker--teardrop .dm-c-marker__graphic {
   filter: opacity(50%) brightness(0.25);
 }

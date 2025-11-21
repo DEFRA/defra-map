@@ -7,7 +7,7 @@ export const createFormHandlers = ({
   viewportRef,
   mapProvider,
   showMarker,
-  locationMarkers,
+  markers,
   datasets,
   transformRequest
 }) => {
@@ -25,7 +25,7 @@ export const createFormHandlers = ({
       dispatch({ type: 'UPDATE_SUGGESTIONS', payload: [] })
       dispatch({ type: 'SET_VALUE', payload: '' })
       setTimeout(() => buttonRef.current.focus(), 0)
-      locationMarkers.remove('search')
+      markers.remove('search')
       services.eventBus.emit('search:clear')
       services.eventBus.emit('search:close')
     },
@@ -42,7 +42,7 @@ export const createFormHandlers = ({
         const suggestion = suggestions[selectedIndex]
         dispatch({ type: 'SET_VALUE', payload: suggestion.text })
         viewportRef.current?.focus()
-        updateMap({ mapProvider, locationMarkers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
+        updateMap({ mapProvider, markers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
         services.eventBus.emit('search:match', { query: suggestion.text, ...suggestion })
         return
       }
@@ -67,7 +67,7 @@ export const createFormHandlers = ({
           services.eventBus.emit('search:close')
         }
         const suggestion = newSuggestions[0]
-        updateMap({ mapProvider, locationMarkers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
+        updateMap({ mapProvider, markers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
         services.eventBus.emit('search:match', { query: value, ...suggestion })
       }
     }

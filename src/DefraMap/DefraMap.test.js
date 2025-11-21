@@ -198,7 +198,7 @@ describe('DefraMap Core Functionality', () => {
   })
 })
 
-// --- Combined API Tests (Including new Location Marker methods) ---
+// --- Combined API Tests ---
 
 describe('DefraMap Public API Methods', () => {
   let map
@@ -209,7 +209,7 @@ describe('DefraMap Public API Methods', () => {
     map = new DefraMap('map', { mapProvider: mapProviderMock })
   })
 
-  it('delegates all EventBus and Location Marker API calls correctly', () => {
+  it('delegates all EventBus and Marker API calls correctly', () => {
     const cb = jest.fn()
     const coords = [10.5, 20.5]
     const options = { color: 'red' }
@@ -223,15 +223,15 @@ describe('DefraMap Public API Methods', () => {
     expect(eventBus.off).toHaveBeenCalledWith('testEvent', cb)
     expect(eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
     
-    // 2. Location Marker API methods (New Coverage)
-    map.addLocationMarker('marker-1', coords, options)
-    map.removeLocationMarker('marker-1')
+    // 2. Marker API methods
+    map.addMarker('marker-1', coords, options)
+    map.removeMarker('marker-1')
     
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addlocationmarker', {
+    expect(eventBus.emit).toHaveBeenCalledWith('app:addmarker', {
       id: 'marker-1',
       coords: coords,
       options: options
     })
-    expect(eventBus.emit).toHaveBeenCalledWith('app:removelocationmarker', 'marker-1')
+    expect(eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
   })
 })

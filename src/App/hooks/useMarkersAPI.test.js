@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
-import { useLocationMarkers, projectCoords } from './useLocationMarkersAPI'
+import { useMarkers, projectCoords } from './useMarkersAPI.js'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
 import eventBus from '../../services/eventBus.js'
@@ -23,13 +23,13 @@ describe('projectCoords', () => {
   })
 })
 
-describe('useLocationMarkers', () => {
-  let mockMapProvider, mockDispatch, mockLocationMarkers, mockElement
+describe('useMarkers', () => {
+  let mockMapProvider, mockDispatch, mockMarkers, mockElement
 
   beforeEach(() => {
     mockMapProvider = { getPointFromCoords: jest.fn(() => ({ x: 100, y: 200 })) }
     mockDispatch = jest.fn()
-    mockLocationMarkers = { items: [] }
+    mockMarkers = { items: [] }
     mockElement = { style: {} }
 
     eventBus.on = jest.fn()
@@ -37,46 +37,46 @@ describe('useLocationMarkers', () => {
 
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
     useMap.mockReturnValue({
-      locationMarkers: mockLocationMarkers,
+      markers: mockMarkers,
       dispatch: mockDispatch,
       mapSize: 'medium',
       isMapReady: true
     })
   })
 
-  it('returns locationMarkers and markerRef', () => {
-    const { result } = renderHook(() => useLocationMarkers())
-    expect(result.current).toMatchObject({ locationMarkers: mockLocationMarkers, markerRef: expect.any(Function) })
+  it('returns markers and markerRef', () => {
+    const { result } = renderHook(() => useMarkers())
+    expect(result.current).toMatchObject({ markers: mockMarkers, markerRef: expect.any(Function) })
   })
 
   it('getMarker returns correct marker', () => {
-    mockLocationMarkers.items = [{ id: 'm1', label: 'First' }, { id: 'm2', label: 'Second' }]
-    const { result } = renderHook(() => useLocationMarkers())
+    mockMarkers.items = [{ id: 'm1', label: 'First' }, { id: 'm2', label: 'Second' }]
+    const { result } = renderHook(() => useMarkers())
 
     // Found
-    expect(result.current.locationMarkers.getMarker('m2')).toEqual({ id: 'm2', label: 'Second' })
+    expect(result.current.markers.getMarker('m2')).toEqual({ id: 'm2', label: 'Second' })
     // Not found
-    expect(result.current.locationMarkers.getMarker('nonexistent')).toBeUndefined()
+    expect(result.current.markers.getMarker('nonexistent')).toBeUndefined()
   })
 
   it('markerRef stores and removes refs (line 54)', () => {
-    const { result } = renderHook(() => useLocationMarkers())
+    const { result } = renderHook(() => useMarkers())
     const ref = result.current.markerRef('m1')
 
     act(() => ref(mockElement))
-    expect(result.current.locationMarkers.markerRefs.get('m1')).toBe(mockElement)
+    expect(result.current.markers.markerRefs.get('m1')).toBe(mockElement)
 
     act(() => ref(null)) // line 54 early return
-    expect(result.current.locationMarkers.markerRefs.has('m1')).toBe(false)
+    expect(result.current.markers.markerRefs.has('m1')).toBe(false)
   })
 
   it('updateMarkers skips missing coords or ref (line 71)', () => {
-    mockLocationMarkers.items = [
+    mockMarkers.items = [
       { id: 'm1', coords: { lat: 1, lng: 1 } },
       { id: 'm2', coords: null }, // line 71: missing coords
       { id: 'm3', coords: { lat: 0, lng: 0 } } // line 71: missing ref
     ]
-    const { result } = renderHook(() => useLocationMarkers())
+    const { result } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
 
     const renderCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')[1]
@@ -85,8 +85,8 @@ describe('useLocationMarkers', () => {
   })
 
   it('skips map:render when not ready or no provider (line 60)', () => {
-    useMap.mockReturnValue({ locationMarkers: mockLocationMarkers, dispatch: mockDispatch, mapSize: 'medium', isMapReady: false })
-    const { result } = renderHook(() => useLocationMarkers())
+    useMap.mockReturnValue({ markers: mockMarkers, dispatch: mockDispatch, mapSize: 'medium', isMapReady: false })
+    const { result } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
     
     const renderCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')?.[1]
@@ -94,12 +94,12 @@ describe('useLocationMarkers', () => {
   })
 
   it('updates positions on mapSize change', () => {
-    mockLocationMarkers.items = [{ id: 'm1', coords: { lat: 1, lng: 1 } }]
-    const { result, rerender } = renderHook(() => useLocationMarkers())
+    mockMarkers.items = [{ id: 'm1', coords: { lat: 1, lng: 1 } }]
+    const { result, rerender } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
 
     useMap.mockReturnValue({
-      locationMarkers: mockLocationMarkers,
+      markers: mockMarkers,
       dispatch: mockDispatch,
       mapSize: 'large',
       isMapReady: true
@@ -108,11 +108,11 @@ describe('useLocationMarkers', () => {
     expect(mockElement.style.transform).toBe('translate(300px, 581px)')
   })
 
-  it('handles app:addlocationmarker safely', () => {
-    renderHook(() => useLocationMarkers())
+  it('handles app:addmarker safely', () => {
+    renderHook(() => useMarkers())
     const addPayload = { id: 'm1', coords: { lat: 1, lng: 1 }, options: { label: 'Test' } }
 
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addlocationmarker')[1]
+    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
     act(() => callback(addPayload))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPSERT_LOCATION_MARKER',
@@ -121,8 +121,8 @@ describe('useLocationMarkers', () => {
   })
 
   it('does not crash on undefined/null payload', () => {
-    renderHook(() => useLocationMarkers())
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addlocationmarker')[1]
+    renderHook(() => useMarkers())
+    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
 
     act(() => callback(undefined))
     act(() => callback(null))
@@ -131,9 +131,9 @@ describe('useLocationMarkers', () => {
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('handles app:removelocationmarker safely (guard)', () => {
-    renderHook(() => useLocationMarkers())
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:removelocationmarker')[1]
+  it('handles app:removemarker safely (guard)', () => {
+    renderHook(() => useMarkers())
+    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
 
     act(() => callback('m1')) // valid id
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'REMOVE_LOCATION_MARKER', payload: 'm1' })
@@ -144,7 +144,7 @@ describe('useLocationMarkers', () => {
   })
 
   it('cleans up map:render listener on unmount', () => {
-    const { result, unmount } = renderHook(() => useLocationMarkers())
+    const { result, unmount } = renderHook(() => useMarkers())
     
     let cleanup
     act(() => { cleanup = result.current.markerRef('m1')(mockElement) })
@@ -156,16 +156,16 @@ describe('useLocationMarkers', () => {
   })
 
   it('cleans up eventBus listeners on unmount', () => {
-    const { unmount } = renderHook(() => useLocationMarkers())
+    const { unmount } = renderHook(() => useMarkers())
     
     // Get the registered callbacks
-    const addCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:addlocationmarker')[1]
-    const removeCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:removelocationmarker')[1]
+    const addCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    const removeCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
 
     unmount()
 
     // Verify both listeners were removed
-    expect(eventBus.off).toHaveBeenCalledWith('app:addlocationmarker', addCallback)
-    expect(eventBus.off).toHaveBeenCalledWith('app:removelocationmarker', removeCallback)
+    expect(eventBus.off).toHaveBeenCalledWith('app:addmarker', addCallback)
+    expect(eventBus.off).toHaveBeenCalledWith('app:removemarker', removeCallback)
   })
 })

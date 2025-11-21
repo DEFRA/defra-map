@@ -26,7 +26,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   selectAtTarget.onClick = handleSelectAtTarget
   
   const handleSelectDone = () => {
-    const marker = mapState.locationMarkers.getMarker('location')
+    const marker = mapState.markers.getMarker('location')
     const { coords } = marker || {}
     const { selectionBounds, selectedFeatures } = pluginState
     
@@ -44,7 +44,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   selectCancel.onClick = handleSelectCancel
 
   const handleSelectFeatures = (args) => {
-    mapState.locationMarkers.remove('location')
+    mapState.markers.remove('location')
 
     console.log(args)
 

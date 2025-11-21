@@ -28,8 +28,9 @@ export function attachEvents({ appState, pluginState, mapProvider, useLocationBu
       }
     }, (err) => {
       const message = getFriendlyError(err)
+      const triggeringElement = buttonRefs.current[useLocationButton.id]
       pluginDispatch({ type: 'SET_ERROR_MESSAGE', payload: message })
-      appDispatch({ type: 'OPEN_PANEL', payload: { panelId: 'useLocation', props: {}}})
+      appDispatch({ type: 'OPEN_PANEL', payload: { panelId: 'useLocation', props: { triggeringElement }}})
     }, {
       enableHighAccuracy: true,
       maximumAge: 0,

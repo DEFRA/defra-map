@@ -118,7 +118,8 @@ const ALL_BUILDS = [
   { entryPath: './plugins/data-layers-ml/src/index.js', outDir: 'plugins/data-layers-ml/dist/esm' },
   { entryPath: './plugins/menu-data-layers/src/index.js', outDir: 'plugins/menu-data-layers/dist/esm' },
   { entryPath: './plugins/map-styles/src/index.js', outDir: 'plugins/map-styles/dist/esm' },
-  { entryPath: './plugins/draw-polygon-ml/src/index.js', outDir: 'plugins/draw-polygon-ml/dist/esm' }
+  { entryPath: './plugins/draw-polygon-ml/src/index.js', outDir: 'plugins/draw-polygon-ml/dist/esm' },
+  { entryPath: './plugins/use-location-ml/src/index.js', outDir: 'plugins/use-location-ml/dist/esm' }
 ]
 
 // === Filter via environment variable ===

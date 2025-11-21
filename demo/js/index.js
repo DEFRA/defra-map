@@ -8,6 +8,7 @@ import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
+import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import menuDataLayersPlugin from '/plugins/menu-data-layers/src/index.js'
 import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
@@ -81,15 +82,16 @@ const defraMap = new DefraMap('map', {
 			showMarker: false,
 			// excludeModes: ['circle', 'square', 'polygon']
 		}),
+		useLocationPlugin(),
 		dataLayersPlugin({
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		// selectPlugin,
-		drawPolygonPlugin({
-			featureId: 'test1234',
-			// featureGeoJSON: featureGeoJSON
-		})
+		selectPlugin,
+		// drawPolygonPlugin({
+		// 	featureId: 'test1234',
+		// 	// featureGeoJSON: featureGeoJSON
+		// })
 		// drawPolygonPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',

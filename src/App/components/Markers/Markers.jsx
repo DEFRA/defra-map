@@ -21,7 +21,7 @@ export const Markers = () => {
       {markers.items.map(marker => (
         <svg
           key={marker.id}
-          ref={markerRef(marker.id)} // Single callback ref, just like useTargetMarker
+          ref={markerRef(marker.id)} // Single callback ref, just like useCrossHair
           id={`${id}-marker-${marker.id}`}
           className={`dm-c-marker dm-c-marker--${marker.markerShape || stringToKebab(markerShape)}`}
           width="38"

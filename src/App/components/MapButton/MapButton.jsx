@@ -4,6 +4,7 @@ import { Tooltip } from '../Tooltip/Tooltip'
 import { getIconRegistry } from '../../registry/iconRegistry.js'
 import { SlotRenderer } from '../../renderer/SlotRenderer'
 import { useConfig } from '../../store/configContext'
+import { useApp } from '../../store/appContext'
 
 export const MapButton = ({
   buttonId,
@@ -21,6 +22,7 @@ export const MapButton = ({
   idPrefix
 }) => {
   const { id: appId } = useConfig()
+  const { buttonRefs } = useApp()
   const Icon = getIconRegistry()[iconId]
 
   const classNames = [
@@ -41,6 +43,7 @@ export const MapButton = ({
       // If button controls a panel then that takes priority
       aria-pressed={panelId ? (isOpen ? 'true' : 'false') : isPressed}
       aria-controls={panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined}
+      ref={(el) => buttonRefs.current && buttonId ? buttonRefs.current[buttonId] = el : null}
     >
       {Icon && <Icon aria-hidden='true' focusable='false' />}
       {showLabel && <span>{label}</span>}

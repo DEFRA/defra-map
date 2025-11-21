@@ -1,4 +1,4 @@
-// src/plugins/menuDataLayers/manifest.js
+// /plugins/menu-data-layers/manifest.js
 import { initialState, actions } from './reducer.js'
 import { MenuDataLayersInit } from './MenuDataLayersInit.jsx'
 import { MenuDataLayers } from './MenuDataLayers.jsx'

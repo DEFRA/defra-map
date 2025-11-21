@@ -1,4 +1,4 @@
-// src/plugins/scaleBar/manifest.js
+// /plugins/scale-bar/manifest.js
 import { ScaleBar } from './ScaleBar.jsx'
 
 export const manifest = {

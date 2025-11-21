@@ -1,4 +1,4 @@
-// src/plugins/select/manifest.js
+// /plugins/select/manifest.js
 import { SelectInit } from './SelectInit.jsx'
 import { initialState, actions } from './reducer.js'
 import { Check, MousePointerClick } from 'lucide-react'

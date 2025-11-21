@@ -1,4 +1,4 @@
-// src/plugins/zoomControls/manifest.js
+// /plugins/zoom-controls/manifest.js
 import { ZoomControlsInit } from './ZoomControlsInit.jsx'
 import { Plus, Minus } from 'lucide-react'
 

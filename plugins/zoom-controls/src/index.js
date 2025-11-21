@@ -1,4 +1,4 @@
-// src/plugins/mapStyles/index.js
+// /plugins/zoom-controls/index.js
 export default function createPlugin () {
   return {
     id: 'zoomControls',

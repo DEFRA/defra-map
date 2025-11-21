@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
-import { useTargetMarker } from './useCrossHairAPI.js'
+import { useCrossHair } from './useCrossHairAPI.js'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
@@ -11,7 +11,7 @@ jest.mock('../store/mapContext.js')
 jest.mock('../../services/eventBus.js')
 jest.mock('../../config/appConfig.js', () => ({ scaleFactor: { small: 1, medium: 2, large: 3 } }))
 
-describe('useTargetMarker', () => {
+describe('useCrossHair', () => {
   let mockMapProvider, mockDispatch, mockCrossHair, mockElement
 
   beforeEach(() => {
@@ -36,26 +36,26 @@ describe('useTargetMarker', () => {
   })
 
   const setup = () => {
-    const hook = renderHook(() => useTargetMarker())
-    act(() => hook.result.current.markerRef(mockElement))
+    const hook = renderHook(() => useCrossHair())
+    act(() => hook.result.current.crossHairRef(mockElement))
     return hook
   }
 
-  it('returns crossHair and markerRef', () => {
-    const { result } = renderHook(() => useTargetMarker())
-    expect(result.current).toMatchObject({ crossHair: mockCrossHair, markerRef: expect.any(Function) })
+  it('returns crossHair and crossHairRef', () => {
+    const { result } = renderHook(() => useCrossHair())
+    expect(result.current).toMatchObject({ crossHair: mockCrossHair, crossHairRef: expect.any(Function) })
   })
 
   it('handles null element', () => {
-    const { result } = renderHook(() => useTargetMarker())
-    act(() => result.current.markerRef(null))
+    const { result } = renderHook(() => useCrossHair())
+    act(() => result.current.crossHairRef(null))
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
   it('returns early when no safeZoneInset', () => {
     useApp.mockReturnValue({ safeZoneInset: null })
-    const { result } = renderHook(() => useTargetMarker())
-    act(() => result.current.markerRef(mockElement))
+    const { result } = renderHook(() => useCrossHair())
+    act(() => result.current.crossHairRef(mockElement))
     act(() => mockCrossHair.pinToMap({ lat: 1, lng: 1 }))
     expect(mockElement.style.transform).toBeUndefined()
     expect(mockElement.style.display).toBeUndefined()
@@ -134,9 +134,9 @@ describe('useTargetMarker', () => {
   })
 
   it('unsubscribes on cleanup', () => {
-    const { result } = renderHook(() => useTargetMarker())
+    const { result } = renderHook(() => useCrossHair())
     let cleanup
-    act(() => { cleanup = result.current.markerRef(mockElement) })
+    act(() => { cleanup = result.current.crossHairRef(mockElement) })
     act(() => cleanup())
     expect(eventBus.off).toHaveBeenCalledWith('map:render', expect.any(Function))
   })

@@ -12,9 +12,7 @@ jest.mock('../store/mapContext.js')
 jest.mock('../../utils/getSafeZoneInset.js')
 
 const createEl = (overrides = {}) => {
-  if (overrides === null) {
-    return null
-  }
+  if (overrides === null) return null
   const el = document.createElement('div')
   Object.defineProperty(el, 'offsetHeight', { value: overrides.offsetHeight?.value ?? 100, configurable: true })
   Object.defineProperty(el, 'offsetWidth', { value: overrides.offsetWidth?.value ?? 200, configurable: true })
@@ -25,6 +23,7 @@ const createEl = (overrides = {}) => {
 
 const createRefs = (overrides = {}) => ({
   mainRef: { current: createEl(overrides.main) },
+  bannerRef: { current: createEl(overrides.banner) },
   topRef: { current: createEl(overrides.top) },
   topLeftColRef: { current: createEl(overrides.topLeftCol) },
   topRightColRef: { current: createEl(overrides.topRightCol) },
@@ -167,12 +166,12 @@ describe('useLayoutMeasurements', () => {
     renderHook(() => useLayoutMeasurements())
     
     expect(useResizeObserver).toHaveBeenCalledWith(
-      [layoutRefs.topRightColRef, layoutRefs.mainRef, layoutRefs.insetRef, layoutRefs.actionsRef],
+      [layoutRefs.bannerRef, layoutRefs.topRightColRef, layoutRefs.mainRef, layoutRefs.insetRef, layoutRefs.actionsRef],
       expect.any(Function)
     )
 
     setPropertySpy.mockClear()
-    useResizeObserver.mock.calls[0][1]()
+    useResizeObserver.mock.calls[0][1]() // call the callback
     expect(rafSpy).toHaveBeenCalled()
     expect(setPropertySpy).toHaveBeenCalled()
   })

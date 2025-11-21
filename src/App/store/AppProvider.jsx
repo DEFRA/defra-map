@@ -12,6 +12,7 @@ import { getButtonConfig } from '../registry/buttonRegistry.js'
 export const AppContext = createContext(null)
 
 export const AppProvider = ({ options, children }) => {
+  // Add refs for layout elements
   const layoutRefs = {
     appContainerRef: useRef(null),
     sideRef: useRef(null),
@@ -27,6 +28,9 @@ export const AppProvider = ({ options, children }) => {
     bannerRef: useRef(null),
     viewportRef: useRef(null)
   }
+
+  // Add refs for button elements
+  const buttonRefs = useRef({})
 
   const config = {
     ...options,
@@ -69,7 +73,8 @@ export const AppProvider = ({ options, children }) => {
   const appStore = useMemo(() => ({
     ...state,
     dispatch,
-    layoutRefs
+    layoutRefs,
+    buttonRefs
   }), [state])
 
   return (

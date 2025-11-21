@@ -1,4 +1,4 @@
-// src/plugins/mapStyles/manifest.js
+// /plugins/map-styles/manifest.js
 import { MapStylesInit } from './MapStylesInit.jsx'
 import { MapStyles } from './MapStyles.jsx'
 import { Map } from 'lucide-react'

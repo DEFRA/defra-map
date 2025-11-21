@@ -61,6 +61,7 @@ export const useMapProviderOverrides = () => {
 
     return () => {
       mapProvider.fitToBounds = originalFitToBounds
+      mapProvider.setView = originalSetView
     }
   }, [mapProvider, appDispatch, layoutRefs, mapSize])
 }

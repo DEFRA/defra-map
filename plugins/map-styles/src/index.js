@@ -1,4 +1,4 @@
-// src/plugins/mapStyles/index.js
+// /plugins/map-styles/index.js
 import './mapStyles.scss'
 
 export default function createPlugin ({ manifest, mapStyles } = {}) {

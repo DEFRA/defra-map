@@ -1,4 +1,4 @@
-// src/plugins/dataLayers/manifest.js
+// /plugins/data-layers-ml/manifest.js
 import { initialState, actions } from './reducer.js'
 import { DataLayersInit } from './DataLayersInit.jsx'
 import { DataLayers } from './DataLayers.jsx'

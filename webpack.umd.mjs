@@ -134,7 +134,8 @@ const ALL_BUILDS = [
   { entryPath: './plugins/data-layers-ml/src/index.js', libraryPath: 'dataLayersMLPlugin', outDir: 'plugins/data-layers-ml/dist/umd' },
   { entryPath: './plugins/menu-data-layers/src/index.js', libraryPath: 'menuDataLayersPlugin', outDir: 'plugins/menu-data-layers/dist/umd' },
   { entryPath: './plugins/map-styles/src/index.js', libraryPath: 'mapStylesPlugin', outDir: 'plugins/map-styles/dist/umd' },
-  { entryPath: './plugins/draw-polygon-ml/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/draw-polygon-ml/dist/umd' }
+  { entryPath: './plugins/draw-polygon-ml/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/draw-polygon-ml/dist/umd' },
+  { entryPath: './plugins/use-location/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/use-location/dist/umd' }
 ]
 
 // === Filter via environment variable ===

@@ -1,4 +1,4 @@
-// src/plugins/drawPolygonML/index.js
+// /plugins/draw-polygon-ml/index.js
 import './drawPolygon.scss'
 
 export default function createPlugin (options = {}) {

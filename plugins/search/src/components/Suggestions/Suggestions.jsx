@@ -1,5 +1,5 @@
 // src/plugins/search/Suggestions.jsx
-export const Suggestions = ({ id, appState, pluginState, handleSuggestionClick }) => {
+export const Suggestions = ({ id, pluginState, handleSuggestionClick }) => {
   return (
     <ul
       id={`${id}-search-suggestions`}

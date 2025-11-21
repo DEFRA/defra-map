@@ -5,7 +5,7 @@ import { useMap } from '../store/mapContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import eventBus from '../../services/eventBus.js'
 
-export const useTargetMarker = () => {
+export const useCrossHair = () => {
   const { mapProvider } = useConfig()
   const { safeZoneInset } = useApp()
   const { crossHair, dispatch, mapSize } = useMap()
@@ -21,7 +21,7 @@ export const useTargetMarker = () => {
     el.style.display = 'block'
   }
 
-  const markerRef = useCallback(el => {
+  const crossHairRef = useCallback(el => {
     if (!el) {
       return
     }
@@ -97,6 +97,6 @@ export const useTargetMarker = () => {
 
   return {
     crossHair,
-    markerRef
+    crossHairRef
   }
 }

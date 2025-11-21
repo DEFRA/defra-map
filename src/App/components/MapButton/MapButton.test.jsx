@@ -6,7 +6,7 @@ import { stringToKebab } from '../../../utils/stringToKebab'
 
 // mocks
 jest.mock('../../../utils/stringToKebab', () => ({
-  stringToKebab: jest.fn((str) => str.replace(/\s+/g, '-').toLowerCase())
+  stringToKebab: jest.fn((str) => str ? str.replace(/\s+/g, '-').toLowerCase() : '')
 }))
 
 jest.mock('../Tooltip/Tooltip', () => ({
@@ -27,15 +27,26 @@ jest.mock('../../store/configContext', () => ({
   useConfig: jest.fn(() => ({ id: 'app' }))
 }))
 
+jest.mock('../../store/appContext', () => ({
+  useApp: jest.fn(() => ({ buttonRefs: { current: {} } }))
+}))
+
+// Import the mocked hooks so we can access them in tests
+import { useApp } from '../../store/appContext'
+
 // helper
 const renderMapButton = (props = {}) =>
   render(<MapButton buttonId="Test" iconId="icon" label="Label" {...props} />)
 
 describe('MapButton', () => {
+  let mockButtonRefs
+
   beforeEach(() => {
     jest.clearAllMocks()
+    mockButtonRefs = { current: {} }
+    useApp.mockReturnValue({ buttonRefs: mockButtonRefs })
     getIconRegistry.mockReturnValue({})
-    stringToKebab.mockImplementation((str) => str.replace(/\s+/g, '-').toLowerCase())
+    stringToKebab.mockImplementation((str) => str ? str.replace(/\s+/g, '-').toLowerCase() : '')
   })
 
   it('renders with label, classNames, and optional icon', () => {
@@ -48,7 +59,8 @@ describe('MapButton', () => {
     expect(button).toHaveClass(
       'dm-c-map-button',
       'dm-c-map-button--my-button',
-      'dm-c-map-button--primary'
+      'dm-c-map-button--primary',
+      'dm-c-map-button--with-label'
     )
     expect(screen.getByTestId('icon')).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getByText('Label')).toBeInTheDocument()
@@ -102,5 +114,28 @@ describe('MapButton', () => {
   it('renders SlotRenderer when panelId is provided', () => {
     renderMapButton({ panelId: 'Panel', idPrefix: 'prefix' })
     expect(screen.getByTestId('slot')).toBeInTheDocument()
+  })
+
+  it('stores button ref in buttonRefs.current', () => {
+    renderMapButton({ buttonId: 'TestButton' })
+    const button = screen.getByRole('button')
+    expect(mockButtonRefs.current['TestButton']).toBe(button)
+  })
+
+  it('does not store ref when buttonId is missing', () => {
+    renderMapButton({ buttonId: null })
+    expect(Object.keys(mockButtonRefs.current)).toHaveLength(0)
+  })
+
+  it('stores ref for buttons with showLabel true', () => {
+    renderMapButton({ buttonId: 'LabelButton', showLabel: true })
+    const button = screen.getByRole('button')
+    expect(mockButtonRefs.current['LabelButton']).toBe(button)
+  })
+
+  it('stores ref for buttons wrapped in Tooltip', () => {
+    renderMapButton({ buttonId: 'TooltipButton', showLabel: false })
+    const button = screen.getByRole('button')
+    expect(mockButtonRefs.current['TooltipButton']).toBe(button)
   })
 })

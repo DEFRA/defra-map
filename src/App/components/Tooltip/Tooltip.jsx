@@ -59,8 +59,21 @@ export const Tooltip = ({ children, content }) => {
     }
   }, [visible])
 
+  // Merge refs - call both the Tooltip's internal ref and any ref passed from the child
+  const mergeRefs = (node) => {
+    triggerRef.current = node
+    
+    // In React 19, ref is a regular prop
+    const childRef = children.props?.ref
+    if (typeof childRef === 'function') {
+      childRef(node)
+    } else if (childRef && typeof childRef === 'object') {
+      childRef.current = node
+    }
+  }
+
   const childWithProps = cloneElement(children, {
-    ref: triggerRef,
+    ref: mergeRefs,
     onMouseEnter: show,
     onMouseLeave: hide,
     onMouseDown: cancel,

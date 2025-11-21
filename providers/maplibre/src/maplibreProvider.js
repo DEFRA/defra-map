@@ -73,7 +73,7 @@ export default class MapLibreProvider {
     this.map.flyTo({
       center: center || this.getCenter(),
       zoom: zoom || this.getZoom(),
-      duration: defaults.duration
+      duration: defaults.animationDuration
     })
   }
 

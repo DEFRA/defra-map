@@ -1,17 +1,17 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { CrossHair } from './CrossHair.jsx'
-import { useTargetMarker } from '../../hooks/useCrossHairAPI.js'
+import { useCrossHair } from '../../hooks/useCrossHairAPI.js'
 
-jest.mock('../../hooks/useCrossHairAPI', () => ({ useTargetMarker: jest.fn() }))
+jest.mock('../../hooks/useCrossHairAPI', () => ({ useCrossHair: jest.fn() }))
 jest.mock('../../store/configContext', () => ({ useConfig: jest.fn(() => ({ id: 'testApp' })) }))
 
 describe('CrossHair', () => {
-  const markerRef = React.createRef()
+  const crossHairRef = React.createRef()
 
   const renderWith = (overrides = {}) => {
-    useTargetMarker.mockReturnValue({
-      markerRef,
+    useCrossHair.mockReturnValue({
+      crossHairRef,
       crossHair: {
         isVisible: true,
         isPinnedToMap: true,

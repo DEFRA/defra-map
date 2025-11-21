@@ -25,7 +25,7 @@ describe('createKeyboardActions', () => {
   const zoomDelta = 2
   const nudgeZoomDelta = 1
 
-  let mapProvider, announce, dispatch, containerRef, targetMarker, readMapText
+  let mapProvider, announce, dispatch, containerRef, readMapText
 
   const create = () =>
     createKeyboardActions(mapProvider, announce, {
@@ -35,7 +35,6 @@ describe('createKeyboardActions', () => {
       nudgePanDelta,
       zoomDelta,
       nudgeZoomDelta,
-      targetMarker,
       readMapText
     })
 
@@ -55,7 +54,6 @@ describe('createKeyboardActions', () => {
     announce = jest.fn()
     dispatch = jest.fn()
     containerRef = { current: {} }
-    targetMarker = { pinToMap: jest.fn() }
     readMapText = true
   })
 
@@ -93,8 +91,6 @@ describe('createKeyboardActions', () => {
     await create().getInfo()
 
     expect(reverseGeocode).toHaveBeenCalledWith(12, { lng: 1, lat: 2 })
-
-    expect(targetMarker.pinToMap).toHaveBeenCalledWith({ lng: 1, lat: 2 }, 'location')
 
     expect(announce).toHaveBeenCalledWith('London. Covering 5km².', 'core')
   })

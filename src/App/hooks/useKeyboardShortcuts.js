@@ -3,13 +3,11 @@ import { keyboardMappings } from '../controls/keyboardMappings.js'
 import { createKeyboardActions } from '../controls/keyboardActions.js'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
-import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 
 export function useKeyboardShortcuts (containerRef) {
-  const { mapProvider, reverseGeocode, panDelta, nudgePanDelta, zoomDelta, nudgeZoomDelta, readMapText } = useConfig()
+  const { mapProvider, panDelta, nudgePanDelta, zoomDelta, nudgeZoomDelta, readMapText } = useConfig()
   const { interfaceType, dispatch } = useApp()
-  const { targetMarker } = useMap()
   const { announce } = useService()
 
   useEffect(() => {
@@ -25,7 +23,6 @@ export function useKeyboardShortcuts (containerRef) {
       nudgePanDelta,
       zoomDelta,
       nudgeZoomDelta,
-      targetMarker: reverseGeocode?.showMarker ? targetMarker : null,
       readMapText
     })
 

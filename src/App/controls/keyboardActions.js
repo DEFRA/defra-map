@@ -7,7 +7,6 @@ export const createKeyboardActions = (mapProvider, announce, {
   nudgePanDelta,
   zoomDelta,
   nudgeZoomDelta,
-  targetMarker,
   readMapText
 }) => {
   const getPan = (shift) => (shift ? nudgePanDelta : panDelta)
@@ -40,7 +39,6 @@ export const createKeyboardActions = (mapProvider, announce, {
       const coord = mapProvider.getCenter()
       const place = await reverseGeocode(mapProvider.getZoom(), coord)
       const area = mapProvider.getAreaDimensions?.()
-      targetMarker?.pinToMap(coord, 'location')
       announce(`${place}.${area ? ' Covering ' + area + '.' : ''}`, 'core')
     },
 

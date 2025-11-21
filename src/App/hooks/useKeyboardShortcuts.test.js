@@ -44,26 +44,19 @@ describe('useKeyboardShortcuts', () => {
   })
 
   test('creates actions with correct config', () => {
-    const dispatch = jest.fn(), announce = jest.fn(), targetMarker = { lat: 1, lng: 2 }
+    const dispatch = jest.fn(), announce = jest.fn()
     const readMapText = jest.fn()
     setup({ config: { mapProvider: 'mapbox', panDelta: 20, nudgePanDelta: 2, zoomDelta: 2, 
-      nudgeZoomDelta: 0.2, readMapText }, app: { dispatch }, map: { targetMarker }, service: { announce } })
+      nudgeZoomDelta: 0.2, readMapText }, app: { dispatch }, service: { announce } })
     const { containerRef } = setup({ config: { mapProvider: 'mapbox', panDelta: 20, nudgePanDelta: 2, 
-      zoomDelta: 2, nudgeZoomDelta: 0.2, readMapText }, app: { dispatch }, map: { targetMarker }, 
+      zoomDelta: 2, nudgeZoomDelta: 0.2, readMapText }, app: { dispatch }, 
       service: { announce } })
     
     renderHook(() => useKeyboardShortcuts(containerRef))
     
     expect(createKeyboardActions).toHaveBeenCalledWith('mapbox', announce, 
       expect.objectContaining({ dispatch, panDelta: 20, nudgePanDelta: 2, zoomDelta: 2, 
-        nudgeZoomDelta: 0.2, targetMarker, readMapText }))
-  })
-
-  test('passes null targetMarker when showMarker is false', () => {
-    const { containerRef } = setup({ config: { reverseGeocode: { showMarker: false } } })
-    renderHook(() => useKeyboardShortcuts(containerRef))
-    expect(createKeyboardActions).toHaveBeenCalledWith(expect.anything(), expect.anything(),
-      expect.objectContaining({ targetMarker: null }))
+        nudgeZoomDelta: 0.2, readMapText }))
   })
 
   test('normalizes letter keys using e.code and other keys using e.key', () => {

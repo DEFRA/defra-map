@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
-import { useTargetMarker } from './useTargetMarkerAPI'
+import { useTargetMarker } from './useCrossHairAPI.js'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
@@ -12,7 +12,7 @@ jest.mock('../../services/eventBus.js')
 jest.mock('../../config/appConfig.js', () => ({ scaleFactor: { small: 1, medium: 2, large: 3 } }))
 
 describe('useTargetMarker', () => {
-  let mockMapProvider, mockDispatch, mockTargetMarker, mockElement
+  let mockMapProvider, mockDispatch, mockCrossHair, mockElement
 
   beforeEach(() => {
     mockMapProvider = {
@@ -21,7 +21,7 @@ describe('useTargetMarker', () => {
       getZoom: jest.fn(() => 10)
     }
     mockDispatch = jest.fn()
-    mockTargetMarker = { coords: null, isPinnedToMap: false, state: 'default' }
+    mockCrossHair = { coords: null, isPinnedToMap: false, state: 'default' }
     mockElement = { style: {} }
     eventBus.on = jest.fn()
     eventBus.off = jest.fn()
@@ -29,7 +29,7 @@ describe('useTargetMarker', () => {
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
     useApp.mockReturnValue({ safeZoneInset: { left: 10, top: 20 } })
     useMap.mockReturnValue({ 
-      targetMarker: mockTargetMarker, 
+      crossHair: mockCrossHair, 
       dispatch: mockDispatch, 
       mapSize: 'medium' 
     })
@@ -41,9 +41,9 @@ describe('useTargetMarker', () => {
     return hook
   }
 
-  it('returns targetMarker and markerRef', () => {
+  it('returns crossHair and markerRef', () => {
     const { result } = renderHook(() => useTargetMarker())
-    expect(result.current).toMatchObject({ targetMarker: mockTargetMarker, markerRef: expect.any(Function) })
+    expect(result.current).toMatchObject({ crossHair: mockCrossHair, markerRef: expect.any(Function) })
   })
 
   it('handles null element', () => {
@@ -56,44 +56,44 @@ describe('useTargetMarker', () => {
     useApp.mockReturnValue({ safeZoneInset: null })
     const { result } = renderHook(() => useTargetMarker())
     act(() => result.current.markerRef(mockElement))
-    act(() => mockTargetMarker.pinToMap({ lat: 1, lng: 1 }))
+    act(() => mockCrossHair.pinToMap({ lat: 1, lng: 1 }))
     expect(mockElement.style.transform).toBeUndefined()
     expect(mockElement.style.display).toBeUndefined()
   })
 
   it('pinToMap updates position', () => {
     setup()
-    act(() => mockTargetMarker.pinToMap({ lat: 1, lng: 1 }, 'active'))
+    act(() => mockCrossHair.pinToMap({ lat: 1, lng: 1 }, 'active'))
     expect(mockElement.style.transform).toBe('translate(190px, 380px)')
     expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'UPDATE_TARGET_MARKER',
+      type: 'UPDATE_CROSS_HAIR',
       payload: { isPinnedToMap: true, isVisible: true, coords: { lat: 1, lng: 1 }, state: 'active' }
     })
   })
 
   it('fixAtCenter centers marker', () => {
     setup()
-    act(() => mockTargetMarker.fixAtCenter())
+    act(() => mockCrossHair.fixAtCenter())
     expect(mockElement.style).toMatchObject({ left: '50%', top: '50%', transform: 'translate(0,0)' })
   })
 
   it('remove/show/hide toggle visibility', () => {
     setup()
-    act(() => mockTargetMarker.remove())
+    act(() => mockCrossHair.remove())
     expect(mockElement.style.display).toBe('none')
     
-    act(() => mockTargetMarker.show())
+    act(() => mockCrossHair.show())
     expect(mockElement.style.display).toBe('block')
     
-    act(() => mockTargetMarker.hide())
+    act(() => mockCrossHair.hide())
     expect(mockElement.style.display).toBe('none')
   })
 
   it('setStyle updates state', () => {
     setup()
-    act(() => mockTargetMarker.setStyle('highlighted'))
+    act(() => mockCrossHair.setStyle('highlighted'))
     expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'UPDATE_TARGET_MARKER',
+      type: 'UPDATE_CROSS_HAIR',
       payload: { state: 'highlighted' }
     })
   })
@@ -101,12 +101,12 @@ describe('useTargetMarker', () => {
   it('getDetail returns correct data for pinned/unpinned', () => {
     setup()
     
-    mockTargetMarker.isPinnedToMap = true
-    mockTargetMarker.coords = { lat: 5, lng: 10 }
-    expect(mockTargetMarker.getDetail()).toMatchObject({ coords: { lat: 5, lng: 10 }, zoom: 10 })
+    mockCrossHair.isPinnedToMap = true
+    mockCrossHair.coords = { lat: 5, lng: 10 }
+    expect(mockCrossHair.getDetail()).toMatchObject({ coords: { lat: 5, lng: 10 }, zoom: 10 })
     
-    mockTargetMarker.isPinnedToMap = false
-    expect(mockTargetMarker.getDetail()).toMatchObject({ coords: { lat: 0, lng: 0 } })
+    mockCrossHair.isPinnedToMap = false
+    expect(mockCrossHair.getDetail()).toMatchObject({ coords: { lat: 0, lng: 0 } })
     expect(mockMapProvider.getCenter).toHaveBeenCalled()
   })
 
@@ -114,8 +114,8 @@ describe('useTargetMarker', () => {
     setup()
     expect(eventBus.on).toHaveBeenCalledWith('map:render', expect.any(Function))
     
-    mockTargetMarker.coords = { lat: 1, lng: 1 }
-    mockTargetMarker.isPinnedToMap = true
+    mockCrossHair.coords = { lat: 1, lng: 1 }
+    mockCrossHair.isPinnedToMap = true
     
     act(() => eventBus.on.mock.calls[0][1]())
     expect(mockElement.style.transform).toBe('translate(190px, 380px)')
@@ -124,8 +124,8 @@ describe('useTargetMarker', () => {
   it('skips map:render update when not pinned', () => {
     setup()
     
-    mockTargetMarker.coords = { lat: 1, lng: 1 }
-    mockTargetMarker.isPinnedToMap = false
+    mockCrossHair.coords = { lat: 1, lng: 1 }
+    mockCrossHair.isPinnedToMap = false
     
     const handleRender = eventBus.on.mock.calls[0][1]
     act(() => handleRender())
@@ -144,21 +144,21 @@ describe('useTargetMarker', () => {
   it('re-pins on mapSize change', () => {
     const { rerender } = setup()
     
-    mockTargetMarker.coords = { lat: 1, lng: 1 }
-    mockTargetMarker.isPinnedToMap = true
+    mockCrossHair.coords = { lat: 1, lng: 1 }
+    mockCrossHair.isPinnedToMap = true
     mockDispatch.mockClear()
     
-    useMap.mockReturnValue({ targetMarker: mockTargetMarker, dispatch: mockDispatch, mapSize: 'large' })
+    useMap.mockReturnValue({ crossHair: mockCrossHair, dispatch: mockDispatch, mapSize: 'large' })
     rerender()
     
-    expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'UPDATE_TARGET_MARKER' }))
+    expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'UPDATE_CROSS_HAIR' }))
   })
 
   it('skips re-pin when not pinned', () => {
     const { rerender } = setup()
     mockDispatch.mockClear()
     
-    useMap.mockReturnValue({ targetMarker: mockTargetMarker, dispatch: mockDispatch, mapSize: 'large' })
+    useMap.mockReturnValue({ crossHair: mockCrossHair, dispatch: mockDispatch, mapSize: 'large' })
     rerender()
     
     expect(mockDispatch).not.toHaveBeenCalled()

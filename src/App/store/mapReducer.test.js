@@ -41,7 +41,7 @@ describe('mapReducer', () => {
         resolution: null,
         isAtMaxZoom: null,
         isAtMinZoom: null,
-        targetMarker: {
+        crossHair: {
           isVisible: false,
           isPinnedToMap: false,
           state: 'active'

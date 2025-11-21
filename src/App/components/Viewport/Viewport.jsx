@@ -8,7 +8,7 @@ import { useKeyboardHint } from '../../hooks/useKeyboardHint.js'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts.js'
 import { useMapEvents } from '../../hooks/useMapEvents.js'
 import { MapStatus } from './MapStatus.jsx'
-import { TargetMarker } from '../TargetMarker/TargetMarker'
+import { CrossHair } from '../CrossHair/CrossHair'
 import { Markers } from '../Markers/Markers'
 
 export const Viewport = ({ keyboardHintPortalRef }) => {
@@ -84,7 +84,7 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
         <div className='dm-c-viewport__features' />
         <MapStatus />
         <div className='dm-c-viewport__safezone' style={safeZoneInset} ref={layoutRefs.safeZoneRef}>
-          <TargetMarker />
+          <CrossHair />
         </div>
         <Markers />
       </div>

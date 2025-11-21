@@ -8,7 +8,7 @@ import { useService } from '../../store/serviceContext.js'
 import { useKeyboardHint } from '../../hooks/useKeyboardHint.js'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts.js'
 import { useMapEvents } from '../../hooks/useMapEvents.js'
-import { TargetMarker } from '../TargetMarker/TargetMarker'
+import { CrossHair } from '../CrossHair/CrossHair'
 import { Markers } from '../Markers/Markers'
 
 // ---------------------------
@@ -21,7 +21,7 @@ jest.mock('../../store/serviceContext.js', () => ({ useService: jest.fn() }))
 jest.mock('../../hooks/useKeyboardShortcuts.js', () => ({ useKeyboardShortcuts: jest.fn() }))
 jest.mock('../../hooks/useKeyboardHint.js', () => ({ useKeyboardHint: jest.fn() }))
 jest.mock('../../hooks/useMapEvents.js', () => ({ useMapEvents: jest.fn() }))
-jest.mock('../TargetMarker/TargetMarker', () => ({ TargetMarker: jest.fn(() => <div data-testid="target-marker" />) }))
+jest.mock('../CrossHair/CrossHair', () => ({ CrossHair: jest.fn(() => <div data-testid="cross-hair" />) }))
 jest.mock('../Markers/Markers', () => ({ Markers: jest.fn(() => <div data-testid="markers" />) }))
 
 describe('Viewport', () => {
@@ -79,17 +79,17 @@ describe('Viewport', () => {
     const mapContainer = container.querySelector('.dm-c-viewport__map-container')
     const safeZone = container.querySelector('.dm-c-viewport__safezone')
     const keyboardHint = keyboardHintPortalRef.current.querySelector('.dm-c-viewport__keyboard-hint')
-    const targetMarker = container.querySelector('[data-testid="target-marker"]')
+    const crossHair = container.querySelector('[data-testid="cross-hair"]')
     const markers = container.querySelector('[data-testid="markers"]')
-    return { viewport, mapContainer, safeZone, keyboardHint, targetMarker, markers, rerender, unmount }
+    return { viewport, mapContainer, safeZone, keyboardHint, crossHair, markers, rerender, unmount }
   }
 
-  it('renders viewport, map container, safe zone, TargetMarker, and Markers', () => {
-    const { viewport, mapContainer, safeZone, targetMarker, markers } = renderViewport()
+  it('renders viewport, map container, safe zone, CrossHair, and Markers', () => {
+    const { viewport, mapContainer, safeZone, crossHair, markers } = renderViewport()
     expect(viewport).toBeInTheDocument()
     expect(mapContainer).toBeInTheDocument()
     expect(safeZone).toBeInTheDocument()
-    expect(targetMarker).toBeInTheDocument()
+    expect(crossHair).toBeInTheDocument()
     expect(markers).toBeInTheDocument()
   })
 

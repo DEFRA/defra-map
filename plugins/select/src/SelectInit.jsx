@@ -16,7 +16,7 @@ export const SelectInit = ({
   const { dataLayers } = pluginConfig
   const { dispatch, selectedFeatures, selectionBounds } = pluginState
   const { eventBus } = services
-  const { targetMarker, mapStyle } = mapState
+  const { crossHair, mapStyle } = mapState
 
   const isTouchOrKeyboard = ['touch', 'keyboard'].includes(interfaceType)
 
@@ -44,9 +44,9 @@ export const SelectInit = ({
   // Toggle target marker visibility
   useEffect(() => {
     if (isTouchOrKeyboard) {
-      targetMarker.fixAtCenter()
+      crossHair.fixAtCenter()
     } else {
-      targetMarker.hide()
+      crossHair.hide()
     }
   }, [interfaceType])
 

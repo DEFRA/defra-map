@@ -21,7 +21,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   eventBus.on('map:click', handleMapClick)
 
   const handleSelectAtTarget = () => {
-    handleInteraction(mapState.targetMarker.getDetail())
+    handleInteraction(mapState.crossHair.getDetail())
   }
   selectAtTarget.onClick = handleSelectAtTarget
   

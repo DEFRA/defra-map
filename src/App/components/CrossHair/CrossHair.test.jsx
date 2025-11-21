@@ -1,32 +1,32 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import { TargetMarker } from './TargetMarker.jsx'
-import { useTargetMarker } from '../../hooks/useTargetMarkerAPI.js'
+import { CrossHair } from './CrossHair.jsx'
+import { useTargetMarker } from '../../hooks/useCrossHairAPI.js'
 
-jest.mock('../../hooks/useTargetMarkerAPI', () => ({ useTargetMarker: jest.fn() }))
+jest.mock('../../hooks/useCrossHairAPI', () => ({ useTargetMarker: jest.fn() }))
 jest.mock('../../store/configContext', () => ({ useConfig: jest.fn(() => ({ id: 'testApp' })) }))
 
-describe('TargetMarker', () => {
+describe('CrossHair', () => {
   const markerRef = React.createRef()
 
   const renderWith = (overrides = {}) => {
     useTargetMarker.mockReturnValue({
       markerRef,
-      targetMarker: {
+      crossHair: {
         isVisible: true,
         isPinnedToMap: true,
         state: 'active',
         ...overrides
       }
     })
-    return render(<TargetMarker />).container.querySelector('svg')
+    return render(<CrossHair />).container.querySelector('svg')
   }
 
   it('renders visible active marker when pinned', () => {
     const svg = renderWith()
     const path = svg.querySelector('path')
 
-    expect(svg).toHaveClass('dm-c-target-marker')
+    expect(svg).toHaveClass('dm-c-cross-hair')
     expect(svg).toHaveStyle({
       position: 'absolute',
       left: 0,

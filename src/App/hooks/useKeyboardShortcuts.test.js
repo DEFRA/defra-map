@@ -19,7 +19,7 @@ const setup = (overrides = {}) => {
   useConfig.mockReturnValue({ mapProvider: 'google', reverseGeocode: { showMarker: true }, 
     panDelta: 10, nudgePanDelta: 1, zoomDelta: 1, nudgeZoomDelta: 0.1, readMapText: jest.fn(), ...overrides.config })
   useApp.mockReturnValue({ interfaceType: 'keyboard', dispatch: jest.fn(), ...overrides.app })
-  useMap.mockReturnValue({ targetMarker: { lat: 0, lng: 0 }, ...overrides.map })
+  useMap.mockReturnValue({ crossHair: { lat: 0, lng: 0 }, ...overrides.map })
   useService.mockReturnValue({ announce: jest.fn(), ...overrides.service })
   
   const actions = { zoomIn: jest.fn(), panUp: jest.fn(), ...overrides.actions }

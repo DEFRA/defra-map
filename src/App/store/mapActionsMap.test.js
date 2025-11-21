@@ -8,7 +8,7 @@ describe('actionsMap', () => {
       isMapReady: false,
       mapStyle: 'default',
       mapSize: { width: 100, height: 100 },
-      targetMarker: { lat: 0, lng: 0 },
+      crossHair: { lat: 0, lng: 0 },
       otherProp: 'keep',
       markers: {
         items: [
@@ -57,10 +57,10 @@ describe('actionsMap', () => {
     expect(result.mapSize).toBe(newSize)
   })
 
-  test('UPDATE_TARGET_MARKER merges payload into targetMarker', () => {
+  test('UPDATE_CROSS_HAIR merges payload into crossHair', () => {
     const marker = { lat: 10, lng: 20 }
-    const result = actionsMap.UPDATE_TARGET_MARKER(state, marker)
-    expect(result.targetMarker).toEqual({ ...state.targetMarker, ...marker })
+    const result = actionsMap.UPDATE_CROSS_HAIR(state, marker)
+    expect(result.crossHair).toEqual({ ...state.crossHair, ...marker })
   })
 
   // --- New tests for upsert/remove location markers ---

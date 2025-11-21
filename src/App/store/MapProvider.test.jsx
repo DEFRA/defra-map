@@ -8,20 +8,20 @@ jest.mock('./mapReducer.js', () => {
   const initialState = jest.fn((options) => ({
     mapStyle: null,
     mapSize: null,
-    targetMarker: null,
+    crossHair: null,
     isMapReady: false
   }))
 
   const setMapReady = jest.fn((state) => ({ ...state, isMapReady: true }))
   const setMapStyle = jest.fn((state, payload) => ({ ...state, mapStyle: payload }))
   const setMapSize = jest.fn((state, payload) => ({ ...state, mapSize: payload }))
-  const updateTargetMarker = jest.fn((state, payload) => ({ ...state, targetMarker: payload }))
+  const updateCrossHair = jest.fn((state, payload) => ({ ...state, crossHair: payload }))
 
   const actionsMap = {
     SET_MAP_READY: setMapReady,
     SET_MAP_STYLE: setMapStyle,
     SET_MAP_SIZE: setMapSize,
-    UPDATE_TARGET_MARKER: updateTargetMarker
+    UPDATE_CROSS_HAIR: updateCrossHair
   }
 
   const reducer = jest.fn((state, action) => {
@@ -70,7 +70,7 @@ describe('MapProvider', () => {
     expect(contextValue).toHaveProperty('dispatch')
     expect(contextValue).toHaveProperty('mapStyle')
     expect(contextValue).toHaveProperty('mapSize')
-    expect(contextValue).toHaveProperty('targetMarker')
+    expect(contextValue).toHaveProperty('crossHair')
     expect(contextValue).toHaveProperty('isMapReady')
   })
 

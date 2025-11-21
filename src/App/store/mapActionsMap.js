@@ -40,11 +40,11 @@ const setMapSize = (state, payload) => {
   }
 }
 
-const updateTargetMarker = (state, payload) => {
+const updateCrossHair = (state, payload) => {
   return {
     ...state,
-    targetMarker: {
-      ...state.targetMarker,
+    crossHair: {
+      ...state.crossHair,
       ...payload
     }
   }
@@ -83,7 +83,7 @@ export const actionsMap = {
   MAP_FIRST_IDLE: mapFirstIdle,
   SET_MAP_STYLE: setMapStyle,
   SET_MAP_SIZE: setMapSize,
-  UPDATE_TARGET_MARKER: updateTargetMarker,
+  UPDATE_CROSS_HAIR: updateCrossHair,
   UPSERT_LOCATION_MARKER: upsertMarker,
   REMOVE_LOCATION_MARKER: removeMarker
 }

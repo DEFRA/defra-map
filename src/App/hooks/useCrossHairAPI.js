@@ -8,7 +8,7 @@ import eventBus from '../../services/eventBus.js'
 export const useTargetMarker = () => {
   const { mapProvider } = useConfig()
   const { safeZoneInset } = useApp()
-  const { targetMarker, dispatch, mapSize } = useMap()
+  const { crossHair, dispatch, mapSize } = useMap()
 
   const updatePosition = (el, x, y) => {
     if (!safeZoneInset) {
@@ -28,45 +28,45 @@ export const useTargetMarker = () => {
 
     // --- API ---
     
-    targetMarker.pinToMap = (coords, state) => {
+    crossHair.pinToMap = (coords, state) => {
       const { x, y } = mapProvider.getPointFromCoords(coords)
-      targetMarker.coords = coords
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { isPinnedToMap: true, isVisible: true, coords: coords, state }})
+      crossHair.coords = coords
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: true, isVisible: true, coords: coords, state }})
       updatePosition(el, x, y, state)
     }
 
-    targetMarker.fixAtCenter = () => {
+    crossHair.fixAtCenter = () => {
       el.style.left = '50%'
       el.style.top = '50%'
       el.style.transform = 'translate(0,0)'
       el.style.display = 'block'
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { isPinnedToMap: false, isVisible: true }})
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: false, isVisible: true }})
     }
 
-    targetMarker.remove = () => {
+    crossHair.remove = () => {
       el.style.display = 'none'
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { isPinnedToMap: false, isVisible: false } })
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: false, isVisible: false } })
     }
 
-    targetMarker.show = () => {
+    crossHair.show = () => {
       el.style.display = 'block'
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { isVisible: true } })
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isVisible: true } })
     }
 
-    targetMarker.hide = () => {
+    crossHair.hide = () => {
       el.style.display = 'none'
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { isVisible: false } })
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isVisible: false } })
     }
 
-    targetMarker.setStyle = (state) => {
-      dispatch({ type: 'UPDATE_TARGET_MARKER', payload: { state } })
+    crossHair.setStyle = (state) => {
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { state } })
     }
 
-    targetMarker.getDetail = () => {
-      const coords = targetMarker.isPinnedToMap ? targetMarker.coords : mapProvider.getCenter()
+    crossHair.getDetail = () => {
+      const coords = crossHair.isPinnedToMap ? crossHair.coords : mapProvider.getCenter()
       
       return {
-        state: targetMarker.state,
+        state: crossHair.state,
         point: mapProvider.getPointFromCoords(coords),
         zoom: mapProvider.getZoom(),
         coords
@@ -74,9 +74,9 @@ export const useTargetMarker = () => {
     }
 
     const handleRender = () => {
-      if (targetMarker.coords && targetMarker.isPinnedToMap) {
-        const { x, y } = mapProvider.getPointFromCoords(targetMarker.coords)
-        updatePosition(el, x, y, targetMarker.state)
+      if (crossHair.coords && crossHair.isPinnedToMap) {
+        const { x, y } = mapProvider.getPointFromCoords(crossHair.coords)
+        updatePosition(el, x, y, crossHair.state)
       }
     }
 
@@ -86,17 +86,17 @@ export const useTargetMarker = () => {
       eventBus.off('map:render', handleRender)
     }
 
-  }, [targetMarker, mapProvider, mapSize, dispatch, safeZoneInset])
+  }, [crossHair, mapProvider, mapSize, dispatch, safeZoneInset])
 
   useEffect(() => {
-    if (targetMarker.coords && targetMarker.isPinnedToMap) {
+    if (crossHair.coords && crossHair.isPinnedToMap) {
       // Call again on size change
-      targetMarker.pinToMap(targetMarker.coords, targetMarker.state)
+      crossHair.pinToMap(crossHair.coords, crossHair.state)
     }
   }, [mapSize])
 
   return {
-    targetMarker,
+    crossHair,
     markerRef
   }
 }

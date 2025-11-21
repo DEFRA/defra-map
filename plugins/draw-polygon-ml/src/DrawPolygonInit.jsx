@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { attachEvents } from './events.js'
 import { createMapboxDraw } from './mapboxDraw.js'
 
-export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig, iconRegistry }) => {
+export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
 	const { eventBus } = services
 
 	// Set initial featureGeoJSON
@@ -22,7 +22,7 @@ export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, p
 		// Create drawPolygon
     const drawPolygon = createMapboxDraw({
 			container: appState.layoutRefs.viewportRef.current,
-			vertexMarkerId: `${appConfig.id}-target-marker`,
+			vertexMarkerId: `${appConfig.id}-cross-hair`,
 			interfaceType: appState.interfaceType,
 			colorScheme: mapState.mapStyle.mapColorScheme,
 			featureId: pluginConfig.featureId || 'polygon',

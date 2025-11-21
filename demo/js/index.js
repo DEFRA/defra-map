@@ -85,11 +85,11 @@ const defraMap = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		selectPlugin,
-		// drawPolygonPlugin({
-		// 	featureId: 'test1234',
-		// 	// featureGeoJSON: featureGeoJSON
-		// })
+		// selectPlugin,
+		drawPolygonPlugin({
+			featureId: 'test1234',
+			// featureGeoJSON: featureGeoJSON
+		})
 		// drawPolygonPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',

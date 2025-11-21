@@ -26,7 +26,7 @@ export const initialState = (config) => {
     isAtMinZoom: null,
 
     // Full target marker state
-    targetMarker: {
+    crossHair: {
       isVisible: false,
       isPinnedToMap: false,
       state: 'active'

@@ -129,13 +129,13 @@ const ALL_BUILDS = [
   // Plugins
   { entryPath: './plugins/scale-bar/src/index.js', libraryPath: 'scaleBarPlugin', outDir: 'plugins/scale-bar/dist/umd' },
   { entryPath: './plugins/zoom-controls/src/index.js', libraryPath: 'zoomControlsPlugin', outDir: 'plugins/zoom-controls/dist/umd' },
+  { entryPath: './plugins/use-location/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/use-location/dist/umd' },
   { entryPath: './plugins/search/src/index.js', libraryPath: 'searchPlugin', outDir: 'plugins/search/dist/umd' },
   { entryPath: './plugins/select/src/index.js', libraryPath: 'selectPlugin', outDir: 'plugins/select/dist/umd' },
   { entryPath: './plugins/data-layers-ml/src/index.js', libraryPath: 'dataLayersMLPlugin', outDir: 'plugins/data-layers-ml/dist/umd' },
   { entryPath: './plugins/menu-data-layers/src/index.js', libraryPath: 'menuDataLayersPlugin', outDir: 'plugins/menu-data-layers/dist/umd' },
   { entryPath: './plugins/map-styles/src/index.js', libraryPath: 'mapStylesPlugin', outDir: 'plugins/map-styles/dist/umd' },
-  { entryPath: './plugins/draw-polygon-ml/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/draw-polygon-ml/dist/umd' },
-  { entryPath: './plugins/use-location/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/use-location/dist/umd' }
+  { entryPath: './plugins/draw-polygon-ml/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/draw-polygon-ml/dist/umd' }
 ]
 
 // === Filter via environment variable ===

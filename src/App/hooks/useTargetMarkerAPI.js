@@ -35,7 +35,7 @@ export const useTargetMarker = () => {
       updatePosition(el, x, y, state)
     }
 
-    targetMarker.fixAtCenter = (state) => {
+    targetMarker.fixAtCenter = () => {
       el.style.left = '50%'
       el.style.top = '50%'
       el.style.transform = 'translate(0,0)'

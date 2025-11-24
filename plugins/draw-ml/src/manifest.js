@@ -1,7 +1,7 @@
-// /plugins/draw-polygon-ml/manifest.js
+// /plugins/draw-ml/manifest.js
 import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
-import { DrawPolygonInit } from './DrawPolygonInit.jsx'
+import { DrawInit } from './DrawInit.jsx'
 
 const createButtonSlots = (showLabel) => ({
   mobile:  { slot: 'actions', showLabel },
@@ -15,30 +15,30 @@ export const manifest = {
     actions
   },
 
-  InitComponent: DrawPolygonInit,
+  InitComponent: DrawInit,
 
   buttons: [{
-    id: 'drawPolygonDone',
+    id: 'drawDone',
     label: 'Done',
     variant: 'primary',
     hiddenWhen: ({ appState, pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode) || appState.interfaceType === 'mouse'),
     enableWhen: ({ pluginState }) => pluginState.featureGeoJSON,
     ...createButtonSlots(true)
   },{
-    id: 'drawPolygonAddPoint',
+    id: 'drawAddPoint',
     label: 'Add point',
     variant: 'primary',
     hiddenWhen: ({ appState, pluginState }) => pluginState.mode !== 'draw_vertex' || appState.interfaceType === 'mouse',
     ...createButtonSlots(true)
   },{
-    id: 'drawPolygonUndo',
+    id: 'drawUndo',
     label: 'Undo',
     iconId: 'undo',
     variant: 'tertiary',
     enableWhen: ({ pluginState }) => pluginState.numVertecies >= 1,
     ...createButtonSlots(false)
   },{
-    id: 'drawPolygonFinish',
+    id: 'drawFinish',
     label: 'Close shape',
     iconId: 'check',
     variant: 'tertiary',
@@ -46,7 +46,7 @@ export const manifest = {
     enableWhen: ({ pluginState }) => pluginState.numVertecies > 3,
     ...createButtonSlots(false)
   },{
-    id: 'drawPolygonDeletePoint',
+    id: 'drawDeletePoint',
     label: 'Delete point',
     iconId: 'close',
     variant: 'tertiary',
@@ -54,14 +54,14 @@ export const manifest = {
     hiddenWhen: ({ pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode)),
     ...createButtonSlots(false)
   },{
-    id: 'drawPolygonSnap',
+    id: 'drawSnap',
     label: 'Snap to point',
     iconId: 'magnet',
     variant: 'tertiary',
     pressedWhen: ({ pluginState }) => pluginState.snap,
     ...createButtonSlots(false)
   },{
-    id: 'drawPolygonCancel',
+    id: 'drawCancel',
     label: 'Cancel',
     variant: 'tertiary',
     hiddenWhen: ({ appState }) => !appState.isFullscreen,
@@ -69,7 +69,7 @@ export const manifest = {
   }],
 
   keyboardShortcuts: [{
-    id: 'drawPolygonStart',
+    id: 'drawStart',
     group: 'Drawing',
     title: 'Edit vertex',
     command: '<kbd>Spacebar</kbd></dd>'

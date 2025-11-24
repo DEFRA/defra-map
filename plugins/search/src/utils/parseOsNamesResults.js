@@ -18,13 +18,15 @@ const removeDuplicates = (results) =>
 
 const removeTenuousResults = (results, query) => {
   const words = query.toLowerCase().replace(/,/g, '').split(' ')
-  return results.filter(l => words.some(w => l.GAZETTEER_ENTRY.NAME1.toLowerCase().includes(w)))
+  return results.filter(l => words.some(w => l.GAZETTEER_ENTRY.NAME1.toLowerCase().includes(w) || isPostcode(query)))
 }
 
 const markString = (string, find) => {
-  find = find.replace(/,/g, '')
-  const patterns = [...new Set([find, ...find.trim().split(/[stn]+/)])].join('|')
-  const reg = new RegExp(`(${patterns})`, 'i')
+  const clean = find.replace(/\s+/g, '')
+  // Create a pattern where whitespace is optional between every character
+  // e.g. "ab12cd" -> "a\s* b\s* 1\s* 2\s* c\s* d"
+  const spacedPattern = clean.split('').join('\\s*')
+  const reg = new RegExp(`(${spacedPattern})`, 'i')
   return string.replace(reg, '<mark>$1</mark>')
 }
 

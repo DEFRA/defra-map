@@ -13,10 +13,9 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   }
   appState.layoutRefs.viewportRef.current?.addEventListener('keyup', handleKeyup)
 
+  // Allow tapping on touch devices as well as accurate placement
   const handleMapClick = (e) => {
-    if (appState.interfaceType === 'mouse') {
-      handleInteraction(e)
-    }
+    handleInteraction(e)
   }
   eventBus.on('map:click', handleMapClick)
 
@@ -30,7 +29,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
     const { coords } = marker || {}
     const { selectionBounds, selectedFeatures } = pluginState
     
-    eventBus.emit('select:done', {
+    eventBus.emit('interact:done', {
       ...(coords && { coords }),
       ...(selectionBounds && { selectionBounds }),
       ...(selectedFeatures && { selectedFeatures })
@@ -39,7 +38,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   selectDone.onClick = handleSelectDone
 
   const handleSelectCancel = () => {
-    eventBus.emit('select:cancel')
+    eventBus.emit('interact:cancel')
   }
   selectCancel.onClick = handleSelectCancel
 
@@ -57,7 +56,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
       }
     })
   }
-  eventBus.on('select:selectFeatures', handleSelectFeatures)
+  eventBus.on('interact:selectFeatures', handleSelectFeatures)
 
   // Return cleanup function
   return () => {
@@ -66,6 +65,6 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
     selectCancel.onClick = null
     appState.layoutRefs.viewportRef.current?.removeEventListener('keyup', handleKeyup)
     eventBus.off('map:click', handleMapClick)
-    eventBus.off('select:selectFeatures', handleSelectFeatures)
+    eventBus.off('interact:selectFeatures', handleSelectFeatures)
   }
 }

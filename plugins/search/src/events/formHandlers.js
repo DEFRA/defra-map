@@ -6,10 +6,11 @@ export const createFormHandlers = ({
   services,
   viewportRef,
   mapProvider,
-  showMarker,
   markers,
   datasets,
-  transformRequest
+  transformRequest,
+  showMarker,
+  markerColor
 }) => {
   let lastFetchedValue = ''
 
@@ -42,7 +43,7 @@ export const createFormHandlers = ({
         const suggestion = suggestions[selectedIndex]
         dispatch({ type: 'SET_VALUE', payload: suggestion.text })
         viewportRef.current?.focus()
-        updateMap({ mapProvider, markers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
+        updateMap({ mapProvider, bounds: suggestion.bounds, point: suggestion.point, markers, showMarker, markerColor })
         services.eventBus.emit('search:match', { query: suggestion.text, ...suggestion })
         return
       }
@@ -67,7 +68,7 @@ export const createFormHandlers = ({
           services.eventBus.emit('search:close')
         }
         const suggestion = newSuggestions[0]
-        updateMap({ mapProvider, markers, showMarker, bounds: suggestion.bounds, point: suggestion.point })
+        updateMap({ mapProvider, bounds: suggestion.bounds, point: suggestion.point, markers, showMarker, markerColor })
         services.eventBus.emit('search:match', { query: value, ...suggestion })
       }
     }

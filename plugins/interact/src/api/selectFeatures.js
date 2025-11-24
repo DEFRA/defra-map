@@ -5,7 +5,7 @@
  * @param {boolean} [multiSelect=false] - whether to add to existing selection
  */
 export const selectFeatures = ({ services }, { featureId, layerId, idProperty, addToExisting }) => {
-  services.eventBus.emit('select:selectFeatures', {
+  services.eventBus.emit('interact:selectFeatures', {
 		featureId,
 		layerId,
 		idProperty,

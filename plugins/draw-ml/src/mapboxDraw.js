@@ -79,7 +79,7 @@ export const createMapboxDraw = ({
 
   // --- Draw event handlers ---
   const onModeChange = (e) => {
-    eventBus.emit('drawpolygon:modechange', { mode: e.mode })
+    eventBus.emit('draw:modechange', { mode: e.mode })
 
     // Switch SimpleSelect to EditVertexMode
     if (e.mode === 'simple_select') {
@@ -90,8 +90,8 @@ export const createMapboxDraw = ({
     }
   }
 
-  const onCreate = (e) => eventBus.emit('drawpolygon:create', e)
-  const onVertexSelection = (e) => eventBus.emit('drawpolygon:vertexselection', e)
+  const onCreate = (e) => eventBus.emit('draw:create', e)
+  const onVertexSelection = (e) => eventBus.emit('draw:vertexselection', e)
 
   // --- Update colour scheme ---
   const handleSetMapStyle = (e) => {

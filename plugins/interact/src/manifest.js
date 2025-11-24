@@ -1,11 +1,11 @@
-// /plugins/select/manifest.js
-import { SelectInit } from './SelectInit.jsx'
+// /plugins/interact/manifest.js
+import { InteractInit } from './InteractInit.jsx'
 import { initialState, actions } from './reducer.js'
 import { Check, MousePointerClick } from 'lucide-react'
 import { selectFeatures } from './api/selectFeatures.js'
 
 export const manifest = {
-  InitComponent: SelectInit,
+  InitComponent: InteractInit,
 
   reducer: {
     initialState,
@@ -32,7 +32,7 @@ export const manifest = {
   },{
     id: 'selectAtTarget',
     label: 'Select',
-    variant: 'tertiary',
+    variant: 'primary',
     hiddenWhen: ({ appState }) => !['touch', 'keyboard'].includes(appState.interfaceType),
     mobile: {
       slot: 'actions',

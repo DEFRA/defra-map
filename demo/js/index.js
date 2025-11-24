@@ -12,14 +12,14 @@ import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import menuDataLayersPlugin from '/plugins/menu-data-layers/src/index.js'
 import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
-import drawPolygonPlugin from '/plugins/draw-polygon-ml/src/index.js'
+import drawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
-import createSelectPlugin from '/plugins/select/src/index.js'
+import createInteractPlugin from '/plugins/interact/src/index.js'
 
 const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
 
-const selectPlugin = createSelectPlugin({
+const interactPlugin = createInteractPlugin({
 	dataLayers: [{
 		layerId: 'field-parcels',
 		idProperty: 'ID',
@@ -30,7 +30,7 @@ const selectPlugin = createSelectPlugin({
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	}],
 	markerColor: { outdoor: '#ff0000' },
-	selectionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
 	// multiSelect: true
 })
 
@@ -79,7 +79,7 @@ const defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: false,
+			showMarker: true,
 			// excludeModes: ['circle', 'square', 'polygon']
 		}),
 		useLocationPlugin(),
@@ -87,12 +87,12 @@ const defraMap = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		selectPlugin,
-		// drawPolygonPlugin({
+		interactPlugin,
+		// drawPlugin({
 		// 	featureId: 'test1234',
 		// 	// featureGeoJSON: featureGeoJSON
 		// })
-		// drawPolygonPlugin({
+		// drawPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',
 		// 	featureGeoJSON: featureGeoJSON
@@ -109,7 +109,7 @@ defraMap.on('map:ready', (e) => {
 	// console.log('Map ready')
 })
 
-defraMap.on('select:done', (e) => {
+defraMap.on('interact:done', (e) => {
 	console.log(e)
 })
 

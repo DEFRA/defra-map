@@ -1,0 +1,9 @@
+// Maplibre custom mode
+.touch-vertex-target {
+    circle {
+        fill: var(--map-overlay-foreground-color);
+    }
+    path {
+        fill: var(--map-overlay-halo-color);
+    }
+}

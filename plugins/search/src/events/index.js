@@ -26,7 +26,7 @@ export function attachEvents(args) {
     ...inputHandlers,
     ...suggestionHandlers,
 
-    handleOutside(e, searchContainerRef, appState) {
+    handleOutside(e, searchContainerRef) {
       if (args.viewportRef.current?.contains(e.target)) {
         e.preventDefault()
       }

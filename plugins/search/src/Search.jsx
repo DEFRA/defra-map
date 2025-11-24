@@ -30,12 +30,11 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
     eventsRef.current = attachEvents({
       dispatch,
       datasets: mergedDatasets,
-      transformRequest,
       services,
       mapProvider,
       viewportRef: appState.layoutRefs.viewportRef,
       markers: mapState.markers,
-      showMarker: pluginConfig.showMarker
+      ...pluginConfig
     })
   }
   const events = eventsRef.current

@@ -9,7 +9,7 @@ export const useInteractionHandlers = ({
   mapProvider,
 }) => {
   const { markers } = mapState
-  const { dataLayers, selectionMode = 'marker', multiSelect, markerColor } = pluginConfig
+  const { dataLayers, interactionMode = 'marker', multiSelect, markerColor } = pluginConfig
   const { dispatch } = pluginState
   const { eventBus } = services
 
@@ -22,7 +22,7 @@ export const useInteractionHandlers = ({
 
       const match =
         hasDataLayers &&
-        (selectionMode === 'select' || selectionMode === 'auto')
+        (interactionMode === 'select' || interactionMode === 'auto')
           ? findMatchingFeature(allFeatures, layerConfigMap)
           : null
 
@@ -44,7 +44,7 @@ export const useInteractionHandlers = ({
           })
         }
 
-        eventBus.emit('select:feature', {
+        eventBus.emit('interact:feature', {
           coords,
           selectedFeature: feature,
           allFeatures,
@@ -54,16 +54,16 @@ export const useInteractionHandlers = ({
       }
 
       // Marker mode
-      if (selectionMode === 'marker' || (selectionMode === 'auto' && hasDataLayers)) {
+      if (interactionMode === 'marker' || (interactionMode === 'auto' && hasDataLayers)) {
         dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
         markers.add('location', coords, { color: markerColor })
 
-        eventBus.emit('select:confirm', { coords, allFeatures })
+        eventBus.emit('interact:confirm', { coords, allFeatures })
       }
     }, [
       mapProvider,
       dataLayers,
-      selectionMode,
+      interactionMode,
       multiSelect,
       eventBus,
       dispatch,

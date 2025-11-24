@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { attachEvents } from './events.js'
 import { createMapboxDraw } from './mapboxDraw.js'
 
-export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
+export const DrawInit = ({ appConfig, appState, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
 	const { eventBus } = services
 
 	// Set initial featureGeoJSON
@@ -19,16 +19,16 @@ export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, p
       return
     }
 
-		// Create drawPolygon
-    const drawPolygon = createMapboxDraw({
+		// Create draw
+    const draw = createMapboxDraw({
 			container: appState.layoutRefs.viewportRef.current,
 			vertexMarkerId: `${appConfig.id}-cross-hair`,
 			interfaceType: appState.interfaceType,
 			colorScheme: mapState.mapStyle.mapColorScheme,
 			featureId: pluginConfig.featureId || 'polygon',
 			featureGeoJSON: pluginConfig.featureGeoJSON,
-			addVertexButtonId: `${appConfig.id}-draw-polygon-add-point`,
-			deleteVertexButtonId: `${appConfig.id}-draw-polygon-delete-point`,
+			addVertexButtonId: `${appConfig.id}-draw-add-point`,
+			deleteVertexButtonId: `${appConfig.id}-draw-delete-point`,
 			mapProvider,
 			mapSize: mapState.mapSize,
 			eventBus
@@ -44,7 +44,7 @@ export const DrawPolygonInit = ({ appConfig, appState, mapState, pluginConfig, p
 
 		return () => {
 			cleanupEvents
-			drawPolygon.remove()
+			draw.remove()
 			pluginState.dispatch({ type: 'SET_FEATURE_GEOJSON', payload: null })
 		}
 

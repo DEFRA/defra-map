@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useInteractionHandlers } from './hooks/useInteractionHandlers'
-import { useHighlightSync } from './hooks/useHighlightSync'
+import { useInteractionHandlers } from './hooks/useInteractionHandlers.js'
+import { useHighlightSync } from './hooks/useHighlightSync.js'
 import { attachEvents } from './events.js'
 
-export const SelectInit = ({
+export const InteractInit = ({
   appState,
   mapState,
   services,

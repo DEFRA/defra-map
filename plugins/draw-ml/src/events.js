@@ -1,12 +1,12 @@
 export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus }) {
   const {
-    drawPolygonDone,
-    drawPolygonAddPoint,
-    drawPolygonUndo,
-    drawPolygonFinish,
-    drawPolygonDeletePoint,
-    drawPolygonSnap,
-    drawPolygonCancel
+    drawDone,
+    drawAddPoint,
+    drawUndo,
+    drawFinish,
+    drawDeletePoint,
+    drawSnap,
+    drawCancel
   } = buttonConfig
 
   const { featureGeoJSON } = pluginState
@@ -17,29 +17,29 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
     console.log('Done')
     eventBus.emit('app:polygondone', featureGeoJSON)
   }
-  drawPolygonDone.onClick = handleDone
+  drawDone.onClick = handleDone
 
   const handleCancel = () => {
     console.log('Cancel')
-    eventBus.emit('drawpolygon:cancel')
+    eventBus.emit('draw:cancel')
   }
-  drawPolygonCancel.onClick = handleCancel
+  drawCancel.onClick = handleCancel
 
   const handleSnap = () => {
     pluginState.dispatch({ type: 'TOGGLE_SNAP' })
   }
-  drawPolygonSnap.onClick = handleSnap
+  drawSnap.onClick = handleSnap
 
   // Plugin events
 
   const handlePolygonModeChange = (e) => pluginState.dispatch({ type: 'SET_MODE', payload: e.mode })
-  eventBus.on('drawpolygon:modechange', handlePolygonModeChange)
+  eventBus.on('draw:modechange', handlePolygonModeChange)
 
   const handlePolygonCreate = (e) => pluginState.dispatch({ type: 'SET_FEATURE_GEOJSON', payload: e.features })
-  eventBus.on('drawpolygon:create', handlePolygonCreate)
+  eventBus.on('draw:create', handlePolygonCreate)
 
   const handlePolygonVertexSelection = (e) => pluginState.dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
-  eventBus.on('drawpolygon:vertexselection', handlePolygonVertexSelection)
+  eventBus.on('draw:vertexselection', handlePolygonVertexSelection)
 
   // Map events
 
@@ -54,15 +54,15 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
   map.on('styledata', (e) => handleStyleData(map))
 
   return () => {
-    drawPolygonDone.onClick = null,
-    drawPolygonAddPoint.onClick = null,
-    drawPolygonUndo.onClick = null,
-    drawPolygonFinish.onClick = null,
-    drawPolygonDeletePoint.onClick = null,
-    drawPolygonSnap.onClick = null,
-    drawPolygonCancel.onClick = null
-    eventBus.off('drawpolygon:modechange', handlePolygonModeChange)
-    eventBus.off('drawpolygon:create', handlePolygonCreate)
-    eventBus.off('drawpolygon:vertexselection', handlePolygonVertexSelection)
+    drawDone.onClick = null,
+    drawAddPoint.onClick = null,
+    drawUndo.onClick = null,
+    drawFinish.onClick = null,
+    drawDeletePoint.onClick = null,
+    drawSnap.onClick = null,
+    drawCancel.onClick = null
+    eventBus.off('draw:modechange', handlePolygonModeChange)
+    eventBus.off('draw:create', handlePolygonCreate)
+    eventBus.off('draw:vertexselection', handlePolygonVertexSelection)
   }
 }

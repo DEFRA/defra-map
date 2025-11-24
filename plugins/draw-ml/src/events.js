@@ -32,14 +32,14 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
 
   // Plugin events
 
-  const handlePolygonModeChange = (e) => pluginState.dispatch({ type: 'SET_MODE', payload: e.mode })
-  eventBus.on('draw:modechange', handlePolygonModeChange)
+  const handleDrawModeChange = (e) => pluginState.dispatch({ type: 'SET_MODE', payload: e.mode })
+  eventBus.on('draw:modechange', handleDrawModeChange)
 
-  const handlePolygonCreate = (e) => pluginState.dispatch({ type: 'SET_FEATURE_GEOJSON', payload: e.features })
-  eventBus.on('draw:create', handlePolygonCreate)
+  const handleDrawCreate = (e) => pluginState.dispatch({ type: 'SET_FEATURE_GEOJSON', payload: e.features })
+  eventBus.on('draw:create', handleDrawCreate)
 
-  const handlePolygonVertexSelection = (e) => pluginState.dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
-  eventBus.on('draw:vertexselection', handlePolygonVertexSelection)
+  const handleDrawVertexSelection = (e) => pluginState.dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
+  eventBus.on('draw:vertexselection', handleDrawVertexSelection)
 
   // Map events
 
@@ -61,8 +61,8 @@ export function attachEvents ({ pluginState, mapProvider, buttonConfig, eventBus
     drawDeletePoint.onClick = null,
     drawSnap.onClick = null,
     drawCancel.onClick = null
-    eventBus.off('draw:modechange', handlePolygonModeChange)
-    eventBus.off('draw:create', handlePolygonCreate)
-    eventBus.off('draw:vertexselection', handlePolygonVertexSelection)
+    eventBus.off('draw:modechange', handleDrawModeChange)
+    eventBus.off('draw:create', handleDrawCreate)
+    eventBus.off('draw:vertexselection', handleDrawVertexSelection)
   }
 }

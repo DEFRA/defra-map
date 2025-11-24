@@ -15,18 +15,18 @@ const initState = (state, payload) => {
   }
 }
 
+const setMode = (state, payload) => {
+  return {
+    ...state,
+    mode: payload
+  }
+}
+
 const setSelectedVertexIndex = (state, payload) => {
   return {
     ...state,
     selectedVertexIndex: payload.index,
     numVertecies: payload.numVertecies
-  }
-}
-
-const setMode = (state, payload) => {
-  return {
-    ...state,
-    mode: payload
   }
 }
 
@@ -45,11 +45,11 @@ const toggleSnap = (state) => {
 }
 
 const actions = {
+  SET_MODE: setMode,
   INIT_STATE: initState,
   SET_SELECTED_VERTEX_INDEX: setSelectedVertexIndex,
   SET_FEATURE_GEOJSON: setfeatureGeoJSON,
-  TOGGLE_SNAP: toggleSnap,
-  SET_MODE: setMode
+  TOGGLE_SNAP: toggleSnap
 }
 
 export {

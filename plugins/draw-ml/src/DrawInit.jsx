@@ -19,26 +19,26 @@ export const DrawInit = ({ appConfig, appState, mapState, pluginConfig, pluginSt
       return
     }
 
+		// Attach provider.map and plugin events before mapbox-gl-draw instance is created
+		const cleanupEvents = attachEvents({
+			mapProvider,
+			buttonConfig,
+			pluginState,
+			eventBus
+		})
+
 		// Create draw
     const draw = createMapboxDraw({
 			container: appState.layoutRefs.viewportRef.current,
 			vertexMarkerId: `${appConfig.id}-cross-hair`,
 			interfaceType: appState.interfaceType,
 			colorScheme: mapState.mapStyle.mapColorScheme,
-			featureId: pluginConfig.featureId || 'polygon',
-			featureGeoJSON: pluginConfig.featureGeoJSON,
+			featureId: pluginState.featureId || 'polygon',
+			featureGeoJSON: pluginState.featureGeoJSON,
 			addVertexButtonId: `${appConfig.id}-draw-add-point`,
 			deleteVertexButtonId: `${appConfig.id}-draw-delete-point`,
-			mapProvider,
 			mapSize: mapState.mapSize,
-			eventBus
-		})
-
-		// Attach events
-		const cleanupEvents = attachEvents({
 			mapProvider,
-			buttonConfig,
-			pluginState,
 			eventBus
 		})
 

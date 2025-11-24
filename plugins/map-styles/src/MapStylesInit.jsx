@@ -11,7 +11,7 @@ export function MapStylesInit ({ pluginConfig, services }) {
   useEffect(() => {
     eventBus.on('app:ready', handler)
 
-    return () => eventBus.off('map:ready', handler)
+    return () => eventBus.off('app:ready', handler)
   }, [])
 
   return null // no UI output, just side effects

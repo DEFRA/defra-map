@@ -7,7 +7,6 @@ export const DrawVertexMode = {
 
   onSetup(options) {
     const { map } = this
-    map.fire('draw.modechange', { mode: 'draw_vertex' })
 
     const state = {
       ...DrawPolygon.onSetup.call(this, options),

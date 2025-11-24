@@ -12,7 +12,7 @@ import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import menuDataLayersPlugin from '/plugins/menu-data-layers/src/index.js'
 import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
-import drawPlugin from '/plugins/draw-ml/src/index.js'
+import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import createInteractPlugin from '/plugins/interact/src/index.js'
@@ -32,6 +32,12 @@ var interactPlugin = createInteractPlugin({
 	markerColor: { outdoor: '#ff0000' },
 	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
 	// multiSelect: true
+})
+
+var drawPlugin = createDrawPlugin({
+	featureId: 'test1234',
+	// featureGeoJSON: featureGeoJSON,
+	includeModes: ['draw']
 })
 
 var defraMap = new DefraMap('map', {
@@ -87,11 +93,8 @@ var defraMap = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		interactPlugin,
-		// drawPlugin({
-		// 	featureId: 'test1234',
-		// 	// featureGeoJSON: featureGeoJSON
-		// })
+		// interactPlugin,
+		drawPlugin
 		// drawPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',
@@ -107,6 +110,8 @@ var defraMap = new DefraMap('map', {
 
 defraMap.on('map:ready', function (e) {
 	// console.log('Map ready')
+	defraMap.setMode('draw')
+	drawPlugin.editFeature(featureGeoJSON)
 })
 
 defraMap.on('interact:done', function (e) {

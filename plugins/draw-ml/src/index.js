@@ -8,7 +8,6 @@ export default function createPlugin (options = {}) {
     load: async () => {
       const module = (await import(/* webpackChunkName: "dm-draw-ml-plugin" */ './manifest.js')).manifest
       return module
-    },
-    api: {}
+    }
   }
 }

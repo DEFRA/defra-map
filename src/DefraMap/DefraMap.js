@@ -158,4 +158,9 @@ export default class DefraMap {
   removeMarker (id) {
     eventBus.emit('app:removemarker', id)
   }
+
+  // API - change app mode
+  setMode (mode) {
+    eventBus.emit('app:setmode', mode)
+  }
 }

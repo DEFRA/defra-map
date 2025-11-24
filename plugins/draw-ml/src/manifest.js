@@ -2,6 +2,7 @@
 import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
 import { DrawInit } from './DrawInit.jsx'
+import { editFeature } from './api/editFeature.js'
 
 const createButtonSlots = (showLabel) => ({
   mobile:  { slot: 'actions', showLabel },
@@ -84,5 +85,9 @@ export const manifest = {
   },{
     id: 'magnet',
     component: Magnet
-  }]
+  }],
+
+  api: {
+    editFeature
+  }
 }

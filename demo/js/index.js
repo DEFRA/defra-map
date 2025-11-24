@@ -17,9 +17,9 @@ import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import createInteractPlugin from '/plugins/interact/src/index.js'
 
-const featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
+var featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
 
-const interactPlugin = createInteractPlugin({
+var interactPlugin = createInteractPlugin({
 	dataLayers: [{
 		layerId: 'field-parcels',
 		idProperty: 'ID',
@@ -34,8 +34,8 @@ const interactPlugin = createInteractPlugin({
 	// multiSelect: true
 })
 
-const defraMap = new DefraMap('map', {
-	behaviour: 'mapOnly',
+var defraMap = new DefraMap('map', {
+	behaviour: 'hybrid',
 	mapProvider: maplibreProvider,
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,
@@ -105,16 +105,16 @@ const defraMap = new DefraMap('map', {
 	// search
 })
 
-defraMap.on('map:ready', (e) => {
+defraMap.on('map:ready', function (e) {
 	// console.log('Map ready')
 })
 
-defraMap.on('interact:done', (e) => {
+defraMap.on('interact:done', function (e) {
 	console.log(e)
 })
 
 // Update selected feature
-defraMap.on('search:match', (e) => {
+defraMap.on('search:match', function (e) {
 	if (e.type !== 'parcel') {
 		return
 	}
@@ -126,6 +126,6 @@ defraMap.on('search:match', (e) => {
 })
 
 // Hide selected feature
-defraMap.on('search:clear', () => {
+defraMap.on('search:clear', function (e) {
 	// console.log('Search clear')
 })

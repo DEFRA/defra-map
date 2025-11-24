@@ -74,25 +74,11 @@ function removeLoadingState () {
   document.body.classList.remove('dm-is-loading')
 }
 
-/**
- * Render an error message inside the app root element.
- *
- * @param {HTMLElement} rootEl - Root element to render the error into.
- * @param {string} message - Error message to display.
- * @returns {void}
- */
-function renderError (rootEl, message) {
-  if (rootEl) {
-    rootEl.innerHTML = `<div class="dm-error">${message}</div>`
-  }
-}
-
 // -----------------------------------------------------------------------------
 // Exports
 // -----------------------------------------------------------------------------
 
 export {
   updateDOMState,
-  removeLoadingState,
-  renderError
+  removeLoadingState
 }

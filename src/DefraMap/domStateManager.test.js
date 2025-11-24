@@ -1,4 +1,4 @@
-import { updateDOMState, removeLoadingState, renderError } from './domStateManager.js'
+import { updateDOMState, removeLoadingState } from './domStateManager.js'
 import * as queryString from '../utils/queryString.js'
 import * as detectBreakpoint from '../utils/detectBreakpoint.js'
 import * as toggleInertElements from '../utils/toggleInertElements.js'
@@ -60,17 +60,5 @@ describe('removeLoadingState', () => {
     document.body.classList.add('dm-is-loading')
     removeLoadingState()
     expect(document.body.classList.contains('dm-is-loading')).toBe(false)
-  })
-})
-
-describe('renderError', () => {
-  it('renders error message in root element', () => {
-    const rootEl = document.createElement('div')
-    renderError(rootEl, 'Something went wrong')
-    expect(rootEl.innerHTML).toBe('<div class="dm-error">Something went wrong</div>')
-  })
-
-  it('handles null rootEl gracefully', () => {
-    expect(() => renderError(null, 'Error')).not.toThrow()
   })
 })

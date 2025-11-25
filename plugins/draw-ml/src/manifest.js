@@ -2,6 +2,7 @@
 import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
 import { DrawInit } from './DrawInit.jsx'
+import { newPolygon } from './api/newPolygon.js'
 import { editFeature } from './api/editFeature.js'
 
 const createButtonSlots = (showLabel) => ({
@@ -22,8 +23,8 @@ export const manifest = {
     id: 'drawDone',
     label: 'Done',
     variant: 'primary',
-    hiddenWhen: ({ appState, pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode) || appState.interfaceType === 'mouse'),
-    enableWhen: ({ pluginState }) => pluginState.featureGeoJSON,
+    hiddenWhen: ({ appState, pluginState }) => !(['simple_select', 'edit_vertex'].includes(pluginState.mode) || appState.interfaceType !== 'keyboard'),
+    enableWhen: ({ pluginState }) => !!pluginState.feature,
     ...createButtonSlots(true)
   },{
     id: 'drawAddPoint',
@@ -88,6 +89,7 @@ export const manifest = {
   }],
 
   api: {
+    newPolygon,
     editFeature
   }
 }

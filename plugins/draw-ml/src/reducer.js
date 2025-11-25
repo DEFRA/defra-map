@@ -1,18 +1,9 @@
 const initialState = {
   selectedVertexIndex: -1,
   numVertecies: null,
-  featureGeoJSON: null,
+  feature: null,
   mode: null,
-  feature: null
-}
-
-const initState = (state, payload) => {
-  return {
-    ...state,
-    featureGeoJSON: payload.featureGeoJSON,
-    mode: payload.featureGeoJSON ? 'edit_vertex' : 'draw_vertex',
-    snap: false
-  }
+  snap: false
 }
 
 const setMode = (state, payload) => {
@@ -30,10 +21,10 @@ const setSelectedVertexIndex = (state, payload) => {
   }
 }
 
-const setfeatureGeoJSON = (state, payload) => {
+const setfeature = (state, payload) => {
   return {
     ...state,
-    featureGeoJSON: payload
+    feature: payload
   }
 }
 
@@ -46,9 +37,8 @@ const toggleSnap = (state) => {
 
 const actions = {
   SET_MODE: setMode,
-  INIT_STATE: initState,
   SET_SELECTED_VERTEX_INDEX: setSelectedVertexIndex,
-  SET_FEATURE_GEOJSON: setfeatureGeoJSON,
+  SET_FEATURE: setfeature,
   TOGGLE_SNAP: toggleSnap
 }
 

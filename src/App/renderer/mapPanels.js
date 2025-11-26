@@ -7,7 +7,8 @@ import { withPluginContexts } from './pluginWrapper.js'
 import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'
 
-export function mapPanels ({ slot, breakpoint, mode, openPanels }) {
+export function mapPanels ({ slot, appState }) {
+  const { breakpoint, mode, openPanels } = appState
   const panelConfig = getPanelConfig()
 
   // Get currently open modal panels

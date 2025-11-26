@@ -1,17 +1,15 @@
 // src/core/renderers/SlotRenderer.jsx
 import React from 'react'
-import { useApp } from '../store/appContext'
 import { useConfig } from '../store/configContext'
+import { useApp } from '../store/appContext'
 import { getSlotItems } from './slotAggregator'
 import { Actions } from '../components/Actions/Actions'
 
 export const SlotRenderer = ({ slot }) => {
-  const { id } = useConfig()
-  const { breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons } = useApp()
+  const appConfig = useConfig()
+  const appState = useApp()
 
-  const slotItems = getSlotItems({
-    id, slot, breakpoint, mode, openPanels, dispatch, disabledButtons, hiddenButtons, pressedButtons
-  })
+  const slotItems = getSlotItems({ slot, appState, appConfig })
 
   if (!slotItems.length) {
     return null

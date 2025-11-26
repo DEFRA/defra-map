@@ -1,7 +1,9 @@
 import { createRoot } from 'react-dom/client'
 import eventBus from '../services/eventBus.js'
 import { appConfig } from '../config/appConfig.js'
+import { registerButton } from './registry/buttonRegistry.js'
 import { registerPanel } from './registry/panelRegistry.js'
+import { registerIcon } from './registry/iconRegistry.js'
 import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 import { mergeManifests } from './registry/mergeManifests.js'
@@ -28,13 +30,14 @@ export async function initialiseApp (rootElement, {
     setProviderSupportedShortcuts(mapProvider.capabilities.supportedShortcuts)
   }
 
-  // Register default panels
-  for (const panel of appConfig.panels) {
-    registerPanel({ [panel.id]: panel })
-  }
-
   // Clear previous plugins
   registeredPlugins.length = 0
+
+  // Register default appConfig as a plugin
+  registerPlugin({
+    id: 'appConfig',
+    manifest: appConfig
+  })
 
   // Create root if not already present
   let root = rootMap.get(rootElement)

@@ -23,6 +23,8 @@ const defaults = {
   reverseGeocode: null,
   markerShape: 'teardrop',
   markerColor: '#ff0000',
+  enableFullscreen: false,
+  helpURL: null,
   readMapText: true
 }
 

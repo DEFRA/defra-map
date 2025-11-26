@@ -1,156 +1,145 @@
 import React from 'react'
-import { render } from '@testing-library/react'
-import { getButtonGroups, renderButton, mapButtons } from './mapButtons.js'
+import { mapButtons, getMatchingButtons, renderButton } from './mapButtons.js'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
 
-// Mocks
 jest.mock('../registry/buttonRegistry.js')
-jest.mock('../components/MapButton/MapButton.jsx', () => ({ MapButton: (props) => <button data-testid='map-button' {...props} /> }))
-jest.mock('./slots.js', () => ({ allowedSlots: { button: ['header', 'sidebar'] } }))
-
-const mockGetButtonConfig = getButtonConfig
+jest.mock('../components/MapButton/MapButton.jsx', () => ({ 
+  MapButton: (props) => <button data-testid="map-button" {...props} /> 
+}))
+jest.mock('./slots.js', () => ({ 
+  allowedSlots: { button: ['header', 'sidebar'] } 
+}))
 
 describe('mapButtons module', () => {
-  const buttonConfig = {
-    btn1: { iconId: 'icon1', label: 'Button 1', desktop: { slot: 'header', order: 1, showLabel: true }, includeModes: ['view'], group: 'group1' },
-    btn2: { iconId: 'icon2', label: 'Button 2', desktop: { slot: 'header', order: 2, showLabel: false }, includeModes: ['view'], group: 'group1', panelId: 'panel1', onClick: jest.fn() }
-  }
-
-  const commonProps = { slot: 'header', breakpoint: 'desktop', mode: 'view', openPanels: { panel1: true }, dispatch: jest.fn(), disabledButtons: new Set(['btn1']), hiddenButtons: new Set(), pressedButtons: new Set(), id: 'test' }
+  const baseBtn = { iconId: 'i1', label: 'Btn', desktop: { slot: 'header', order: 1, showLabel: true }, includeModes: ['view'] }
+  const appState = { breakpoint: 'desktop', openPanels: {}, dispatch: jest.fn(), disabledButtons: new Set(), hiddenButtons: new Set(), pressedButtons: new Set() }
+  const appConfig = { id: 'test' }
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockGetButtonConfig.mockReturnValue(buttonConfig)
-    Object.defineProperty(document, 'activeElement', { value: document.createElement('div'), writable: true })
-  })
-
-  // ---------------- getButtonGroups ----------------
-  describe('getButtonGroups', () => {
-    it('returns [] if no config', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig: null })).toEqual([])
-      expect(getButtonGroups({ ...commonProps, buttonConfig: undefined })).toEqual([])
-    })
-
-    it('skips missing breakpoint config', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { btn1: { ...buttonConfig.btn1, desktop: undefined } } })).toEqual([])
-    })
-
-    it('filters buttons by slot/mode', () => {
-      const result = getButtonGroups({ ...commonProps, buttonConfig })
-      expect(result).toHaveLength(1)
-      expect(result[0].buttons).toHaveLength(2)
-    })
-
-    it('returns [] when no matches', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig, slot: 'footer' })).toEqual([])
-    })
-
-    it('filters by include/excludeModes', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { ...buttonConfig, btn1: { ...buttonConfig.btn1, includeModes: ['edit'] } } })[0].buttons).toHaveLength(1)
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { ...buttonConfig, btn1: { ...buttonConfig.btn1, excludeModes: ['view'] } } })[0].buttons).toHaveLength(1)
-    })
-
-    it('groups adjacent buttons', () => {
-      const config = { ...buttonConfig, btn2: { ...buttonConfig.btn2, group: 'group2' } }
-      expect(getButtonGroups({ ...commonProps, buttonConfig: config })).toHaveLength(2)
-    })
-
-    it('filters invalid slots', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { btn1: { desktop: { slot: 'footer', order: 1, showLabel: true }, label: 'X' } } })).toEqual([])
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { btn1: { desktop: { slot: 'not-allowed', order: 1, showLabel: true }, label: 'X' } } })).toEqual([])
-    })
-
-    it('filters include/exclude modes that block', () => {
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { btn1: { desktop: { slot: 'header', order: 1, showLabel: true }, label: 'X', includeModes: ['edit'] } } })).toEqual([])
-      expect(getButtonGroups({ ...commonProps, buttonConfig: { btn1: { desktop: { slot: 'header', order: 1, showLabel: true }, label: 'X', excludeModes: ['view'] } } })).toEqual([])
+    getButtonConfig.mockReturnValue({})
+    Object.defineProperty(document, 'activeElement', { 
+      value: document.createElement('div'), 
+      writable: true,
+      configurable: true
     })
   })
 
-  // ---------------- renderButton ----------------
+  describe('getMatchingButtons', () => {
+    const testFilter = (config, expected) => {
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', breakpoint: 'desktop', mode: 'view' }).length).toBe(expected)
+    }
+
+    it('handles missing config', () => testFilter(null, 0))
+    it('filters by slot', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'sidebar' } } }, 0))
+    it('filters by includeModes', () => testFilter({ b1: { ...baseBtn, includeModes: ['edit'] } }, 0))
+    it('filters by excludeModes', () => testFilter({ b1: { ...baseBtn, excludeModes: ['view'] } }, 0))
+    it('filters invalid slots', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'invalid' } } }, 0))
+    it('defaults includeModes/excludeModes', () => testFilter({ b1: { ...baseBtn, includeModes: undefined, excludeModes: undefined } }, 1))
+    it('matches valid buttons', () => testFilter({ b1: baseBtn, b2: baseBtn }, 2))
+  })
+
   describe('renderButton', () => {
-    it('renders with correct props', () => {
-      const btn = renderButton(['btn1', buttonConfig.btn1], 'desktop', commonProps.openPanels, commonProps.dispatch, commonProps.disabledButtons, commonProps.hiddenButtons, commonProps.pressedButtons, 'test')
-      expect(btn.props).toMatchObject({ buttonId: 'btn1', isDisabled: true, isOpen: false })
+    const render = (config, state = appState, flags = {}) => 
+      renderButton({ btn: ['id', config], appState: state, appConfig, groupStart: false, groupMiddle: false, groupEnd: false, ...flags })
+
+    it('renders basic props', () => {
+      const result = render(baseBtn)
+      expect(result.props).toMatchObject({ buttonId: 'id', iconId: 'i1', label: 'Btn', showLabel: true })
     })
 
-    it('calls onClick if provided', () => {
-      const btn = renderButton(['btn2', buttonConfig.btn2], 'desktop', commonProps.openPanels, commonProps.dispatch, new Set(), new Set(), new Set(), 'test')
-      btn.props.onClick()
-      expect(buttonConfig.btn2.onClick).toHaveBeenCalled()
+    it('handles group flags', () => {
+      const result = render(baseBtn, appState, { groupStart: true, groupEnd: true })
+      expect(result.props).toMatchObject({ groupStart: true, groupEnd: true })
     })
 
-    it('dispatches OPEN_PANEL and CLOSE_PANEL correctly', () => {
-      const dispatch = jest.fn()
-      renderButton(['btn2', { ...buttonConfig.btn2, onClick: undefined }], 'desktop', { panel1: false }, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
-      expect(dispatch).toHaveBeenCalledWith({ type: 'OPEN_PANEL', payload: { panelId: 'panel1', props: { triggeringElement: document.activeElement } } })
-      renderButton(['btn1', { ...buttonConfig.btn1, panelId: 'panel1', onClick: undefined }], 'desktop', { panel1: true }, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
-      expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'panel1' })
+    it('evaluates dynamic label', () => {
+      const label = jest.fn(() => 'Dynamic')
+      expect(render({ ...baseBtn, label }).props.label).toBe('Dynamic')
+      expect(label).toHaveBeenCalledWith({ appState, appConfig })
     })
 
-    it('does nothing if no panelId or onClick', () => {
-      const dispatch = jest.fn()
-      renderButton(['btn1', { ...buttonConfig.btn1, panelId: undefined, onClick: undefined }], 'desktop', {}, dispatch, new Set(), new Set(), new Set(), 'test').props.onClick()
-      expect(dispatch).not.toHaveBeenCalled()
+    it('evaluates dynamic href', () => {
+      const href = jest.fn(() => 'url')
+      expect(render({ ...baseBtn, href }).props.href).toBe('url')
     })
 
-    // ---------------- pressedButtons ----------------
-    it('isPressed undefined if pressedWhen not present', () => {
-      const btn = renderButton(['btn1', buttonConfig.btn1], 'desktop', {}, jest.fn(), new Set(), new Set(), new Set(['btn1']), 'test')
-      expect(btn.props.isPressed).toBeUndefined()
+    it('calls custom onClick', () => {
+      const onClick = jest.fn()
+      render({ ...baseBtn, onClick }).props.onClick({})
+      expect(onClick).toHaveBeenCalledWith({}, { appState, appConfig })
     })
 
-    it('isPressed true if pressedWhen present and button is in pressedButtons', () => {
-      const cfg = { ...buttonConfig.btn1, pressedWhen: true }
-      const btn = renderButton(['btn1', cfg], 'desktop', {}, jest.fn(), new Set(), new Set(), new Set(['btn1']), 'test')
-      expect(btn.props.isPressed).toBe(true)
+    it('opens panel', () => {
+      render({ ...baseBtn, panelId: 'p1' }).props.onClick()
+      expect(appState.dispatch).toHaveBeenCalledWith({ type: 'OPEN_PANEL', payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } } })
+    })
+
+    it('closes panel', () => {
+      render({ ...baseBtn, panelId: 'p1' }, { ...appState, openPanels: { p1: true } }).props.onClick()
+      expect(appState.dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'p1' })
+    })
+
+    it('does nothing without panelId or onClick', () => {
+      render(baseBtn).props.onClick()
+      expect(appState.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('handles disabled/hidden/pressed state', () => {
+      const state = { ...appState, disabledButtons: new Set(['id']), hiddenButtons: new Set(['id']), pressedButtons: new Set(['id']) }
+      const result = render({ ...baseBtn, pressedWhen: jest.fn() }, state)
+      expect(result.props).toMatchObject({ isDisabled: true, isHidden: true, isPressed: true })
+    })
+
+    it('sets isPressed undefined without pressedWhen', () => {
+      expect(render(baseBtn, { ...appState, pressedButtons: new Set(['id']) }).props.isPressed).toBeUndefined()
+    })
+
+    it('falls back to empty breakpoint config', () => {
+      expect(render(baseBtn, { ...appState, breakpoint: 'mobile' }).props.showLabel).toBeUndefined()
     })
   })
-
-  // ---------------- mapButtons ----------------
-  const TestButtons = (props) => {
-    return <div data-testid='result'>{JSON.stringify(mapButtons(props).map(({ id, type, order }) => ({ id, type, order })))}</div>
-  }
 
   describe('mapButtons', () => {
-    it('returns [] when no config', () => {
-      mockGetButtonConfig.mockReturnValue({})
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)).toEqual([])
+    const map = (config, mode = 'view') => mapButtons({ slot: 'header', appState, appConfig, mode })
+
+    it('returns empty for no config', () => {
+      expect(map({})).toEqual([])
     })
 
-    it('returns group type for grouped buttons', () => {
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)[0].type).toBe('group')
+    it('returns flat list with type and order', () => {
+      getButtonConfig.mockReturnValue({ b1: baseBtn })
+      const result = map()
+      expect(result[0]).toMatchObject({ id: 'b1', type: 'button', order: 1 })
     })
 
-    it('handles single button fallback', () => {
-      mockGetButtonConfig.mockReturnValue({ btn1: { ...buttonConfig.btn1, group: undefined } })
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)[0]).toMatchObject({ type: 'button', order: 1 })
-    })
-
-    it('uses first button id if groupKey missing', () => {
-      mockGetButtonConfig.mockReturnValue({
-        btn1: { iconId: 'i1', desktop: { slot: 'header', order: 1, showLabel: true }, includeModes: ['view'] },
-        btn2: { iconId: 'i2', desktop: { slot: 'header', order: 2, showLabel: true }, includeModes: ['view'] }
+    it('sets group flags for 2 buttons', () => {
+      getButtonConfig.mockReturnValue({ 
+        b1: { ...baseBtn, group: 'g1' }, 
+        b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' } 
       })
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)[0].id).toBe('group-btn1')
+      const result = map()
+      expect(result[0].element.props).toMatchObject({ groupStart: true, groupEnd: false })
+      expect(result[1].element.props).toMatchObject({ groupStart: false, groupEnd: true })
     })
 
-    it('falls back to order 0 if missing', () => {
-      mockGetButtonConfig.mockReturnValue({ btn1: { iconId: 'i1', desktop: { slot: 'header', showLabel: true }, includeModes: ['view'] } })
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)[0].order).toBe(0)
-    })
-
-    it('falls back to 0 when order is missing in grouped buttons', () => {
-      mockGetButtonConfig.mockReturnValue({
-        btn1: { desktop: { slot: 'header', showLabel: true }, includeModes: ['view'], group: 'g' },
-        btn2: { desktop: { slot: 'header', showLabel: true }, includeModes: ['view'], group: 'g' }
+    it('sets groupMiddle for 3+ buttons', () => {
+      getButtonConfig.mockReturnValue({ 
+        b1: { ...baseBtn, desktop: { slot: 'header', order: 1 }, group: 'g1' },
+        b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' },
+        b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' }
       })
-      const { getByTestId } = render(<TestButtons {...commonProps} />)
-      expect(JSON.parse(getByTestId('result').textContent)[0].order).toBe(0)
+      expect(map()[1].element.props.groupMiddle).toBe(true)
+    })
+
+    it('ignores singleton groups', () => {
+      getButtonConfig.mockReturnValue({ b1: { ...baseBtn, group: 'g1' } })
+      expect(map()[0].element.props).toMatchObject({ groupStart: false, groupEnd: false })
+    })
+
+    it('falls back to order 0', () => {
+      getButtonConfig.mockReturnValue({ b1: { ...baseBtn, desktop: { slot: 'header' } } })
+      expect(map()[0].order).toBe(0)
     })
   })
 })

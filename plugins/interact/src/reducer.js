@@ -1,5 +1,5 @@
 const initialState = {
-  selectedFeatures: new Set(),
+  selectedFeatures: [],
   selectionBounds: null
 }
 
@@ -9,39 +9,37 @@ const initialState = {
  */
 const toggleSelectedFeatures = (state, payload) => {
   const { featureId, multiSelect, layerId, idProperty, addToExisting } = payload
-  const set = new Set(state.selectedFeatures)
+  const selected = Array.isArray(state.selectedFeatures) ? [...state.selectedFeatures] : []
 
-  const existing = [...set].find(f => f.featureId === featureId && f.layerId === layerId)
+  const existingIndex = selected.findIndex(
+    f => f.featureId === featureId && f.layerId === layerId
+  )
 
-  // Add-only
+  // Add-only mode with multiSelect
   if (addToExisting && multiSelect) {
-    if (!existing) {
-      set.add({ featureId, layerId, idProperty })
+    if (existingIndex === -1) {
+      selected.push({ featureId, layerId, idProperty })
     }
-    return { ...state, selectedFeatures: [...set] }
+    return { ...state, selectedFeatures: selected }
   }
 
   // Multi-select logic
   if (multiSelect) {
-    if (existing) {
-      set.delete(existing)
+    if (existingIndex !== -1) {
+      selected.splice(existingIndex, 1) // remove
     } else {
-      set.add({ featureId, layerId, idProperty })
+      selected.push({ featureId, layerId, idProperty })
     }
-    return { ...state, selectedFeatures: [...set] }
+    return { ...state, selectedFeatures: selected }
   }
 
   // Single-select logic
-  const isSameSingle = existing && set.size === 1
+  const isSameSingle = existingIndex !== -1 && selected.length === 1
+  const newSelected = isSameSingle ? [] : [{ featureId, layerId, idProperty }]
 
-  set.clear()
-
-  if (!isSameSingle) {
-    set.add({ featureId, layerId, idProperty })
-  }
-
-  return { ...state, selectedFeatures: [...set] }
+  return { ...state, selectedFeatures: newSelected }
 }
+
 
 // Update bounds (called from useEffect after map provider calculates them)
 const updateSelectedBounds = (state, payload) => {
@@ -55,7 +53,7 @@ const updateSelectedBounds = (state, payload) => {
 const clearSelectedFeatures = (state) => {
   return {
     ...state,
-    selectedFeatures: new Set(),
+    selectedFeatures: [],
     selectionBounds: null
   }
 }

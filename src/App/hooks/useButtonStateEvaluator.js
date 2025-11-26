@@ -1,16 +1,19 @@
 import { useEffect, useContext } from 'react'
+import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
 import { PluginContext } from '../store/PluginProvider.jsx'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 
-const evaluateButton = (btn, combinedState, currentState, dispatch) => {
+const evaluateButton = (btn, appConfig, appState, mapState, pluginState, dispatch) => {
+  const { disabledButtons, hiddenButtons, pressedButtons } = appState
+
   // Evaluate enableWhen
   if (typeof btn.enableWhen === 'function') {
     try {
-      const shouldBeEnabled = btn.enableWhen(combinedState)
+      const shouldBeEnabled = btn.enableWhen({ appConfig, appState, mapState, pluginState })
       const isDisabled = !shouldBeEnabled
-      const currentlyDisabled = currentState.disabledButtons.has(btn.id)
+      const currentlyDisabled = disabledButtons.has(btn.id)
 
       if (isDisabled !== currentlyDisabled) {
         dispatch({ type: 'TOGGLE_BUTTON_DISABLED', payload: { id: btn.id, isDisabled } })
@@ -23,8 +26,8 @@ const evaluateButton = (btn, combinedState, currentState, dispatch) => {
   // Evaluate hiddenWhen
   if (typeof btn.hiddenWhen === 'function') {
     try {
-      const shouldBeHidden = btn.hiddenWhen(combinedState)
-      const currentlyHidden = currentState.hiddenButtons.has(btn.id)
+      const shouldBeHidden = btn.hiddenWhen({ appConfig, appState, mapState, pluginState })
+      const currentlyHidden = hiddenButtons.has(btn.id)
 
       if (shouldBeHidden !== currentlyHidden) {
         dispatch({ type: 'TOGGLE_BUTTON_HIDDEN', payload: { id: btn.id, isHidden: shouldBeHidden } })
@@ -37,8 +40,8 @@ const evaluateButton = (btn, combinedState, currentState, dispatch) => {
   // Evaluate pressedWhen
   if (typeof btn.pressedWhen === 'function') {
     try {
-      const shouldBePressed = btn.pressedWhen(combinedState)
-      const currentlyPressed = currentState.pressedButtons.has(btn.id)
+      const shouldBePressed = btn.pressedWhen({ appConfig, appState, mapState, pluginState })
+      const currentlyPressed = pressedButtons.has(btn.id)
 
       if (shouldBePressed !== currentlyPressed) {
         dispatch({ type: 'TOGGLE_BUTTON_PRESSED', payload: { id: btn.id, isPressed: shouldBePressed } })
@@ -50,6 +53,7 @@ const evaluateButton = (btn, combinedState, currentState, dispatch) => {
 }
 
 export function useButtonStateEvaluator() {
+  const appConfig = useConfig()
   const appState = useApp()
   const mapState = useMap()
   const pluginContext = useContext(PluginContext)
@@ -64,9 +68,7 @@ export function useButtonStateEvaluator() {
     registeredPlugins.forEach((plugin) => {
       const buttons = plugin?.manifest?.buttons || []
       const pluginState = pluginContext.state[plugin.id] || {}
-      const combinedState = { appState, mapState, pluginState }
-
-      buttons.forEach((btn) => evaluateButton(btn, combinedState, appState, dispatch))
+      buttons.forEach((btn) => evaluateButton(btn, appConfig, appState, mapState, pluginState, dispatch))
     })
-  }, [appState, mapState, pluginContext])
+  }, [appConfig, appState, mapState, pluginContext])
 }

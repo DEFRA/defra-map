@@ -13,8 +13,8 @@ export function registerPlugin (plugin) {
 
   const pluginConfig = {
     pluginId: plugin.id,
-    includeModes: plugin.config.includeModes,
-    excludeModes: plugin.config.excludeModes
+    includeModes: plugin.config?.includeModes,
+    excludeModes: plugin.config?.excludeModes
   }
 
   // --- Register buttons ---

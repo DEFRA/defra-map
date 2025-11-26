@@ -20,7 +20,7 @@ jest.mock('./slots.js', () => ({
 const mockGetControlConfig = getControlConfig
 
 describe('mapControls', () => {
-  const commonProps = { slot: 'header', breakpoint: 'desktop', mode: 'view' }
+  const defaultAppState = { breakpoint: 'desktop', mode: 'view' }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -28,9 +28,8 @@ describe('mapControls', () => {
 
   it('returns empty array when no controls', () => {
     mockGetControlConfig.mockReturnValue({})
-    const TestComp = () => <div>{mapControls(commonProps).length}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('0')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result).toEqual([])
   })
 
   it('filters controls by slot and allowedSlots', () => {
@@ -38,56 +37,56 @@ describe('mapControls', () => {
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['view'] },
       ctrl2: { id: 'ctrl2', desktop: { slot: 'footer', order: 2 }, includeModes: ['view'] } // filtered out
     })
-    const TestComp = () => <div>{mapControls(commonProps).map(c => c.id).join(',')}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('ctrl1')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result.map(c => c.id)).toEqual(['ctrl1'])
   })
 
   it('filters out controls missing breakpoint config', () => {
     mockGetControlConfig.mockReturnValue({
       ctrl1: { id: 'ctrl1', mobile: { slot: 'header', order: 1 }, includeModes: ['view'] } // no desktop config
     })
-    const TestComp = () => <div>{mapControls(commonProps).length}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('0')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result).toEqual([])
   })
 
   it('filters controls by includeModes whitelist', () => {
     mockGetControlConfig.mockReturnValue({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['edit'] } // not matching 'view'
     })
-    const TestComp = () => <div>{mapControls(commonProps).length}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('0')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result).toEqual([])
   })
 
   it('filters controls by excludeModes', () => {
     mockGetControlConfig.mockReturnValue({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, excludeModes: ['view'] } // excluded
     })
-    const TestComp = () => <div>{mapControls(commonProps).length}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('0')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result).toEqual([])
   })
 
   it('maps controls to wrapped component with order', () => {
     mockGetControlConfig.mockReturnValue({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 5 }, render: () => <div>R</div>, includeModes: ['view'] }
     })
-    const TestComp = () => {
-      const controls = mapControls(commonProps)
-      return <div>{controls[0].order}-{controls[0].id}</div>
-    }
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('5-ctrl1')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result[0].order).toBe(5)
+    expect(result[0].id).toBe('ctrl1')
   })
 
   it('falls back to order 0 if missing', () => {
     mockGetControlConfig.mockReturnValue({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header' }, render: () => <div />, includeModes: ['view'] }
     })
-    const TestComp = () => <div>{mapControls(commonProps)[0].order}</div>
-    const { container } = render(<TestComp />)
-    expect(container.textContent).toBe('0')
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(result[0].order).toBe(0)
+  })
+
+  it('wraps with plugin contexts when plugin matches', () => {
+    mockGetControlConfig.mockReturnValue({
+      ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, render: () => <div />, includeModes: ['view'] }
+    })
+    const result = mapControls({ slot: 'header', appState: defaultAppState })
+    expect(typeof result[0].element.type).toBe('function')
   })
 })

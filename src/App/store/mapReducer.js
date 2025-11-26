@@ -12,7 +12,7 @@ export const initialState = (config) => {
   } = config
 
   // Does a plugin handle map styles
-  const pluginHandlesMapStyles = !!registeredPlugins?.find(plugin => plugin.config.handlesMapStyle)
+  const pluginHandlesMapStyles = !!registeredPlugins?.find(plugin => plugin.config?.handlesMapStyle)
 
   return {
     isMapReady: false,

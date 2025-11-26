@@ -19,39 +19,64 @@ export const MapButton = ({
   variant,
   onClick,
   panelId,
-  idPrefix
+  idPrefix,
+  href,
+  groupMiddle,
+  groupStart,
+  groupEnd
 }) => {
   const { id: appId } = useConfig()
   const { buttonRefs } = useApp()
   const Icon = getIconRegistry()[iconId]
 
-  const classNames = [
+  const buttonClassNames = [
     'dm-c-map-button',
     buttonId && `dm-c-map-button--${stringToKebab(buttonId)}`,
     variant && `dm-c-map-button--${variant}`,
-    showLabel && `dm-c-map-button--with-label`
+    showLabel && 'dm-c-map-button--with-label'
   ].filter(Boolean).join(' ')
 
+  const Element = href ? 'a' : 'button'
+
+  const handleKeyUp = (e) => {
+    if (e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault() // prevent page scrolling
+      e.currentTarget.click() // trigger click
+    }
+  }
+
+  const buttonProps = {
+    id: `${appId}-${stringToKebab(buttonId)}`,
+    className: buttonClassNames,
+    onClick,
+    ref: (el) => buttonRefs.current && buttonId ? buttonRefs.current[buttonId] = el : null,
+    'aria-disabled': isDisabled || undefined,
+    'aria-expanded': typeof isExpanded === 'boolean' ? isExpanded : undefined,
+    'aria-pressed': panelId ? (isOpen ? 'true' : 'false') : isPressed,
+    'aria-controls': panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined,
+    ...(href 
+      ? { href, target: '_blank', onKeyUp: handleKeyUp, role: 'button' } // only <a>
+      : { type: 'button' } // only <button>
+    )
+  }
+
   const buttonEl = (
-    <button
-      id={`${appId}-${stringToKebab(buttonId)}`}
-      type='button'
-      className={classNames}
-      aria-disabled={isDisabled || undefined}
-      aria-expanded={typeof isExpanded === 'boolean' ? isExpanded : undefined}
-      onClick={onClick}
-      // If button controls a panel then that takes priority
-      aria-pressed={panelId ? (isOpen ? 'true' : 'false') : isPressed}
-      aria-controls={panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined}
-      ref={(el) => buttonRefs.current && buttonId ? buttonRefs.current[buttonId] = el : null}
-    >
+    <Element {...buttonProps}>
       {Icon && <Icon aria-hidden='true' focusable='false' />}
       {showLabel && <span>{label}</span>}
-    </button>
+    </Element>
   )
 
+  const wrapperClassNames = [
+    'dm-c-button-wrapper',
+    showLabel && ' dm-c-button-wrapper--wide',
+    groupStart && `dm-c-button-wrapper--group-start`,
+    groupMiddle && `dm-c-button-wrapper--group-middle`,
+    groupEnd && `dm-c-button-wrapper--group-end`
+  ].filter(Boolean).join(' ')
+
   return (
-    <div className={`dm-c-button-wrapper${showLabel ? ' dm-c-button-wrapper--wide' : ''}`} style={isHidden ? { display: 'none'} : undefined}>
+    <div className={wrapperClassNames} style={isHidden ? { display: 'none'} : undefined}>
       {showLabel ? buttonEl : <Tooltip content={label}>{buttonEl}</Tooltip>}
       {panelId && <SlotRenderer slot={`${stringToKebab(buttonId)}-button`} />}
     </div>

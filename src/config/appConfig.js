@@ -1,29 +1,79 @@
 import { KeyboardHelp } from '../App/components/KeyboardHelp/KeyboardHelp.jsx'
+import { CircleQuestionMark, Maximize2, Minimize2 } from 'lucide-react'
 
-const breakpointDefinition = {
+const focusButtonAfterFullscreen = (id) => {
+  const handler = () => {
+    setTimeout(() => {
+      document.getElementById(id).focus()
+    }, 1000)
+    document.removeEventListener('fullscreenchange', handler)
+  }
+  document.addEventListener('fullscreenchange', handler)
+}
+
+const keyboardBasePanelSlots = {
   slot: 'middle',
   initiallyOpen: false,
   dismissable: true,
   modal: true
-  // width: '80%'
+}
+
+const helpButtonSlots = {
+  slot: 'right-top',
+  showLabel: false,
+  order: 10
 }
 
 export const appConfig = {
+  buttons: [{
+    id: 'help',
+    label: 'Help (Opens in a new tab)',
+    iconId: 'help',
+    href: ({ appConfig }) => appConfig.helpURL,
+    excludeWhen: ({ appConfig }) => !appConfig.helpURL,
+    mobile: helpButtonSlots,
+    tablet: helpButtonSlots,
+    desktop: helpButtonSlots
+  },{
+    id: 'fullscreen',
+    label: () => `${document.fullscreenElement ? 'Exit' : 'Enter'} fullscreen`,
+    iconId: () => document.fullscreenElement ? 'minimise' : 'maximise',
+    onClick: (e, { appState }) => {
+      const container = appState.layoutRefs.appContainerRef.current
+      document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
+    },
+    excludeWhen: ({ appConfig }) => !appConfig.enableFullscreen,
+    mobile: helpButtonSlots,
+    tablet: helpButtonSlots,
+    desktop: helpButtonSlots
+  }],
+
   panels: [{
     id: 'keyboardHelp',
     label: 'Keyboard shortcuts',
     mobile: {
-      ...breakpointDefinition
+      ...keyboardBasePanelSlots
     },
     tablet: {
-      ...breakpointDefinition,
+      ...keyboardBasePanelSlots,
       width: '500px'
     },
     desktop: {
-      ...breakpointDefinition,
+      ...keyboardBasePanelSlots,
       width: '500px'
     },
     render: () => <KeyboardHelp />
+  }],
+
+  icons: [{
+    id: 'help',
+    component: CircleQuestionMark
+  },{
+    id: 'maximise',
+    component: Maximize2
+  },{
+    id: 'minimise',
+    component: Minimize2
   }]
 }
 

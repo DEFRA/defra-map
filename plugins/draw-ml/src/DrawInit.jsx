@@ -14,8 +14,6 @@ export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginSt
       return
     }
 
-		console.log(pluginState.mode, appState.interfaceType)
-
 		// Attach provider.map and plugin events before mapbox-gl-draw instance is created
 		const cleanupEvents = attachEvents({
 			appState,

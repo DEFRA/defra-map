@@ -16,58 +16,6 @@
 }
 
 // ===================================================
-// Component: ButtonGroup
-// ===================================================
-
-// 1. Base styles
-.dm-c-button-group {
-    display: flex;
-}
-
-// 2. Elements
-
-// 3. Modifiers
-
-// 4. State styles
-.dm-o-app__right .dm-c-button-group {
-    flex-direction: column;
-}
-
-.dm-o-app__right .dm-c-button-group > *:first-child button,
-.dm-o-app__right .dm-c-button-group > *:first-child {
-    @include tools.border-focus-corner-override($corners: 'top');
-}
-
-.dm-o-app__right .dm-c-button-group > *:not(:first-child):not(:last-child) button,
-.dm-o-app__right .dm-c-button-group > *:not(:first-child):not(:last-child) {
-    @include tools.border-focus-corner-override($corners: 'top bottom');
-}
-
-.dm-o-app__right .dm-c-button-group > *:last-child button,
-.dm-o-app__right .dm-c-button-group > *:last-child {
-    @include tools.border-focus-corner-override($corners: 'bottom');
-}
-
-.dm-o-app__top .dm-c-button-group {
-    flex-direction: row;
-}
-
-.dm-o-app__top .dm-c-button-group > *:first-child button,
-.dm-o-app__top .dm-c-button-group > *:first-child {
-    @include tools.border-focus-corner-override($corners: 'left');
-}
-
-.dm-o-app__top .dm-c-button-group > *:not(:first-child):not(:last-child) button,
-.dm-o-app__top .dm-c-button-group > *:not(:first-child):not(:last-child) {
-    @include tools.border-focus-corner-override($corners: 'left right');
-}
-
-.dm-o-app__top .dm-c-button-group > *:last-child button,
-.dm-o-app__top .dm-c-button-group > *:last-child {
-    @include tools.border-focus-corner-override($corners: 'right');
-}
-
-// ===================================================
 // Component: MapButton
 // ===================================================
 
@@ -167,6 +115,33 @@
 
 .dm-c-map-button--tertiary::before {
     box-shadow: none;
+}
+
+.dm-o-app__right {
+    .dm-c-button-wrapper--group-start,
+    .dm-c-button-wrapper--group-middle {
+        margin-bottom: calc(-1 * var(--divider-gap));
+    }
+    .dm-c-button-wrapper--group-start .dm-c-map-button {
+        @include tools.border-focus-corner-override($corners: 'top');
+    }
+    .dm-c-button-wrapper--group-end .dm-c-map-button {
+        margin-top: 0;
+        @include tools.border-focus-corner-override($corners: 'bottom');
+    }
+}
+
+.dm-o-app__top {
+    .dm-c-button-wrapper--group-start,
+    .dm-c-button-wrapper--group-middle {
+        margin-right: calc(-1 * var(--divider-gap));
+    }
+    .dm-c-button-wrapper--group-start .dm-c-map-button {
+        @include tools.border-focus-corner-override($corners: 'left');
+    }
+    .dm-c-button-wrapper--group-end .dm-c-map-button {
+        @include tools.border-focus-corner-override($corners: 'right');
+    }
 }
 
 // 4. State styles

@@ -6,10 +6,10 @@ import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
 
 export const PluginInits = () => {
-  // NOW run button state evaluation after all states are initialized
+  // Run button state evaluation after all states are initialized
   useButtonStateEvaluator()
 
-  // Initialize all plugin states FIRST
+  // Initialize all plugin states
   registeredPlugins.forEach((plugin) => {
     const stateRef = usePluginApiState(plugin.id)
 

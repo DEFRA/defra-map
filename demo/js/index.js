@@ -60,6 +60,8 @@ var defraMap = new DefraMap('map', {
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
+	// helpURL: 'https://google.co.uk',
+	// enableFullscreen: true,
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],
@@ -85,7 +87,7 @@ var defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: true,
+			// showMarker: true,
 			// excludeModes: ['circle', 'square', 'polygon']
 		}),
 		useLocationPlugin(),
@@ -93,8 +95,8 @@ var defraMap = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		// interactPlugin,
-		drawPlugin
+		interactPlugin,
+		// drawPlugin
 		// drawPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',

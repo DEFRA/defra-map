@@ -45,8 +45,6 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   const handleSelectFeatures = (args) => {
     mapState.markers.remove('location')
 
-    console.log(args)
-
     pluginState.dispatch({
       type: 'TOGGLE_SELECTED_FEATURES',
       payload: {

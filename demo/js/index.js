@@ -127,7 +127,7 @@ defraMap.on('search:match', function (e) {
 	if (e.type !== 'parcel') {
 		return
 	}
-	selectPlugin.selectFeatures({
+	interactPlugin.selectFeatures({
 		idProperty: 'ID',
 		featureId: e.id,
 		layerId: 'field-parcels'

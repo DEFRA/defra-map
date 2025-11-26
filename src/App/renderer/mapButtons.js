@@ -6,7 +6,9 @@ import { allowedSlots } from './slots.js'
 /**
  * Return a flat list of matching [id, config] pairs
  */
-function getMatchingButtons({ appState, appConfig, buttonConfig, slot, breakpoint, mode }) {
+function getMatchingButtons({ appState, appConfig, buttonConfig, slot }) {
+  const { breakpoint, mode } = appState
+
   if (!buttonConfig) {
     return []
   }
@@ -113,11 +115,14 @@ function renderButton({ btn, appState, appConfig, groupStart, groupMiddle, group
 /**
  * Main function: generate flat list of buttons with dynamic props and group flags
  */
-function mapButtons({ slot, appState, appConfig, mode }) {
+function mapButtons({ slot, appState, appConfig }) {
   const buttonConfig = getButtonConfig()
   const breakpoint = appState.breakpoint
-  const matching = getMatchingButtons({ appState, appConfig, buttonConfig, slot, breakpoint, mode })
-  if (!matching.length) return []
+  const matching = getMatchingButtons({ appState, appConfig, buttonConfig, slot })
+
+  if (!matching.length) {
+    return []
+  }
 
   // Build group map: groupKey -> indices
   const groupMap = new Map()

@@ -35,8 +35,6 @@ var interactPlugin = createInteractPlugin({
 })
 
 var drawPlugin = createDrawPlugin({
-	// featureId: 'test1234',
-	// featureGeoJSON: featureGeoJSON,
 	includeModes: ['draw']
 })
 
@@ -96,7 +94,7 @@ var defraMap = new DefraMap('map', {
 			layers: dataLayers
 		}),
 		interactPlugin,
-		// drawPlugin
+		// drawPlugin,
 		// drawPlugin({
 		// 	includeModes: ['polygon'],
 		// 	featureId: 'test1234',

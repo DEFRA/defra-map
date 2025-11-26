@@ -12,7 +12,7 @@ jest.mock('./slots.js', () => ({
 
 describe('mapButtons module', () => {
   const baseBtn = { iconId: 'i1', label: 'Btn', desktop: { slot: 'header', order: 1, showLabel: true }, includeModes: ['view'] }
-  const appState = { breakpoint: 'desktop', openPanels: {}, dispatch: jest.fn(), disabledButtons: new Set(), hiddenButtons: new Set(), pressedButtons: new Set() }
+  const appState = { breakpoint: 'desktop', mode: 'view', openPanels: {}, dispatch: jest.fn(), disabledButtons: new Set(), hiddenButtons: new Set(), pressedButtons: new Set() }
   const appConfig = { id: 'test' }
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('mapButtons module', () => {
 
   describe('getMatchingButtons', () => {
     const testFilter = (config, expected) => {
-      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', breakpoint: 'desktop', mode: 'view' }).length).toBe(expected)
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState, appConfig }).length).toBe(expected)
     }
 
     it('handles missing config', () => testFilter(null, 0))
@@ -101,10 +101,10 @@ describe('mapButtons module', () => {
   })
 
   describe('mapButtons', () => {
-    const map = (config, mode = 'view') => mapButtons({ slot: 'header', appState, appConfig, mode })
+    const map = () => mapButtons({ slot: 'header', appState, appConfig })
 
     it('returns empty for no config', () => {
-      expect(map({})).toEqual([])
+      expect(map()).toEqual([])
     })
 
     it('returns flat list with type and order', () => {

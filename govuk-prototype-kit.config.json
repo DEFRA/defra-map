@@ -13,12 +13,13 @@
     "/providers/maplibre/dist",
     "/providers/open-names/dist",
     "/plugins/data-layers-ml/dist",
-    "/plugins/data-polygon-ml/dist",
+    "/plugins/data-ml/dist",
+    "/plugins/interact/dist",
     "/plugins/map-styles/dist",
     "/plugins/menu-data-layers/dist",
     "/plugins/scale-bar/dist",
     "/plugins/search/dist",
-    "/plugins/select/dist",
+    "/plugins/use-location/dist",
     "/plugins/zoom-controls/dist"
   ]
 }

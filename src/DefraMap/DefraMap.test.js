@@ -223,9 +223,10 @@ describe('DefraMap Public API Methods', () => {
     expect(eventBus.off).toHaveBeenCalledWith('testEvent', cb)
     expect(eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
     
-    // 2. Marker API methods
+    // 2. API methods that use eventBus directly
     map.addMarker('marker-1', coords, options)
     map.removeMarker('marker-1')
+    map.setMode('test-mode')
     
     expect(eventBus.emit).toHaveBeenCalledWith('app:addmarker', {
       id: 'marker-1',
@@ -233,5 +234,6 @@ describe('DefraMap Public API Methods', () => {
       options: options
     })
     expect(eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
+    expect(eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
   })
 })

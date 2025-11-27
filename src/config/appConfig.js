@@ -14,8 +14,22 @@ const buttonSlots = {
   order: 10
 }
 
+const exitButtonSlots = {
+  slot: 'top-left',
+  showLabel: false,
+  order: -1
+}
+
 export const appConfig = {
   buttons: [{
+    id: 'exit',
+    label: 'Exit',
+    iconId: 'close',
+    excludeWhen: ({ appConfig }) => !appConfig.hasExitButton,
+    mobile: exitButtonSlots,
+    tablet: exitButtonSlots,
+    desktop: exitButtonSlots
+  },{
     id: 'help',
     label: 'Help (Opens in a new tab)',
     iconId: 'help',

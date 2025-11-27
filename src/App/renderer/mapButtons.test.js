@@ -37,6 +37,18 @@ describe('mapButtons module', () => {
     it('filters invalid slots', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'invalid' } } }, 0))
     it('defaults includeModes/excludeModes', () => testFilter({ b1: { ...baseBtn, includeModes: undefined, excludeModes: undefined } }, 1))
     it('matches valid buttons', () => testFilter({ b1: baseBtn, b2: baseBtn }, 2))
+
+    // concise excludeWhen tests
+    const testExcludeWhen = (returnValue, expected) => {
+      const fn = jest.fn(() => returnValue)
+      const config = { b1: { ...baseBtn, desktop: { slot: 'header' }, excludeWhen: fn } }
+      const result = getMatchingButtons({ buttonConfig: config, slot: 'header', appState, appConfig })
+      expect(result).toHaveLength(expected)
+      expect(fn).toHaveBeenCalledWith({ appState, appConfig })
+    }
+
+    it('excludes buttons when excludeWhen returns true', () => testExcludeWhen(true, 0))
+    it('includes buttons when excludeWhen returns false', () => testExcludeWhen(false, 1))
   })
 
   describe('renderButton', () => {
@@ -57,6 +69,12 @@ describe('mapButtons module', () => {
       const label = jest.fn(() => 'Dynamic')
       expect(render({ ...baseBtn, label }).props.label).toBe('Dynamic')
       expect(label).toHaveBeenCalledWith({ appState, appConfig })
+    })
+
+    it('evaluates dynamic iconId', () => {
+      const iconId = jest.fn(() => 'dynamicIcon')
+      expect(render({ ...baseBtn, iconId }).props.iconId).toBe('dynamicIcon')
+      expect(iconId).toHaveBeenCalledWith({ appState, appConfig })
     })
 
     it('evaluates dynamic href', () => {

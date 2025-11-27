@@ -60,6 +60,7 @@ var defraMap = new DefraMap('map', {
 	transformRequest: transformTileRequest,
 	// helpURL: 'https://google.co.uk',
 	// enableFullscreen: true,
+	// hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],

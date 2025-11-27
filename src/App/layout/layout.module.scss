@@ -366,9 +366,12 @@
 // Banner on desktop
 .dm-o-app--desktop .dm-o-app__banner {
   position: absolute;
+  top: var(--primary-gap);
+  left: 0;
   width: 100%;
 }
 
+.dm-o-app--desktop .dm-o-app__banner .dm-c-panel,
 .dm-o-app--desktop .dm-c-panel--banner {
   margin-left: auto;
   margin-right: auto;

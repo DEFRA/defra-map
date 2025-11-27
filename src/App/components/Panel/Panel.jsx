@@ -25,9 +25,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
   const panelRef = useRef(null)
 
   const handleClose = () => {
-    requestAnimationFrame(() => {
-      (props?.triggeringElement || layoutRefs.viewportRef.current).focus?.()
-    })
+    requestAnimationFrame(() => {(props?.triggeringElement || layoutRefs.viewportRef.current).focus?.()})
     dispatch({ type: 'CLOSE_PANEL', payload: panelId })
   }
 

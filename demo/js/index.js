@@ -106,6 +106,45 @@ var defraMap = new DefraMap('map', {
 defraMap.on('map:ready', function (e) {
 	// console.log('Map ready')
 	defraMap.setMode('draw')
+	defraMap.addPanel('test1', {
+		label: 'Wahoo',
+		showLabel: false,
+		html: '<p>Que? Test</p>',
+		mobile: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		},
+		tablet: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		},
+		desktop: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		}
+	})
+	defraMap.addPanel('test2', {
+		label: 'Wahoo2',
+		html: '<p>Que? Test</p>',
+		mobile: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		},
+		tablet: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		},
+		desktop: {
+			slot: 'banner',
+			dismissable: true,
+			modal: false
+		}
+	})
 })
 
 defraMap.on('draw:ready', function () {

@@ -4,10 +4,14 @@ import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
+import { usePanelsAPI } from '../hooks/usePanelsAPI.js'
 
 export const PluginInits = () => {
   // Run button state evaluation after all states are initialized
   useButtonStateEvaluator()
+
+  // Add panels API (Needs to be top-level)
+  usePanelsAPI()
 
   // Initialize all plugin states
   registeredPlugins.forEach((plugin) => {

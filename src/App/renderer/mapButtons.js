@@ -128,14 +128,20 @@ function mapButtons({ slot, appState, appConfig }) {
   const groupMap = new Map()
   matching.forEach(([, config], idx) => {
     const key = config.group
-    if (key == null) return
-    if (!groupMap.has(key)) groupMap.set(key, [])
+    if (key == null) {
+      return
+    }
+    if (!groupMap.has(key)) {
+      groupMap.set(key, [])
+    }
     groupMap.get(key).push(idx)
   })
 
   // Remove singletons
   for (const [key, indices] of groupMap) {
-    if (indices.length < 2) groupMap.delete(key)
+    if (indices.length < 2) {
+      groupMap.delete(key)
+    }
   }
 
   // Build flat list with group flags

@@ -1,16 +1,6 @@
 import { KeyboardHelp } from '../App/components/KeyboardHelp/KeyboardHelp.jsx'
 import { CircleQuestionMark, Maximize2, Minimize2 } from 'lucide-react'
 
-const focusButtonAfterFullscreen = (id) => {
-  const handler = () => {
-    setTimeout(() => {
-      document.getElementById(id).focus()
-    }, 1000)
-    document.removeEventListener('fullscreenchange', handler)
-  }
-  document.addEventListener('fullscreenchange', handler)
-}
-
 const keyboardBasePanelSlots = {
   slot: 'middle',
   initiallyOpen: false,
@@ -18,7 +8,7 @@ const keyboardBasePanelSlots = {
   modal: true
 }
 
-const helpButtonSlots = {
+const buttonSlots = {
   slot: 'right-top',
   showLabel: false,
   order: 10
@@ -31,9 +21,9 @@ export const appConfig = {
     iconId: 'help',
     href: ({ appConfig }) => appConfig.helpURL,
     excludeWhen: ({ appConfig }) => !appConfig.helpURL,
-    mobile: helpButtonSlots,
-    tablet: helpButtonSlots,
-    desktop: helpButtonSlots
+    mobile: buttonSlots,
+    tablet: buttonSlots,
+    desktop: buttonSlots
   },{
     id: 'fullscreen',
     label: () => `${document.fullscreenElement ? 'Exit' : 'Enter'} fullscreen`,
@@ -42,10 +32,10 @@ export const appConfig = {
       const container = appState.layoutRefs.appContainerRef.current
       document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
     },
-    excludeWhen: ({ appConfig }) => !appConfig.enableFullscreen,
-    mobile: helpButtonSlots,
-    tablet: helpButtonSlots,
-    desktop: helpButtonSlots
+    excludeWhen: ({ appState, appConfig }) => !appConfig.enableFullscreen || appState.isFullscreen,
+    mobile: buttonSlots,
+    tablet: buttonSlots,
+    desktop: buttonSlots
   }],
 
   panels: [{
@@ -84,7 +74,7 @@ export const scaleFactor = {
 }
 
 export const markerSvgPaths = [{
-  shape: 'teardrop',
+  shape: 'pin',
   backgroundPath: 'M31 16.001c0 7.489-8.308 15.289-11.098 17.698-.533.4-1.271.4-1.803 0C15.309 31.29 7 23.49 7 16.001c0-6.583 5.417-12 12-12s12 5.417 12 12z',
   graphicPath: 'M19 11.001c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.241 5-5-2.24-5-5-5z'
 }]

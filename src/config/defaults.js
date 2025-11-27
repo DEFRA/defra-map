@@ -21,7 +21,7 @@ const defaults = {
   nudgePanDelta: 5,
   mapProvider: null,
   reverseGeocode: null,
-  markerShape: 'teardrop',
+  markerShape: 'pin',
   markerColor: '#ff0000',
   enableFullscreen: false,
   helpURL: null,

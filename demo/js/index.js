@@ -85,8 +85,7 @@ var defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			// showMarker: true,
-			// excludeModes: ['circle', 'square', 'polygon']
+			showMarker: false
 		}),
 		useLocationPlugin(),
 		dataLayersPlugin({
@@ -95,15 +94,10 @@ var defraMap = new DefraMap('map', {
 		}),
 		interactPlugin,
 		// drawPlugin,
-		// drawPlugin({
-		// 	includeModes: ['polygon'],
-		// 	featureId: 'test1234',
-		// 	featureGeoJSON: featureGeoJSON
-		// })
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']
-		// }),
+		// })
 	]
 	// search
 })

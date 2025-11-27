@@ -100,45 +100,51 @@ describe('DefraMap Core Functionality', () => {
     expect(setupBehavior).toHaveBeenCalledWith(map)
   })
 
-  it('open button click calls _handleButtonClick / loadComponent', async () => {
+  it('open button click calls _handleButtonClick / loadApp', async () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    const loadSpy = jest.spyOn(map, 'loadComponent').mockResolvedValue()
-    await openButtonCallback() // triggers _handleButtonClick
+    const loadSpy = jest.spyOn(map, 'loadApp').mockResolvedValue()
+    // Mock pushState
+    const pushStateSpy = jest.spyOn(history, 'pushState').mockImplementation(() => {})
+    // Simulate an event with currentTarget having getAttribute('href')
+    const fakeEvent = {currentTarget: {getAttribute: jest.fn().mockReturnValue('/?mv=map')}}
+    await openButtonCallback(fakeEvent) // triggers _handleButtonClick
     expect(loadSpy).toHaveBeenCalled()
+    expect(pushStateSpy).toHaveBeenCalledWith({ isBack: true }, '', '/?mv=map')
     loadSpy.mockRestore()
+    pushStateSpy.mockRestore()
   })
 
   it('initializes reverseGeocode if reverseGeocodeProvider is provided', async () => {
     const mapProviderWithCRS = { load: jest.fn().mockResolvedValue([{}, {}]), crs: 'EPSG:3857' }
     const configWithReverse = { behaviour: 'buttonFirst', mapProvider: mapProviderWithCRS, reverseGeocodeProvider: { url: 'https://example.com', apiKey: '123' }}
     const map = new DefraMap('map', configWithReverse)
-    await map.loadComponent()
+    await map.loadApp()
     expect(createReverseGeocode).toHaveBeenCalledWith(
       configWithReverse.reverseGeocodeProvider,
       mapProviderWithCRS.crs
     )
   })
 
-  it('calls loadComponent if shouldLoadComponent returns true', async () => {
+  it('calls loadApp if shouldLoadComponent returns true', async () => {
     shouldLoadComponent.mockReturnValue(true)
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    // We need to await loadComponent to ensure initialiseApp is called
-    await map.loadComponent()
+    // We need to await loadApp to ensure initialiseApp is called
+    await map.loadApp()
     expect(initialiseApp).toHaveBeenCalled()
   })
 
-  it('does not call loadComponent if shouldLoadComponent returns false', () => {
+  it('does not call loadApp if shouldLoadComponent returns false', () => {
     shouldLoadComponent.mockReturnValue(false)
     new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
     // Check the alternative path in _initialize
     expect(removeLoadingState).toHaveBeenCalled()
   })
 
-  it('handles loadComponent errors', async () => {
+  it('handles loadApp errors', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     const failingProvider = { load: jest.fn().mockRejectedValue(new Error('fail')) }
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: failingProvider, genericErrorText: 'error' })
-    await expect(map.loadComponent()).rejects.toThrow('fail')
+    await expect(map.loadApp()).rejects.toThrow('fail')
     expect(renderError).toHaveBeenCalledWith(rootEl, 'error')
     consoleErrorSpy.mockRestore()
   })
@@ -151,7 +157,7 @@ describe('DefraMap Core Functionality', () => {
     
     initialiseApp.mockResolvedValue({ _root: {}, on: jest.fn(), off: jest.fn(), emit: jest.fn(), someMethod: jest.fn() })
 
-    await map.loadComponent()
+    await map.loadApp()
 
     // EventBus methods should not be replaced
     expect(map.on).toBe(originalOn)
@@ -167,7 +173,7 @@ describe('DefraMap Core Functionality', () => {
     map.unmount = jest.fn() 
     map._openButton = mockButtonInstance
     
-    map.removeComponent()
+    map.removeApp()
     
     expect(map._root).toBeNull() 
     expect(map.unmount).toHaveBeenCalled() 
@@ -181,7 +187,7 @@ describe('DefraMap Core Functionality', () => {
     map._root = null // falsy
     map.unmount = jest.fn()
     map._openButton = mockButtonInstance
-    map.removeComponent()
+    map.removeApp()
     expect(map.unmount).not.toHaveBeenCalled()
     expect(updateDOMState).toHaveBeenCalled()
   })
@@ -191,7 +197,7 @@ describe('DefraMap Core Functionality', () => {
     map._root = { some: 'root' } // just truthy
     map.unmount = jest.fn()
     map._openButton = null
-    map.removeComponent()
+    map.removeApp()
     expect(map.unmount).toHaveBeenCalled()
     // No button actions executed
     expect(updateDOMState).toHaveBeenCalled()

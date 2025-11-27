@@ -2,19 +2,19 @@
  * Creates a clickable button element in the DOM based on the given configuration.
  *
  * The button is inserted before the provided `rootEl` and navigates using
- * the History API when clicked. It also calls the provided `onClick` callback.
+ * the History API when clicked. It also calls the provided `handleClick` callback.
  *
  * @param {Object} config - Button configuration object.
  * @param {string} config.id - Unique ID used in the button URL query parameter.
  * @param {string} config.buttonText - Visible text label for the button.
  * @param {HTMLElement} rootEl - The reference element before which the button is inserted.
- * @param {Function} onClick - Callback invoked when the button is clicked.
+ * @param {Function} handleClick - Callback invoked when the button is clicked.
  * @returns {HTMLAnchorElement} The newly created button element.
  */
 
 import defaults from '../config/defaults.js'
 
-export function createButton(config, rootEl, onClick) {
+export function createButton(config, rootEl, handleClick) {
   const { id, buttonText, buttonClass } = config
 
   const buttonHTML = `
@@ -38,8 +38,7 @@ export function createButton(config, rootEl, onClick) {
 
   button.addEventListener('click', (e) => {
     e.preventDefault()
-    history.pushState({ isBack: true }, '', e.currentTarget.getAttribute('href'))
-    onClick()
+    handleClick(e)
   })
 
   return button

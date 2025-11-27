@@ -25,7 +25,8 @@ export const appConfig = {
     id: 'exit',
     label: 'Exit',
     iconId: 'close',
-    excludeWhen: ({ appConfig }) => !appConfig.hasExitButton,
+    onClick: (e, { appConfig }) => history.state?.isBack ? history.back() : appConfig.handleExitClick(),
+    excludeWhen: ({ appConfig, appState }) => !appConfig.hasExitButton || !(appState.isFullscreen && (new URL(window.location.href)).searchParams.has(appConfig.mapViewParamKey)),
     mobile: exitButtonSlots,
     tablet: exitButtonSlots,
     desktop: exitButtonSlots

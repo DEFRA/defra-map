@@ -1,9 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import eventBus from '../services/eventBus.js'
 import { appConfig } from '../config/appConfig.js'
-import { registerButton } from './registry/buttonRegistry.js'
-import { registerPanel } from './registry/panelRegistry.js'
-import { registerIcon } from './registry/iconRegistry.js'
 import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 import { mergeManifests } from './registry/mergeManifests.js'
@@ -57,6 +54,7 @@ export async function initialiseApp (rootElement, {
     unmount () {
       root.unmount()
       rootMap.delete(rootElement)
+      mapProvider.destroyMap?.()
       mapProviderMap.delete(rootElement)
       registeredPlugins.length = 0
     }

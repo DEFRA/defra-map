@@ -30,9 +30,9 @@ function handlePopstate() {
     const isOpen = mapInstance.rootEl?.children.length
 
     if (shouldBeOpen && !isOpen) {
-      mapInstance.loadComponent?.()
+      mapInstance.loadApp?.()
     } else if (!shouldBeOpen && isOpen && !isHybridVisible) {
-      mapInstance.removeComponent?.()
+      mapInstance.removeApp?.()
       mapInstance.openButton?.focus?.()
     }
   }
@@ -60,8 +60,8 @@ let initialized = false
  *
  * @param {Object} component - Component to register.
  * @param {string} component.id - Unique ID for the component.
- * @param {Function} [component.loadComponent] - Optional function to load the component.
- * @param {Function} [component.removeComponent] - Optional function to remove the component.
+ * @param {Function} [component.loadApp] - Optional function to load the component.
+ * @param {Function} [component.removeApp] - Optional function to remove the component.
  * @param {HTMLElement} [component.rootEl] - Root element of the component.
  * @param {HTMLElement} [component.openButton] - Button to focus when removing component.
  * @param {Object} component.config - Component configuration.

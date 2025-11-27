@@ -33,7 +33,7 @@ const setMapStateInURL = (id, state) => {
   })
   const hash = url.hash || ''
   const newUrl = `${url.origin}${url.pathname}?${[...filteredParams, ...newParams].join('&')}${hash}`
-  window.history.replaceState(null, '', newUrl)
+  history.replaceState(history.state, '', newUrl)
 }
 
 // Determine initial map state based on URL, bounds, or defaults

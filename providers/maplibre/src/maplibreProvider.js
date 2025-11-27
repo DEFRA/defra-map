@@ -65,6 +65,10 @@ export default class MapLibreProvider {
     this.eventBus.emit('map:ready', { map })
   }
 
+  destroyMap () {
+    this.map.remove()
+  }
+
   // ==========================
   // Side-effects
   // ==========================

@@ -13,16 +13,16 @@ describe('historyManager', () => {
       id: 'map',
       config: { behaviour: 'buttonFirst' },
       rootEl: document.createElement('div'),
-      loadComponent: jest.fn(),
-      removeComponent: jest.fn(),
+      loadApp: jest.fn(),
+      removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
     }
     component2 = {
       id: 'list',
       config: { behaviour: 'hybrid' },
       rootEl: document.createElement('div'),
-      loadComponent: jest.fn(),
-      removeComponent: jest.fn(),
+      loadApp: jest.fn(),
+      removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
     }
     popstateEvent = new PopStateEvent('popstate')
@@ -45,7 +45,7 @@ describe('historyManager', () => {
 
     window.dispatchEvent(popstateEvent)
 
-    expect(component1.loadComponent).toHaveBeenCalled()
+    expect(component1.loadApp).toHaveBeenCalled()
   })
 
   it('does not load component when already open', () => {
@@ -56,7 +56,7 @@ describe('historyManager', () => {
 
     window.dispatchEvent(popstateEvent)
 
-    expect(component1.loadComponent).not.toHaveBeenCalled()
+    expect(component1.loadApp).not.toHaveBeenCalled()
   })
 
   it('removes component and focuses button when view param does not match', () => {
@@ -67,7 +67,7 @@ describe('historyManager', () => {
 
     window.dispatchEvent(popstateEvent)
 
-    expect(component1.removeComponent).toHaveBeenCalled()
+    expect(component1.removeApp).toHaveBeenCalled()
     expect(component1.openButton.focus).toHaveBeenCalled()
   })
 
@@ -79,7 +79,7 @@ describe('historyManager', () => {
 
     window.dispatchEvent(popstateEvent)
 
-    expect(component2.removeComponent).not.toHaveBeenCalled()
+    expect(component2.removeApp).not.toHaveBeenCalled()
   })
 
   it('removes hybrid component on mobile breakpoint when view does not match', () => {
@@ -90,7 +90,7 @@ describe('historyManager', () => {
 
     window.dispatchEvent(popstateEvent)
 
-    expect(component2.removeComponent).toHaveBeenCalled()
+    expect(component2.removeApp).toHaveBeenCalled()
   })
 
   it('unregisters component', () => {
@@ -102,6 +102,6 @@ describe('historyManager', () => {
     detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
     window.dispatchEvent(popstateEvent)
 
-    expect(component1.loadComponent).not.toHaveBeenCalled()
+    expect(component1.loadApp).not.toHaveBeenCalled()
   })
 })

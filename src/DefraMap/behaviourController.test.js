@@ -36,8 +36,8 @@ describe('setupBehavior', () => {
     jest.clearAllMocks()
     mockMapInstance = {
       config: {},
-      loadComponent: jest.fn(),
-      removeComponent: jest.fn()
+      loadApp: jest.fn(),
+      removeApp: jest.fn()
     }
     detectBreakpoint.subscribeToBreakpointChange.mockImplementation(cb => { breakpointCallback = cb })
   })
@@ -60,10 +60,10 @@ describe('setupBehavior', () => {
     
     queryString.getQueryParam.mockReturnValue('test')
     breakpointCallback()
-    expect(mockMapInstance.loadComponent).toHaveBeenCalled()
+    expect(mockMapInstance.loadApp).toHaveBeenCalled()
 
     queryString.getQueryParam.mockReturnValue(null)
     breakpointCallback()
-    expect(mockMapInstance.removeComponent).toHaveBeenCalled()
+    expect(mockMapInstance.removeApp).toHaveBeenCalled()
   })
 })

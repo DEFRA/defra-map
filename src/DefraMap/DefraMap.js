@@ -56,26 +56,36 @@ export default class DefraMap {
   // Private methods
   _initialize () {
     if (['buttonFirst', 'hybrid'].includes(this.config.behaviour)) {
-      this._openButton = createButton(this.config, this.rootEl, () => {
-        this._handleButtonClick()
+      this._openButton = createButton(this.config, this.rootEl, (e) => {
+        this._handleButtonClick(e)
       })
     }
 
     setupBehavior(this)
 
     if (shouldLoadComponent(this.config)) {
-      this.loadComponent()
+      this.loadApp()
     } else {
       removeLoadingState()
     }
   }
 
-  _handleButtonClick () {
-    this.loadComponent()
+  _handleButtonClick (e) {
+    this.loadApp()
+    history.pushState({ isBack: true }, '', e.currentTarget.getAttribute('href'))
+  }
+
+  _handleExitClick () {
+    this.removeApp()
+    // Remove the map param from the URL using regex to prevent encoding
+    const key = this.config.mapViewParamKey
+    const href = location.href
+    const newUrl = href.replace(new RegExp(`[?&]${key}=[^&]*(&|$)`),(_, p1) => (p1 === '&' ? '?' : '')).replace(/\?$/, '')
+    history.replaceState(history.state, '', newUrl)
   }
 
   // Public methods
-  async loadComponent () {
+  async loadApp () {
     if (this._openButton) {
       this._openButton.style.display = 'none'
     }
@@ -99,7 +109,8 @@ export default class DefraMap {
         initialInterfaceType: getInterfaceType(),
         ...this.config,
         MapProvider,
-        mapFramework
+        mapFramework,
+        handleExitClick: this._handleExitClick.bind(this)
       })
 
       // Merge returned APIs (plugins etc.)
@@ -122,8 +133,8 @@ export default class DefraMap {
       throw err
     }
   }
-
-  removeComponent () {
+ 
+  removeApp () {
     if (this._root && typeof this.unmount === 'function') {
       this.unmount()
       this._root = null

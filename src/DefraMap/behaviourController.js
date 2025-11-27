@@ -33,8 +33,8 @@ function shouldLoadComponent (config) {
  *
  * @param {Object} mapInstance - Map instance containing config and methods.
  * @param {Object} mapInstance.config - Configuration object.
- * @param {Function} mapInstance.loadComponent - Function to load the component.
- * @param {Function} mapInstance.removeComponent - Function to remove the component.
+ * @param {Function} mapInstance.loadApp - Function to load the component.
+ * @param {Function} mapInstance.removeApp - Function to remove the component.
  * @returns {void}
  */
 function setupBehavior (mapInstance) {
@@ -43,9 +43,9 @@ function setupBehavior (mapInstance) {
   if (['buttonFirst', 'hybrid'].includes(behaviour)) {
     subscribeToBreakpointChange(() => {
       if (shouldLoadComponent(mapInstance.config)) {
-        mapInstance.loadComponent()
+        mapInstance.loadApp()
       } else {
-        mapInstance.removeComponent()
+        mapInstance.removeApp()
       }
     })
   }

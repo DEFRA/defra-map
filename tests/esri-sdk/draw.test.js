@@ -402,9 +402,11 @@ describe('Draw Class', () => {
       expect(onSpy).toHaveBeenCalledWith(['update', 'delete'], expect.any(Function))
     })
 
-    it('should call update() on sketchViewModel with the provided graphic', () => {
+    it('should call update() on sketchViewModel with the provided graphic', async () => {
+      jest.useFakeTimers()
       const graphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       drawInstance.editGraphic(graphic)
+      jest.runAllTimers()
       expect(updateSpy).toHaveBeenCalledWith(expect.any(Object))
     })
   })

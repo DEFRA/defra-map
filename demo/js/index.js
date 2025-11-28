@@ -105,30 +105,15 @@ var defraMap = new DefraMap('map', {
 
 defraMap.on('map:ready', function (e) {
 	// console.log('Map ready')
-	defraMap.setMode('draw')
-	defraMap.addPanel('test1', {
-		label: 'Wahoo',
-		showLabel: false,
-		html: '<p>Que? Test</p>',
-		mobile: {
-			slot: 'banner',
-			dismissable: true,
-			modal: false
-		},
-		tablet: {
-			slot: 'banner',
-			dismissable: true,
-			modal: false
-		},
-		desktop: {
-			slot: 'banner',
-			dismissable: true,
-			modal: false
-		}
-	})
-	defraMap.addPanel('test2', {
+	// defraMap.setMode('draw')
+	// defraMap.addPanel('test1', {
+	// 	label: 'My info panel',
+	// 	html: '<p>Some text...</p>'
+	// })
+	defraMap.addPanel('test3', {
 		label: 'Wahoo2',
-		html: '<p>Que? Test</p>',
+		showLabel: false,
+		html: '<p>The quick brown fox jumped over the lazy dog and then ran back and jumped over hie again</p>',
 		mobile: {
 			slot: 'banner',
 			dismissable: true,

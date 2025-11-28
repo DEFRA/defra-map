@@ -24,7 +24,6 @@ export const AppProvider = ({ options, children }) => {
     rightRef: useRef(null),
     footerRef: useRef(null),
     actionsRef: useRef(null),
-    drawerRef: useRef(null),
     bannerRef: useRef(null),
     viewportRef: useRef(null)
   }

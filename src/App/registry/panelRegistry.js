@@ -1,7 +1,10 @@
 // src/registry/panelRegistry.js
+import { defaultPanelConfig } from '../../config/appConfig.js'
+import { deepMerge } from '../../utils/deepMerge.js'
 
 let panelConfig = {}
 
+// Register a panel from config/manifest
 export const registerPanel = (panel) => {
   const normalizedPanelConfig = Object.fromEntries(
     Object.entries(panel).map(([key, value]) => [
@@ -14,26 +17,20 @@ export const registerPanel = (panel) => {
   panelConfig = { ...panelConfig, ...normalizedPanelConfig }
 }
 
-// Dynamic methods
+// Add a panel to the registry
 export const addPanel = (id, config) => {
-  const configWithDefaults = {
-    ...config,
-    mobile: config.mobile && { initiallyOpen: true, ...config.mobile },
-    tablet: config.tablet && { initiallyOpen: true, ...config.tablet },
-    desktop: config.desktop && { initiallyOpen: true, ...config.desktop },
-  }
+  const merged = deepMerge(defaultPanelConfig, config)
 
   panelConfig[id] = {
-    showLabel: true,
-    ...configWithDefaults,
-    render: config.html
-      ? () => <div dangerouslySetInnerHTML={{ __html: config.html }} />
-      : config.render
+    ...merged,
+    html: merged.html,
+    render: merged.render
   }
 
   return id
 }
 
+// Remove a panel from the registry
 export const removePanel = (id) => {
   delete panelConfig[id]
 }

@@ -103,6 +103,5 @@ describe('AppProvider', () => {
     expect(contextValue).toHaveProperty('openPanels')
     expect(contextValue.layoutRefs).toHaveProperty('mainRef')
     expect(contextValue.layoutRefs).toHaveProperty('footerRef')
-    expect(contextValue.layoutRefs).toHaveProperty('drawerRef')
   })
 })

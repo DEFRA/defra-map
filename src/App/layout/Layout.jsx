@@ -40,7 +40,7 @@ export const Layout = () => {
         </div>
         <div className='dm-o-app__main' ref={layoutRefs.mainRef}>
           <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
-            <SlotRenderer slot={layoutSlots.BANNER} />
+            {['mobile', 'tablet'].includes(breakpoint) && <SlotRenderer slot={layoutSlots.BANNER} />}
           </div>
           <div className='dm-o-app__top' ref={layoutRefs.topRef}>
             <div className='dm-o-app__top-col' ref={layoutRefs.topLeftColRef}>
@@ -48,6 +48,7 @@ export const Layout = () => {
             </div>
             <div className='dm-o-app__top-col'>
               <SlotRenderer slot={layoutSlots.TOP_MIDDLE} />
+              {['desktop'].includes(breakpoint) && <SlotRenderer slot={layoutSlots.BANNER} />}
             </div>
             <div className='dm-o-app__top-col' ref={layoutRefs.topRightColRef}>
               <SlotRenderer slot={layoutSlots.TOP_RIGHT} />
@@ -84,9 +85,6 @@ export const Layout = () => {
           <div className='dm-o-app__actions' ref={layoutRefs.actionsRef}>
             <SlotRenderer slot={layoutSlots.ACTIONS} />
           </div>
-        </div>
-        <div className='dm-o-app__drawer' ref={layoutRefs.drawerRef}>
-          <SlotRenderer slot={layoutSlots.DRAWER} />
         </div>
       </div>
       <div className='dm-o-app__modal'>

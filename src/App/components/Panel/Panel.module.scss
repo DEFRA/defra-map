@@ -16,6 +16,7 @@
         flex-direction: column;
         min-height: calc(var(--button-size) + (var(--panel-close-button-gap) * 2));
         max-height: 100vh;
+        min-width: var(--min-panel-width);
         pointer-events: auto;
         background-color: var(--background-color);
     }
@@ -56,7 +57,7 @@
 }
 
 .dm-c-panel__body {
-    padding: var(--panel-margin);
+    padding: var(--panel-margin) var(--panel-margin);
     overflow: auto;
 }
 
@@ -75,7 +76,7 @@
 }
 
 // 3. Modifiers
-.dm-c-panel--drawer {
+.dm-c-panel--bottom {
     @include tools.border-focus-base(
         $is-inset: true,
         $type: panel
@@ -83,6 +84,11 @@
     @include tools.border-focus-corner-override(
         $corners: 'top'
     );
+}
+
+// When panel heading is visually hidden we need to accomodate the close button
+.dm-c-panel__body--offset {
+    border: 1px solid red;
 }
 
 // 4. State styles

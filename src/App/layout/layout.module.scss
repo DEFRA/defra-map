@@ -55,10 +55,23 @@
   padding: var(--primary-gap);
 }
 
-.dm-o-app__drawer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+// ---------------------------------------------------
+// Side: Panels only
+// ---------------------------------------------------
+
+.dm-o-app__side .dm-c-panel {
+  @include tools.border-focus-base(
+    $is-inset: true,
+    $type: panel
+  );
+
+  @include tools.border-focus-corner-override(
+    $corners: 'none'
+  );
+
+  & {
+    height: 100%;
+  }
 }
 
 // ---------------------------------------------------
@@ -94,19 +107,16 @@
 
 .dm-o-app__top-col:first-child,
 .dm-o-app__top-col:last-child {
-  flex: 1 1 0%;
-  min-width: 0;
+  flex: 1 1 calc(var(--button-size) + (var(--primary-gap) * 2));
   max-width: var(--top-col-width, 100%);
 }
 
 .dm-o-app__top-col:first-child {
   justify-content: flex-start;
-  min-width: auto;
 }
 
 .dm-o-app__top-col:last-child {
   justify-content: flex-end;
-  min-width: auto;
 }
 
 .dm-o-app__top-col:nth-child(2) {
@@ -209,6 +219,14 @@
 }
 
 // ---------------------------------------------------
+// Bottom:
+// ---------------------------------------------------
+
+.dm-o-app__bottom {
+  z-index: 1;
+}
+
+// ---------------------------------------------------
 // Actions:
 // ---------------------------------------------------
 
@@ -220,25 +238,6 @@
 
   .dm-c-panel__body {
     overflow: visible;
-  }
-}
-
-// ---------------------------------------------------
-// Side: Panels only
-// ---------------------------------------------------
-
-.dm-o-app__side .dm-c-panel {
-  @include tools.border-focus-base(
-    $is-inset: true,
-    $type: panel
-  );
-
-  @include tools.border-focus-corner-override(
-    $corners: 'none'
-  );
-
-  & {
-    height: 100%;
   }
 }
 
@@ -301,7 +300,7 @@
     max-height: calc(100% - (var(--primary-gap) * 2));
   }
 
-  .dm-c-panel--drawer {
+  .dm-c-panel--bottom {
     top: auto;
     bottom: 0;
     max-height: 85%;
@@ -362,16 +361,16 @@
     );
   }
 }
-
-// Banner on desktop
-.dm-o-app--desktop .dm-o-app__banner {
-  position: absolute;
-  top: var(--primary-gap);
-  left: 0;
-  width: 100%;
+.dm-o-app--mobile .dm-o-app__bottom .dm-c-panel {
+    clip-path: inset(-20px 0px 0px 0px);
+    border-bottom: 1px solid var(--app-border-color);
 }
 
-.dm-o-app--desktop .dm-o-app__banner .dm-c-panel,
+// Banner on desktop
+.dm-o-app--desktop .dm-o-app__top-col .dm-c-panel {
+  max-width: var(--banner-max-desktop-width);
+}
+
 .dm-o-app--desktop .dm-c-panel--banner {
   margin-left: auto;
   margin-right: auto;

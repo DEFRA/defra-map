@@ -2,10 +2,6 @@
     // Gaps
     --primary-gap: 15px;
     --divider-gap: 10px;
-    --panel-close-button-gap: 4px;
-
-    // Banner
-    --banner-max-desktop-width: 400px;
 
     // Button size
     --button-size: 40px;
@@ -33,6 +29,9 @@
     --tooltip-border-radius: 3px;
 
     // Panels
+    --min-panel-width: 200px;
+    --banner-max-desktop-width: 400px;
+    --panel-close-button-gap: 4px;
     --panel-heading-margin-top: 12px;
     --panel-margin: 15px;
 

@@ -20,6 +20,7 @@ const exitButtonSlots = {
   order: -1
 }
 
+// Default app buttons, panels and icons
 export const appConfig = {
   buttons: [{
     id: 'exit',
@@ -80,6 +81,32 @@ export const appConfig = {
     id: 'minimise',
     component: Minimize2
   }]
+}
+
+// Used by addPanel
+export const defaultPanelConfig = {
+  showLabel: true,
+  label: '',
+  mobile: {
+    slot: 'bottom',
+    initiallyOpen: true,
+    dismissable: true,
+    modal: false
+  },
+  tablet: {
+    slot: 'inset',
+    initiallyOpen: true,
+    dismissable: true,
+    modal: false
+  },
+  desktop: {
+    slot: 'inset',
+    initiallyOpen: true,
+    dismissable: true,
+    modal: false
+  },
+  render: null,
+  html: null
 }
 
 export const scaleFactor = {

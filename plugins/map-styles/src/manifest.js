@@ -10,7 +10,7 @@ export const manifest = {
     id: 'mapStyles',
     label: 'Map styles',
     mobile: {
-      slot: 'drawer',
+      slot: 'bottom',
       modal: true,
       dismissable: true
     },

@@ -16,7 +16,7 @@ export const manifest = {
     id: 'dataLayers',
     label: 'Layers',
     mobile: {
-      slot: 'drawer',
+      slot: 'bottom',
       modal: true,
       dismissable: true
     },

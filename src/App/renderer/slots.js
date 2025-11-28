@@ -12,7 +12,6 @@ export const layoutSlots = Object.freeze({
   FOOTER_RIGHT: 'footer-right',
   BOTTOM: 'bottom',
   ACTIONS: 'actions',
-  DRAWER: 'drawer',
   MODAL: 'modal' // internal only
 })
 

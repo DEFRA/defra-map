@@ -37,6 +37,11 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
     }
   }, [])
 
+  const panelBodyClass = [
+    'dm-c-panel__body',
+    !panelConfig.showLabel && 'dm-c-panel__body--offset'
+  ].filter(Boolean).join(' ')
+
   return (
     <div
       ref={panelRef}
@@ -46,7 +51,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
       role={isDialog ? 'dialog' : isDismissable ? 'complementary' : 'region'}
       aria-modal={isDialog && isModal ? 'true' : undefined}
       style={bpConfig.width ? { width: bpConfig.width } : undefined}
-      className={`dm-c-panel${isModal ? ` dm-c-panel--${bpConfig.slot}` : ''}`}
+      className={`dm-c-panel dm-c-panel--${bpConfig.slot}`}
     >
       <h2
         id={`${newPanelId}-label`}
@@ -65,9 +70,13 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
         </button>
       )}
 
-      <div className='dm-c-panel__body'>
-        {WrappedChild ? <WrappedChild {...props} /> : children}
-      </div>
+      {panelConfig.html ? (
+        <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: panelConfig.html }} />
+      ) : (
+        <div className={panelBodyClass}>
+          {WrappedChild ? <WrappedChild {...props} /> : children}
+        </div>
+      )}
     </div>
   )
 }

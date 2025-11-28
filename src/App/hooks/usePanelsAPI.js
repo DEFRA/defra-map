@@ -8,8 +8,15 @@ export const usePanelsAPI = () => {
   const { dispatch } = useApp()
 
   useEffect(() => {
-    const handleAddPanel = ({ id, config }) => addPanel(id, config)
-    const handleRemovePanel = (id) => removePanel(id)
+    const handleAddPanel = ({ id, config }) => {
+      addPanel(id, config)
+      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id }})
+    }
+
+    const handleRemovePanel = (id) => {
+      dispatch({ type: 'CLOSE_PANEL', payload: id })
+      removePanel(id)
+    }
 
     eventBus.on('app:addpanel', handleAddPanel)
     eventBus.on('app:removepanel', handleRemovePanel)

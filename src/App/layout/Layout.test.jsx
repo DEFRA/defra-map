@@ -40,8 +40,7 @@ describe('Layout', () => {
     insetRef: React.createRef(),
     rightRef: React.createRef(),
     footerRef: React.createRef(),
-    actionsRef: React.createRef(),
-    drawerRef: React.createRef()
+    actionsRef: React.createRef()
   }
 
   beforeEach(() => {
@@ -89,7 +88,6 @@ describe('Layout', () => {
     expect(screen.getByTestId('slot-banner')).toBeInTheDocument()
     expect(screen.getByTestId('slot-top-left')).toBeInTheDocument()
     expect(screen.getByTestId('slot-footer-right')).toBeInTheDocument()
-    expect(screen.getByTestId('slot-drawer')).toBeInTheDocument()
     expect(screen.getByTestId('slot-modal')).toBeInTheDocument()
   })
 

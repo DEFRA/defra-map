@@ -1,5 +1,5 @@
 // src/plugins/search/OpenButton.jsx
-export const OpenButton = ({ id, isExpanded, onClick, buttonRef, SearchIcon }) => {
+export const OpenButton = ({ id, isExpanded, onClick, buttonRef, searchIcon }) => {
   return (
     <button
       aria-label="Open search"
@@ -9,7 +9,22 @@ export const OpenButton = ({ id, isExpanded, onClick, buttonRef, SearchIcon }) =
       ref={buttonRef}
       style={isExpanded ? { display: 'none' } : undefined}
     >
-      <SearchIcon aria-hidden="true" focusable="false" />
+      {searchIcon && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
+          dangerouslySetInnerHTML={{ __html: searchIcon }}
+          />
+      )}
     </button>
   )
 }

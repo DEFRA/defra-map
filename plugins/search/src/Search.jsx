@@ -9,11 +9,11 @@ import { attachEvents } from './events/index.js'
 export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, appState, mapState, services, mapProvider }) {
   const { id } = appConfig
   const { interfaceType, breakpoint } = appState
-  const { customDatasets, osNamesURL, transformRequest } = pluginConfig
+  const { customDatasets, osNamesURL } = pluginConfig
   const { dispatch, isExpanded } = pluginState
 
-  const CloseIcon = iconRegistry['close']
-  const SearchIcon = iconRegistry['search']
+  const closeIcon = iconRegistry['close']
+  const searchIcon = iconRegistry['search']
   const searchContainerRef = useRef(null)
   const buttonRef = useRef(null)
   const inputRef = useRef(null)
@@ -75,7 +75,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
         isExpanded={isExpanded}
         onClick={() => events.handleOpenClick(appState)}
         buttonRef={buttonRef}
-        SearchIcon={SearchIcon}
+        searchIcon={searchIcon}
       />
       <Form
         id={id}
@@ -85,7 +85,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
         inputRef={inputRef}
         events={events}
       >
-        <CloseButton onClick={(e) => events.handleCloseClick(e, buttonRef, appState)} CloseIcon={CloseIcon} />
+        <CloseButton onClick={(e) => events.handleCloseClick(e, buttonRef, appState)} closeIcon={closeIcon} />
       </Form>
     </div>
   )

@@ -1,6 +1,5 @@
 // /plugins/zoom-controls/manifest.js
 import { ZoomControlsInit } from './ZoomControlsInit.jsx'
-import { Plus, Minus } from 'lucide-react'
 
 export const manifest = {
   InitComponent: ZoomControlsInit,
@@ -35,9 +34,9 @@ export const manifest = {
 
   icons: [{
     id: 'plus',
-    component: Plus
+    svgContent: '<path d="M5 12h14"/><path d="M12 5v14"/>'
   }, {
     id: 'minus',
-    component: Minus
+    svgContent: '<path d="M5 12h14"/>'
   }]
 }

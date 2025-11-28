@@ -94,6 +94,7 @@ function renderButton({ btn, appState, appConfig, groupStart, groupMiddle, group
       key={buttonId}
       buttonId={buttonId}
       iconId={iconId}
+      iconSvgContent={config.iconSvgContent}
       variant={config.variant}
       label={label}
       href={href}

@@ -175,9 +175,17 @@ export default class DefraMap {
     eventBus.emit('app:setmode', mode)
   }
 
-  // API add/remove panel
+  // Interface API add button/panel/control, remove panel
+  addButton (id, config) {
+    eventBus.emit('app:addbutton', { id, config })
+  }
+
   addPanel (id, config) {
     eventBus.emit('app:addpanel', { id, config })
+  }
+
+  addControl (id, config) {
+    eventBus.emit('app:addcontrol', { id, config })
   }
 
   removePanel (id) {

@@ -1,7 +1,7 @@
 // components/MapButton.jsx
 import { stringToKebab } from '../../../utils/stringToKebab'
 import { Tooltip } from '../Tooltip/Tooltip'
-import { getIconRegistry } from '../../registry/iconRegistry.js'
+import { Icon } from '../Icon/Icon'
 import { SlotRenderer } from '../../renderer/SlotRenderer'
 import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
@@ -9,6 +9,7 @@ import { useApp } from '../../store/appContext'
 export const MapButton = ({
   buttonId,
   iconId,
+  iconSvgContent,
   label,
   showLabel,
   isDisabled,
@@ -27,7 +28,6 @@ export const MapButton = ({
 }) => {
   const { id: appId } = useConfig()
   const { buttonRefs } = useApp()
-  const Icon = getIconRegistry()[iconId]
 
   const buttonClassNames = [
     'dm-c-map-button',
@@ -62,7 +62,7 @@ export const MapButton = ({
 
   const buttonEl = (
     <Element {...buttonProps}>
-      {Icon && <Icon aria-hidden='true' focusable='false' />}
+      {(iconId || iconSvgContent) && <Icon id={iconId} svgContent={iconSvgContent} />}
       {showLabel && <span>{label}</span>}
     </Element>
   )

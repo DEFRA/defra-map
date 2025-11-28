@@ -32,16 +32,30 @@ export function mapControls({ slot, appState }) {
         p.manifest?.controls?.some(c => c.id === control.id)
       )
 
-      const Wrapped = withPluginContexts(control.render, {
-        pluginId: plugin?.id,
-        pluginConfig: plugin?.config
-      })
+      let element
+
+      // If dynamic HTML control
+      if (control.html) {
+        element = (
+          <div class='dm-c-control'
+            key={control.id}
+            dangerouslySetInnerHTML={{ __html: control.html }}
+          />
+        )
+      } else {
+        // Plugin control
+        const Wrapped = withPluginContexts(control.render, {
+          pluginId: plugin?.id,
+          pluginConfig: plugin?.config
+        })
+        element = <Wrapped key={control.id} />
+      }
 
       return {
         id: control.id,
         type: 'control',
         order: control[breakpoint]?.order ?? 0,
-        element: <Wrapped key={control.id} />
+        element
       }
     })
 }

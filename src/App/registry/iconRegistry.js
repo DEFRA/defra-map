@@ -1,8 +1,6 @@
 // src/icons/iconRegistry.js
-import { X as CloseIcon } from 'lucide-react'
-
 let iconRegistry = {
-  close: CloseIcon
+  close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
 }
 
 export const registerIcon = (icon) => {

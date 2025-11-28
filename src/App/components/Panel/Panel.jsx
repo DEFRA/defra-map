@@ -2,8 +2,8 @@ import React, { useRef, useEffect } from 'react'
 import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
-import { getIconRegistry } from '../../registry/iconRegistry.js'
 import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
+import { Icon } from '../Icon/Icon'
 
 export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) => {
   const { id } = useConfig()
@@ -11,7 +11,6 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
 
   const rootEl = document.getElementById(`${id}-dm-app`)
   const bpConfig = panelConfig[breakpoint]
-  const CloseIcon = getIconRegistry().close
   const newPanelId = `${id}-panel-${stringToKebab(panelId)}`
 
   const isAside = bpConfig.slot === 'side' && bpConfig.initiallyOpen
@@ -37,9 +36,15 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
     }
   }, [])
 
+  const panelClass = [
+    'dm-c-panel',
+    `dm-c-panel--${bpConfig.slot}`,
+    !panelConfig.showLabel && 'dm-c-panel--no-heading'
+  ].filter(Boolean).join(' ')
+
   const panelBodyClass = [
     'dm-c-panel__body',
-    !panelConfig.showLabel && 'dm-c-panel__body--offset'
+    !panelConfig.showLabel && isDismissable && 'dm-c-panel__body--offset'
   ].filter(Boolean).join(' ')
 
   return (
@@ -51,7 +56,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
       role={isDialog ? 'dialog' : isDismissable ? 'complementary' : 'region'}
       aria-modal={isDialog && isModal ? 'true' : undefined}
       style={bpConfig.width ? { width: bpConfig.width } : undefined}
-      className={`dm-c-panel dm-c-panel--${bpConfig.slot}`}
+      className={panelClass}
     >
       <h2
         id={`${newPanelId}-label`}
@@ -66,7 +71,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
           className='dm-c-panel__close'
           onClick={handleClose}
         >
-          <CloseIcon aria-hidden='true' focusable='false' />
+          <Icon id='close' />
         </button>
       )}
 

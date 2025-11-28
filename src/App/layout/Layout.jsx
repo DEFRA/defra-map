@@ -39,16 +39,22 @@ export const Layout = () => {
           <SlotRenderer slot={layoutSlots.SIDE} />
         </div>
         <div className='dm-o-app__main' ref={layoutRefs.mainRef}>
+          {['mobile', 'tablet'].includes(breakpoint) &&  (
           <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
-            {['mobile', 'tablet'].includes(breakpoint) && <SlotRenderer slot={layoutSlots.BANNER} />}
+            <SlotRenderer slot={layoutSlots.BANNER} />
           </div>
+          )}
           <div className='dm-o-app__top' ref={layoutRefs.topRef}>
             <div className='dm-o-app__top-col' ref={layoutRefs.topLeftColRef}>
               <SlotRenderer slot={layoutSlots.TOP_LEFT} />
             </div>
             <div className='dm-o-app__top-col'>
               <SlotRenderer slot={layoutSlots.TOP_MIDDLE} />
-              {['desktop'].includes(breakpoint) && <SlotRenderer slot={layoutSlots.BANNER} />}
+              {['desktop'].includes(breakpoint) &&  (
+              <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
+                <SlotRenderer slot={layoutSlots.BANNER} />
+              </div>
+              )}
             </div>
             <div className='dm-o-app__top-col' ref={layoutRefs.topRightColRef}>
               <SlotRenderer slot={layoutSlots.TOP_RIGHT} />

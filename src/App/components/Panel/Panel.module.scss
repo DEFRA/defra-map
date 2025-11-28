@@ -14,7 +14,6 @@
     & {
         display: flex;
         flex-direction: column;
-        min-height: calc(var(--button-size) + (var(--panel-close-button-gap) * 2));
         max-height: 100vh;
         min-width: var(--min-panel-width);
         pointer-events: auto;
@@ -57,7 +56,7 @@
 }
 
 .dm-c-panel__body {
-    padding: var(--panel-margin) var(--panel-margin);
+    padding: var(--panel-margin);
     overflow: auto;
 }
 
@@ -86,9 +85,20 @@
     );
 }
 
-// When panel heading is visually hidden we need to accomodate the close button
+// When banner heading is hidden we need to align with the close button
+.dm-o-app--desktop .dm-c-panel--banner.dm-c-panel--no-heading {
+    .dm-c-panel__close {
+        top: var(--banner-close-button-gap);
+        right: var(--banner-close-button-gap);
+    }
+    .dm-c-panel__body--offset {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
 .dm-c-panel__body--offset {
-    border: 1px solid red;
+    padding-right: calc(var(--button-size) + var(--divider-gap));
 }
 
 // 4. State styles

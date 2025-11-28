@@ -30,10 +30,12 @@
 
     // Panels
     --min-panel-width: 200px;
-    --banner-max-desktop-width: 400px;
     --panel-close-button-gap: 4px;
     --panel-heading-margin-top: 12px;
     --panel-margin: 15px;
+    --banner-close-button-gap: 0px;
+    --banner-max-desktop-width: 400px;
+    --banner-collapse-margin: 14px;
 
     // Action bar (Needs to fit evently if tools are in right hand column)
     --action-bar-max-width: calc(100% - (var(--button-size) * 2) - (var(--primary-gap) * 4));

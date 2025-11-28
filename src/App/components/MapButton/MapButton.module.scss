@@ -48,6 +48,7 @@
 }
 
 .dm-c-map-button svg {
+    pointer-events: none;
     width: var(--icon-size);
     height: var(--icon-size);
 

@@ -1,7 +1,6 @@
 // /plugins/interact/manifest.js
 import { InteractInit } from './InteractInit.jsx'
 import { initialState, actions } from './reducer.js'
-import { Check, MousePointerClick } from 'lucide-react'
 import { selectFeatures } from './api/selectFeatures.js'
 
 export const manifest = {
@@ -70,14 +69,6 @@ export const manifest = {
     group: 'Select',
     title: 'Select feature',
     command: '<kbd>Enter</kbd></dd>'
-  }],
-
-  icons: [{
-    id: 'check',
-    component: Check
-  },{
-    id: 'mouse-pointer-click',
-    component: MousePointerClick
   }],
 
   api: {

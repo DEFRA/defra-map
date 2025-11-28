@@ -2,7 +2,6 @@
 import { initialState, actions } from './reducer.js'
 import { MenuDataLayersInit } from './MenuDataLayersInit.jsx'
 import { MenuDataLayers } from './MenuDataLayers.jsx'
-import { Layers2 } from 'lucide-react'
 
 export const manifest = {
   InitComponent: MenuDataLayersInit,
@@ -54,11 +53,6 @@ export const manifest = {
       slot: 'top-left',
       showLabel: true
     }
-  }],
-
-  icons: [{
-    id: 'layers',
-    component: Layers2
   }],
 
   // Direct plugin API

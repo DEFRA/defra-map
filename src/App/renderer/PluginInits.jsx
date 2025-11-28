@@ -4,14 +4,17 @@ import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
-import { usePanelsAPI } from '../hooks/usePanelsAPI.js'
+import { useInterfaceAPI } from '../hooks/useInterfaceAPI.js'
+import { useApp } from '../store/appContext.js'
 
 export const PluginInits = () => {
+  const { mode } = useApp()
+  
   // Run button state evaluation after all states are initialized
   useButtonStateEvaluator()
 
-  // Add panels API (Needs to be top-level)
-  usePanelsAPI()
+  // Add button, panel and control API methods (Needs to be top-level)
+  useInterfaceAPI()
 
   // Initialize all plugin states
   registeredPlugins.forEach((plugin) => {
@@ -35,7 +38,12 @@ export const PluginInits = () => {
         const { InitComponent } = plugin
         const { api, ...pluginConfig } = plugin?.config || {}
 
-        const WrappedInit = InitComponent
+        // Only return InitComponent if valid ode for plugin
+        const { includeModes, excludeModes } = plugin.config || {}
+        const inModeWhitelist = includeModes?.includes(mode) ?? true
+        const inExcludeModes = excludeModes?.includes(mode) ?? false
+
+        const WrappedInit = inModeWhitelist && !inExcludeModes && InitComponent
           ? withPluginContexts(InitComponent, {
               pluginId: plugin.id,
               pluginConfig

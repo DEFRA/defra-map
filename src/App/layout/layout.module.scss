@@ -78,7 +78,13 @@
 // Banner: Panels only
 // ---------------------------------------------------
 
-.dm-o-app__banner .dm-c-panel {
+.dm-o-app__banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--divider-gap);
+}
+
+.dm-o-app__banner .dm-c-panel:last-child {
   margin-bottom: var(--divider-gap);
 }
 
@@ -128,7 +134,10 @@
 // ---------------------------------------------------
 
 .dm-o-app__inset {
+  display: flex;
+  flex-direction: column;
   position: absolute;
+  gap: var(--divider-gap);
   top: var(--inset-offset-top);
 }
 
@@ -367,10 +376,6 @@
 }
 
 // Banner on desktop
-.dm-o-app--desktop .dm-o-app__top-col .dm-c-panel {
-  max-width: var(--banner-max-desktop-width);
-}
-
 .dm-o-app--desktop .dm-c-panel--banner {
   margin-left: auto;
   margin-right: auto;

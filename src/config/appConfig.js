@@ -1,5 +1,4 @@
 import { KeyboardHelp } from '../App/components/KeyboardHelp/KeyboardHelp.jsx'
-import { CircleQuestionMark, Maximize2, Minimize2 } from 'lucide-react'
 
 const keyboardBasePanelSlots = {
   slot: 'middle',
@@ -73,20 +72,33 @@ export const appConfig = {
 
   icons: [{
     id: 'help',
-    component: CircleQuestionMark
+    svgContent: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'
   },{
     id: 'maximise',
-    component: Maximize2
+    svgContent: '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>'
   },{
     id: 'minimise',
-    component: Minimize2
+    svgContent: '<path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/>'
   }]
+}
+
+// Used by addButton
+const defaultButtonSlots = {
+  slot: 'right-top',
+  showLabel: false
+}
+
+export const defaultButtonConfig = {
+  label: 'Button',
+  mobile: defaultButtonSlots,
+  tablet: defaultButtonSlots,
+  desktop: defaultButtonSlots
 }
 
 // Used by addPanel
 export const defaultPanelConfig = {
   showLabel: true,
-  label: '',
+  label: 'Panel',
   mobile: {
     slot: 'bottom',
     initiallyOpen: true,
@@ -107,6 +119,20 @@ export const defaultPanelConfig = {
   },
   render: null,
   html: null
+}
+
+//Used by addControl
+export const defaultControlConfig = {
+  label: 'Control',
+  mobile: {
+    slot: 'bottom'
+  },
+  tablet: {
+    slot: 'inset'
+  },
+  desktop: {
+    slot: 'inset'
+  }
 }
 
 export const scaleFactor = {

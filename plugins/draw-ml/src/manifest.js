@@ -1,5 +1,4 @@
 // /plugins/draw-ml/manifest.js
-import { Check, Undo, Magnet } from 'lucide-react'
 import { initialState, actions } from './reducer.js'
 import { DrawInit } from './DrawInit.jsx'
 import { newPolygon } from './api/newPolygon.js'
@@ -79,13 +78,13 @@ export const manifest = {
 
   icons: [{
     id: 'check',
-    component: Check
+    svgContent: '<path d="M20 6 9 17l-5-5"/>'
   },{
     id: 'undo',
-    component: Undo
+    svgContent: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>'
   },{
     id: 'magnet',
-    component: Magnet
+    svgContent: '<path d="m12 15 4 4"/><path d="M2.352 10.648a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.029-6.029a1 1 0 1 1 3 3l-6.029 6.029a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.365-6.367A1 1 0 0 0 8.716 4.282z"/><path d="m5 8 4 4"/>'
   }],
 
   api: {

@@ -71,7 +71,7 @@ export function registerPlugin (plugin) {
       ? manifest.icons
       : [manifest.icons]
 
-    icons.forEach(icon => registerIcon({ [icon.id]: icon.component }))
+    icons.forEach(icon => registerIcon({ [icon.id]: icon.svgContent }))
   }
 
   // --- Register keyboard shortcuts ---

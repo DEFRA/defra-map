@@ -9,32 +9,25 @@ import RemoveFilesPlugin from 'remove-files-webpack-plugin'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = false, externalPreact = true) => {
-  const cssFolder = path.resolve(__dirname, outDir, '../css') // Plugin-specific CSS folder
+  const cssFolder = path.resolve(__dirname, outDir, '../css')
 
-  // Ensure CSS folder exists before Webpack runs
   if (!fs.existsSync(cssFolder)) {
     fs.mkdirSync(cssFolder, { recursive: true })
   }
 
   const plugins = [
     new RemoveEmptyScriptsPlugin(),
-
-    // Clean this plugin's CSS folder BEFORE anything
     new RemoveFilesPlugin({
       before: { include: [cssFolder] }
     }),
-
     new MiniCssExtractPlugin({
       filename: `../css/${entryName}.css`
     }),
-
-    // Clean the UMD JS folder
     new RemoveFilesPlugin({
       before: { include: [path.resolve(__dirname, outDir)] }
     })
   ]
 
-  // Core: remove "-full.css" after build
   if (isCore) {
     plugins.push(
       new RemoveFilesPlugin({
@@ -70,7 +63,14 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
         umdNamedDefine: true
       },
       globalObject: 'this',
-      chunkLoadingGlobal: 'webpackChunkdefra_DefraMap'
+      chunkLoadingGlobal: 'webpackChunkdefra_DefraMap',
+      // ⚠️ ADD THIS - it helps with external resolution
+      auxiliaryComment: {
+        root: 'Root Export',
+        commonjs: 'CommonJS Export',
+        commonjs2: 'CommonJS2 Export',
+        amd: 'AMD Export'
+      }
     },
 
     externalsType: 'var',
@@ -81,12 +81,13 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
           react: 'preactCompat',
           'react-dom': 'preactCompat',
           'react-dom/client': 'preactCompat',
-          'react/jsx-runtime': 'preactJsxRuntime',
-          'react/jsx-dev-runtime': 'preactJsxRuntime',
+          // ⚠️ KEY FIX: Change these to use property access
+          'react/jsx-runtime': ['preactJsxRuntime'],
+          'react/jsx-dev-runtime': ['preactJsxRuntime'],
           preact: 'preact',
           'preact/compat': 'preactCompat',
           'preact/hooks': 'preactHooks',
-          'preact/jsx-runtime': 'preactJsxRuntime'
+          'preact/jsx-runtime': ['preactJsxRuntime']
         }
       : {},
 

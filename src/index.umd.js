@@ -2,7 +2,7 @@
 // Import using React entrypoints so externals resolve to Preact globals
 
 import React from 'react'
-import * as JSXRuntime from 'react/jsx-runtime'
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime'
 
 // Import at least ONE hook to force react-hooks → preact/hooks
 import { useState } from 'react'
@@ -16,7 +16,10 @@ g.defra = g.defra || {}
 
 // Expose globals exactly like CDN version
 g.preactCompat = React // maps to preact/compat
-g.preactJsxRuntime = JSXRuntime
+
+// KEY FIX: Expose jsx, jsxs, Fragment as named exports on the global
+g.preactJsxRuntime = { jsx, jsxs, Fragment }
+
 g.preactHooks = { useState }  // the act of importing keeps the module alive
 
 // Attach the main map
@@ -40,13 +43,5 @@ if (!g.preactCompat.createRoot) {
     }
   }
 }
-
-// *Prevent tree-shaking - might be needed?
-// export const __keep = {
-//   React,
-//   ReactDOM,
-//   JSXRuntime,
-//   useState
-// }
 
 export default DefraMap

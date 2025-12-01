@@ -10,7 +10,8 @@
       }
     ],
     ["@babel/preset-react", {
-      "runtime": "classic"
+      "runtime": "automatic",
+      "importSource": "react"
     }]
   ]
 }

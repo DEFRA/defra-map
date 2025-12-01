@@ -11,37 +11,64 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = false, externalPreact = true) => {
   const cssFolder = path.resolve(__dirname, outDir, '../css') // Plugin-specific CSS folder
 
+  // Ensure CSS folder exists before Webpack runs
   if (!fs.existsSync(cssFolder)) {
     fs.mkdirSync(cssFolder, { recursive: true })
   }
 
   const plugins = [
     new RemoveEmptyScriptsPlugin(),
-    new RemoveFilesPlugin({ before: { include: [cssFolder] } }),
-    new MiniCssExtractPlugin({ filename: `../css/${entryName}.css` }),
-    new RemoveFilesPlugin({ before: { include: [path.resolve(__dirname, outDir)] } })
+
+    // Clean this plugin's CSS folder BEFORE anything
+    new RemoveFilesPlugin({
+      before: { include: [cssFolder] }
+    }),
+
+    new MiniCssExtractPlugin({
+      filename: `../css/${entryName}.css`
+    }),
+
+    // Clean the UMD JS folder
+    new RemoveFilesPlugin({
+      before: { include: [path.resolve(__dirname, outDir)] }
+    })
   ]
 
+  // Core: remove "-full.css" after build
   if (isCore) {
     plugins.push(
       new RemoveFilesPlugin({
         after: {
-          test: [{ folder: path.resolve(__dirname, 'dist/css'), method: p => p.endsWith('-full.css') }]
+          test: [
+            {
+              folder: path.resolve(__dirname, 'dist/css'),
+              method: p => p.endsWith('-full.css')
+            }
+          ]
         }
       })
     )
   }
 
-  const libraryName = Array.isArray(libraryPath) ? ['defra', ...libraryPath] : ['defra', libraryPath]
+  const libraryName = Array.isArray(libraryPath)
+    ? ['defra', ...libraryPath]
+    : ['defra', libraryPath]
 
   return {
     mode: 'production',
+
     entry: { [entryName]: entryPath },
+
     output: {
       path: path.resolve(__dirname, outDir),
       filename: '[name].js',
       chunkFilename: '[name].js',
-      library: { name: libraryName, type: 'umd', export: 'default', umdNamedDefine: true },
+      library: {
+        name: libraryName,
+        type: 'umd',
+        export: 'default',
+        umdNamedDefine: true
+      },
       globalObject: 'this',
       chunkLoadingGlobal: 'webpackChunkdefra_DefraMap'
     },
@@ -54,10 +81,12 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
           react: 'preactCompat',
           'react-dom': 'preactCompat',
           'react-dom/client': 'preactCompat',
+          'react/jsx-runtime': 'preactJsxRuntime',
+          'react/jsx-dev-runtime': 'preactJsxRuntime',
           preact: 'preact',
           'preact/compat': 'preactCompat',
-          'preact/hooks': 'preactHooks'
-          // ⚠ Remove jsx-runtime from externals so it gets bundled
+          'preact/hooks': 'preactHooks',
+          'preact/jsx-runtime': 'preactJsxRuntime'
         }
       : {},
 
@@ -67,9 +96,7 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
         preact: false,
         'preact/compat': false,
         'preact/hooks': false,
-        // ⚡ Alias JSX runtime so Babel's jsxs()/jsx() calls resolve correctly
-        'react/jsx-runtime': 'preact/jsx-runtime',
-        'react/jsx-dev-runtime': 'preact/jsx-runtime'
+        'preact/jsx-runtime': false
       }
     },
 

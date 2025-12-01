@@ -7,18 +7,16 @@ import { withPluginContexts } from './pluginWrapper.js'
 import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'
 
-export function mapPanels ({ slot, appState }) {
+export function mapPanels({ slot, appState, evaluateProp }) {
   const { breakpoint, mode, openPanels } = appState
   const panelConfig = getPanelConfig()
 
-  // Get currently open modal panels
   const openPanelEntries = Object.entries(openPanels)
   const modalPanels = openPanelEntries.filter(([panelId]) => {
     const config = panelConfig[panelId]
     return config?.[breakpoint]?.modal
   })
 
-  // Only allow the last opened modal panel
   const allowedModalPanelId = modalPanels.length > 0
     ? modalPanels[modalPanels.length - 1][0]
     : null
@@ -41,7 +39,6 @@ export function mapPanels ({ slot, appState }) {
       const inModeWhitelist = config.includeModes?.includes(mode) ?? true
       const inExcludeModes = config.excludeModes?.includes(mode) ?? false
 
-      // Skip if not allowed in current slot/mode or modal rules
       if (!slotAllowed || !inModeWhitelist || inExcludeModes) {
         return null
       }
@@ -53,19 +50,31 @@ export function mapPanels ({ slot, appState }) {
       }
 
       const plugin = registeredPlugins.find(p => p.id === config.pluginId)
+      const pluginId = plugin?.id
+
       const WrappedChild = config.render
         ? withPluginContexts(config.render, {
-          ...props,
-          pluginId: plugin?.id, // Default panels don't need an id
-          pluginConfig: plugin?.config
-        })
+            ...props,
+            pluginId,
+            pluginConfig: plugin?.config
+          })
         : null
 
       return {
         id: panelId,
         type: 'panel',
         order: bpConfig.order ?? 0,
-        element: <Panel key={panelId} panelId={panelId} panelConfig={config} props={props} WrappedChild={WrappedChild} />
+        element: (
+          <Panel
+            key={panelId}
+            panelId={panelId}
+            panelConfig={config}
+            props={props}
+            WrappedChild={WrappedChild}
+            label={evaluateProp(config.label, pluginId)}
+            html={evaluateProp(config.html, pluginId)}
+          />
+        )
       }
     })
     .filter(Boolean)

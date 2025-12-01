@@ -7,18 +7,16 @@ import { allowedSlots } from './slots.js'
 
 /**
  * Map controls for a given slot and app state.
- * Pure utility: returns an array of control descriptors.
+ * Returns an array of control descriptors.
  */
-export function mapControls({ slot, appState }) {
+export function mapControls({ slot, appState, evaluateProp }) {
   const { breakpoint, mode } = appState
   const controlConfig = getControlConfig()
 
   return Object.values(controlConfig)
     .filter(control => {
       const bpConfig = control[breakpoint]
-      if (!bpConfig) {
-        return false
-      }
+      if (!bpConfig) return false
 
       const slotAllowed = allowedSlots.control.includes(bpConfig.slot)
       const inModeWhitelist = control.includeModes?.includes(mode) ?? true
@@ -28,24 +26,28 @@ export function mapControls({ slot, appState }) {
       return inModeWhitelist && !inExcludeModes && bpConfig.slot === slot && slotAllowed
     })
     .map(control => {
+      // Detect plugin owning this control
       const plugin = registeredPlugins.find(p =>
         p.manifest?.controls?.some(c => c.id === control.id)
       )
+
+      const pluginId = plugin?.id
 
       let element
 
       // If dynamic HTML control
       if (control.html) {
         element = (
-          <div class='dm-c-control'
+          <div
+            className="dm-c-control"
             key={control.id}
-            dangerouslySetInnerHTML={{ __html: control.html }}
+            dangerouslySetInnerHTML={{ __html: evaluateProp(control.html, pluginId) }}
           />
         )
       } else {
-        // Plugin control
+        // Plugin control: wrap render with plugin context
         const Wrapped = withPluginContexts(control.render, {
-          pluginId: plugin?.id,
+          pluginId,
           pluginConfig: plugin?.config
         })
         element = <Wrapped key={control.id} />

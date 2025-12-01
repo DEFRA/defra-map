@@ -6,7 +6,6 @@ describe('appConfig', () => {
   const appState = { layoutRefs: { appContainerRef: { current: document.createElement('div') } }, isFullscreen: false }
   const buttons = appConfig.buttons
   const fullscreenBtn = buttons.find(b => b.id === 'fullscreen')
-  const helpBtn = buttons.find(b => b.id === 'help')
   const exitBtn = buttons.find(b => b.id === 'exit')
 
   it('renders KeyboardHelp panel', () => {
@@ -24,13 +23,8 @@ describe('appConfig', () => {
     expect(typeof fullscreenBtn.iconId).toBe('function')
     expect(fullscreenBtn.iconId({ appState, appConfig })).toBe('maximise')
 
-    // href
-    expect(typeof helpBtn.href).toBe('function')
-    expect(helpBtn.href({ appConfig: { helpURL: 'url' } })).toBe('url')
-
     // excludeWhen
     expect(exitBtn.excludeWhen({ appConfig: { hasExitButton: false } })).toBe(true)
-    expect(helpBtn.excludeWhen({ appConfig: { helpURL: 'url' } })).toBe(false)
     expect(fullscreenBtn.excludeWhen({ appState, appConfig: { enableFullscreen: true } })).toBe(false)
   })
 
@@ -64,5 +58,24 @@ describe('appConfig', () => {
     Object.defineProperty(document, 'fullscreenElement', { value: containerMock, writable: true })
     expect(fullscreenBtn.label({ appState, appConfig })).toBe('Exit fullscreen')
     expect(fullscreenBtn.iconId({ appState, appConfig })).toBe('minimise')
+  })
+
+  it('calls exit button onClick correctly', () => {
+    const handleExitClick = jest.fn()
+    const fakeEvent = {}
+
+    // Case 1: history.state?.isBack = true
+    Object.defineProperty(history, 'state', { value: { isBack: true }, writable: true })
+    const historyBackSpy = jest.spyOn(history, 'back').mockImplementation(() => {})
+    exitBtn.onClick(fakeEvent, { appConfig: { handleExitClick } })
+    expect(historyBackSpy).toHaveBeenCalled()
+    expect(handleExitClick).not.toHaveBeenCalled()
+    historyBackSpy.mockRestore()
+
+    // Case 2: history.state?.isBack = false
+    Object.defineProperty(history, 'state', { value: {}, writable: true })
+    const handleExitClickSpy = jest.fn()
+    exitBtn.onClick(fakeEvent, { appConfig: { handleExitClick: handleExitClickSpy } })
+    expect(handleExitClickSpy).toHaveBeenCalled()
   })
 })

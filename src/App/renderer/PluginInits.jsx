@@ -3,18 +3,20 @@ import React from 'react'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
-import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
 import { useInterfaceAPI } from '../hooks/useInterfaceAPI.js'
 import { useApp } from '../store/appContext.js'
+import { useEvaluateProp } from '../hooks/useEvaluateProp.js'
+import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
 
 export const PluginInits = () => {
   const { mode } = useApp()
-  
-  // Run button state evaluation after all states are initialized
-  useButtonStateEvaluator()
 
   // Add button, panel and control API methods (Needs to be top-level)
   useInterfaceAPI()
+
+  // Evaluate reactive button states globally
+  const evaluateProp = useEvaluateProp()
+  useButtonStateEvaluator(evaluateProp)
 
   // Initialize all plugin states
   registeredPlugins.forEach((plugin) => {

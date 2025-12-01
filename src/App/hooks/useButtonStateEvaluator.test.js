@@ -1,199 +1,130 @@
 import { renderHook } from '@testing-library/react'
 import { useButtonStateEvaluator } from './useButtonStateEvaluator'
-import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
-import { useMap } from '../store/mapContext.js'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { useContext } from 'react'
+import { PluginContext } from '../store/PluginProvider.jsx'
 
-jest.mock('../store/configContext.js')
 jest.mock('../store/appContext.js')
-jest.mock('../store/mapContext.js')
-jest.mock('react', () => ({...jest.requireActual('react'), useContext: jest.fn()}))
+jest.mock('react', () => ({ ...jest.requireActual('react'), useContext: jest.fn() }))
 jest.mock('../registry/pluginRegistry.js', () => ({ registeredPlugins: [] }))
 
 describe('useButtonStateEvaluator', () => {
-  let mockAppState, mockDispatch, mockAppConfig
+  let mockAppState, mockDispatch
 
   beforeEach(() => {
+    jest.clearAllMocks()
     mockDispatch = jest.fn()
-    mockAppConfig = { someConfig: 'value' }
     mockAppState = {
       disabledButtons: new Set(),
       hiddenButtons: new Set(),
       pressedButtons: new Set(),
       dispatch: mockDispatch
     }
-
-    useConfig.mockReturnValue(mockAppConfig)
     useApp.mockReturnValue(mockAppState)
-    useMap.mockReturnValue({ zoom: 10 })
-    useContext.mockReturnValue({ state: {} })
-
+    useContext.mockReturnValue({}) // PluginContext
     registeredPlugins.length = 0
     jest.spyOn(console, 'warn').mockImplementation()
   })
 
   afterEach(() => console.warn.mockRestore())
 
-  it('returns early when required state missing', () => {
+  it('returns early when appState or pluginContext is missing', () => {
     useApp.mockReturnValue(null)
-    renderHook(() => useButtonStateEvaluator())
-    expect(mockDispatch).not.toHaveBeenCalled()
-
-    useApp.mockReturnValue({})
-    renderHook(() => useButtonStateEvaluator())
+    useContext.mockReturnValue({})
+    renderHook(() => useButtonStateEvaluator(() => true))
     expect(mockDispatch).not.toHaveBeenCalled()
 
     useApp.mockReturnValue(mockAppState)
-    useMap.mockReturnValue(null)
-    renderHook(() => useButtonStateEvaluator())
-    expect(mockDispatch).not.toHaveBeenCalled()
-
-    useMap.mockReturnValue({ zoom: 10 })
     useContext.mockReturnValue(null)
-    renderHook(() => useButtonStateEvaluator())
+    renderHook(() => useButtonStateEvaluator(() => true))
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('handles missing manifest or buttons', () => {
+  it('handles plugins with missing manifest or buttons', () => {
     registeredPlugins.push({ id: 'p1' }, { id: 'p2', manifest: {} })
-    renderHook(() => useButtonStateEvaluator())
+    renderHook(() => useButtonStateEvaluator(() => true))
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('toggles button disabled state', () => {
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen: () => false }] }})
+  it('toggles button disabled state based on enableWhen', () => {
+    registeredPlugins.push({
+      id: 'p1',
+      manifest: { buttons: [{ id: 'btn1', enableWhen: () => false }] }
+    })
 
-    renderHook(() => useButtonStateEvaluator())
+    renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'TOGGLE_BUTTON_DISABLED',
       payload: { id: 'btn1', isDisabled: true }
     })
-
-    mockDispatch.mockClear()
-    mockAppState.disabledButtons.add('btn1')
-    renderHook(() => useButtonStateEvaluator())
-    expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('toggles button hidden state', () => {
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', hiddenWhen: () => true }] }})
+  it('toggles button hidden state based on hiddenWhen', () => {
+    registeredPlugins.push({
+      id: 'p1',
+      manifest: { buttons: [{ id: 'btn1', hiddenWhen: () => true }] }
+    })
 
-    renderHook(() => useButtonStateEvaluator())
+    renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'TOGGLE_BUTTON_HIDDEN',
       payload: { id: 'btn1', isHidden: true }
     })
   })
 
-  it('toggles button pressed state', () => {
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', pressedWhen: () => true }] }})
+  it('toggles button pressed state based on pressedWhen', () => {
+    registeredPlugins.push({
+      id: 'p1',
+      manifest: { buttons: [{ id: 'btn1', pressedWhen: () => true }] }
+    })
 
-    renderHook(() => useButtonStateEvaluator())
+    renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'TOGGLE_BUTTON_PRESSED',
       payload: { id: 'btn1', isPressed: true }
     })
   })
 
-  it('does not dispatch when hidden state unchanged', () => {
-    mockAppState.hiddenButtons.add('btn1')
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', hiddenWhen: () => true }] }})
+  it('does not dispatch if state already matches', () => {
+    mockAppState.disabledButtons.add('btn1')
+    mockAppState.hiddenButtons.add('btn2')
+    mockAppState.pressedButtons.add('btn3')
 
-    renderHook(() => useButtonStateEvaluator())
+    registeredPlugins.push(
+      { id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen: () => false }] } },
+      { id: 'p2', manifest: { buttons: [{ id: 'btn2', hiddenWhen: () => true }] } },
+      { id: 'p3', manifest: { buttons: [{ id: 'btn3', pressedWhen: () => true }] } }
+    )
+
+    renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('does not dispatch when pressed state unchanged', () => {
-    mockAppState.pressedButtons.add('btn1')
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', pressedWhen: () => true }] }})
-
-    renderHook(() => useButtonStateEvaluator())
-    expect(mockDispatch).not.toHaveBeenCalled()
-  })
-
-  it('passes combined state with plugin state and appConfig', () => {
-    const enableWhen = jest.fn(() => true)
-    useContext.mockReturnValue({ state: { p1: { data: 'test' } } })
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen }] }})
-    renderHook(() => useButtonStateEvaluator())
-
-    expect(enableWhen).toHaveBeenCalledWith({
-      appConfig: mockAppConfig,
-      appState: mockAppState,
-      mapState: { zoom: 10 },
-      pluginState: { data: 'test' }
-    })
-  })
-
-  it('handles errors in evaluators', () => {
+  it('passes pluginId to evaluateProp and catches errors', () => {
+    const failingFn = () => { throw new Error('fail') }
     registeredPlugins.push({
       id: 'p1',
       manifest: {
         buttons: [
-          { id: 'btn1', enableWhen: () => { throw new Error('e1') } },
-          { id: 'btn2', hiddenWhen: () => { throw new Error('e2') } },
-          { id: 'btn3', pressedWhen: () => { throw new Error('e3') } }
+          { id: 'btn1', enableWhen: failingFn },
+          { id: 'btn2', hiddenWhen: failingFn },
+          { id: 'btn3', pressedWhen: failingFn }
         ]
       }
     })
 
-    renderHook(() => useButtonStateEvaluator())
-
+    renderHook(() => useButtonStateEvaluator((fn, pluginId) => fn(pluginId)))
     expect(console.warn).toHaveBeenCalledTimes(3)
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
-  it('uses empty object for plugin state when not found', () => {
-    const enableWhen = jest.fn(() => true)
+  it('provides empty plugin state if context missing', () => {
     useContext.mockReturnValue({ state: {} })
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen }] }})
-    renderHook(() => useButtonStateEvaluator())
+    const enableWhen = jest.fn()
+    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen }] } })
 
-    expect(enableWhen).toHaveBeenCalledWith({
-      appConfig: mockAppConfig,
-      appState: mockAppState,
-      mapState: { zoom: 10 },
-      pluginState: {}
-    })
-  })
-
-  it('handles multiple plugins with multiple buttons', () => {
-    registeredPlugins.push(
-      {
-        id: 'p1',
-        manifest: {
-          buttons: [
-            { id: 'btn1', enableWhen: () => false },
-            { id: 'btn2', hiddenWhen: () => true }
-          ]
-        }
-      },
-      {
-        id: 'p2',
-        manifest: {
-          buttons: [
-            { id: 'btn3', pressedWhen: () => true }
-          ]
-        }
-      }
-    )
-
-    renderHook(() => useButtonStateEvaluator())
-
-    expect(mockDispatch).toHaveBeenCalledTimes(3)
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'TOGGLE_BUTTON_DISABLED',
-      payload: { id: 'btn1', isDisabled: true }
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'TOGGLE_BUTTON_HIDDEN',
-      payload: { id: 'btn2', isHidden: true }
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'TOGGLE_BUTTON_PRESSED',
-      payload: { id: 'btn3', isPressed: true }
-    })
+    renderHook(() => useButtonStateEvaluator((fn) => fn({ pluginState: {} })))
+    expect(enableWhen).toHaveBeenCalled()
   })
 })

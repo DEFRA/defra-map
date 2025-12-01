@@ -1,32 +1,39 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { addButton, getButtonConfig, registerButton } from './buttonRegistry.js'
+import { defaultButtonConfig } from '../../config/appConfig.js'
+import { deepMerge } from '../../utils/deepMerge.js'
+
+// Mock deepMerge to behave like Object.assign for simplicity
+jest.mock('../../utils/deepMerge.js', () => ({
+  deepMerge: jest.fn((a, b) => ({ ...a, ...b }))
+}))
+
 describe('buttonRegistry', () => {
-  let registerButton
-  let getButtonConfig
-
   beforeEach(() => {
-    // Reset module state by clearing the require cache
-    jest.resetModules()
-    const module = require('./buttonRegistry')
-    registerButton = module.registerButton
-    getButtonConfig = module.getButtonConfig
+    // Reset registry before each test
+    registerButton({})
   })
 
-  test('registerButton should store button config', () => {
-    const button = { save: { label: 'Save' } }
-    registerButton(button)
-    expect(getButtonConfig()).toEqual(button)
+  it('adds a button and returns its id', () => {
+    const newConfig = { label: 'My Button', size: 'large' }
+    const id = 'button1'
+    const returnedId = addButton(id, newConfig)
+
+    expect(returnedId).toBe(id)
+    expect(deepMerge).toHaveBeenCalledWith(defaultButtonConfig, newConfig)
+
+    const registry = getButtonConfig()
+    expect(registry[id]).toEqual({ ...defaultButtonConfig, ...newConfig })
   })
 
-  test('registerButton should merge multiple button configs', () => {
-    const button1 = { save: { label: 'Save' } }
-    const button2 = { cancel: { label: 'Cancel' } }
-    registerButton(button1)
-    registerButton(button2)
-    expect(getButtonConfig()).toEqual({ ...button1, ...button2 })
-  })
+  it('can add multiple buttons', () => {
+    addButton('button1', { label: 'A' })
+    addButton('button2', { label: 'B' })
 
-  test('getButtonConfig should return the current button config', () => {
-    const button = { submit: { label: 'Submit' } }
-    registerButton(button)
-    expect(getButtonConfig()).toEqual(button)
+    const registry = getButtonConfig()
+    expect(Object.keys(registry)).toEqual(['button1', 'button2'])
   })
 })

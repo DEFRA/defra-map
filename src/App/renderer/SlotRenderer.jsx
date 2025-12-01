@@ -1,15 +1,20 @@
 // src/core/renderers/SlotRenderer.jsx
 import React from 'react'
-import { useConfig } from '../store/configContext'
-import { useApp } from '../store/appContext'
-import { getSlotItems } from './slotAggregator'
-import { Actions } from '../components/Actions/Actions'
+import { useConfig } from '../store/configContext.js'
+import { useApp } from '../store/appContext.js'
+import { getSlotItems } from './slotAggregator.js'
+import { Actions } from '../components/Actions/Actions.jsx'
+import { useEvaluateProp } from '../hooks/useEvaluateProp.js'
 
 export const SlotRenderer = ({ slot }) => {
   const appConfig = useConfig()
   const appState = useApp()
+  
+  // Shared evaluateProp hook for this render cycle
+  const evaluateProp = useEvaluateProp()
 
-  const slotItems = getSlotItems({ slot, appState, appConfig })
+  // Get all slot items (controls, panels, buttons)
+  const slotItems = getSlotItems({ slot, appState, appConfig, evaluateProp })
 
   if (!slotItems.length) {
     return null
@@ -21,7 +26,11 @@ export const SlotRenderer = ({ slot }) => {
         <Actions slot={slot}>
           {slotItems.map(item => item.element)}
         </Actions>
-      ) : <>{slotItems.map(item => item.element)}</>}
+      ) : (
+        <>
+          {slotItems.map(item => item.element)}
+        </>
+      )}
     </>
   )
 }

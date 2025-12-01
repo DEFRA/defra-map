@@ -5,7 +5,7 @@ import { stringToKebab } from '../../../utils/stringToKebab.js'
 import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
 import { Icon } from '../Icon/Icon'
 
-export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) => {
+export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, children }) => {
   const { id } = useConfig()
   const { dispatch, breakpoint, layoutRefs } = useApp()
 
@@ -62,12 +62,12 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
         id={`${newPanelId}-label`}
         className={panelConfig.showLabel ? 'dm-c-panel__heading dm-e-heading-m' : 'dm-u-visually-hidden'}
       >
-        {panelConfig.label}
+        {label}
       </h2>
 
       {isDismissable && (
         <button
-          aria-label={`Close ${panelConfig.label}`}
+          aria-label={`Close ${label}`}
           className='dm-c-panel__close'
           onClick={handleClose}
         >
@@ -75,8 +75,8 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, children }) =
         </button>
       )}
 
-      {panelConfig.html ? (
-        <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: panelConfig.html }} />
+      {html ? (
+        <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: html }} />
       ) : (
         <div className={panelBodyClass}>
           {WrappedChild ? <WrappedChild {...props} /> : children}

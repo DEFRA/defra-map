@@ -31,15 +31,6 @@ export const appConfig = {
     tablet: exitButtonSlots,
     desktop: exitButtonSlots
   },{
-    id: 'help',
-    label: 'Help (Opens in a new tab)',
-    iconId: 'help',
-    href: ({ appConfig }) => appConfig.helpURL,
-    excludeWhen: ({ appConfig }) => !appConfig.helpURL,
-    mobile: buttonSlots,
-    tablet: buttonSlots,
-    desktop: buttonSlots
-  },{
     id: 'fullscreen',
     label: () => `${document.fullscreenElement ? 'Exit' : 'Enter'} fullscreen`,
     iconId: () => document.fullscreenElement ? 'minimise' : 'maximise',
@@ -71,9 +62,6 @@ export const appConfig = {
   }],
 
   icons: [{
-    id: 'help',
-    svgContent: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'
-  },{
     id: 'maximise',
     svgContent: '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>'
   },{

@@ -24,7 +24,6 @@ const defaults = {
   markerShape: 'pin',
   markerColor: '#ff0000',
   enableFullscreen: false,
-  helpURL: null,
   readMapText: true
 }
 

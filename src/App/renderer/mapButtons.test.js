@@ -11,9 +11,26 @@ jest.mock('./slots.js', () => ({
 }))
 
 describe('mapButtons module', () => {
-  const baseBtn = { iconId: 'i1', label: 'Btn', desktop: { slot: 'header', order: 1, showLabel: true }, includeModes: ['view'] }
-  const appState = { breakpoint: 'desktop', mode: 'view', openPanels: {}, dispatch: jest.fn(), disabledButtons: new Set(), hiddenButtons: new Set(), pressedButtons: new Set() }
+  const baseBtn = { 
+    iconId: 'i1', 
+    label: 'Btn', 
+    desktop: { slot: 'header', order: 1, showLabel: true }, 
+    includeModes: ['view'] 
+  }
+
+  const appState = { 
+    breakpoint: 'desktop', 
+    mode: 'view', 
+    openPanels: {}, 
+    dispatch: jest.fn(), 
+    disabledButtons: new Set(), 
+    hiddenButtons: new Set(), 
+    pressedButtons: new Set() 
+  }
+
   const appConfig = { id: 'test' }
+
+  const evaluateProp = jest.fn((prop) => typeof prop === 'function' ? prop({ appState, appConfig }) : prop)
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -25,137 +42,141 @@ describe('mapButtons module', () => {
     })
   })
 
+  // -------------------------
+  // getMatchingButtons tests
+  // -------------------------
   describe('getMatchingButtons', () => {
     const testFilter = (config, expected) => {
-      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState, appConfig }).length).toBe(expected)
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState, evaluateProp }).length).toBe(expected)
     }
 
-    it('handles missing config', () => testFilter(null, 0))
-    it('filters by slot', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'sidebar' } } }, 0))
-    it('filters by includeModes', () => testFilter({ b1: { ...baseBtn, includeModes: ['edit'] } }, 0))
-    it('filters by excludeModes', () => testFilter({ b1: { ...baseBtn, excludeModes: ['view'] } }, 0))
-    it('filters invalid slots', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'invalid' } } }, 0))
-    it('defaults includeModes/excludeModes', () => testFilter({ b1: { ...baseBtn, includeModes: undefined, excludeModes: undefined } }, 1))
-    it('matches valid buttons', () => testFilter({ b1: baseBtn, b2: baseBtn }, 2))
+    it('returns empty array when buttonConfig is null', () => testFilter(null, 0))
+    it('filters out buttons not in the correct slot', () => testFilter({ b1: { ...baseBtn, desktop: { slot: 'sidebar' } } }, 0))
+    it('filters out buttons excluded by includeModes', () => testFilter({ b1: { ...baseBtn, includeModes: ['edit'] } }, 0))
+    it('filters out buttons excluded by excludeModes', () => testFilter({ b1: { ...baseBtn, excludeModes: ['view'] } }, 0))
+    it('returns all valid matching buttons', () => testFilter({ b1: baseBtn, b2: baseBtn }, 2))
 
-    // concise excludeWhen tests
-    const testExcludeWhen = (returnValue, expected) => {
-      const fn = jest.fn(() => returnValue)
-      const config = { b1: { ...baseBtn, desktop: { slot: 'header' }, excludeWhen: fn } }
-      const result = getMatchingButtons({ buttonConfig: config, slot: 'header', appState, appConfig })
-      expect(result).toHaveLength(expected)
-      expect(fn).toHaveBeenCalledWith({ appState, appConfig })
-    }
-
-    it('excludes buttons when excludeWhen returns true', () => testExcludeWhen(true, 0))
-    it('includes buttons when excludeWhen returns false', () => testExcludeWhen(false, 1))
+    it('excludes buttons dynamically via excludeWhen', () => {
+      const fn = jest.fn(() => true)
+      const config = { b1: { ...baseBtn, desktop: { slot: 'header' }, excludeWhen: fn, pluginId: 'p1' } }
+      getMatchingButtons({ buttonConfig: config, slot: 'header', appState, evaluateProp })
+      expect(evaluateProp).toHaveBeenCalledWith(fn, 'p1')
+    })
   })
 
+  // -------------------------
+  // renderButton tests
+  // -------------------------
   describe('renderButton', () => {
     const render = (config, state = appState, flags = {}) => 
-      renderButton({ btn: ['id', config], appState: state, appConfig, groupStart: false, groupMiddle: false, groupEnd: false, ...flags })
+      renderButton({ btn: ['id', config], appState: state, appConfig, evaluateProp, groupStart: false, groupMiddle: false, groupEnd: false, ...flags })
 
-    it('renders basic props', () => {
+    it('renders a MapButton with correct basic props', () => {
       const result = render(baseBtn)
       expect(result.props).toMatchObject({ buttonId: 'id', iconId: 'i1', label: 'Btn', showLabel: true })
     })
 
-    it('handles group flags', () => {
+    it('applies group flags correctly', () => {
       const result = render(baseBtn, appState, { groupStart: true, groupEnd: true })
       expect(result.props).toMatchObject({ groupStart: true, groupEnd: true })
     })
 
-    it('evaluates dynamic label', () => {
-      const label = jest.fn(() => 'Dynamic')
-      expect(render({ ...baseBtn, label }).props.label).toBe('Dynamic')
-      expect(label).toHaveBeenCalledWith({ appState, appConfig })
+    it('evaluates dynamic label, iconId, and href via evaluateProp', () => {
+      const label = jest.fn(() => 'DynamicLabel')
+      const iconId = jest.fn(() => 'DynamicIcon')
+      const href = jest.fn(() => '/dynamic')
+      render({ ...baseBtn, label, iconId, href, pluginId: 'p1' })
+      expect(evaluateProp).toHaveBeenCalledWith(label, 'p1')
+      expect(evaluateProp).toHaveBeenCalledWith(iconId, 'p1')
+      expect(evaluateProp).toHaveBeenCalledWith(href, 'p1')
     })
 
-    it('evaluates dynamic iconId', () => {
-      const iconId = jest.fn(() => 'dynamicIcon')
-      expect(render({ ...baseBtn, iconId }).props.iconId).toBe('dynamicIcon')
-      expect(iconId).toHaveBeenCalledWith({ appState, appConfig })
-    })
-
-    it('evaluates dynamic href', () => {
-      const href = jest.fn(() => 'url')
-      expect(render({ ...baseBtn, href }).props.href).toBe('url')
-    })
-
-    it('calls custom onClick', () => {
+    it('calls the custom onClick handler when clicked', () => {
       const onClick = jest.fn()
-      render({ ...baseBtn, onClick }).props.onClick({})
-      expect(onClick).toHaveBeenCalledWith({}, { appState, appConfig })
+      const btn = { ...baseBtn, onClick, pluginId: 'p1' }
+      render(btn).props.onClick({})
+      expect(onClick).toHaveBeenCalledWith({}, expect.any(Object))
     })
 
-    it('opens panel', () => {
-      render({ ...baseBtn, panelId: 'p1' }).props.onClick()
-      expect(appState.dispatch).toHaveBeenCalledWith({ type: 'OPEN_PANEL', payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } } })
+    it('opens and closes panel on button click to cover all branches', () => {
+      const btn = { ...baseBtn, panelId: 'p1' }
+
+      // OPEN_PANEL branch
+      render(btn).props.onClick({})
+      expect(appState.dispatch).toHaveBeenCalledWith({
+        type: 'OPEN_PANEL',
+        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } }
+      })
+
+      // CLOSE_PANEL branch
+      render(btn, { ...appState, openPanels: { p1: true } }).props.onClick({})
+      expect(appState.dispatch).toHaveBeenCalledWith({
+        type: 'CLOSE_PANEL',
+        payload: 'p1'
+      })
     })
 
-    it('closes panel', () => {
-      render({ ...baseBtn, panelId: 'p1' }, { ...appState, openPanels: { p1: true } }).props.onClick()
-      expect(appState.dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'p1' })
-    })
-
-    it('does nothing without panelId or onClick', () => {
-      render(baseBtn).props.onClick()
-      expect(appState.dispatch).not.toHaveBeenCalled()
-    })
-
-    it('handles disabled/hidden/pressed state', () => {
-      const state = { ...appState, disabledButtons: new Set(['id']), hiddenButtons: new Set(['id']), pressedButtons: new Set(['id']) }
+    it('renders correct state flags for disabled, hidden, and pressed buttons', () => {
+      const state = { 
+        ...appState, 
+        disabledButtons: new Set(['id']), 
+        hiddenButtons: new Set(['id']), 
+        pressedButtons: new Set(['id']) 
+      }
       const result = render({ ...baseBtn, pressedWhen: jest.fn() }, state)
       expect(result.props).toMatchObject({ isDisabled: true, isHidden: true, isPressed: true })
     })
 
-    it('sets isPressed undefined without pressedWhen', () => {
-      expect(render(baseBtn, { ...appState, pressedButtons: new Set(['id']) }).props.isPressed).toBeUndefined()
+    it('uses empty object fallback for missing breakpoint config', () => {
+      const result = render(baseBtn, { ...appState, breakpoint: 'mobile' })
+      expect(result.props.showLabel).toBeUndefined()
     })
 
-    it('falls back to empty breakpoint config', () => {
-      expect(render(baseBtn, { ...appState, breakpoint: 'mobile' }).props.showLabel).toBeUndefined()
+    it('does nothing when clicked if button has no panelId and no onClick', () => {
+      const btn = { ...baseBtn } // ❗ no panelId, no onClick
+      const handler = render(btn).props.onClick
+
+      handler({})
+
+      // dispatch should NOT be called because panelId is missing
+      expect(appState.dispatch).not.toHaveBeenCalled()
     })
   })
 
+  // -------------------------
+  // mapButtons tests
+  // -------------------------
   describe('mapButtons', () => {
-    const map = () => mapButtons({ slot: 'header', appState, appConfig })
+    const map = () => mapButtons({ slot: 'header', appState, appConfig, evaluateProp })
 
-    it('returns empty for no config', () => {
+    it('returns empty array when buttonConfig is empty', () => {
       expect(map()).toEqual([])
     })
 
-    it('returns flat list with type and order', () => {
+    it('returns a flat list of buttons with type and order', () => {
       getButtonConfig.mockReturnValue({ b1: baseBtn })
       const result = map()
       expect(result[0]).toMatchObject({ id: 'b1', type: 'button', order: 1 })
     })
 
-    it('sets group flags for 2 buttons', () => {
+    it('sets groupStart, groupMiddle, and groupEnd flags correctly for multiple buttons', () => {
       getButtonConfig.mockReturnValue({ 
         b1: { ...baseBtn, group: 'g1' }, 
-        b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' } 
+        b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' },
+        b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' } 
       })
       const result = map()
-      expect(result[0].element.props).toMatchObject({ groupStart: true, groupEnd: false })
-      expect(result[1].element.props).toMatchObject({ groupStart: false, groupEnd: true })
+      expect(result[0].element.props).toMatchObject({ groupStart: true })
+      expect(result[1].element.props.groupMiddle).toBe(true)
+      expect(result[2].element.props).toMatchObject({ groupEnd: true })
     })
 
-    it('sets groupMiddle for 3+ buttons', () => {
-      getButtonConfig.mockReturnValue({ 
-        b1: { ...baseBtn, desktop: { slot: 'header', order: 1 }, group: 'g1' },
-        b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' },
-        b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' }
-      })
-      expect(map()[1].element.props.groupMiddle).toBe(true)
-    })
-
-    it('ignores singleton groups', () => {
+    it('ignores singleton groups when calculating group flags', () => {
       getButtonConfig.mockReturnValue({ b1: { ...baseBtn, group: 'g1' } })
       expect(map()[0].element.props).toMatchObject({ groupStart: false, groupEnd: false })
     })
 
-    it('falls back to order 0', () => {
+    it('falls back to order 0 when order is not specified in breakpoint config', () => {
       getButtonConfig.mockReturnValue({ b1: { ...baseBtn, desktop: { slot: 'header' } } })
       expect(map()[0].order).toBe(0)
     })

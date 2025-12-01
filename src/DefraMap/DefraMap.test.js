@@ -242,4 +242,22 @@ describe('DefraMap Public API Methods', () => {
     expect(eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
     expect(eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
   })
+
+  it('delegates addButton, addPanel, addControl, removePanel correctly', () => {
+    const buttonConfig = { label: 'MyButton' }
+    const panelConfig = { title: 'MyPanel' }
+    const controlConfig = { type: 'zoom' }
+
+    // Call API methods
+    map.addButton('btn1', buttonConfig)
+    map.addPanel('panel1', panelConfig)
+    map.addControl('ctrl1', controlConfig)
+    map.removePanel('panel1')
+
+    // Verify eventBus emits correct events
+    expect(eventBus.emit).toHaveBeenCalledWith('app:addbutton', { id: 'btn1', config: buttonConfig })
+    expect(eventBus.emit).toHaveBeenCalledWith('app:addpanel', { id: 'panel1', config: panelConfig })
+    expect(eventBus.emit).toHaveBeenCalledWith('app:addcontrol', { id: 'ctrl1', config: controlConfig })
+    expect(eventBus.emit).toHaveBeenCalledWith('app:removepanel', 'panel1')
+  })
 })

@@ -1,104 +1,143 @@
 // components/Panel.test.jsx
 import React from 'react'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Panel } from './Panel'
 import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
-import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
 
 jest.mock('../../store/configContext', () => ({ useConfig: jest.fn() }))
 jest.mock('../../store/appContext', () => ({ useApp: jest.fn() }))
 jest.mock('../../../utils/stringToKebab', () => ({ stringToKebab: (str) => str.toLowerCase().replace(/\s+/g, '-') }))
-jest.mock('../../registry/iconRegistry.js', () => ({
-  getIconRegistry: jest.fn(() => ({ close: (props) => <svg data-testid="close-icon" {...props} /> }))
-}))
 jest.mock('../../hooks/useModalPanelBehaviour.js', () => ({ useModalPanelBehaviour: jest.fn() }))
+jest.mock('../../components/Icon/Icon', () => ({ Icon: ({ id }) => <svg data-testid={id} /> }))
 
 describe('Panel', () => {
-  let dispatch, layoutRefs
-  const baseConfig = { desktop: { slot: 'side', initiallyOpen: true, dismissable: false, modal: false }, showLabel: true, label: 'Test Panel' }
+  const dispatch = jest.fn()
+  const layoutRefs = { 
+    mainRef: { current: {} }, 
+    viewportRef: { current: { focus: jest.fn() } } 
+  }
 
   beforeEach(() => {
-    dispatch = jest.fn()
-    layoutRefs = { mainRef: { current: {} }, viewportRef: { current: { focus: jest.fn() } } }
     useConfig.mockReturnValue({ id: 'app' })
     useApp.mockReturnValue({ dispatch, breakpoint: 'desktop', layoutRefs })
     document.body.innerHTML = `<div id="app-dm-app"></div>`
-
     jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => cb())
+    jest.clearAllMocks()
   })
 
-  afterEach(() => {
-    window.requestAnimationFrame.mockRestore()
-  })
+  afterEach(() => window.requestAnimationFrame.mockRestore())
 
-  const renderPanel = (overrides = {}) => render(<Panel panelId="Settings" panelConfig={baseConfig} {...overrides} />)
+  const renderPanel = (config = {}, props = {}) => {
+    const panelConfig = {
+      showLabel: true,
+      desktop: { slot: 'side', initiallyOpen: true, dismissable: false, modal: false },
+      ...config
+    }
+    return render(<Panel panelId="Settings" panelConfig={panelConfig} label="Settings" {...props} />)
+  }
 
-  it('renders as aside region with label visible', () => {
-    renderPanel()
-    const panel = screen.getByRole('region')
-    expect(panel).toHaveAttribute('id', 'app-panel-settings')
-    expect(panel).toHaveClass('dm-c-panel')
-    expect(screen.getByText('Test Panel')).toHaveClass('dm-c-panel__heading', 'dm-e-heading-m')
-  })
-
-  it('renders with visually hidden label when showLabel=false', () => {
-    renderPanel({ panelConfig: { ...baseConfig, showLabel: false } })
-    expect(screen.getByText('Test Panel')).toHaveClass('dm-u-visually-hidden')
-  })
-
-  it('renders dialog and complementary roles', () => {
-    renderPanel({ panelConfig: { ...baseConfig, desktop: { slot: 'overlay', initiallyOpen: false, dismissable: true, modal: false } } })
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-
-    renderPanel({ panelConfig: { ...baseConfig, desktop: { slot: 'side', initiallyOpen: true, dismissable: true, modal: false } } })
-    expect(screen.getByRole('complementary')).toBeInTheDocument()
-  })
-
-  it('sets aria-modal and tabIndex when dialog and modal', () => {
-    renderPanel({ panelConfig: { ...baseConfig, desktop: { slot: 'overlay', initiallyOpen: false, dismissable: true, modal: true } } })
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveAttribute('aria-modal', 'true')
-    expect(dialog).toHaveAttribute('tabIndex', '-1')
-    expect(dialog).toHaveClass('dm-c-panel dm-c-panel--overlay')
-  })
-
-  it('applies width style', () => {
-    renderPanel({ panelConfig: { ...baseConfig, desktop: { slot: 'side', initiallyOpen: true, dismissable: false, modal: false, width: '300px' } } })
-    expect(screen.getByRole('region')).toHaveStyle({ width: '300px' })
-  })
-
-  it('calls returnFocus for top-button slot', () => {
-    const focusMock = jest.fn()
-    const triggeringElement = { focus: focusMock, parentNode: {} }
-    renderPanel({ props: { triggeringElement }, panelConfig: { ...baseConfig, desktop: { slot: 'top-button', initiallyOpen: true, dismissable: true, modal: false } } })
-
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Close Test Panel' }))
+  describe('rendering and accessibility', () => {
+    it('renders with correct id and classes', () => {
+      renderPanel()
+      const panel = screen.getByRole('region')
+      expect(panel).toHaveAttribute('id', 'app-panel-settings')
+      expect(panel).toHaveClass('dm-c-panel')
+      expect(screen.getByText('Settings')).toHaveClass('dm-c-panel__heading', 'dm-e-heading-m')
     })
 
-    expect(focusMock).toHaveBeenCalled()
-    expect(screen.getByTestId('close-icon')).toBeInTheDocument()
-    expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'Settings' })
-  })
-
-  it('falls back to viewportRef.current.focus when no triggeringElement provided', () => {
-    renderPanel({ panelConfig: { ...baseConfig, desktop: { slot: 'side', initiallyOpen: true, dismissable: true, modal: false } } })
-
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Close Test Panel' }))
+    it('renders visually hidden label when showLabel=false', () => {
+      renderPanel({ showLabel: false })
+      expect(screen.getByText('Settings')).toHaveClass('dm-u-visually-hidden')
     })
 
-    expect(layoutRefs.viewportRef.current.focus).toHaveBeenCalled()
-    expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'Settings' })
+    it('applies offset class to body when showLabel=false and dismissable', () => {
+      renderPanel({ showLabel: false, desktop: { slot: 'side', dismissable: true, initiallyOpen: false } })
+      expect(screen.getByRole('dialog').querySelector('.dm-c-panel__body')).toHaveClass('dm-c-panel__body--offset')
+    })
+
+    it('applies width style if provided', () => {
+      renderPanel({ desktop: { slot: 'side', dismissable: true, initiallyOpen: true, width: '300px' } })
+      expect(screen.getByRole('complementary')).toHaveStyle({ width: '300px' })
+    })
   })
 
-  it('renders children or WrappedChild', () => {
-    renderPanel({ children: <p>Child content</p> })
-    expect(screen.getByText('Child content')).toBeInTheDocument()
+  describe('role and aria attributes', () => {
+    it('renders region role for non-dismissable panels', () => {
+      renderPanel()
+      expect(screen.getByRole('region')).toBeInTheDocument()
+    })
 
-    const Wrapped = (props) => <p>Wrapped {props.extra}</p>
-    renderPanel({ WrappedChild: Wrapped, props: { extra: 'content' } })
-    expect(screen.getByText('Wrapped content')).toBeInTheDocument()
+    it('renders dialog role for dismissable non-aside panels', () => {
+      renderPanel({ desktop: { slot: 'side', dismissable: true, initiallyOpen: false } })
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
+    it('renders complementary role for dismissable aside panels', () => {
+      renderPanel({ desktop: { slot: 'side', initiallyOpen: true, dismissable: true } })
+      expect(screen.getByRole('complementary')).toBeInTheDocument()
+    })
+
+    it('sets aria-modal and tabIndex for modal dialogs', () => {
+      renderPanel({ desktop: { slot: 'overlay', dismissable: true, modal: true } })
+      const dialog = screen.getByRole('dialog')
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+      expect(dialog).toHaveAttribute('tabIndex', '-1')
+    })
+  })
+
+  describe('close functionality', () => {
+    it('focuses triggeringElement on close for button slots', () => {
+      const focusMock = jest.fn()
+      const triggeringElement = { focus: focusMock, parentNode: document.createElement('div') }
+      
+      renderPanel(
+        { desktop: { slot: 'top-button', dismissable: true, initiallyOpen: false } },
+        { props: { triggeringElement } }
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Close Settings' }))
+      expect(focusMock).toHaveBeenCalled()
+      expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'Settings' })
+    })
+
+    it('handles close for non-button slots', () => {
+      const focusMock = jest.fn()
+      const triggeringElement = { focus: focusMock, parentNode: document.createElement('div') }
+      
+      renderPanel(
+        { desktop: { slot: 'overlay', dismissable: true, modal: true } },
+        { props: { triggeringElement } }
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Close Settings' }))
+      expect(focusMock).toHaveBeenCalled()
+    })
+
+    it('falls back to viewportRef focus when no triggeringElement', () => {
+      renderPanel({ desktop: { slot: 'side', dismissable: true, initiallyOpen: false } })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Close Settings' }))
+      expect(layoutRefs.viewportRef.current.focus).toHaveBeenCalled()
+      expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_PANEL', payload: 'Settings' })
+    })
+  })
+
+  describe('content rendering', () => {
+    it('renders children when no WrappedChild provided', () => {
+      renderPanel({}, { children: <p>Child content</p> })
+      expect(screen.getByText('Child content')).toBeInTheDocument()
+    })
+
+    it('renders WrappedChild when provided', () => {
+      const Wrapped = (props) => <p>Wrapped {props.extra}</p>
+      renderPanel({}, { WrappedChild: Wrapped, props: { extra: 'content' } })
+      expect(screen.getByText('Wrapped content')).toBeInTheDocument()
+    })
+
+    it('renders html content when html prop is provided', () => {
+      renderPanel({}, { html: '<p>HTML content</p>' })
+      expect(screen.getByText('HTML content')).toBeInTheDocument()
+    })
   })
 })

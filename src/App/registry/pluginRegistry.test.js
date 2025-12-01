@@ -38,7 +38,7 @@ describe('pluginRegistry', () => {
         buttons: { id: 'btn1' },
         panels: [{ id: 'panel1' }],
         controls: { id: 'ctrl1' },
-        icons: { id: 'icon1', component: 'Comp' },
+        icons: { id: 'icon1', svgContent: 'Comp' }, // match implementation
         keyboardShortcuts: { key: 'K' }
       }
     }
@@ -79,7 +79,7 @@ describe('pluginRegistry', () => {
         buttons: [{ id: 'b1' }, { id: 'b2' }],
         panels: { id: 'p1' },
         controls: [{ id: 'c1' }],
-        icons: [{ id: 'i1', component: 'Comp' }],
+        icons: [{ id: 'i1', svgContent: 'Comp' }],
         keyboardShortcuts: [{ key: 'S' }]
       }
     }

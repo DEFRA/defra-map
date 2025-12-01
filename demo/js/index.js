@@ -59,7 +59,6 @@ var defraMap = new DefraMap('map', {
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
-	// helpURL: 'https://google.co.uk',
 	// enableFullscreen: true,
 	hasExitButton: true,
 	// markers: [{
@@ -95,7 +94,7 @@ var defraMap = new DefraMap('map', {
 			layers: dataLayers
 		}),
 		interactPlugin,
-		drawPlugin,
+		// drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']

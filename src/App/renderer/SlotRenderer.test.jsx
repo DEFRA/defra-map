@@ -4,6 +4,7 @@ import { SlotRenderer } from './SlotRenderer.jsx'
 import { getSlotItems } from './slotAggregator'
 import { useApp } from '../store/appContext'
 import { useConfig } from '../store/configContext'
+import { useEvaluateProp } from '../hooks/useEvaluateProp'
 
 jest.mock('./slotAggregator', () => ({
   getSlotItems: jest.fn()
@@ -13,6 +14,9 @@ jest.mock('../store/appContext', () => ({
 }))
 jest.mock('../store/configContext', () => ({
   useConfig: jest.fn()
+}))
+jest.mock('../hooks/useEvaluateProp', () => ({
+  useEvaluateProp: jest.fn()
 }))
 
 describe('SlotRenderer', () => {
@@ -24,11 +28,13 @@ describe('SlotRenderer', () => {
     dispatch: jest.fn(),
     disabledButtons: new Set()
   }
+  const mockEvaluateProp = jest.fn(x => x)
 
   beforeEach(() => {
     jest.clearAllMocks()
     useConfig.mockReturnValue(mockAppConfig)
     useApp.mockReturnValue(mockAppState)
+    useEvaluateProp.mockReturnValue(mockEvaluateProp)
   })
 
   it('renders nothing if no slot items', () => {
@@ -57,13 +63,14 @@ describe('SlotRenderer', () => {
     expect(getByText('Item2')).toBeInTheDocument()
   })
 
-  it('calls getSlotItems with correct args', () => {
+  it('calls getSlotItems with correct arguments including evaluateProp', () => {
     getSlotItems.mockReturnValue([])
     render(<SlotRenderer slot='sidebar' />)
     expect(getSlotItems).toHaveBeenCalledWith({
       slot: 'sidebar',
       appState: mockAppState,
-      appConfig: mockAppConfig
+      appConfig: mockAppConfig,
+      evaluateProp: mockEvaluateProp
     })
   })
 })

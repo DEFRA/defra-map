@@ -1,12 +1,18 @@
+import { defaultControlConfig } from '../../config/appConfig.js'
+import { deepMerge } from '../../utils/deepMerge.js'
+
+jest.mock('../../utils/deepMerge.js', () => ({
+  deepMerge: jest.fn((a, b) => ({ ...a, ...b }))
+}))
+
 describe('controlRegistry', () => {
-  let registerControl
-  let getControlConfig
+  let registerControl, addControl, getControlConfig
 
   beforeEach(() => {
-    // Reset module state so controlConfig is fresh for each test
     jest.resetModules()
-    const module = require('./controlRegistry')
+    const module = require('./controlRegistry.js')
     registerControl = module.registerControl
+    addControl = module.addControl
     getControlConfig = module.getControlConfig
   })
 
@@ -28,5 +34,27 @@ describe('controlRegistry', () => {
     const control = { input: { placeholder: 'Enter text' } }
     registerControl(control)
     expect(getControlConfig()).toEqual(control)
+  })
+
+  test('addControl adds a control and returns it', () => {
+    const config = { min: 0, max: 10 }
+    const id = 'slider1'
+
+    const returned = addControl(id, config)
+
+    const registry = getControlConfig()
+    expect(registry[id]).toEqual({ id, ...defaultControlConfig, ...config })
+    expect(returned).toEqual({ id, ...defaultControlConfig, ...config })
+  })
+
+  test('addControl can add multiple controls', () => {
+    const { addControl, getControlConfig } = require('./controlRegistry.js')
+    addControl('control1', { foo: 'bar' })
+    addControl('control2', { baz: 'qux' })
+
+    const registry = getControlConfig()
+    expect(Object.keys(registry)).toEqual(['control1', 'control2'])
+    expect(registry.control1).toEqual({ id: 'control1', ...defaultControlConfig, foo: 'bar' })
+    expect(registry.control2).toEqual({ id: 'control2', ...defaultControlConfig, baz: 'qux' })
   })
 })

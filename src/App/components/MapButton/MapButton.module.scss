@@ -85,6 +85,7 @@
 .dm-c-map-button--primary {
     color: var(--background-color);
     background-color: var(--primary-button-color);
+    box-shadow: var(--primary-button-box-shadow);
     span {
         white-space: nowrap;
         padding: 0px var(--button-icon-label-offset);
@@ -105,7 +106,8 @@
 }
 
 .dm-c-map-button--tertiary {
-    border: 1px solid var(--secondary-button-border-color);
+    border: 1px solid var(--tertiary-button-border-color);
+    box-shadow: var(--tertiary-button-box-shadow);
     span {
         white-space: nowrap;
         padding: 0px 5px;

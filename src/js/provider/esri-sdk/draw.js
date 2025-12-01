@@ -64,6 +64,10 @@ export class Draw {
 
   cancel () {
     this.sketchViewModel?.cancel()
+    if (this.sketchViewModel) {
+      this.sketchViewModel.layer = null
+    }
+
     // Re-instate orginal graphic
     this.addGraphic(this.oGraphic)
   }
@@ -115,7 +119,7 @@ export class Draw {
     this.sketchViewModel = sketchViewModel
 
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
-    sketchViewModel.update(this.addGraphic(graphic))
+    setTimeout(() => sketchViewModel.update(this.addGraphic(graphic)), 0)
   }
 
   finishEdit () {
@@ -223,12 +227,12 @@ export class Draw {
       }
     }
 
-    // Undo draw if attemtped self-intersect
+    // Undo draw if attempted self-intersect
     if (toolInfoType === 'reshape' && graphic?.geometry.isSelfIntersecting) {
       this.undo()
     }
 
-    // Canel draw if attempted polygon move
+    // Cancel draw if attempted polygon move
     if (toolInfoType === 'move-start') {
       this.cancel()
     }

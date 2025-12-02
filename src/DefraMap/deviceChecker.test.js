@@ -35,9 +35,9 @@ describe('checkDeviceSupport', () => {
   it('returns false and shows error when device is not supported', () => {
     config = {
       mapProvider: {
-        checkDeviceCapabilities: jest.fn().mockReturnValue({ 
-          isSupported: false, 
-          error: 'WebGL not available' 
+        checkDeviceCapabilities: jest.fn().mockReturnValue({
+          isSupported: false,
+          error: 'WebGL not available'
         })
       },
       deviceNotSupportedText: 'Device not supported'

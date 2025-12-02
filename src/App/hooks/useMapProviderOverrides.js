@@ -32,7 +32,7 @@ export const useMapProviderOverrides = () => {
 
   useEffect(() => {
     if (!mapProvider) {
-        return
+      return
     }
 
     const originalFitToBounds = mapProvider.fitToBounds

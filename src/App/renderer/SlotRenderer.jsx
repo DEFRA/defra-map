@@ -9,7 +9,7 @@ import { useEvaluateProp } from '../hooks/useEvaluateProp.js'
 export const SlotRenderer = ({ slot }) => {
   const appConfig = useConfig()
   const appState = useApp()
-  
+
   // Shared evaluateProp hook for this render cycle
   const evaluateProp = useEvaluateProp()
 
@@ -22,15 +22,17 @@ export const SlotRenderer = ({ slot }) => {
 
   return (
     <>
-      {slot === 'actions' ? (
-        <Actions slot={slot}>
-          {slotItems.map(item => item.element)}
-        </Actions>
-      ) : (
-        <>
-          {slotItems.map(item => item.element)}
-        </>
-      )}
+      {slot === 'actions'
+        ? (
+          <Actions slot={slot}>
+            {slotItems.map(item => item.element)}
+          </Actions>
+          )
+        : (
+          <>
+            {slotItems.map(item => item.element)}
+          </>
+          )}
     </>
   )
 }

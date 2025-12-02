@@ -33,7 +33,7 @@ export const PluginInits = () => {
       })
     }
   })
-  
+
   return (
     <>
       {registeredPlugins.map((plugin, idx) => {
@@ -47,14 +47,16 @@ export const PluginInits = () => {
 
         const WrappedInit = inModeWhitelist && !inExcludeModes && InitComponent
           ? withPluginContexts(InitComponent, {
-              pluginId: plugin.id,
-              pluginConfig
-            })
+            pluginId: plugin.id,
+            pluginConfig
+          })
           : null
 
-        return WrappedInit ? (
-          <WrappedInit key={`init-${plugin.id}-${idx}`} />
-        ) : null
+        return WrappedInit
+          ? (
+            <WrappedInit key={`init-${plugin.id}-${idx}`} />
+            )
+          : null
       })}
     </>
   )

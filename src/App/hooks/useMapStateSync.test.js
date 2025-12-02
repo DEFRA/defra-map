@@ -29,7 +29,7 @@ describe('useMapStateSync', () => {
   it('does nothing when no mapProvider (line 13)', () => {
     useConfig.mockReturnValue({ mapProvider: null })
     renderHook(() => useMapStateSync())
-    
+
     expect(eventBus.on).not.toHaveBeenCalled()
   })
 

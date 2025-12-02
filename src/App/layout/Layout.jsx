@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Viewport } from '../components/Viewport/Viewport'
 import { useConfig } from '../store/configContext'
 import { useApp } from '../store/appContext'
@@ -39,10 +39,10 @@ export const Layout = () => {
           <SlotRenderer slot={layoutSlots.SIDE} />
         </div>
         <div className='dm-o-app__main' ref={layoutRefs.mainRef}>
-          {['mobile', 'tablet'].includes(breakpoint) &&  (
-          <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
-            <SlotRenderer slot={layoutSlots.BANNER} />
-          </div>
+          {['mobile', 'tablet'].includes(breakpoint) && (
+            <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
+              <SlotRenderer slot={layoutSlots.BANNER} />
+            </div>
           )}
           <div className='dm-o-app__top' ref={layoutRefs.topRef}>
             <div className='dm-o-app__top-col' ref={layoutRefs.topLeftColRef}>
@@ -50,10 +50,10 @@ export const Layout = () => {
             </div>
             <div className='dm-o-app__top-col'>
               <SlotRenderer slot={layoutSlots.TOP_MIDDLE} />
-              {['desktop'].includes(breakpoint) &&  (
-              <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
-                <SlotRenderer slot={layoutSlots.BANNER} />
-              </div>
+              {['desktop'].includes(breakpoint) && (
+                <div className='dm-o-app__banner' ref={layoutRefs.bannerRef}>
+                  <SlotRenderer slot={layoutSlots.BANNER} />
+                </div>
               )}
             </div>
             <div className='dm-o-app__top-col' ref={layoutRefs.topRightColRef}>

@@ -1,7 +1,7 @@
 // services/announcer.js
 import { debounce } from '../utils/debounce.js'
 
-export function createAnnouncer(mapStatusRef) {
+export function createAnnouncer (mapStatusRef) {
   const CLEAR_DELAY = 100
   const DEBOUNCE_DELAY = 500
   let priorityLock = false

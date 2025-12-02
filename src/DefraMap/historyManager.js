@@ -20,7 +20,7 @@ import defaults from '../config/defaults.js'
  * @private
  * @returns {void}
  */
-function handlePopstate() {
+function handlePopstate () {
   const viewId = getQueryParam(defaults.mapViewParamKey)
   const breakpoint = getBreakpoint()
 

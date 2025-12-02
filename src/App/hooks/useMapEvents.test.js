@@ -19,7 +19,7 @@ describe('useMapEvents', () => {
   it('does nothing when no mapProvider (line 10)', () => {
     useConfig.mockReturnValue({ mapProvider: null })
     renderHook(() => useMapEvents({ 'test:event': jest.fn() }))
-    
+
     expect(eventBus.on).not.toHaveBeenCalled()
   })
 
@@ -60,7 +60,7 @@ describe('useMapEvents', () => {
     }
 
     const { unmount } = renderHook(() => useMapEvents(eventMap))
-    
+
     const handler1 = eventBus.on.mock.calls[0][1]
     const handler2 = eventBus.on.mock.calls[1][1]
 
@@ -90,13 +90,13 @@ describe('useMapEvents', () => {
 
   it('handles empty eventMap', () => {
     renderHook(() => useMapEvents({}))
-    
+
     expect(eventBus.on).not.toHaveBeenCalled()
   })
 
   it('handles undefined eventMap (default parameter)', () => {
     renderHook(() => useMapEvents())
-    
+
     expect(eventBus.on).not.toHaveBeenCalled()
   })
 })

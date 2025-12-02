@@ -3,7 +3,7 @@ import { MapButton } from '../components/MapButton/MapButton.jsx'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
 import { allowedSlots } from './slots.js'
 
-function getMatchingButtons({ appState, buttonConfig, slot, evaluateProp }) {
+function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
   const { breakpoint, mode } = appState
   if (!buttonConfig) {
     return []
@@ -29,8 +29,8 @@ function getMatchingButtons({ appState, buttonConfig, slot, evaluateProp }) {
   })
 }
 
-function createButtonClickHandler(btn, appState, evaluateProp) {
-  const [_, config] = btn
+function createButtonClickHandler (btn, appState, evaluateProp) {
+  const [, config] = btn
   const isOpen = !!(config.panelId && appState.openPanels[config.panelId])
 
   return (e) => {
@@ -50,7 +50,7 @@ function createButtonClickHandler(btn, appState, evaluateProp) {
   }
 }
 
-function renderButton({ btn, appState, appConfig, evaluateProp, groupStart, groupMiddle, groupEnd }) {
+function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, groupMiddle, groupEnd }) {
   const [buttonId, config] = btn
   const bp = config[appState.breakpoint] ?? {}
   const handleClick = createButtonClickHandler(btn, appState, evaluateProp)
@@ -80,7 +80,7 @@ function renderButton({ btn, appState, appConfig, evaluateProp, groupStart, grou
   )
 }
 
-function mapButtons({ slot, appState, appConfig, evaluateProp }) {
+function mapButtons ({ slot, appState, appConfig, evaluateProp }) {
   const buttonConfig = getButtonConfig()
   const breakpoint = appState.breakpoint
   const matching = getMatchingButtons({ appState, appConfig, buttonConfig, slot, evaluateProp })

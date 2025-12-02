@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { useEvaluateProp } from './useEvaluateProp.js'
 import * as configStore from '../store/configContext.js'

@@ -28,7 +28,7 @@ export const useMarkers = () => {
 
     markers.add = (id, coords, options) => {
       const { x, y } = projectCoords(coords, mapProvider, mapSize, isMapReady)
-      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { id, coords, ...options, x, y, isVisible: true }})
+      dispatch({ type: 'UPSERT_LOCATION_MARKER', payload: { id, coords, ...options, x, y, isVisible: true } })
     }
 
     markers.remove = (id) => {
@@ -38,7 +38,6 @@ export const useMarkers = () => {
     markers.getMarker = (id) => {
       return markers.items.find(marker => marker.id === id)
     }
-
   }, [isMapReady, mapProvider, markers, dispatch, mapSize])
 
   // Update marker position on map:render
@@ -53,13 +52,13 @@ export const useMarkers = () => {
       if (!isMapReady || !mapProvider) {
         return
       }
-      
+
       markers.items.forEach(marker => {
         const ref = markerRefs.current.get(marker.id)
         if (!ref || !marker.coords) {
           return
         }
-        
+
         const { x, y } = projectCoords(marker.coords, mapProvider, mapSize, isMapReady)
         ref.style.transform = `translate(${x}px, ${y}px)`
         ref.style.display = 'block'
@@ -77,13 +76,13 @@ export const useMarkers = () => {
     if (!isMapReady || !mapProvider) {
       return
     }
-    
+
     markers.items.forEach(marker => {
       const ref = markerRefs.current.get(marker.id)
       if (!ref || !marker.coords) {
         return
       }
-      
+
       const { x, y } = projectCoords(marker.coords, mapProvider, mapSize, isMapReady)
       ref.style.transform = `translate(${x}px, ${y}px)`
     })

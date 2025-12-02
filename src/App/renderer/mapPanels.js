@@ -7,7 +7,7 @@ import { withPluginContexts } from './pluginWrapper.js'
 import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'
 
-export function mapPanels({ slot, appState, evaluateProp }) {
+export function mapPanels ({ slot, appState, evaluateProp }) {
   const { breakpoint, mode, openPanels } = appState
   const panelConfig = getPanelConfig()
 
@@ -54,10 +54,10 @@ export function mapPanels({ slot, appState, evaluateProp }) {
 
       const WrappedChild = config.render
         ? withPluginContexts(config.render, {
-            ...props,
-            pluginId,
-            pluginConfig: plugin?.config
-          })
+          ...props,
+          pluginId,
+          pluginConfig: plugin?.config
+        })
         : null
 
       return {

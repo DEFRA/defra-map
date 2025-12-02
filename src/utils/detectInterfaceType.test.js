@@ -6,7 +6,7 @@ let mockedMediaQuery
 
 const mockMatchMedia = (query) => {
   const mediaQuery = {
-    matches: false, 
+    matches: false,
     media: query,
     // Mock addEventListener for 'change' events
     addEventListener: jest.fn((event, fn) => {
@@ -20,9 +20,9 @@ const mockMatchMedia = (query) => {
       if (event === 'change' && mediaListeners[query]) {
         mediaListeners[query] = mediaListeners[query].filter(l => l !== fn)
       }
-    }),
+    })
   }
-  mockedMediaQuery = mediaQuery 
+  mockedMediaQuery = mediaQuery
   return mediaQuery
 }
 
@@ -42,12 +42,11 @@ Object.defineProperty(window, 'matchMedia', { writable: true, value: jest.fn(moc
 Object.defineProperty(window, 'addEventListener', { writable: true, value: mockAddEventListener })
 Object.defineProperty(window, 'removeEventListener', { writable: true, value: mockRemoveEventListener })
 
-
 // --- EVENT TRIGGER HELPERS ---
 
 const triggerMediaChange = (matches) => {
   if (mockedMediaQuery) {
-    mockedMediaQuery.matches = matches 
+    mockedMediaQuery.matches = matches
   }
   const queryListeners = mediaListeners['(pointer: coarse)']
   if (queryListeners) {
@@ -70,16 +69,16 @@ describe('Interface Detector Utility Module', () => {
   // Uses async/await and jest.resetModules() for test isolation (critical for global state)
   beforeEach(async () => {
     jest.resetModules()
-    
+
     // Default initial mock state: not 'touch' (coarse=false)
     window.matchMedia.mockImplementationOnce((query) => {
       const mock = mockMatchMedia(query)
-      mock.matches = false; 
+      mock.matches = false
       return mock
     })
 
-    const importedModule = await import('./detectInterfaceType.js') 
-    
+    const importedModule = await import('./detectInterfaceType.js')
+
     createInterfaceDetector = importedModule.createInterfaceDetector
     getInterfaceType = importedModule.getInterfaceType
     subscribeToInterfaceChanges = importedModule.subscribeToInterfaceChanges
@@ -97,61 +96,61 @@ describe('Interface Detector Utility Module', () => {
     expect(getInterfaceType()).toBe('mouse')
 
     cleanup = createInterfaceDetector()
-    
-    expect(getInterfaceType()).toBe('mouse') 
+
+    expect(getInterfaceType()).toBe('mouse')
   })
 
   // Test 2: Comprehensive test of all event paths, listener notification, and cleanup
   it('should handle all three event types, notify listeners only on change, and run cleanup', () => {
     const handler = jest.fn()
-    
+
     // --- Setup and Initial State ---
     const unsubscribe = subscribeToInterfaceChanges(handler)
     cleanup = createInterfaceDetector()
-    handler.mockClear() 
+    handler.mockClear()
 
     // --- Path 1: pointerdown (Covers normalizePointerType branches: touch, pen, mouse, unknown) ---
     // 1a: 'touch' (Sets state to 'touch', notifies)
-    triggerDomEvent('pointerdown', { pointerType: 'touch' }) 
+    triggerDomEvent('pointerdown', { pointerType: 'touch' })
     expect(getInterfaceType()).toBe('touch')
     expect(handler).toHaveBeenCalledWith('touch')
     handler.mockClear()
 
     // 1b: 'pen' (State remains 'touch', no notification)
-    triggerDomEvent('pointerdown', { pointerType: 'pen' }) 
+    triggerDomEvent('pointerdown', { pointerType: 'pen' })
     expect(handler).not.toHaveBeenCalled()
 
     // 1c: 'mouse' (Sets state to 'mouse', notifies)
-    triggerDomEvent('pointerdown', { pointerType: 'mouse' }) 
+    triggerDomEvent('pointerdown', { pointerType: 'mouse' })
     expect(getInterfaceType()).toBe('mouse')
     expect(handler).toHaveBeenCalledWith('mouse')
     handler.mockClear()
 
     // 1d: 'weird' (Sets state to 'unknown', notifies)
-    triggerDomEvent('pointerdown', { pointerType: 'weird' }) 
+    triggerDomEvent('pointerdown', { pointerType: 'weird' })
     expect(getInterfaceType()).toBe('mouse') // Returns 'mouse' due to fallback
-    expect(handler).toHaveBeenCalledWith('unknown') 
+    expect(handler).toHaveBeenCalledWith('unknown')
     handler.mockClear()
-    
+
     // --- Path 2: keydown (Covers keydown event listener) ---
     triggerDomEvent('keydown', { key: 'Tab' })
     expect(getInterfaceType()).toBe('keyboard')
     expect(handler).toHaveBeenCalledWith('keyboard')
     handler.mockClear()
-    
+
     // keydown with non-Tab (No change, no notification)
     triggerDomEvent('keydown', { key: 'a' })
-    expect(handler).not.toHaveBeenCalled() 
+    expect(handler).not.toHaveBeenCalled()
 
     // --- Path 3: matchMedia Change (Covers handleMediaChange logic) ---
     // Simulate media change to coarse (touch)
-    triggerMediaChange(true) 
+    triggerMediaChange(true)
     expect(getInterfaceType()).toBe('touch')
     expect(handler).toHaveBeenCalledWith('touch')
     handler.mockClear()
-    
+
     // Simulate media change back to fine (mouse)
-    triggerMediaChange(false) 
+    triggerMediaChange(false)
     expect(getInterfaceType()).toBe('mouse')
     expect(handler).toHaveBeenCalledWith('mouse')
     handler.mockClear()
@@ -172,14 +171,14 @@ describe('Interface Detector Utility Module', () => {
     // Re-mock matchMedia to match coarse pointer *before* the re-import
     window.matchMedia.mockImplementationOnce((query) => {
       const mock = mockMatchMedia(query)
-      mock.matches = true; 
+      mock.matches = true
       return mock
     })
 
-    const importedModule = await import('./detectInterfaceType.js') 
+    const importedModule = await import('./detectInterfaceType.js')
     getInterfaceType = importedModule.getInterfaceType
 
     // lastInterfaceType is 'touch' initially in this scenario
-    expect(getInterfaceType()).toBe('touch') 
+    expect(getInterfaceType()).toBe('touch')
   })
 })

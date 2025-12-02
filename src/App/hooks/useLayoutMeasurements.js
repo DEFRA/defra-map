@@ -72,7 +72,7 @@ export function useLayoutMeasurements () {
 
       // === Set safe zone inset ===
       const safeZoneInset = getSafeZoneInset(layoutRefs)
-      dispatch({ type: 'SET_SAFE_ZONE_INSET', payload: { safeZoneInset: safeZoneInset }})
+      dispatch({ type: 'SET_SAFE_ZONE_INSET', payload: { safeZoneInset } })
     })
   }, [breakpoint, mapSize, isMapReady])
 

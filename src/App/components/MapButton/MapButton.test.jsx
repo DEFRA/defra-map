@@ -7,15 +7,15 @@ jest.mock('../../../utils/stringToKebab', () => ({
 }))
 
 jest.mock('../Tooltip/Tooltip', () => ({
-  Tooltip: ({ content, children }) => <div data-testid="tooltip" data-content={content}>{children}</div>
+  Tooltip: ({ content, children }) => <div data-testid='tooltip' data-content={content}>{children}</div>
 }))
 
 jest.mock('../Icon/Icon', () => ({
-  Icon: ({ id, svgContent }) => <svg data-testid={id || 'custom-icon'} data-svg={svgContent} aria-hidden="true" />
+  Icon: ({ id, svgContent }) => <svg data-testid={id || 'custom-icon'} data-svg={svgContent} aria-hidden='true' />
 }))
 
 jest.mock('../../renderer/SlotRenderer', () => ({
-  SlotRenderer: ({ slot }) => <div data-testid="slot" data-slot={slot} />
+  SlotRenderer: ({ slot }) => <div data-testid='slot' data-slot={slot} />
 }))
 
 jest.mock('../../store/configContext', () => ({
@@ -33,7 +33,7 @@ describe('MapButton', () => {
   })
 
   const renderButton = (props = {}) =>
-    render(<MapButton buttonId="Test" iconId="icon" label="Label" {...props} />)
+    render(<MapButton buttonId='Test' iconId='icon' label='Label' {...props} />)
 
   it('renders button with classes, icon, and label', () => {
     renderButton({ buttonId: 'My Button', variant: 'primary', showLabel: true })
@@ -107,7 +107,7 @@ describe('MapButton', () => {
 
   it('stores button ref when buttonId provided', () => {
     renderButton({ buttonId: 'TestButton' })
-    expect(mockButtonRefs.current['TestButton']).toBe(screen.getByRole('button'))
+    expect(mockButtonRefs.current.TestButton).toBe(screen.getByRole('button'))
   })
 
   it('does not store ref when buttonRefs.current is falsy', () => {

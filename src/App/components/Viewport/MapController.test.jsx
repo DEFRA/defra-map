@@ -8,7 +8,6 @@ import { useMapStateSync } from '../../hooks/useMapStateSync'
 import { useMapURLSync } from '../../hooks/useMapURLSync'
 import { useMapAnnouncements } from '../../hooks/useMapAnnouncements'
 import { useMapProviderOverrides } from '../../hooks/useMapProviderOverrides'
-import { getInitialMapState } from '../../../utils/mapStateSync'
 import { scaleFactor } from '../../../config/appConfig'
 import { scalePoints } from '../../../utils/scalePoints'
 
@@ -28,7 +27,7 @@ describe('MapController', () => {
   let containerRef, mapProviderMock
 
   const defaultApp = { isLayoutReady: true, safeZoneInset: { top: 0, right: 0, bottom: 0, left: 0 }, breakpoint: 'desktop', syncMapPadding: true }
-  const defaultMap = { mapStyle: { url: 'mock-style-url' }, mapSize: 'small', center: [0,0], zoom:5, bounds:[0,0,10,10], isMapReady:true }
+  const defaultMap = { mapStyle: { url: 'mock-style-url' }, mapSize: 'small', center: [0, 0], zoom: 5, bounds: [0, 0, 10, 10], isMapReady: true }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -51,9 +50,9 @@ describe('MapController', () => {
     expect(mapProviderMock.initMap).toHaveBeenCalledWith(expect.objectContaining({
       container: containerRef.current,
       padding: defaultApp.safeZoneInset,
-      center: [0,0],
-      zoom:5,
-      bounds:[0,0,10,10],
+      center: [0, 0],
+      zoom: 5,
+      bounds: [0, 0, 10, 10],
       mapStyle: defaultMap.mapStyle,
       pixelRatio: window.devicePixelRatio * scaleFactor.small
     }))

@@ -47,9 +47,9 @@ describe('updateDOMState', () => {
       expect(document.title).toBe('Map View: Original Title')
     }
     if (behaviour !== 'inline') {
-      expect(toggleInertElements.toggleInertElements).toHaveBeenCalledWith({ 
-        containerEl: rootEl, 
-        isFullscreen 
+      expect(toggleInertElements.toggleInertElements).toHaveBeenCalledWith({
+        containerEl: rootEl,
+        isFullscreen
       })
     }
   })

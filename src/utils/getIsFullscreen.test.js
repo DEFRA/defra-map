@@ -14,14 +14,14 @@ describe('getIsFullscreen', () => {
     ['mapOnly', 'mobile', true], // Should still be true regardless of breakpoint
 
     // Branch 2: breakpoint === 'mobile' && behaviour === 'hybrid'
-    ['hybrid', 'mobile', true], 
+    ['hybrid', 'mobile', true],
 
     // --- False Cases (Covers all combinations resulting in false) ---
     // If behaviour is not in the list, and the mobile/hybrid condition is not met.
     ['hybrid', 'desktop', false], // Not mobile AND not in list
     ['hybrid', 'tablet', false], // Not mobile AND not in list
     ['someOtherValue', 'mobile', false], // Mobile is true, but behaviour is not 'hybrid'
-    ['someOtherValue', 'desktop', false], // Neither condition met
+    ['someOtherValue', 'desktop', false] // Neither condition met
 
   ])('should return %s for behaviour: %s and breakpoint: %s', (behaviour, breakpoint, expected) => {
     const result = getIsFullscreen(behaviour, breakpoint)

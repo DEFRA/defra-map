@@ -13,15 +13,15 @@ jest.mock('../../components/Icon/Icon', () => ({ Icon: ({ id }) => <svg data-tes
 
 describe('Panel', () => {
   const dispatch = jest.fn()
-  const layoutRefs = { 
-    mainRef: { current: {} }, 
-    viewportRef: { current: { focus: jest.fn() } } 
+  const layoutRefs = {
+    mainRef: { current: {} },
+    viewportRef: { current: { focus: jest.fn() } }
   }
 
   beforeEach(() => {
     useConfig.mockReturnValue({ id: 'app' })
     useApp.mockReturnValue({ dispatch, breakpoint: 'desktop', layoutRefs })
-    document.body.innerHTML = `<div id="app-dm-app"></div>`
+    document.body.innerHTML = '<div id="app-dm-app"></div>'
     jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => cb())
     jest.clearAllMocks()
   })
@@ -34,7 +34,7 @@ describe('Panel', () => {
       desktop: { slot: 'side', initiallyOpen: true, dismissable: false, modal: false },
       ...config
     }
-    return render(<Panel panelId="Settings" panelConfig={panelConfig} label="Settings" {...props} />)
+    return render(<Panel panelId='Settings' panelConfig={panelConfig} label='Settings' {...props} />)
   }
 
   describe('rendering and accessibility', () => {
@@ -90,7 +90,7 @@ describe('Panel', () => {
     it('focuses triggeringElement on close for button slots', () => {
       const focusMock = jest.fn()
       const triggeringElement = { focus: focusMock, parentNode: document.createElement('div') }
-      
+
       renderPanel(
         { desktop: { slot: 'top-button', dismissable: true, initiallyOpen: false } },
         { props: { triggeringElement } }
@@ -104,7 +104,7 @@ describe('Panel', () => {
     it('handles close for non-button slots', () => {
       const focusMock = jest.fn()
       const triggeringElement = { focus: focusMock, parentNode: document.createElement('div') }
-      
+
       renderPanel(
         { desktop: { slot: 'overlay', dismissable: true, modal: true } },
         { props: { triggeringElement } }

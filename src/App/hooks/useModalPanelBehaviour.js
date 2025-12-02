@@ -115,7 +115,7 @@ export function useModalPanelBehaviour ({
     }
 
     document.addEventListener('focusin', handleFocusIn)
-    
+
     return () => {
       document.removeEventListener('focusin', handleFocusIn)
     }

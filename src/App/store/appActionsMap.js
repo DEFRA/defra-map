@@ -97,11 +97,11 @@ const setSafeZoneInset = (state, { safeZoneInset, syncMapPadding = true }) => {
   return shallowEqual(state.safeZoneInset, safeZoneInset)
     ? state
     : {
-      ...state,
-      safeZoneInset,
-      syncMapPadding,
-      isLayoutReady: true
-    }
+        ...state,
+        safeZoneInset,
+        syncMapPadding,
+        isLayoutReady: true
+      }
 }
 
 const toggleButtonDisabled = (state, payload) => {

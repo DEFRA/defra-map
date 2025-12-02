@@ -7,7 +7,7 @@ import { withPluginContexts } from './pluginWrapper.js'
 jest.mock('../registry/panelRegistry.js')
 jest.mock('../registry/pluginRegistry.js', () => ({ registeredPlugins: [] }))
 jest.mock('./pluginWrapper.js', () => ({ withPluginContexts: jest.fn((c) => c) }))
-jest.mock('../components/Panel/Panel.jsx', () => ({ Panel: (props) => <div data-testid="panel" {...props} />}))
+jest.mock('../components/Panel/Panel.jsx', () => ({ Panel: (props) => <div data-testid='panel' {...props} /> }))
 jest.mock('./slots.js', () => ({ allowedSlots: { panel: ['header', 'modal'] } }))
 
 describe('mapPanels', () => {

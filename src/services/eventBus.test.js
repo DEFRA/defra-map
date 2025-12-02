@@ -55,11 +55,11 @@ describe('EventBus singleton', () => {
 
   it('off returns the bus if event has no handlers', () => {
     expect(eventBus.off('nonexistent')).toBe(eventBus)
-	})
+  })
 
-	it('emit returns the bus if event has no handlers', () => {
+  it('emit returns the bus if event has no handlers', () => {
     expect(eventBus.emit('nonexistent')).toBe(eventBus)
-	})
+  })
 
   it('catches and logs errors from handlers', () => {
     const error = new Error('boom')

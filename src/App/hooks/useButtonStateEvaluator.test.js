@@ -3,7 +3,6 @@ import { useButtonStateEvaluator } from './useButtonStateEvaluator'
 import { useApp } from '../store/appContext.js'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { useContext } from 'react'
-import { PluginContext } from '../store/PluginProvider.jsx'
 
 jest.mock('../store/appContext.js')
 jest.mock('react', () => ({ ...jest.requireActual('react'), useContext: jest.fn() }))

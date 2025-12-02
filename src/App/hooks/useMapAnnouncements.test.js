@@ -1,4 +1,3 @@
-import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { useMapAnnouncements } from './useMapAnnouncements'
 import { useConfig } from '../store/configContext.js'
@@ -18,15 +17,15 @@ const setup = (overrides = {}) => {
     getCardinalMove: jest.fn(() => 'north'),
     ...overrides.mapProvider
   }
-  
+
   useConfig.mockReturnValue({ mapProvider, ...overrides.config })
   useService.mockReturnValue({ announce, ...overrides.service })
-  
+
   getMapStatusMessage.moved = jest.fn(() => 'Moved north')
   getMapStatusMessage.zoomed = jest.fn(() => 'Zoomed in')
   getMapStatusMessage.noChange = jest.fn(() => 'No change')
   getMapStatusMessage.newArea = jest.fn(() => 'New area')
-  
+
   return { announce, mapProvider }
 }
 
@@ -134,7 +133,6 @@ describe('useMapAnnouncements', () => {
   })
 
   test('detects center change correctly for lat or lng', () => {
-    const { announce } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -155,7 +153,7 @@ describe('useMapAnnouncements', () => {
   test('does not announce when message is falsy', () => {
     const { announce } = setup()
     getMapStatusMessage.noChange = jest.fn(() => null)
-    
+
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 

@@ -80,7 +80,7 @@ export default class DefraMap {
     // Remove the map param from the URL using regex to prevent encoding
     const key = this.config.mapViewParamKey
     const href = location.href
-    const newUrl = href.replace(new RegExp(`[?&]${key}=[^&]*(&|$)`),(_, p1) => (p1 === '&' ? '?' : '')).replace(/\?$/, '')
+    const newUrl = href.replace(new RegExp(`[?&]${key}=[^&]*(&|$)`), (_, p1) => (p1 === '&' ? '?' : '')).replace(/\?$/, '')
     history.replaceState(history.state, '', newUrl)
   }
 
@@ -133,7 +133,7 @@ export default class DefraMap {
       throw err
     }
   }
- 
+
   removeApp () {
     if (this._root && typeof this.unmount === 'function') {
       this.unmount()

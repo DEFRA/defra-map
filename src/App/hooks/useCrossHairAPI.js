@@ -27,11 +27,11 @@ export const useCrossHair = () => {
     }
 
     // --- API ---
-    
+
     crossHair.pinToMap = (coords, state) => {
       const { x, y } = mapProvider.getPointFromCoords(coords)
       crossHair.coords = coords
-      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: true, isVisible: true, coords: coords, state }})
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: true, isVisible: true, coords, state } })
       updatePosition(el, x, y, state)
     }
 
@@ -40,7 +40,7 @@ export const useCrossHair = () => {
       el.style.top = '50%'
       el.style.transform = 'translate(0,0)'
       el.style.display = 'block'
-      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: false, isVisible: true }})
+      dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: false, isVisible: true } })
     }
 
     crossHair.remove = () => {
@@ -64,7 +64,7 @@ export const useCrossHair = () => {
 
     crossHair.getDetail = () => {
       const coords = crossHair.isPinnedToMap ? crossHair.coords : mapProvider.getCenter()
-      
+
       return {
         state: crossHair.state,
         point: mapProvider.getPointFromCoords(coords),
@@ -85,7 +85,6 @@ export const useCrossHair = () => {
     return () => {
       eventBus.off('map:render', handleRender)
     }
-
   }, [crossHair, mapProvider, mapSize, dispatch, safeZoneInset])
 
   useEffect(() => {

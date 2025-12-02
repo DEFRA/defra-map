@@ -9,7 +9,7 @@ import { allowedSlots } from './slots.js'
  * Map controls for a given slot and app state.
  * Returns an array of control descriptors.
  */
-export function mapControls({ slot, appState, evaluateProp }) {
+export function mapControls ({ slot, appState, evaluateProp }) {
   const { breakpoint, mode } = appState
   const controlConfig = getControlConfig()
 
@@ -39,7 +39,7 @@ export function mapControls({ slot, appState, evaluateProp }) {
       if (control.html) {
         element = (
           <div
-            className="dm-c-control"
+            className='dm-c-control'
             key={control.id}
             dangerouslySetInnerHTML={{ __html: evaluateProp(control.html, pluginId) }}
           />

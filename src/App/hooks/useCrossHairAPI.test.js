@@ -25,13 +25,13 @@ describe('useCrossHair', () => {
     mockElement = { style: {} }
     eventBus.on = jest.fn()
     eventBus.off = jest.fn()
-    
+
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
     useApp.mockReturnValue({ safeZoneInset: { left: 10, top: 20 } })
-    useMap.mockReturnValue({ 
-      crossHair: mockCrossHair, 
-      dispatch: mockDispatch, 
-      mapSize: 'medium' 
+    useMap.mockReturnValue({
+      crossHair: mockCrossHair,
+      dispatch: mockDispatch,
+      mapSize: 'medium'
     })
   })
 
@@ -81,10 +81,10 @@ describe('useCrossHair', () => {
     setup()
     act(() => mockCrossHair.remove())
     expect(mockElement.style.display).toBe('none')
-    
+
     act(() => mockCrossHair.show())
     expect(mockElement.style.display).toBe('block')
-    
+
     act(() => mockCrossHair.hide())
     expect(mockElement.style.display).toBe('none')
   })
@@ -100,11 +100,11 @@ describe('useCrossHair', () => {
 
   it('getDetail returns correct data for pinned/unpinned', () => {
     setup()
-    
+
     mockCrossHair.isPinnedToMap = true
     mockCrossHair.coords = { lat: 5, lng: 10 }
     expect(mockCrossHair.getDetail()).toMatchObject({ coords: { lat: 5, lng: 10 }, zoom: 10 })
-    
+
     mockCrossHair.isPinnedToMap = false
     expect(mockCrossHair.getDetail()).toMatchObject({ coords: { lat: 0, lng: 0 } })
     expect(mockMapProvider.getCenter).toHaveBeenCalled()
@@ -113,23 +113,23 @@ describe('useCrossHair', () => {
   it('subscribes and updates on map:render', () => {
     setup()
     expect(eventBus.on).toHaveBeenCalledWith('map:render', expect.any(Function))
-    
+
     mockCrossHair.coords = { lat: 1, lng: 1 }
     mockCrossHair.isPinnedToMap = true
-    
+
     act(() => eventBus.on.mock.calls[0][1]())
     expect(mockElement.style.transform).toBe('translate(190px, 380px)')
   })
 
   it('skips map:render update when not pinned', () => {
     setup()
-    
+
     mockCrossHair.coords = { lat: 1, lng: 1 }
     mockCrossHair.isPinnedToMap = false
-    
+
     const handleRender = eventBus.on.mock.calls[0][1]
     act(() => handleRender())
-    
+
     expect(mockElement.style.transform).toBeUndefined()
   })
 
@@ -143,24 +143,24 @@ describe('useCrossHair', () => {
 
   it('re-pins on mapSize change', () => {
     const { rerender } = setup()
-    
+
     mockCrossHair.coords = { lat: 1, lng: 1 }
     mockCrossHair.isPinnedToMap = true
     mockDispatch.mockClear()
-    
+
     useMap.mockReturnValue({ crossHair: mockCrossHair, dispatch: mockDispatch, mapSize: 'large' })
     rerender()
-    
+
     expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'UPDATE_CROSS_HAIR' }))
   })
 
   it('skips re-pin when not pinned', () => {
     const { rerender } = setup()
     mockDispatch.mockClear()
-    
+
     useMap.mockReturnValue({ crossHair: mockCrossHair, dispatch: mockDispatch, mapSize: 'large' })
     rerender()
-    
+
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 })

@@ -1,5 +1,4 @@
 import { defaultControlConfig } from '../../config/appConfig.js'
-import { deepMerge } from '../../utils/deepMerge.js'
 
 jest.mock('../../utils/deepMerge.js', () => ({
   deepMerge: jest.fn((a, b) => ({ ...a, ...b }))

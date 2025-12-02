@@ -15,7 +15,7 @@ describe('Icon component', () => {
 
   it('renders an svg element with default attributes', () => {
     getIconRegistry.mockReturnValue({ close: '<path d="M0 0 L10 10"/>' })
-    const { container } = render(<Icon id="close" />)
+    const { container } = render(<Icon id='close' />)
     const svg = container.querySelector('svg')
     expect(svg).toBeInTheDocument()
     expect(svg).toHaveAttribute('width', '24')
@@ -32,14 +32,14 @@ describe('Icon component', () => {
 
   it('renders the SVG from the registry when id is provided', () => {
     getIconRegistry.mockReturnValue({ close: '<path d="M0 0 L10 10"/>' })
-    const { container } = render(<Icon id="close" />)
+    const { container } = render(<Icon id='close' />)
     expect(container.querySelector('svg').innerHTML).toContain('<path d="M0 0 L10 10"')
   })
 
   it('falls back to svgContent if id not found in registry', () => {
     getIconRegistry.mockReturnValue({})
     const fallbackSVG = '<circle cx="5" cy="5" r="5"/>'
-    const { container } = render(<Icon id="unknown" svgContent={fallbackSVG} />)
+    const { container } = render(<Icon id='unknown' svgContent={fallbackSVG} />)
     expect(container.querySelector('svg').innerHTML).toContain('<circle cx="5" cy="5" r="5"')
   })
 
@@ -53,7 +53,7 @@ describe('Icon component', () => {
   it('uses registry icon if both id and svgContent provided', () => {
     getIconRegistry.mockReturnValue({ check: '<path d="M1 1 L5 5"/>' })
     const fallbackSVG = '<circle cx="5" cy="5" r="5"/>'
-    const { container } = render(<Icon id="check" svgContent={fallbackSVG} />)
+    const { container } = render(<Icon id='check' svgContent={fallbackSVG} />)
     expect(container.querySelector('svg').innerHTML).toContain('<path d="M1 1 L5 5"')
   })
 })

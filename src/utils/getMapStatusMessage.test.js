@@ -1,11 +1,10 @@
 import { getMapStatusMessage } from './getMapStatusMessage' // Switched to ES Module import
 
 describe('getMapStatusMessage', () => {
-
   // --- Test 1: moved ---
   it.each([
     ['north', 'Map moved north.'],
-    ['south', 'Map moved south.'],
+    ['south', 'Map moved south.']
   ])('should return the correct message for moved (%s)', (direction, expected) => {
     const result = getMapStatusMessage.moved({ direction })
     expect(result).toBe(expected)
@@ -24,15 +23,15 @@ describe('getMapStatusMessage', () => {
     // Edge case: Max and Min are true (FIXED SPACING ISSUE)
     [10, 11, true, true, 'Map zoomed in (Maximum zoom) (Minimum zoom). New area approximately 100x100.'],
     // Edge case: from === to (should default to "out" due to "to > from" comparison being false)
-    [10, 10, false, false, 'Map zoomed out. New area approximately 100x100.'], 
+    [10, 10, false, false, 'Map zoomed out. New area approximately 100x100.']
   ])('should return the correct message for zoomed (from: %s, to: %s, max: %s, min: %s)', (
     from, to, isAtMaxZoom, isAtMinZoom, expected
   ) => {
     const result = getMapStatusMessage.zoomed({
-      from, 
-      to, 
-      areaDimensions: '100x100', 
-      isAtMaxZoom, 
+      from,
+      to,
+      areaDimensions: '100x100',
+      isAtMaxZoom,
       isAtMinZoom
     })
     expect(result).toBe(expected)
@@ -44,13 +43,13 @@ describe('getMapStatusMessage', () => {
     [true, false, 'New area approximately 500m (Maximum zoom).'],
     [false, true, 'New area approximately 500m (Minimum zoom).'],
     // Edge case: Max and Min are true (FIXED SPACING ISSUE)
-    [true, true, 'New area approximately 500m (Maximum zoom) (Minimum zoom).'],
+    [true, true, 'New area approximately 500m (Maximum zoom) (Minimum zoom).']
   ])('should include zoom status for newArea (max: %s, min: %s)', (
     isAtMaxZoom, isAtMinZoom, expected
   ) => {
     const result = getMapStatusMessage.newArea({
-      areaDimensions: '500m', 
-      isAtMaxZoom, 
+      areaDimensions: '500m',
+      isAtMaxZoom,
       isAtMinZoom
     })
     expect(result).toBe(expected)
@@ -62,7 +61,7 @@ describe('getMapStatusMessage', () => {
     [false, false, 'No change, .'],
     [true, false, 'No change, maximum zoom reached.'],
     [false, true, 'No change, minimum zoom reached.'],
-    [true, true, 'No change, maximum zoom reachedminimum zoom reached.'],
+    [true, true, 'No change, maximum zoom reachedminimum zoom reached.']
   ])('should return the correct status for noChange (max: %s, min: %s)', (
     isAtMaxZoom, isAtMinZoom, expected
   ) => {

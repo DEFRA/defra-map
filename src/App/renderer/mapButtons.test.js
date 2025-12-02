@@ -3,29 +3,29 @@ import { mapButtons, getMatchingButtons, renderButton } from './mapButtons.js'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
 
 jest.mock('../registry/buttonRegistry.js')
-jest.mock('../components/MapButton/MapButton.jsx', () => ({ 
-  MapButton: (props) => <button data-testid="map-button" {...props} /> 
+jest.mock('../components/MapButton/MapButton.jsx', () => ({
+  MapButton: (props) => <button data-testid='map-button' {...props} />
 }))
-jest.mock('./slots.js', () => ({ 
-  allowedSlots: { button: ['header', 'sidebar'] } 
+jest.mock('./slots.js', () => ({
+  allowedSlots: { button: ['header', 'sidebar'] }
 }))
 
 describe('mapButtons module', () => {
-  const baseBtn = { 
-    iconId: 'i1', 
-    label: 'Btn', 
-    desktop: { slot: 'header', order: 1, showLabel: true }, 
-    includeModes: ['view'] 
+  const baseBtn = {
+    iconId: 'i1',
+    label: 'Btn',
+    desktop: { slot: 'header', order: 1, showLabel: true },
+    includeModes: ['view']
   }
 
-  const appState = { 
-    breakpoint: 'desktop', 
-    mode: 'view', 
-    openPanels: {}, 
-    dispatch: jest.fn(), 
-    disabledButtons: new Set(), 
-    hiddenButtons: new Set(), 
-    pressedButtons: new Set() 
+  const appState = {
+    breakpoint: 'desktop',
+    mode: 'view',
+    openPanels: {},
+    dispatch: jest.fn(),
+    disabledButtons: new Set(),
+    hiddenButtons: new Set(),
+    pressedButtons: new Set()
   }
 
   const appConfig = { id: 'test' }
@@ -35,8 +35,8 @@ describe('mapButtons module', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     getButtonConfig.mockReturnValue({})
-    Object.defineProperty(document, 'activeElement', { 
-      value: document.createElement('div'), 
+    Object.defineProperty(document, 'activeElement', {
+      value: document.createElement('div'),
       writable: true,
       configurable: true
     })
@@ -68,7 +68,7 @@ describe('mapButtons module', () => {
   // renderButton tests
   // -------------------------
   describe('renderButton', () => {
-    const render = (config, state = appState, flags = {}) => 
+    const render = (config, state = appState, flags = {}) =>
       renderButton({ btn: ['id', config], appState: state, appConfig, evaluateProp, groupStart: false, groupMiddle: false, groupEnd: false, ...flags })
 
     it('renders a MapButton with correct basic props', () => {
@@ -117,11 +117,11 @@ describe('mapButtons module', () => {
     })
 
     it('renders correct state flags for disabled, hidden, and pressed buttons', () => {
-      const state = { 
-        ...appState, 
-        disabledButtons: new Set(['id']), 
-        hiddenButtons: new Set(['id']), 
-        pressedButtons: new Set(['id']) 
+      const state = {
+        ...appState,
+        disabledButtons: new Set(['id']),
+        hiddenButtons: new Set(['id']),
+        pressedButtons: new Set(['id'])
       }
       const result = render({ ...baseBtn, pressedWhen: jest.fn() }, state)
       expect(result.props).toMatchObject({ isDisabled: true, isHidden: true, isPressed: true })
@@ -160,10 +160,10 @@ describe('mapButtons module', () => {
     })
 
     it('sets groupStart, groupMiddle, and groupEnd flags correctly for multiple buttons', () => {
-      getButtonConfig.mockReturnValue({ 
-        b1: { ...baseBtn, group: 'g1' }, 
+      getButtonConfig.mockReturnValue({
+        b1: { ...baseBtn, group: 'g1' },
         b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' },
-        b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' } 
+        b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' }
       })
       const result = map()
       expect(result[0].element.props).toMatchObject({ groupStart: true })

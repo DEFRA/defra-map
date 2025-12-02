@@ -30,7 +30,7 @@ function notifyListeners (newType) {
 // Public API
 // -----------------------------------------------------------------------------
 
-function createInterfaceDetector() {
+function createInterfaceDetector () {
   const mql = window.matchMedia('(pointer: coarse)')
 
   // handle DevTools / system pointer type changes
@@ -61,7 +61,6 @@ function createInterfaceDetector() {
     window.removeEventListener('keydown', handleKeyDown)
   }
 }
-
 
 function getInterfaceType () {
   if (lastInterfaceType === 'unknown') {

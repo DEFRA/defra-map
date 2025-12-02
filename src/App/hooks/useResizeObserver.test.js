@@ -86,7 +86,7 @@ describe('useResizeObserver', () => {
     const { result, unmount } = renderHook(() => useResizeObserver(ref, callback))
 
     // ⬅️ CORRECTED: Access frameRef via result.current
-    result.current.frameRef.current = 123 
+    result.current.frameRef.current = 123
     unmount()
 
     expect(global.cancelAnimationFrame).toHaveBeenCalledWith(123)

@@ -69,7 +69,7 @@ describe('panelRegistry', () => {
       ...defaultPanelConfig,
       ...config,
       html: config.html,
-      render: null, // match defaultPanelConfig
+      render: null // match defaultPanelConfig
     })
     expect(returned).toEqual(registry[id])
   })

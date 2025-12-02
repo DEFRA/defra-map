@@ -13,7 +13,7 @@ describe('getMediaState', () => {
     window.matchMedia = originalMatchMedia
   })
 
-  function mockMatchMedia(matchesMap) {
+  function mockMatchMedia (matchesMap) {
     window.matchMedia = jest.fn().mockImplementation(query => ({
       matches: matchesMap[query] || false,
       addListener: jest.fn(),

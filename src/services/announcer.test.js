@@ -42,7 +42,7 @@ describe('createAnnouncer', () => {
 
     // advance only CLEAR_DELAY should still be empty due to debounce
     jest.advanceTimersByTime(100)
-    expect(mapStatusRef.current.textContent).toBe('') 
+    expect(mapStatusRef.current.textContent).toBe('')
 
     // advance DEBOUNCE_DELAY to trigger actual announcement
     jest.advanceTimersByTime(500)

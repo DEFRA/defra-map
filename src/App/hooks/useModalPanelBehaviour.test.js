@@ -52,13 +52,13 @@ describe('useModalPanelBehaviour', () => {
 
   it('handles Escape and Tab keys', () => {
     render(<TestComponent />)
-    
+
     fireEvent.keyDown(refs.panel.current, { key: 'Escape' })
     expect(handleClose).toHaveBeenCalled()
 
     fireEvent.keyDown(refs.panel.current, { key: 'Tab' })
     expect(constrainFocusModule.constrainKeyboardFocus).toHaveBeenCalledWith(
-      refs.panel.current, 
+      refs.panel.current,
       expect.any(Object)
     )
   })
@@ -71,9 +71,9 @@ describe('useModalPanelBehaviour', () => {
     Object.defineProperty(elements.buttonContainer, 'getBoundingClientRect', {
       value: () => ({ top: 10, right: 80, bottom: 40, left: 20, width: 60, height: 30 })
     })
-    
+
     render(<TestComponent />)
-    
+
     const inset = getComputedStyle(document.documentElement).getPropertyValue('--modal-inset')
     expect(inset).toContain('10px')
   })
@@ -110,15 +110,15 @@ describe('useModalPanelBehaviour', () => {
 
   it('toggles inert elements on mount and cleanup', () => {
     const { unmount } = render(<TestComponent />)
-    
+
     expect(toggleInertModule.toggleInertElements).toHaveBeenCalledWith({
       containerEl: refs.panel.current,
       isFullscreen: true,
       boundaryEl: elements.root
     })
-    
+
     unmount()
-    
+
     expect(toggleInertModule.toggleInertElements).toHaveBeenCalledWith({
       containerEl: refs.panel.current,
       isFullscreen: false,
@@ -151,19 +151,19 @@ describe('useModalPanelBehaviour', () => {
 
     it('handles edge cases gracefully', () => {
       render(<TestComponent />)
-      
+
       dispatchFocusIn(null)
-      
+
       refs.panel.current = null
       dispatchFocusIn(document.body)
-      
+
       expect(true).toBe(true) // No errors thrown
     })
   })
 
   it('does nothing when isModal is false', () => {
     render(<TestComponent isModal={false} />)
-    
+
     fireEvent.keyDown(refs.panel.current, { key: 'Escape' })
     expect(handleClose).not.toHaveBeenCalled()
     expect(toggleInertModule.toggleInertElements).not.toHaveBeenCalled()

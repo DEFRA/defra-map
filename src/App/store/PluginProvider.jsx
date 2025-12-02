@@ -66,7 +66,7 @@ export const PluginProvider = ({ children }) => {
     refs, // persist refs identity here
     getPluginRef
   }), [state, dispatch]) // refs excluded to keep identity stable
-    
+
   return (
     <PluginContext.Provider value={contextValue}>
       {children}

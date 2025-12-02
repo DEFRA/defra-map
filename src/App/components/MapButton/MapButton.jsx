@@ -49,12 +49,16 @@ export const MapButton = ({
     id: `${appId}-${stringToKebab(buttonId)}`,
     className: buttonClassNames,
     onClick,
-    ref: (el) => buttonRefs.current && buttonId ? buttonRefs.current[buttonId] = el : null,
+    ref: (el) => {
+      if (buttonRefs.current && buttonId) {
+        buttonRefs.current[buttonId] = el
+      }
+    },
     'aria-disabled': isDisabled || undefined,
     'aria-expanded': typeof isExpanded === 'boolean' ? isExpanded : undefined,
     'aria-pressed': panelId ? (isOpen ? 'true' : 'false') : isPressed,
     'aria-controls': panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined,
-    ...(href 
+    ...(href
       ? { href, target: '_blank', onKeyUp: handleKeyUp, role: 'button' } // only <a>
       : { type: 'button' } // only <button>
     )
@@ -70,13 +74,13 @@ export const MapButton = ({
   const wrapperClassNames = [
     'dm-c-button-wrapper',
     showLabel && ' dm-c-button-wrapper--wide',
-    groupStart && `dm-c-button-wrapper--group-start`,
-    groupMiddle && `dm-c-button-wrapper--group-middle`,
-    groupEnd && `dm-c-button-wrapper--group-end`
+    groupStart && 'dm-c-button-wrapper--group-start',
+    groupMiddle && 'dm-c-button-wrapper--group-middle',
+    groupEnd && 'dm-c-button-wrapper--group-end'
   ].filter(Boolean).join(' ')
 
   return (
-    <div className={wrapperClassNames} style={isHidden ? { display: 'none'} : undefined}>
+    <div className={wrapperClassNames} style={isHidden ? { display: 'none' } : undefined}>
       {showLabel ? buttonEl : <Tooltip content={label}>{buttonEl}</Tooltip>}
       {panelId && <SlotRenderer slot={`${stringToKebab(buttonId)}-button`} />}
     </div>

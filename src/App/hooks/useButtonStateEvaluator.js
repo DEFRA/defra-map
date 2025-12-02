@@ -4,7 +4,7 @@ import { useApp } from '../store/appContext.js'
 import { PluginContext } from '../store/PluginProvider.jsx'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 
-export function useButtonStateEvaluator(evaluateProp) {
+export function useButtonStateEvaluator (evaluateProp) {
   const appState = useApp()
   const pluginContext = useContext(PluginContext)
 

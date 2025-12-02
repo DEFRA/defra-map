@@ -1,4 +1,3 @@
-import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useConfig } from '../store/configContext.js'
@@ -18,10 +17,10 @@ describe('pluginApiWrapper', () => {
     test('calls original function with state and additional args', () => {
       const fn = jest.fn((state, arg1, arg2) => `${state.pluginId}-${arg1}-${arg2}`)
       const stateRef = { current: { appState: 'app', mapState: 'map' } }
-      const wrapped = withPluginApiContexts(fn, { 
-        pluginId: 'test-plugin', 
-        pluginConfig: { foo: 'bar' }, 
-        stateRef 
+      const wrapped = withPluginApiContexts(fn, {
+        pluginId: 'test-plugin',
+        pluginConfig: { foo: 'bar' },
+        stateRef
       })
 
       const result = wrapped('hello', 'world')

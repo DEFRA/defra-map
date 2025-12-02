@@ -1,4 +1,3 @@
-import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { useLayoutMeasurements } from './useLayoutMeasurements'
 import { useResizeObserver } from './useResizeObserver.js'

@@ -31,9 +31,9 @@ describe('historyManager', () => {
 
   it('registers component and initializes popstate listener on first registration', () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener')
-    
+
     historyManager.register(component1)
-    
+
     expect(addEventListenerSpy).toHaveBeenCalledWith('popstate', expect.any(Function))
     addEventListenerSpy.mockRestore()
   })
@@ -97,7 +97,7 @@ describe('historyManager', () => {
     historyManager.register(component1)
     component1.rootEl.appendChild(document.createElement('div'))
     historyManager.unregister(component1)
-    
+
     queryString.getQueryParam.mockReturnValue('map')
     detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
     window.dispatchEvent(popstateEvent)

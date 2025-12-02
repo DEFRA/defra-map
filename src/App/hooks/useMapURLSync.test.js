@@ -6,16 +6,17 @@ import * as mapStateSync from '../../utils/mapStateSync.js'
 
 jest.mock('../store/configContext.js')
 jest.mock('../../services/eventBus.js')
-jest.mock('../../utils/mapStateSync.js')
+jest.mock('../../utils/mapStateSync.js', () => ({
+  setMapStateInURL: jest.fn()
+}))
 
 describe('useMapURLSync', () => {
   let handleEvent
 
   beforeEach(() => {
     handleEvent = undefined
-    eventBus.on = jest.fn((event, fn) => { handleEvent = fn })
+    eventBus.on = jest.fn((_, fn) => { handleEvent = fn })
     eventBus.off = jest.fn()
-    mapStateSync.setMapStateInURL = jest.fn()
   })
 
   it('registers map:stateupdated listener and cleans up', () => {

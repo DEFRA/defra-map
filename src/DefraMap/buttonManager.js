@@ -14,7 +14,7 @@
 
 import defaults from '../config/defaults.js'
 
-export function createButton(config, rootEl, handleClick) {
+export function createButton (config, rootEl, handleClick) {
   const { id, buttonText, buttonClass } = config
 
   const buttonHTML = `

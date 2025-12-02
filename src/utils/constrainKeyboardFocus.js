@@ -14,7 +14,7 @@ export function constrainKeyboardFocus (containerEl, e) {
   let focusableEls = Array.from(containerEl.querySelectorAll(selectors.join(',')))
   focusableEls = focusableEls.filter(focusableEl => !!focusableEl.offsetParent)
 
-  // Help with testing 
+  // Help with testing
   if (focusableEls.length === 0) {
     return
   }

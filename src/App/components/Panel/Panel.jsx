@@ -24,12 +24,12 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
   const panelRef = useRef(null)
 
   const handleClose = () => {
-    requestAnimationFrame(() => {(props?.triggeringElement || layoutRefs.viewportRef.current).focus?.()})
+    requestAnimationFrame(() => { (props?.triggeringElement || layoutRefs.viewportRef.current).focus?.() })
     dispatch({ type: 'CLOSE_PANEL', payload: panelId })
   }
 
-  useModalPanelBehaviour({mainRef, panelRef, isModal, isAside, rootEl, buttonContainerEl, handleClose })
-  
+  useModalPanelBehaviour({ mainRef, panelRef, isModal, isAside, rootEl, buttonContainerEl, handleClose })
+
   useEffect(() => {
     if (shouldFocus) {
       panelRef.current.focus()
@@ -75,13 +75,15 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
         </button>
       )}
 
-      {html ? (
-        <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: html }} />
-      ) : (
-        <div className={panelBodyClass}>
-          {WrappedChild ? <WrappedChild {...props} /> : children}
-        </div>
-      )}
+      {html
+        ? (
+          <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: html }} />
+          )
+        : (
+          <div className={panelBodyClass}>
+            {WrappedChild ? <WrappedChild {...props} /> : children}
+          </div>
+          )}
     </div>
   )
 }

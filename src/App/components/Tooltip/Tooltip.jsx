@@ -62,7 +62,7 @@ export const Tooltip = ({ children, content }) => {
   // Merge refs - call both the Tooltip's internal ref and any ref passed from the child
   const mergeRefs = (node) => {
     triggerRef.current = node
-    
+
     // In React 19, ref is a regular prop
     const childRef = children.props?.ref
     if (typeof childRef === 'function') {

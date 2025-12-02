@@ -2,7 +2,10 @@ import { getTooltipPosition } from './getTooltipPosition'
 
 describe('getTooltipPosition', () => {
   const createRect = ({ top = 0, bottom = 0, left = 0, right = 0 } = {}) => ({
-    top, bottom, left, right,
+    top,
+    bottom,
+    left,
+    right,
     width: right - left,
     height: bottom - top
   })

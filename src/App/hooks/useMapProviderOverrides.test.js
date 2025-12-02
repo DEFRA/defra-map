@@ -1,4 +1,3 @@
-import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { useMapProviderOverrides } from './useMapProviderOverrides'
 import { useConfig } from '../store/configContext.js'
@@ -23,14 +22,14 @@ const setup = (overrides = {}) => {
     setPadding: jest.fn(),
     ...overrides.mapProvider
   }
-  
+
   useConfig.mockReturnValue({ mapProvider, ...overrides.config })
   useApp.mockReturnValue({ dispatch, layoutRefs, ...overrides.app })
   useMap.mockReturnValue({ mapSize: 'md', ...overrides.map })
-  
+
   getSafeZoneInset.mockReturnValue({ top: 10, right: 5, bottom: 15, left: 5 })
   scalePoints.mockReturnValue({ top: 20, right: 10, bottom: 30, left: 10 })
-  
+
   return { dispatch, layoutRefs, mapProvider }
 }
 
@@ -46,12 +45,12 @@ describe('useMapProviderOverrides', () => {
   test('fitToBounds and setView call updatePadding with correct flow', () => {
     const { mapProvider, dispatch, layoutRefs } = setup({ map: { mapSize: 'lg' } })
     renderHook(() => useMapProviderOverrides())
-    
+
     const safeZone = { top: 10, right: 5, bottom: 15, left: 5 }
     const scaled = { top: 20, right: 10, bottom: 30, left: 10 }
-    
+
     mapProvider.fitToBounds([0, 0, 1, 1], { animate: true })
-    
+
     expect(getSafeZoneInset).toHaveBeenCalledWith(layoutRefs)
     expect(scalePoints).toHaveBeenCalledWith(safeZone, scaleFactor.lg)
     expect(dispatch).toHaveBeenCalledWith({
@@ -62,7 +61,7 @@ describe('useMapProviderOverrides', () => {
 
     jest.clearAllMocks()
     mapProvider.setView({ center: [1, 2], zoom: 15 })
-    
+
     expect(getSafeZoneInset).toHaveBeenCalledWith(layoutRefs)
     expect(dispatch).toHaveBeenCalled()
     expect(mapProvider.setPadding).toHaveBeenCalled()
@@ -73,22 +72,22 @@ describe('useMapProviderOverrides', () => {
     const originalFitBounds = mapProvider.fitToBounds
     const originalSetView = mapProvider.setView
     renderHook(() => useMapProviderOverrides())
-    
+
     mapProvider.fitToBounds(null)
     mapProvider.setView({ center: null, zoom: 10 })
-    
+
     expect(dispatch).not.toHaveBeenCalled()
     expect(originalFitBounds).not.toHaveBeenCalled()
     expect(originalSetView).not.toHaveBeenCalled()
   })
 
   test('handles missing dispatch or setPadding gracefully', () => {
-    const { mapProvider } = setup({ 
+    const { mapProvider } = setup({
       app: { dispatch: null },
       mapProvider: { setPadding: null, fitToBounds: jest.fn(), setView: jest.fn() }
     })
     renderHook(() => useMapProviderOverrides())
-    
+
     expect(() => {
       mapProvider.fitToBounds([0, 0, 1, 1])
       mapProvider.setView({ center: [0, 0], zoom: 10 })
@@ -100,15 +99,15 @@ describe('useMapProviderOverrides', () => {
     const originalFitBounds = mapProvider.fitToBounds
     const originalSetView = mapProvider.setView
     const { unmount } = renderHook(() => useMapProviderOverrides())
-    
+
     expect(mapProvider.fitToBounds).not.toBe(originalFitBounds)
-    
+
     mapProvider.fitToBounds([0, 0, 1, 1], { animate: false })
     mapProvider.setView({ center: [1, 2], zoom: 15 })
-    
+
     expect(originalFitBounds).toHaveBeenCalledWith([0, 0, 1, 1], { animate: false })
     expect(originalSetView).toHaveBeenCalledWith({ center: [1, 2], zoom: 15 })
-    
+
     unmount()
     expect(mapProvider.fitToBounds).toBe(originalFitBounds)
   })
@@ -117,10 +116,10 @@ describe('useMapProviderOverrides', () => {
     const { mapProvider } = setup()
     const { rerender } = renderHook(() => useMapProviderOverrides())
     const firstOverride = mapProvider.fitToBounds
-    
+
     setup({ map: { mapSize: 'lg' } })
     rerender()
-    
+
     expect(mapProvider.fitToBounds).not.toBe(firstOverride)
   })
 })

@@ -57,7 +57,7 @@ describe('setupBehavior', () => {
   it('loads/removes component based on shouldLoadComponent', () => {
     mockMapInstance.config = { id: 'test', behaviour: 'buttonFirst' }
     setupBehavior(mockMapInstance)
-    
+
     queryString.getQueryParam.mockReturnValue('test')
     breakpointCallback()
     expect(mockMapInstance.loadApp).toHaveBeenCalled()

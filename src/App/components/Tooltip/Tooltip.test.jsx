@@ -18,7 +18,7 @@ describe('Tooltip', () => {
     getTooltipPosition.mockReturnValue('bottom')
 
     const { container, unmount } = render(
-      <Tooltip content="Test tooltip" {...props}>
+      <Tooltip content='Test tooltip' {...props}>
         <Child />
       </Tooltip>
     )
@@ -113,7 +113,7 @@ describe('Tooltip', () => {
     const fnRef = jest.fn()
 
     render(
-      <Tooltip content="Test tooltip">
+      <Tooltip content='Test tooltip'>
         <ChildWithFunctionRef ref={fnRef} />
       </Tooltip>
     )
@@ -133,7 +133,7 @@ describe('Tooltip', () => {
     const objRef = { current: null }
 
     render(
-      <Tooltip content="Test tooltip">
+      <Tooltip content='Test tooltip'>
         <ChildWithObjectRef ref={objRef} />
       </Tooltip>
     )

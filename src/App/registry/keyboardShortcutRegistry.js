@@ -29,4 +29,3 @@ export const getKeyboardShortcuts = () => {
     ...pluginShortcutHelp // plugin-defined shortcuts (deduped)
   ]
 }
-

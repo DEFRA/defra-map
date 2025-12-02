@@ -3,6 +3,10 @@ import { render } from '@testing-library/react'
 import { PluginInits } from './PluginInits.jsx'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 
+import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
+import { withPluginApiContexts } from './pluginApiWrapper.js'
+import { withPluginContexts } from './pluginWrapper.js'
+
 // Mock dependencies
 jest.mock('../registry/pluginRegistry.js', () => ({
   registeredPlugins: []
@@ -32,10 +36,6 @@ jest.mock('../hooks/useEvaluateProp.js', () => ({
 jest.mock('../store/appContext.js', () => ({
   useApp: jest.fn(() => ({ mode: 'view' }))
 }))
-
-import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
-import { withPluginApiContexts } from './pluginApiWrapper.js'
-import { withPluginContexts } from './pluginWrapper.js'
 
 describe('PluginInits', () => {
   beforeEach(() => {

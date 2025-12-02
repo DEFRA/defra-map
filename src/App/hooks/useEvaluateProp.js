@@ -8,7 +8,7 @@ import { PluginContext } from '../store/PluginProvider.jsx'
 import { getIconRegistry } from '../registry/iconRegistry.js'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 
-export function useEvaluateProp() {
+export function useEvaluateProp () {
   const appConfig = useConfig()
   const appState = useApp()
   const mapState = useMap()
@@ -24,7 +24,7 @@ export function useEvaluateProp() {
     iconRegistry: getIconRegistry()
   }
 
-  function evaluateProp(prop, pluginId) {
+  function evaluateProp (prop, pluginId) {
     let pluginConfig
     let pluginState
 

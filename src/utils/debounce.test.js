@@ -28,7 +28,7 @@ describe('debounce', () => {
     debouncedFn('first')
     jest.advanceTimersByTime(WAIT_TIME / 2)
     debouncedFn('last', 42) // This resets the timer
-    
+
     // Check timing before final call
     jest.advanceTimersByTime(WAIT_TIME - 1)
     expect(mockFn).not.toHaveBeenCalled()
@@ -45,14 +45,14 @@ describe('debounce', () => {
     debouncedFn(1)
     jest.advanceTimersByTime(WAIT_TIME)
     expect(mockFn).toHaveBeenCalledTimes(1)
-    
+
     // Second run
     debouncedFn(2)
     jest.advanceTimersByTime(WAIT_TIME)
     expect(mockFn).toHaveBeenCalledTimes(2)
     expect(mockFn).toHaveBeenCalledWith(2)
   })
-  
+
   // Test 3: The cancel method logic
   it('should cancel pending execution and allow safe subsequent cancellation', () => {
     // Check cancellation path
@@ -60,11 +60,11 @@ describe('debounce', () => {
     debouncedFn.cancel()
     jest.advanceTimersByTime(WAIT_TIME)
     expect(mockFn).not.toHaveBeenCalled()
-    
+
     // Check safety of calling cancel when no timer is active
     // This covers the `if (timeoutId)` check inside `cancel`
     expect(() => debouncedFn.cancel()).not.toThrow()
-    
+
     // Check function execution can restart after cancellation
     debouncedFn()
     jest.advanceTimersByTime(WAIT_TIME)

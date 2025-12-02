@@ -1,5 +1,5 @@
 // src/core/pluginApiWrapper.js
-import React, { useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
@@ -19,7 +19,7 @@ import { usePlugin } from '../store/PluginProvider.jsx'
  * @param {React.RefObject} options.stateRef - Ref holding the current state
  * @returns {Function} Wrapped function callable anywhere
  */
-export function withPluginApiContexts(fn, { pluginId, pluginConfig, stateRef }) {
+export function withPluginApiContexts (fn, { pluginId, pluginConfig, stateRef }) {
   return (...args) => {
     const state = stateRef.current
     if (!state) {
@@ -35,7 +35,7 @@ export function withPluginApiContexts(fn, { pluginId, pluginConfig, stateRef }) 
  * Returns a ref that is updated on each render with the latest context.
  * This should be called **inside PluginInits**.
  */
-export function usePluginApiState(pluginId) {
+export function usePluginApiState (pluginId) {
   const stateRef = useRef(null)
 
   const appConfig = useConfig()

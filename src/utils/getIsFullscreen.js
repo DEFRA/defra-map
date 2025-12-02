@@ -1,3 +1,3 @@
 export const getIsFullscreen = (behaviour, breakpoint) => {
-  return ['mapOnly', 'buttonFirst'].includes(behaviour) || breakpoint === 'mobile' && behaviour === 'hybrid'
+  return ['mapOnly', 'buttonFirst'].includes(behaviour) || (behaviour === 'hybrid' && breakpoint === 'mobile')
 }

@@ -88,7 +88,7 @@ describe('useMarkers', () => {
     useMap.mockReturnValue({ markers: mockMarkers, dispatch: mockDispatch, mapSize: 'medium', isMapReady: false })
     const { result } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
-    
+
     const renderCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')?.[1]
     if (renderCallback) act(() => renderCallback()) // line 60: early return
   })
@@ -112,8 +112,8 @@ describe('useMarkers', () => {
     renderHook(() => useMarkers())
     const addPayload = { id: 'm1', coords: { lat: 1, lng: 1 }, options: { label: 'Test' } }
 
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
-    act(() => callback(addPayload))
+    const handleAddMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    act(() => handleAddMarker(addPayload))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPSERT_LOCATION_MARKER',
       payload: { id: 'm1', coords: { lat: 1, lng: 1 }, label: 'Test', x: 200, y: 381, isVisible: true }
@@ -122,30 +122,30 @@ describe('useMarkers', () => {
 
   it('does not crash on undefined/null payload', () => {
     renderHook(() => useMarkers())
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    const handleAddMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
 
-    act(() => callback(undefined))
-    act(() => callback(null))
-    act(() => callback({})) // missing id
-    act(() => callback({ id: 'm1' })) // missing coords
+    act(() => handleAddMarker(undefined))
+    act(() => handleAddMarker(null))
+    act(() => handleAddMarker({})) // missing id
+    act(() => handleAddMarker({ id: 'm1' })) // missing coords
     expect(mockDispatch).not.toHaveBeenCalled()
   })
 
   it('handles app:removemarker safely (guard)', () => {
     renderHook(() => useMarkers())
-    const callback = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
+    const handleRemoveMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
 
-    act(() => callback('m1')) // valid id
+    act(() => handleRemoveMarker('m1')) // valid id
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'REMOVE_LOCATION_MARKER', payload: 'm1' })
 
-    act(() => callback(undefined)) // guard triggers
-    act(() => callback(null))
+    act(() => handleRemoveMarker(undefined)) // guard triggers
+    act(() => handleRemoveMarker(null))
     expect(mockDispatch).toHaveBeenCalledTimes(1)
   })
 
   it('cleans up map:render listener on unmount', () => {
-    const { result, unmount } = renderHook(() => useMarkers())
-    
+    const { result } = renderHook(() => useMarkers())
+
     let cleanup
     act(() => { cleanup = result.current.markerRef('m1')(mockElement) })
 
@@ -157,7 +157,7 @@ describe('useMarkers', () => {
 
   it('cleans up eventBus listeners on unmount', () => {
     const { unmount } = renderHook(() => useMarkers())
-    
+
     // Get the registered callbacks
     const addCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
     const removeCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]

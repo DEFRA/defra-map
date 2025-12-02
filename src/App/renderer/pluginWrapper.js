@@ -1,5 +1,4 @@
 // src/core/renderers/pluginWrapper.js
-import React from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'

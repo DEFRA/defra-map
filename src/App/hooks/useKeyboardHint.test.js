@@ -1,4 +1,3 @@
-import React from 'react'
 import { renderHook, act } from '@testing-library/react'
 import { useKeyboardHint } from './useKeyboardHint'
 
@@ -38,7 +37,7 @@ describe('useKeyboardHint', () => {
     const props = defaultProps()
 
     renderHook(() => useKeyboardHint(props))
-    
+
     const keys = ['Escape', 'Tab']
     keys.forEach(key => {
       act(() => {

@@ -8,8 +8,6 @@ import { useService } from '../../store/serviceContext.js'
 import { useKeyboardHint } from '../../hooks/useKeyboardHint.js'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts.js'
 import { useMapEvents } from '../../hooks/useMapEvents.js'
-import { CrossHair } from '../CrossHair/CrossHair'
-import { Markers } from '../Markers/Markers'
 
 // ---------------------------
 // Mock dependencies
@@ -21,8 +19,8 @@ jest.mock('../../store/serviceContext.js', () => ({ useService: jest.fn() }))
 jest.mock('../../hooks/useKeyboardShortcuts.js', () => ({ useKeyboardShortcuts: jest.fn() }))
 jest.mock('../../hooks/useKeyboardHint.js', () => ({ useKeyboardHint: jest.fn() }))
 jest.mock('../../hooks/useMapEvents.js', () => ({ useMapEvents: jest.fn() }))
-jest.mock('../CrossHair/CrossHair', () => ({ CrossHair: jest.fn(() => <div data-testid="cross-hair" />) }))
-jest.mock('../Markers/Markers', () => ({ Markers: jest.fn(() => <div data-testid="markers" />) }))
+jest.mock('../CrossHair/CrossHair', () => ({ CrossHair: jest.fn(() => <div data-testid='cross-hair' />) }))
+jest.mock('../Markers/Markers', () => ({ Markers: jest.fn(() => <div data-testid='markers' />) }))
 
 describe('Viewport', () => {
   let keyboardHintPortalRef

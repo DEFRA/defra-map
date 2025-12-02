@@ -1,8 +1,6 @@
 import React from 'react'
 import { mapControls } from './mapControls.js'
 import { getControlConfig } from '../registry/controlRegistry.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
-import { withPluginContexts } from './pluginWrapper.js'
 
 jest.mock('../registry/controlRegistry.js')
 jest.mock('../registry/pluginRegistry.js', () => ({

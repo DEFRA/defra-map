@@ -19,7 +19,7 @@ export const useInterfaceAPI = () => {
       if (!panel[breakpoint]?.initiallyOpen) {
         return
       }
-      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id }})
+      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id } })
     }
 
     const handleAddControl = ({ id, config }) => {

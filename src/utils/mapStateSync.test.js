@@ -9,7 +9,6 @@ describe('mapStateSync utilities', () => {
   describe('getInitialMapState', () => {
     it('returns state from URL if available', () => {
       // Mock internal function getMapStateFromURL by temporarily overriding
-      const mockState = { center: [10, 20], zoom: 5 }
       const original = jest.requireActual('./mapStateSync')
       jest.spyOn(original, 'getInitialMapState')
       const state = getInitialMapState({ id: 'map1', center: [0, 0], zoom: 0 })

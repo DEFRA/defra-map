@@ -6,7 +6,6 @@ jest.mock('../../services/reverseGeocode.js', () => ({
 }))
 
 describe('createKeyboardActions', () => {
-
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -69,18 +68,18 @@ describe('createKeyboardActions', () => {
   })
 
   test.each([
-    ['panUp',       { shiftKey: false }, [0, -panDelta]],
-    ['panDown',     { shiftKey: true  }, [0,  nudgePanDelta]],
-    ['panLeft',     { shiftKey: false }, [-panDelta, 0]],
-    ['panRight',    { shiftKey: true  }, [nudgePanDelta, 0]]
+    ['panUp', { shiftKey: false }, [0, -panDelta]],
+    ['panDown', { shiftKey: true }, [0, nudgePanDelta]],
+    ['panLeft', { shiftKey: false }, [-panDelta, 0]],
+    ['panRight', { shiftKey: true }, [nudgePanDelta, 0]]
   ])('%s uses correct deltas', (method, event, expected) => {
     create()[method](event)
     expect(mapProvider.panBy).toHaveBeenCalledWith(expected)
   })
 
   test.each([
-    ['zoomIn',  { shiftKey: false }, zoomDelta],
-    ['zoomOut', { shiftKey: true  }, nudgeZoomDelta]
+    ['zoomIn', { shiftKey: false }, zoomDelta],
+    ['zoomOut', { shiftKey: true }, nudgeZoomDelta]
   ])('%s uses correct deltas', (method, event, expected) => {
     create()[method](event)
     expect(mapProvider[method]).toHaveBeenCalledWith(expected)

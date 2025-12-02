@@ -6,7 +6,7 @@ import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 import { mergeManifests } from './registry/mergeManifests.js'
 
-jest.mock('react-dom/client', () => ({ createRoot: jest.fn(() => ({ render: jest.fn(), unmount: jest.fn() }))}))
+jest.mock('react-dom/client', () => ({ createRoot: jest.fn(() => ({ render: jest.fn(), unmount: jest.fn() })) }))
 jest.mock('../services/eventBus.js', () => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() }))
 jest.mock('./registry/pluginRegistry.js', () => ({ registerPlugin: jest.fn(), registeredPlugins: [] }))
 jest.mock('./registry/keyboardShortcutRegistry.js', () => ({ setProviderSupportedShortcuts: jest.fn() }))
@@ -97,14 +97,14 @@ describe('initialiseApp', () => {
   test('does not call setProviderSupportedShortcuts when capabilities are undefined', async () => {
     const MapProviderWithoutCapabilities = createMapProviderMock()
     await initialiseApp(rootElement, { MapProvider: MapProviderWithoutCapabilities, mapFramework: 'test', plugins: [] })
-    
+
     expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
   })
 
   test('does not call setProviderSupportedShortcuts when supportedShortcuts are undefined', async () => {
     const MapProviderWithEmptyCapabilities = createMapProviderMock({})
     await initialiseApp(rootElement, { MapProvider: MapProviderWithEmptyCapabilities, mapFramework: 'test', plugins: [] })
-    
+
     expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
   })
 })

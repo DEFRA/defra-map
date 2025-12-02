@@ -11,9 +11,9 @@
     --button-hover-color: #f3f2f1;
     --primary-button-color: #00703c;
     --primary-button-hover-color: #005a30;
-    --primary-button-box-shadow: 0 2px 0 #002d18;
+    // --primary-button-box-shadow: 0 2px 0 #002d18;
     --tertiary-button-border-color: #505a5f;
-    --tertiary-button-box-shadow: 0 2px 0 #505a5f;
+    // --tertiary-button-box-shadow: 0 2px 0 #505a5f;
     --disabled-button-opacity: 0.4;
     --pressed-button-foreground-color: #ffffff;
     --pressed-button-border-color: #282c34;
@@ -59,9 +59,9 @@
     --button-hover-color: #505a5f;
     --primary-button-color: #ffffff;
     --primary-button-hover-color: #b1b4b6;
-    --primary-button-box-shadow: 0 2px 0 #b1b4b6;
-    --tertiary-button-border-color: #b1b4b6;
-    --tertiary-button-box-shadow: 0 2px 0 #b1b4b6;
+    --primary-button-box-shadow: none;
+    --tertiary-button-border-color: #f3f2f1;
+    --tertiary-button-box-shadow: none;
     --disabled-button-opacity: 0.4;
     --pressed-button-foreground-color: #282c34;
     --pressed-button-border-color: #ffffff;

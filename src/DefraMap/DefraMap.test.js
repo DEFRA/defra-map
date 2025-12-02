@@ -35,20 +35,23 @@ jest.mock('../App/initialiseApp.js', () => ({ initialiseApp: jest.fn() }))
 
 const { initialiseApp } = require('../App/initialiseApp.js')
 const createButtonMock = require('./buttonManager.js').createButton
-const mapProviderMock = { load: jest.fn().mockResolvedValue([{}, {}]) }
+const mapProviderMock = {
+  load: jest.fn().mockResolvedValue({
+    MapProvider: {},
+    mapFramework: {},
+    mapProviderConfig: { crs: 'EPSG:3857' }
+  })
+}
 const mockButtonInstance = { style: {}, removeAttribute: jest.fn(), focus: jest.fn() }
 
 describe('DefraMap Core Functionality', () => {
-  let rootEl
-  let openButtonCallback
+  let rootEl, openButtonCallback
 
   beforeEach(() => {
     jest.clearAllMocks()
     document.body.innerHTML = '<div id="map"></div>'
     rootEl = document.getElementById('map')
     initialiseApp.mockResolvedValue({ _root: {}, someApi: jest.fn(), unmount: jest.fn() })
-
-    // Centralized mock for createButton
     createButtonMock.mockImplementation((config, root, cb) => {
       openButtonCallback = cb
       return mockButtonInstance
@@ -68,21 +71,19 @@ describe('DefraMap Core Functionality', () => {
 
   it('returns early from constructor if device not supported', () => {
     checkDeviceSupport.mockReturnValue(false)
-    // The constructor returns before registering or initializing
+    new DefraMap('map', { mapProvider: mapProviderMock })
     expect(historyManager.register).not.toHaveBeenCalled()
     expect(createBreakpointDetector).not.toHaveBeenCalled()
     expect(createInterfaceDetector).not.toHaveBeenCalled()
   })
 
-  it('registers with historyManager for buttonFirst/hybrid behaviour', () => {
+  it('registers with historyManager for buttonFirst behaviour', () => {
     checkDeviceSupport.mockReturnValue(true)
-    // eslint-disable-next-line no-new
     new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
     expect(historyManager.register).toHaveBeenCalled()
   })
 
   it('calls breakpoint & interface detectors', () => {
-    // eslint-disable-next-line no-new
     new DefraMap('map', { mapProvider: mapProviderMock })
     expect(createBreakpointDetector).toHaveBeenCalled()
     expect(createInterfaceDetector).toHaveBeenCalled()
@@ -104,11 +105,11 @@ describe('DefraMap Core Functionality', () => {
   it('open button click calls _handleButtonClick / loadApp', async () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
     const loadSpy = jest.spyOn(map, 'loadApp').mockResolvedValue()
-    // Mock pushState
     const pushStateSpy = jest.spyOn(history, 'pushState').mockImplementation(() => {})
-    // Simulate an event with currentTarget having getAttribute('href')
     const fakeEvent = { currentTarget: { getAttribute: jest.fn().mockReturnValue('/?mv=map') } }
-    await openButtonCallback(fakeEvent) // triggers _handleButtonClick
+    
+    await openButtonCallback(fakeEvent)
+    
     expect(loadSpy).toHaveBeenCalled()
     expect(pushStateSpy).toHaveBeenCalledWith({ isBack: true }, '', '/?mv=map')
     loadSpy.mockRestore()
@@ -116,29 +117,33 @@ describe('DefraMap Core Functionality', () => {
   })
 
   it('initializes reverseGeocode if reverseGeocodeProvider is provided', async () => {
-    const mapProviderWithCRS = { load: jest.fn().mockResolvedValue([{}, {}]), crs: 'EPSG:3857' }
-    const configWithReverse = { behaviour: 'buttonFirst', mapProvider: mapProviderWithCRS, reverseGeocodeProvider: { url: 'https://example.com', apiKey: '123' } }
+    const mapProviderWithCRS = {
+      load: jest.fn().mockResolvedValue({
+        MapProvider: {},
+        mapFramework: {},
+        mapProviderConfig: { crs: 'EPSG:27700' }
+      })
+    }
+    const configWithReverse = {
+      behaviour: 'buttonFirst',
+      mapProvider: mapProviderWithCRS,
+      reverseGeocodeProvider: { url: 'https://example.com', apiKey: '123' }
+    }
     const map = new DefraMap('map', configWithReverse)
     await map.loadApp()
-    expect(createReverseGeocode).toHaveBeenCalledWith(
-      configWithReverse.reverseGeocodeProvider,
-      mapProviderWithCRS.crs
-    )
+    expect(createReverseGeocode).toHaveBeenCalledWith(configWithReverse.reverseGeocodeProvider, 'EPSG:27700')
   })
 
   it('calls loadApp if shouldLoadComponent returns true', async () => {
     shouldLoadComponent.mockReturnValue(true)
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    // We need to await loadApp to ensure initialiseApp is called
     await map.loadApp()
     expect(initialiseApp).toHaveBeenCalled()
   })
 
   it('does not call loadApp if shouldLoadComponent returns false', () => {
     shouldLoadComponent.mockReturnValue(false)
-    // eslint-disable-next-line no-new
     new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    // Check the alternative path in _initialize
     expect(removeLoadingState).toHaveBeenCalled()
   })
 
@@ -146,6 +151,7 @@ describe('DefraMap Core Functionality', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     const failingProvider = { load: jest.fn().mockRejectedValue(new Error('fail')) }
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: failingProvider, genericErrorText: 'error' })
+    
     await expect(map.loadApp()).rejects.toThrow('fail')
     expect(renderError).toHaveBeenCalledWith(rootEl, 'error')
     consoleErrorSpy.mockRestore()
@@ -153,24 +159,17 @@ describe('DefraMap Core Functionality', () => {
 
   it('does not overwrite eventBus methods when merging appInstance', async () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-
-    // Save original references
     const originalOn = map.on
-
+    
     initialiseApp.mockResolvedValue({ _root: {}, on: jest.fn(), off: jest.fn(), emit: jest.fn(), someMethod: jest.fn() })
-
     await map.loadApp()
 
-    // EventBus methods should not be replaced
     expect(map.on).toBe(originalOn)
-    // Other properties should be merged
     expect(typeof map.someMethod).toBe('function')
   })
 
   it('removes component and resets DOM/button', () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-
-    // Set up state as if component was loaded
     map._root = {}
     map.unmount = jest.fn()
     map._openButton = mockButtonInstance
@@ -186,27 +185,28 @@ describe('DefraMap Core Functionality', () => {
 
   it('skips unmount if _root is falsy or unmount is not a function', () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    map._root = null // falsy
+    map._root = null
     map.unmount = jest.fn()
     map._openButton = mockButtonInstance
+    
     map.removeApp()
+    
     expect(map.unmount).not.toHaveBeenCalled()
     expect(updateDOMState).toHaveBeenCalled()
   })
 
   it('skips _openButton actions if _openButton is falsy', () => {
     const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
-    map._root = { some: 'root' } // just truthy
+    map._root = { some: 'root' }
     map.unmount = jest.fn()
     map._openButton = null
+    
     map.removeApp()
+    
     expect(map.unmount).toHaveBeenCalled()
-    // No button actions executed
     expect(updateDOMState).toHaveBeenCalled()
   })
 })
-
-// --- Combined API Tests ---
 
 describe('DefraMap Public API Methods', () => {
   let map
@@ -222,25 +222,17 @@ describe('DefraMap Public API Methods', () => {
     const coords = [10.5, 20.5]
     const options = { color: 'red' }
 
-    // 1. Core EventBus methods
     map.on('testEvent', cb)
     map.off('testEvent', cb)
     map.emit('customEvent', 123)
-
-    expect(eventBus.on).toHaveBeenCalledWith('testEvent', cb)
-    expect(eventBus.off).toHaveBeenCalledWith('testEvent', cb)
-    expect(eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
-
-    // 2. API methods that use eventBus directly
     map.addMarker('marker-1', coords, options)
     map.removeMarker('marker-1')
     map.setMode('test-mode')
 
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addmarker', {
-      id: 'marker-1',
-      coords,
-      options
-    })
+    expect(eventBus.on).toHaveBeenCalledWith('testEvent', cb)
+    expect(eventBus.off).toHaveBeenCalledWith('testEvent', cb)
+    expect(eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
+    expect(eventBus.emit).toHaveBeenCalledWith('app:addmarker', { id: 'marker-1', coords, options })
     expect(eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
     expect(eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
   })
@@ -250,13 +242,11 @@ describe('DefraMap Public API Methods', () => {
     const panelConfig = { title: 'MyPanel' }
     const controlConfig = { type: 'zoom' }
 
-    // Call API methods
     map.addButton('btn1', buttonConfig)
     map.addPanel('panel1', panelConfig)
     map.addControl('ctrl1', controlConfig)
     map.removePanel('panel1')
 
-    // Verify eventBus emits correct events
     expect(eventBus.emit).toHaveBeenCalledWith('app:addbutton', { id: 'btn1', config: buttonConfig })
     expect(eventBus.emit).toHaveBeenCalledWith('app:addpanel', { id: 'panel1', config: panelConfig })
     expect(eventBus.emit).toHaveBeenCalledWith('app:addcontrol', { id: 'ctrl1', config: controlConfig })

@@ -1,40 +1,47 @@
-import { getWebGL } from './utils/detectWebgl.js'
+import { getWebGL } from './utils/detectWebGL.js'
 
 const isLatest = !!window.globalThis
 
 // MapLibre provider descriptor
-export default {
-  crs: 'ESPG:4326',
-  checkDeviceCapabilities: () => {
-    const webGL = getWebGL(['webgl2', 'webgl1'])
-    const isIE = document.documentMode
-    return {
-      isSupported: webGL.isEnabled,
-      error: (isIE && 'Internet Explorer is not supported') || webGL.error
-    }
-  },
-  load: async () => {
-    let mapFramework
-    if (isLatest) {
-      const maplibre = await import(/* webpackChunkName: "dm-maplibre-framework" */ 'maplibre-gl')
-      mapFramework = maplibre
-    } else {
-      const [maplibreLegacy, resizeObserver] = await Promise.all([
-        import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'maplibre-gl-legacy'),
-        import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'resize-observer'),
-        import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'core-js/es/array/flat.js')
-      ])
-      if (!window.ResizeObserver) {
-        resizeObserver.install()
+export default function (config = {}) {
+  return {
+    checkDeviceCapabilities: () => {
+      const webGL = getWebGL(['webgl2', 'webgl1'])
+      const isIE = document.documentMode
+      return {
+        isSupported: webGL.isEnabled,
+        error: (isIE && 'Internet Explorer is not supported') || webGL.error
       }
-      mapFramework = maplibreLegacy
+    },
+    load: async () => {
+      let mapFramework
+      if (isLatest) {
+        const maplibre = await import(/* webpackChunkName: "dm-maplibre-framework" */ 'maplibre-gl')
+        mapFramework = maplibre
+      } else {
+        const [maplibreLegacy, resizeObserver] = await Promise.all([
+          import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'maplibre-gl-legacy'),
+          import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'resize-observer'),
+          import(/* webpackChunkName: "dm-maplibre-legacy-framework" */ 'core-js/es/array/flat.js')
+        ])
+        if (!window.ResizeObserver) {
+          resizeObserver.install()
+        }
+        mapFramework = maplibreLegacy
+      }
+
+      const MapProvider = (await import(/* webpackChunkName: "dm-maplibre-provider" */ './maplibreProvider.js')).default
+
+      const mapProviderConfig = {
+        ...config,
+        crs: 'ESPG:4326'
+      }
+
+      return {
+        MapProvider,
+        mapProviderConfig,
+        mapFramework
+      }
     }
-
-    const MapProvider = (await import(/* webpackChunkName: "dm-maplibre-provider" */ './maplibreProvider.js')).default
-
-    return [
-      MapProvider,
-      mapFramework
-    ]
   }
 }

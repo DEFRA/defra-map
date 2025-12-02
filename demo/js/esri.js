@@ -1,11 +1,12 @@
 import DefraMap from '../../src/index.js'
-import { openMapStyles, vtsMapStyles3857 } from './mapStyles.js'
+import { vtsMapStyles27700 } from './mapStyles.js'
 import { dataLayers } from './dataLayers.js'
 import { searchCustomDatasets } from './searchCustomDatasets.js'
-import { transformGeocodeRequest, transformTileRequest, transformDataRequest } from './auth.js'
+import { transformGeocodeRequest, transformTileRequest, transformDataRequest, setupEsriConfig } from './auth.js'
 // Providers
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
+import esriProvider from '/providers/esri/src/index.js'
 // Plugins
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
@@ -41,7 +42,9 @@ var drawPlugin = createDrawPlugin({
 
 var defraMap = new DefraMap('map', {
 	behaviour: 'hybrid',
-	mapProvider: maplibreProvider(),
+	mapProvider: esriProvider({
+		setupConfig: setupEsriConfig
+	}),
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,
 		// url: '/api/os-nearest-proxy?query={query}',
@@ -50,13 +53,13 @@ var defraMap = new DefraMap('map', {
 	}),
 	// maxMobileWidth: 700,
 	// minDesktopWidth: 960,
-	mapLabel: 'Map showing Carlisle',
+	mapLabel: 'Ambleside',
 	// zoom: 14,
-	minZoom: 6,
-	maxZoom: 20,
+	minZoom: 2,
+	maxZoom: 15,
 	autoColorScheme: true,
-	// center: [-2.938769, 54.893806],
-	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+	// center: [337672, 504580],
+	extent: [337047, 503795, 338120, 505281],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
 	// enableFullscreen: true,
@@ -67,7 +70,7 @@ var defraMap = new DefraMap('map', {
 	// 	color: { outdoor: '#ff0000', dark: '#00ff00' }
 	// }],
 	mapStyle: {
-		url: process.env.OUTDOOR_URL,
+		url: process.env.VTS_OUTDOOR_URL_27700,
 		logo: '/assets/images/os-logo.svg',
 		logoAltText: 'Ordnance survey logo',
 		attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
@@ -75,7 +78,7 @@ var defraMap = new DefraMap('map', {
 	},
 	plugins: [
 		mapStylesPlugin({
-			mapStyles: vtsMapStyles3857
+			mapStyles: vtsMapStyles27700
 		}),
 		zoomControlsPlugin(),
 		scaleBarPlugin({
@@ -88,13 +91,13 @@ var defraMap = new DefraMap('map', {
 			width: '300px',
 			showMarker: false
 		}),
-		useLocationPlugin(),
-		dataLayersPlugin({
-			transformRequest: transformDataRequest,
-			layers: dataLayers
-		}),
+		// useLocationPlugin(),
+		// dataLayersPlugin({
+		// 	transformRequest: transformDataRequest,
+		// 	layers: dataLayers
+		// }),
 		// interactPlugin,
-		drawPlugin,
+		// drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']

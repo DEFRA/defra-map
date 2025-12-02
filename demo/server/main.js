@@ -1,6 +1,7 @@
 import express from 'express'
 import expressStaticGzip from 'express-static-gzip'
 import getOsAuthToken from './services/getOsAuthToken.js'
+import getEsriAuthToken from './services/getEsriAuthToken.js'
 import getZxyTile from './services/getZxyTile.js'
 import fs from 'fs'
 import path from 'path'
@@ -50,6 +51,14 @@ export function setupMiddlewares(middlewares, { app }) {
     const response = await getOsAuthToken({
       clientId: process.env.OS_CLIENT_ID,
       clientSecret: process.env.OS_CLIENT_SECRET,
+    })
+    res.json(response)
+  })
+
+  app.get('/esri-token', async (req, res, next) => {
+    const response = await getEsriAuthToken({
+      clientId: process.env.AGOL_CLIENT_ID,
+      clientSecret: process.env.AGOL_CLIENT_SECRET,
     })
     res.json(response)
   })

@@ -92,13 +92,13 @@ export default class DefraMap {
 
     try {
       const { initialiseApp } = await import(/* webpackChunkName: "dm-core" */ '../App/initialiseApp.js')
-      const [MapProvider, mapFramework] = await this.config.mapProvider.load()
+      const { MapProvider, mapFramework, mapProviderConfig } = await this.config.mapProvider.load()
 
-      // Initialise reverseGeocode service if provided
+      // Initialise reverseGeocode service if provided, using crs from mapProvider
       if (this.config.reverseGeocodeProvider) {
         createReverseGeocode(
           this.config.reverseGeocodeProvider,
-          this.config.mapProvider.crs
+          mapProviderConfig.crs
         )
       }
 
@@ -109,6 +109,7 @@ export default class DefraMap {
         initialInterfaceType: getInterfaceType(),
         ...this.config,
         MapProvider,
+        mapProviderConfig,
         mapFramework,
         handleExitClick: this._handleExitClick.bind(this)
       })

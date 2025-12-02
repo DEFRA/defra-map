@@ -6,6 +6,7 @@ export const initialState = (config) => {
     center,
     zoom,
     bounds,
+    extent,
     mapStyle,
     mapSize,
     markers
@@ -20,7 +21,7 @@ export const initialState = (config) => {
     mapSize,
     center,
     zoom,
-    bounds,
+    bounds: bounds || extent,
     resolution: null,
     isAtMaxZoom: null,
     isAtMinZoom: null,

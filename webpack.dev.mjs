@@ -15,7 +15,8 @@ export default {
     // Main CSS entry: guarantees it is output first
     main: path.join(__dirname, 'demo/scss/index.scss'),
     // App entry: all JS and plugin dynamic imports
-    index: path.join(__dirname, 'demo/js/index.js')
+    index: path.join(__dirname, 'demo/js/index.js'),
+    esri: path.join(__dirname, 'demo/js/esri.js')
   },
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -36,10 +37,14 @@ export default {
         NIGHT_URL: JSON.stringify(process.env.NIGHT_URL),
         DEUTERANOPIA_URL: JSON.stringify(process.env.DEUTERANOPIA_URL),
         TRITANOPIA_URL: JSON.stringify(process.env.TRITANOPIA_URL),
-        // OS Vector Tile API
+        // OS Vector Tile API (3857)
         VTS_OUTDOOR_URL: JSON.stringify(process.env.VTS_OUTDOOR_URL),
         VTS_DARK_URL: JSON.stringify(process.env.VTS_DARK_URL),
         VTS_BLACK_AND_WHITE_URL: JSON.stringify(process.env.VTS_BLACK_AND_WHITE_URL),
+        // OS Vector Tile API (27700)
+        VTS_OUTDOOR_URL_27700: JSON.stringify(process.env.VTS_OUTDOOR_URL_27700),
+        VTS_DARK_URL_27700: JSON.stringify(process.env.VTS_DARK_URL_27700),
+        VTS_BLACK_AND_WHITE_URL_27700: JSON.stringify(process.env.VTS_BLACK_AND_WHITE_URL_27700),
         // Aerial photography
         AERIAL_URL: JSON.stringify(process.env.AERIAL_URL),
         // KEYS
@@ -73,6 +78,9 @@ export default {
       {
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },{
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       }
     ],
   },

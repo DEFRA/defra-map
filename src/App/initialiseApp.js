@@ -11,6 +11,7 @@ const mapProviderMap = new WeakMap()
 
 export async function initialiseApp (rootElement, {
   MapProvider: MapProviderClass,
+  mapProviderConfig,
   mapFramework,
   plugins = [],
   ...restProps
@@ -18,7 +19,7 @@ export async function initialiseApp (rootElement, {
   // Reuse or create mapProvider
   let mapProvider = mapProviderMap.get(rootElement)
   if (!mapProvider) {
-    mapProvider = new MapProviderClass({ mapFramework, eventBus })
+    mapProvider = new MapProviderClass({ mapFramework, mapProviderConfig, eventBus })
     mapProviderMap.set(rootElement, mapProvider)
   }
 

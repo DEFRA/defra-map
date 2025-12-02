@@ -34,6 +34,6 @@ export function attachEvents(args) {
         dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
         args.services.eventBus.emit('search:close')
       }
-    },
+    }
   }
 }

@@ -21,7 +21,8 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
   // Build datasets array from default plus custom
   const mergedDatasets = createDatasets({
     customDatasets,
-    osNamesURL
+    osNamesURL,
+    crs: mapProvider.crs
   })
 
   // This ensures factory `attachEvents` only runs once

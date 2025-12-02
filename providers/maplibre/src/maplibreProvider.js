@@ -7,16 +7,18 @@ import { createMapLabelNavigator } from './utils/labels.js'
 import { updateHighlightedFeatures } from './utils/highlightFeatures.js'
 
 export default class MapLibreProvider {
-  constructor ({ mapFramework, eventBus }) {
+  constructor ({ mapFramework, mapProviderConfig = {}, eventBus }) {
     this.maplibreModule = mapFramework
     this.eventBus = eventBus
     this.capabilities = {
       supportedShortcuts,
       supportsMapSizes: true
     }
+    // Spread all config properties onto the instance
+    Object.assign(this, mapProviderConfig)
   }
 
-  initMap (config) {
+  async initMap (config) {
     const { container, padding, mapStyle, center, zoom, bounds, pixelRatio, ...initConfig } = config
     const { Map } = this.maplibreModule
 
@@ -36,14 +38,15 @@ export default class MapLibreProvider {
     // Disable rotation
     map.touchZoomRotate.disableRotation()
     
+    // Set bounds after padding
+    if (bounds) {
+      map.fitBounds(bounds, { duration: 0 })
+    }
+
     // map.showPadding = true
 
     this.map = map
     this.map.setPadding(padding)
-
-    if (bounds) {
-      map.fitBounds(bounds, { duration: 0 })
-    }
 
     applyPreventDefaultFix(map)
     cleanCanvas(map)

@@ -57,6 +57,7 @@
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
+    "@esri/arcgis-rest-request": "^4.7.3",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -105,6 +106,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@arcgis/core": "^4.34.8",
     "@turf/area": "^7.2.0",
     "@turf/boolean-valid": "^7.2.0",
     "@turf/helpers": "^7.2.0",

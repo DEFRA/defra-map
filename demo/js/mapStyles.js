@@ -35,7 +35,7 @@ const openMapStyles = [{
 	attribution: 'Test'
 }]
 
-const psMapStyles = [{
+const vtsMapStyles3857 = [{
 	id: 'outdoor',
 	label: 'Outdoor',
 	url: process.env.VTS_OUTDOOR_URL,
@@ -72,7 +72,37 @@ const psMapStyles = [{
 	attribution: 'Test'
 }]
 
+const vtsMapStyles27700 = [{
+	id: 'outdoor',
+	label: 'Outdoor',
+	url: process.env.VTS_OUTDOOR_URL_27700,
+	thumbnail: '/assets/images/outdoor-map-thumb.jpg',
+	logo: '/assets/images/os-logo.svg',
+	logoAltText: 'Ordnance survey logo',
+	attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+	backgroundColor: '#f5f5f0'
+}, {
+	id: 'dark',
+	label: 'Dark',
+	url: process.env.VTS_DARK_URL_27700,
+	mapColorScheme: 'dark',
+	appColorScheme: 'dark',
+	thumbnail: '/assets/images/dark-map-thumb.jpg',
+	logo: '/assets/images/os-logo-white.svg',
+	logoAltText: 'Ordnance survey logo',
+	attribution: 'Test'
+}, {
+	id: 'black-and-white',
+	label: 'Black/White',
+	url: process.env.VTS_BLACK_AND_WHITE_URL_27700,
+	thumbnail: '/assets/images/black-and-white-map-thumb.jpg',
+	logo: '/assets/images/os-logo-black.svg',
+	logoAltText: 'Ordnance survey logo',
+	attribution: 'Test'
+}]
+
 export {
   openMapStyles,
-  psMapStyles
+  vtsMapStyles3857,
+	vtsMapStyles27700
 }

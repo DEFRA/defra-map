@@ -3,12 +3,11 @@ import esriConfig from '@arcgis/core/config.js'
 import Map from '@arcgis/core/Map.js'
 import MapView from '@arcgis/core/views/MapView.js'
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer.js'
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js'
-import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import { defaults, supportedShortcuts } from './defaults.js'
 import { attachAppEvents } from './appEvents.js'
 import { attachMapEvents } from './mapEvents.js'
-import { getAreaDimensions, getCardinalMove, getResolution, getPaddedExtent } from './utils/spatial.js'
+import { getAreaDimensions, getCardinalMove, getPaddedExtent } from './utils/spatial.js'
+import { queryVectorTileFeatures } from './utils/query.js'
 import { getExtentFromFlatCoords, getPointFromFlatCoords } from './utils/coords.js'
 import { cleanDOM } from './utils/esriFixes.js'
 
@@ -131,6 +130,14 @@ export default class EsriProvider {
   }
 
   // ==========================
+  // Feature highlighting
+  // ==========================
+
+  updateHighlightedFeatures (selectedFeatures, stylesMap) {
+    console.log('updateHighlightedFeatures')
+  }
+
+  // ==========================
   // Read-only getters
   // ==========================
 
@@ -149,7 +156,7 @@ export default class EsriProvider {
   }
 
   getFeaturesAtPoint (point) {
-    // return this.map.queryRenderedFeatures(point)
+    return queryVectorTileFeatures(this.view, point)
   }
 
   // ==========================

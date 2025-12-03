@@ -105,7 +105,6 @@ var defraMap = new DefraMap('map', {
 
 defraMap.on('map:ready', function (e) {
 	// defraMap.setMode('draw')
-		defraMap.addMarker('test', [-2.989707, 54.864555])
 })
 
 defraMap.on('draw:ready', function () {

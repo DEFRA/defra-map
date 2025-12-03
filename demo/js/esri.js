@@ -31,9 +31,8 @@ var interactPlugin = createInteractPlugin({
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	}],
 	markerColor: { outdoor: '#ff0000' },
-	interactionMode: 'select', // 'auto', 'select', 'marker' // defaults to 'marker'
-	multiSelect: true,
-	excludeModes: ['draw']
+	interactionMode: 'marker', // 'auto', 'select', 'marker' // defaults to 'marker'
+	// multiSelect: true
 })
 
 var drawPlugin = createDrawPlugin({
@@ -96,7 +95,7 @@ var defraMap = new DefraMap('map', {
 		// 	transformRequest: transformDataRequest,
 		// 	layers: dataLayers
 		// }),
-		// interactPlugin,
+		interactPlugin,
 		// drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
@@ -107,7 +106,7 @@ var defraMap = new DefraMap('map', {
 })
 
 defraMap.on('map:ready', function (e) {
-	defraMap.setMode('draw')
+	// defraMap.setMode('draw')
 })
 
 defraMap.on('draw:ready', function () {

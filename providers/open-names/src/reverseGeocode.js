@@ -7,7 +7,7 @@ const URL = 'https://api.os.uk/search/names/v1/nearest?point={easting},{northing
 export const reverseGeocode = async (url = URL, transformRequest, crs, zoom, coord) => {
   let bng = coord
 
-  if (crs === 'ESPG:4326') {
+  if (crs === 'EPSG:4326') {
     try {
       bng = (new LatLon(coord[1], coord[0])).toOsGrid()
       bng = [bng.easting, bng.northing].map(c => Math.round(c))
@@ -33,7 +33,7 @@ export const reverseGeocode = async (url = URL, transformRequest, crs, zoom, coo
   const json = await response.json()
   const model = mapToLocationModel(json.results[0].GAZETTEER_ENTRY)
 
-  if (crs === 'ESPG:4326') {
+  if (crs === 'EPSG:4326') {
     const osGridRef = new OsGridRef(model.coordinates[0], model.coordinates[1])
     const latLon = osGridRef.toLatLon()
     model.coordinates = [latLon.lat, latLon.lon]

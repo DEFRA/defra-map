@@ -58,6 +58,6 @@ export const createKeyboardActions = (mapProvider, announce, {
       announce(label, 'core')
     },
 
-    clearSelection: () => mapProvider?.clearHighlightedLabel()
+    clearSelection: () => mapProvider?.clearHighlightedLabel?.()
   }
 }

@@ -34,7 +34,7 @@ export default function (config = {}) {
 
       const mapProviderConfig = {
         ...config,
-        crs: 'ESPG:4326'
+        crs: 'EPSG:4326'
       }
 
       return {

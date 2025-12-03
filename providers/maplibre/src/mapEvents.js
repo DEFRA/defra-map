@@ -22,29 +22,45 @@ export function attachMapEvents (map, eventBus, { getCenter, getZoom, getBounds,
   const emitEvent = (name, state) => eventBus.emit(name, state)
 
   // Map loaded
-  map.on('load', () => emitEvent('map:loaded'))
+  map.on('load', () => {
+    emitEvent('map:loaded')
+  })
 
   // Map first idle
-  map.once('idle', () => emitEvent('map:firstidle', getMapState()))
+  map.once('idle', () => {
+    emitEvent('map:firstidle', getMapState())
+  })
 
   // Map movestart
-  map.on('movestart', () => emitEvent('map:movestart'))
+  map.on('movestart', () => {
+    emitEvent('map:movestart')
+  })
 
   // Map moveend (debounced)
-  map.on('moveend', debounce(() => emitEvent('map:moveend', getMapState()), DEBOUNCE_IDLE_TIME))
+  map.on('moveend', debounce(() => {
+    emitEvent('map:moveend', getMapState())
+  }, DEBOUNCE_IDLE_TIME))
 
   // Map move (throttled)
   // map.on('move', throttle(() => emitEvent('map:move', getMapState()), MOVE_THROTTLE_TIME))
-  map.on('zoom', throttle(() => emitEvent('map:move', getMapState()), MOVE_THROTTLE_TIME))
+  map.on('zoom', throttle(() => {
+    emitEvent('map:move', getMapState())
+  }, MOVE_THROTTLE_TIME))
 
   // Map render (unthrottled - realtime anchoring to map)
-  map.on('render', () => emitEvent('map:render'))
+  map.on('render', () => {
+    emitEvent('map:render')
+  })
 
   // Feature changes (debounced)
-  map.on('styledata', debounce(() => emitEvent('map:datachange', getMapState()), DEBOUNCE_IDLE_TIME))
+  map.on('styledata', debounce(() => {
+    emitEvent('map:datachange', getMapState())
+  }, DEBOUNCE_IDLE_TIME))
 
   // Map style change
-  map.on('style.load', () => emitEvent('map:stylechange'))
+  map.on('style.load', () => {
+    emitEvent('map:stylechange')
+  })
 
   /* ==================================== */
   /* Interactions

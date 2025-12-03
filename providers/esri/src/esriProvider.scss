@@ -1,0 +1,45 @@
+// Overide dynamically injected esri css that bleeds outside app
+
+// Reset :root CSS variables that Calcite sets
+:root {
+  // Font family override - prevent Avenir Next from being applied globally
+  font-family: inherit !important;
+  
+  // Reset text rendering that Calcite sets on :root
+  text-rendering: auto !important;
+  -webkit-font-smoothing: auto !important;
+  -moz-osx-font-smoothing: auto !important;
+}
+
+// Scope all Calcite variables to only work inside Esri/Calcite components
+:root:not(.esri-ui):not([class*="calcite"]):not([class*="esri"]) {
+  --calcite-font-family: inherit !important;
+  --calcite-sans-family: inherit !important;
+}
+
+// Prevent body/html from inheriting Calcite styles
+body, html {
+  font-family: inherit !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: auto !important;
+  -moz-osx-font-smoothing: auto !important;
+}
+
+// Scope Calcite typography classes to only the map container
+// Replace with your actual map container class/id
+.your-map-container {
+  // Allow Calcite styles inside here
+  font-family: var(--calcite-font-family);
+}
+
+// Prevent .calcite-typography from affecting anything outside map
+:not(.esri-view):not(.esri-ui):not([class*="calcite"]):not([class*="esri"]) {
+  &.calcite-typography,
+  & .calcite-typography {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    letter-spacing: inherit !important;
+    line-height: inherit !important;
+  }
+}

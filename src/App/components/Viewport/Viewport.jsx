@@ -27,7 +27,7 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
 
   // Attach map events
   useMapEvents({
-    'map:click': (e) => mapProvider?.clearHighlightedLabel()
+    'map:click': (e) => mapProvider?.clearHighlightedLabel?.()
   })
 
   // Manage keyboard hint visibility using local state

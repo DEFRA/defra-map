@@ -24,7 +24,7 @@ export default {
     clean: true,
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -69,13 +69,7 @@ export default {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules\/(?!(lucide-react))/
-      },
-      {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/,
-      },
-      {
+      },{
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },{

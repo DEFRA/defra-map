@@ -65,6 +65,7 @@ export default class MapLibreProvider {
       this.labelNavigator = createMapLabelNavigator(map, mapStyle?.mapColorScheme, this.eventBus)
     })
 
+    console.log('map:ready')
     this.eventBus.emit('map:ready', { map })
   }
 

@@ -93,8 +93,8 @@ var defraMap = new DefraMap('map', {
 			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
-		// interactPlugin,
-		drawPlugin,
+		interactPlugin,
+		// drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']
@@ -104,7 +104,8 @@ var defraMap = new DefraMap('map', {
 })
 
 defraMap.on('map:ready', function (e) {
-	defraMap.setMode('draw')
+	// defraMap.setMode('draw')
+		defraMap.addMarker('test', [-2.989707, 54.864555])
 })
 
 defraMap.on('draw:ready', function () {

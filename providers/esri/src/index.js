@@ -24,7 +24,7 @@ export default function (config = {}) {
     load: async () => {
       const mapProviderConfig = {
         ...config,
-        crs: 'ESPG:27700'
+        crs: 'EPSG:27700'
       }
 
       try {

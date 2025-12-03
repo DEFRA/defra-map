@@ -32,21 +32,52 @@ const markString = (string, find) => {
 
 // Public functions
 
-const bounds = ({ MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, GEOMETRY_Y }) => {
-  let min, max
+const bounds = (crs, { MBR_XMIN, MBR_YMIN, MBR_XMAX, MBR_YMAX, GEOMETRY_X, GEOMETRY_Y }) => {
+  let minX, minY, maxX, maxY
+
+  // Use either MBR or buffered point depending on what's provided
   if (MBR_XMIN != null) {
-    min = (new OsGridRef(MBR_XMIN, MBR_YMIN)).toLatLon()
-    max = (new OsGridRef(MBR_XMAX, MBR_YMAX)).toLatLon()
+    minX = MBR_XMIN
+    minY = MBR_YMIN
+    maxX = MBR_XMAX
+    maxY = MBR_YMAX
   } else {
-    min = (new OsGridRef(GEOMETRY_X - POINT_BUFFER, GEOMETRY_Y - POINT_BUFFER)).toLatLon()
-    max = (new OsGridRef(GEOMETRY_X + POINT_BUFFER, GEOMETRY_Y + POINT_BUFFER)).toLatLon()
+    minX = GEOMETRY_X - POINT_BUFFER
+    minY = GEOMETRY_Y - POINT_BUFFER
+    maxX = GEOMETRY_X + POINT_BUFFER
+    maxY = GEOMETRY_Y + POINT_BUFFER
   }
-  return [min.lon, min.lat, max.lon, max.lat].map(n => Math.round(n * 1e6) / 1e6)
+
+  // If CRS is already EPSG:27700 (OSGB), just return the raw values
+  if (crs === 'EPSG:27700') {
+    return [minX, minY, maxX, maxY]
+  }
+
+  // If CRS is EPSG:4326, convert OSGB → WGS84 lat/lon
+  if (crs === 'EPSG:4326') {
+    const minLL = (new OsGridRef(minX, minY)).toLatLon();
+    const maxLL = (new OsGridRef(maxX, maxY)).toLatLon();
+
+    return [minLL.lon, minLL.lat, maxLL.lon, maxLL.lat].map(n => Math.round(n * 1e6) / 1e6)
+  }
+
+  throw new Error(`Unsupported CRS: ${crs}`)
 }
 
-const point = ({ GEOMETRY_X, GEOMETRY_Y }) => {
-  const p = (new OsGridRef(GEOMETRY_X, GEOMETRY_Y)).toLatLon()
-  return [p.lon, p.lat].map(n => Math.round(n * 1e6) / 1e6)
+const point = (crs, { GEOMETRY_X, GEOMETRY_Y }) => {
+
+  // EPSG:27700 → return raw OSGB grid coordinates (meters)
+  if (crs === 'EPSG:27700') {
+    return [GEOMETRY_X, GEOMETRY_Y]
+  }
+
+  // EPSG:4326 → convert OSGB to WGS84 lat/lon
+  if (crs === 'EPSG:4326') {
+    const p = (new OsGridRef(GEOMETRY_X, GEOMETRY_Y)).toLatLon()
+    return [Math.round(p.lon * 1e6) / 1e6, Math.round(p.lat * 1e6) / 1e6]
+  }
+
+  throw new Error(`Unsupported CRS: ${crs}`)
 }
 
 const label = (query, { NAME1, COUNTY_UNITARY, DISTRICT_BOROUGH, POSTCODE_DISTRICT, LOCAL_TYPE }) => {
@@ -59,7 +90,6 @@ const label = (query, { NAME1, COUNTY_UNITARY, DISTRICT_BOROUGH, POSTCODE_DISTRI
 }
 
 const parseOsNamesResults = (json, query, crs) => {
-  console.log(crs)
   if (!json || json.error || json.header?.totalresults === 0) {
     return []
   }
@@ -71,8 +101,8 @@ const parseOsNamesResults = (json, query, crs) => {
 
   return results.map(l => ({
     id: l.GAZETTEER_ENTRY.ID,
-    bounds: bounds(l.GAZETTEER_ENTRY),
-    point: point(l.GAZETTEER_ENTRY),
+    bounds: bounds(crs, l.GAZETTEER_ENTRY),
+    point: point(crs, l.GAZETTEER_ENTRY),
     ...label(query, l.GAZETTEER_ENTRY),
     type: 'os-names'
   }))

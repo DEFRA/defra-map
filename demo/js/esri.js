@@ -91,7 +91,7 @@ var defraMap = new DefraMap('map', {
 			width: '300px',
 			showMarker: false
 		}),
-		// useLocationPlugin(),
+		useLocationPlugin(),
 		// dataLayersPlugin({
 		// 	transformRequest: transformDataRequest,
 		// 	layers: dataLayers

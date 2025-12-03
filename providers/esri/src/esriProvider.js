@@ -1,3 +1,4 @@
+import './esriProvider.scss'
 import esriConfig from '@arcgis/core/config.js'
 import Map from '@arcgis/core/Map.js'
 import MapView from '@arcgis/core/views/MapView.js'
@@ -7,6 +8,7 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import { defaults, supportedShortcuts } from './defaults.js'
 import { attachAppEvents } from './appEvents.js'
 import { attachMapEvents } from './mapEvents.js'
+import { getAreaDimensions, getCardinalMove, getResolution, getPaddedExtent } from './utils/spatial.js'
 import { getExtentFromFlatCoords, getPointFromFlatCoords } from './utils/coords.js'
 import { cleanDOM } from './utils/esriFixes.js'
 
@@ -88,8 +90,6 @@ export default class EsriProvider {
     // Refs to map and view
     this.map = map
     this.view = view
-
-    this.eventBus.emit('map:ready', { map })
   }
 
   destroyMap () {
@@ -157,12 +157,11 @@ export default class EsriProvider {
   // ==========================
 
   getAreaDimensions () {
-    // const { LngLatBounds } = this.maplibreModule
-    // return getAreaDimensions(getPaddedBounds(LngLatBounds, this.map)) // Use padded bounds
+    return getAreaDimensions(getPaddedExtent(this.view)) // Use padded bounds
   }
 
   getCardinalMove (from, to) {
-    // return getCardinalMove(from, to)
+    return getCardinalMove(from, to)
   }
 
   getResolution () {
@@ -170,6 +169,8 @@ export default class EsriProvider {
   }
 
   getPointFromCoords (coords) {
-    // return this.map.project(coords)
+    const point = getPointFromFlatCoords(coords)
+    const screenPoint = this.view.toScreen(point)
+    return { x: screenPoint.x, y: screenPoint.y }
   }
 }

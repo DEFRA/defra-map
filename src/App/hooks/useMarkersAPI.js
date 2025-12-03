@@ -20,7 +20,7 @@ export const useMarkers = () => {
 
   // --- API: Attach methods to markers object ---
   useEffect(() => {
-    if (!isMapReady || !mapProvider) {
+    if (!mapProvider) {
       return
     }
 
@@ -38,7 +38,7 @@ export const useMarkers = () => {
     markers.getMarker = (id) => {
       return markers.items.find(marker => marker.id === id)
     }
-  }, [isMapReady, mapProvider, markers, dispatch, mapSize])
+  }, [mapProvider, markers, dispatch, mapSize])
 
   // Update marker position on map:render
   const markerRef = useCallback((id) => (el) => {

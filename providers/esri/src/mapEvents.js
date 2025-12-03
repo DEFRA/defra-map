@@ -1,4 +1,4 @@
-import { watch, when } from '@arcgis/core/core/reactiveUtils.js'
+import { watch, when, once } from '@arcgis/core/core/reactiveUtils.js'
 import { debounce } from '../../../src/utils/debounce.js'
 import { throttle } from '../../../src/utils/throttle.js'
 
@@ -6,7 +6,7 @@ const DEBOUNCE_IDLE_TIME = 500 // Must be greater than provider animation durati
 const MOVE_THROTTLE_TIME = 10 // Small delay for performance
 const ZOOM_TOLERANCE = 0.01
 
-export function attachMapEvents ({ view, baseTileLayer, eventBus, getZoom, getCenter, getBounds, getResolution }) {
+export function attachMapEvents ({ map, view, baseTileLayer, eventBus, getZoom, getCenter, getBounds, getResolution }) {
   // Helper to get common map state
   const getMapState = () => {
     const { maxZoom, minZoom } = view.constraints
@@ -30,11 +30,14 @@ export function attachMapEvents ({ view, baseTileLayer, eventBus, getZoom, getCe
     emitEvent('map:loaded')
   })
 
+  // Map ready
+  once(() => view.ready).then(() => {
+    emitEvent('map:ready', { map, view })
+  })
+
   // Map first idle
-  watch(() => view.stationary, (isStationary) => {
-    if (isStationary) {
-      emitEvent('map:idle')
-    }
+  once(() => view.stationary).then(() => {
+    emitEvent('map:firstidle', getMapState())
   })
 
   // Map movestart
@@ -45,7 +48,9 @@ export function attachMapEvents ({ view, baseTileLayer, eventBus, getZoom, getCe
   })
 
   // Map moveend (debounced)
-  const emitMoveEnd = debounce(() => emitEvent('map:moveend', getMapState()), DEBOUNCE_IDLE_TIME)
+  const emitMoveEnd = debounce(() => {
+    emitEvent('map:moveend', getMapState())
+  }, DEBOUNCE_IDLE_TIME)
   watch(() => [view.interacting, view.animation], ([interacting, animation]) => {
     if (!interacting && !animation) {
       emitMoveEnd()
@@ -54,14 +59,21 @@ export function attachMapEvents ({ view, baseTileLayer, eventBus, getZoom, getCe
 
   // Map move (throttled)
   watch(() => view.zoom,
-    throttle(() => emitEvent('map:move', getMapState()), MOVE_THROTTLE_TIME)
+    throttle(() => {
+      emitEvent('map:move', getMapState())
+    }, MOVE_THROTTLE_TIME)
   )
 
   // Map render (unthrottled - realtime anchoring to map)
-  view.on('frame', () => emitEvent('map:render'))
+  watch(() => view.extent, () => {
+      emitEvent('map:render')
+    }, { initial: false } // optional: skip first call
+  )
 
   // Feature changes (debounced)
-  const emitDataChange = debounce(() => emitEvent('map:datachange', getMapState()), DEBOUNCE_IDLE_TIME)
+  const emitDataChange = debounce(() => {
+    emitEvent('map:datachange', getMapState())
+  }, DEBOUNCE_IDLE_TIME)
   watch(() => view.updating, (isUpdating) => {
     if (!isUpdating) {
       emitDataChange()

@@ -44,7 +44,7 @@
   
   <script>
     const defraMap = new defra.DefraMap('map', {
-      mapProvider: defra.maplibreProvider,
+      mapProvider: defra.maplibreProvider(),
       behaviour: 'hybrid',
       mapLabel: 'Ambleside',
       minZoom: 6,
@@ -56,8 +56,10 @@
         backgroundColor: '#f5f5f0'
       },
       plugins: [
-        defra.scaleBarPlugin({ units: 'metric' }),
-        defra.zoomControlsPlugin()
+        defra.zoomControlsPlugin(),
+        defra.scaleBarPlugin({
+          units: 'metric'
+        })
       ]
     })
   </script>

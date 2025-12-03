@@ -16,6 +16,7 @@
 // 2. Elements
 .dm-o-app__overlay {
   position: absolute;
+  z-index: 1;
   box-sizing: border-box;
   flex-direction: row;
   display: flex;

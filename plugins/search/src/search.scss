@@ -71,8 +71,13 @@
 }
 
 // 3. Modifiers
-.dm-o-app--mobile.dm-o-app--exclusive-control {
-  .dm-o-app__top .dm-c-button-wrapper, .dm-o-app__right .dm-c-button-wrapper {
+.dm-o-app--exclusive-control {
+  .dm-o-app__top .dm-c-button-wrapper,
+  .dm-o-app__right .dm-c-button-wrapper {
+    opacity: 0;
+    z-index: -1;
+  }
+  .dm-o-app__inset .dm-c-panel {
     opacity: 0;
     z-index: -1;
   }

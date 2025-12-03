@@ -30,8 +30,8 @@ var interactPlugin = createInteractPlugin({
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	}],
 	markerColor: { outdoor: '#ff0000' },
-	interactionMode: 'select', // 'auto', 'select', 'marker' // defaults to 'marker'
-	multiSelect: true,
+	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+	multiSelect: false,
 	excludeModes: ['draw']
 })
 

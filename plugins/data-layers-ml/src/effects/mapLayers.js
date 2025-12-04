@@ -1,4 +1,4 @@
-import { parseColor } from '../../../../src/utils/parseColor.js'
+import { getValueForStyle } from '../../../../src/utils/getValueForStyle.js'
 
 /**
  * Ensures MapLibre sources and layers exist for a given layer config.
@@ -37,7 +37,7 @@ export const updateMapSources = (map, mapStyleId, layer, geojson, sourceCache) =
 
   // --- Add fill layer ---
   if (hasFill && !map.getLayer(fillLayerId)) {
-    const fillColor = parseColor(layer.fill, mapStyleId)
+    const fillColor = getValueForStyle(layer.fill, mapStyleId)
     map.addLayer({
       id: fillLayerId,
       type: 'fill',
@@ -52,7 +52,7 @@ export const updateMapSources = (map, mapStyleId, layer, geojson, sourceCache) =
 
   // --- Add stroke layer ---
   if (hasStroke && !map.getLayer(strokeLayerId)) {
-    const strokeColor = parseColor(layer.stroke, mapStyleId)
+    const strokeColor = getValueForStyle(layer.stroke, mapStyleId)
     map.addLayer({
       id: strokeLayerId,
       type: 'line',

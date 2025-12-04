@@ -7,8 +7,11 @@ export const dataLayers = [{
   strokeWidth: 2,
   // strokeDashArray: [1, 2],
   fill: 'transparent',
+  symbolDescription: { outdoor: 'turquiose outline' },
   minZoom: 15,
-  maxZoom: 24
+  maxZoom: 24,
+  showInLegend: true,
+  canToggle: true
 },{
   id: 'linked-parcels',
   label: 'Existing fields',
@@ -17,6 +20,9 @@ export const dataLayers = [{
   stroke: '#0000ff',
   strokeWidth: 2,
   fill: 'rgba(0,0,255,0.1)',
+  symbolDescription: { outdoor: 'blue outline' },
   minZoom: 15,
   maxZoom: 24
 }]
+
+// Land cover, hedgerows

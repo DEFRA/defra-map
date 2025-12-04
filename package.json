@@ -65,6 +65,7 @@
     "@types/react-dom": "^19.1.6",
     "babel-loader": "^10.0.0",
     "compression-webpack-plugin": "^11.1.0",
+    "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
     "dotenv": "^17.2.0",
     "event-target-polyfill": "^0.0.4",
@@ -111,6 +112,7 @@
     "@turf/boolean-valid": "^7.2.0",
     "@turf/helpers": "^7.2.0",
     "core-js": "^3.44.0",
+    "govuk-frontend": "^5.13.0",
     "maplibre-gl": "^5.12.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@1.15.3",
     "preact": "^10.27.2"

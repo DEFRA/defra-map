@@ -1,5 +1,5 @@
 import { defaults } from '../defaults.js'
-import { parseColor } from '../../../../src/utils/parseColor.js'
+import { getValueForStyle } from '../../../../src/utils/getValueForStyle.js'
 
 export const buildStylesMap = (dataLayers, mapStyle) => {
   const stylesMap = {}
@@ -13,8 +13,8 @@ export const buildStylesMap = (dataLayers, mapStyle) => {
 
     stylesMap[layer.layerId] = {
       ...base,
-      stroke: parseColor(base.stroke, mapStyle.id),
-      fill: parseColor(base.fill, mapStyle.id),
+      stroke: getValueForStyle(base.stroke, mapStyle.id),
+      fill: getValueForStyle(base.fill, mapStyle.id),
     }
   })
 

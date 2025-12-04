@@ -2,7 +2,7 @@ import { markerSvgPaths } from '../../../config/appConfig.js'
 import { useMarkers } from '../../hooks/useMarkersAPI.js'
 import { useConfig } from '../../store/configContext.js'
 import { useMap } from '../../store/mapContext.js'
-import { parseColor } from '../../../utils/parseColor.js'
+import { getValueForStyle } from '../../../utils/getValueForStyle.js'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
 
 export const Markers = () => {
@@ -32,7 +32,7 @@ export const Markers = () => {
           <path
             className='dm-c-marker__background'
             d={defaultSvgPaths.backgroundPath}
-            fill={parseColor(marker.color || markerColor, mapStyle.id)}
+            fill={getValueForStyle(marker.color || markerColor, mapStyle.id)}
           />
           <path
             className='dm-c-marker__graphic'

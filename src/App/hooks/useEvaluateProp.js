@@ -33,8 +33,7 @@ export function useEvaluateProp () {
       pluginConfig = pluginEntry
         ? {
             pluginId: pluginEntry.id,
-            includeModes: pluginEntry.config?.includeModes,
-            excludeModes: pluginEntry.config?.excludeModes
+            ...pluginEntry.config
           }
         : {}
       // Only include this plugin's state + dispatch

@@ -40,6 +40,7 @@ export const manifest = {
     label: 'Layers',
     panelId: 'dataLayers',
     iconId: 'layers',
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.layers.find(l => l.showInLegend),
     mobile: {
       slot: 'top-left',
       showLabel: true

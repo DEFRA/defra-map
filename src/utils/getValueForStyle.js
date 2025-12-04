@@ -8,7 +8,7 @@
  * @param {string} mapStyleId - Current style/theme identifier
  * @returns {string|null}
  */
-export const parseColor = (colors, mapStyleId) => {
+export const getValueForStyle = (colors, mapStyleId) => {
   if (!colors) {
     return null
   }

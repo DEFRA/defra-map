@@ -3,6 +3,7 @@ import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { setupMiddlewares } from './demo/server/main.js'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import CopyPlugin from 'copy-webpack-plugin'
 import dotenv from 'dotenv'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -29,6 +30,18 @@ export default {
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css'
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.css',
+          to: 'assets/govuk-frontend.min.css'
+        },
+        {
+          from: 'node_modules/govuk-frontend/dist/govuk/assets',
+          to: 'assets'
+        }
+      ]
     }),
     new webpack.DefinePlugin({
       'process.env': {
@@ -82,6 +95,9 @@ export default {
     static: [
     {
       directory: path.join(__dirname, 'demo'),
+    },
+    {
+      directory: path.join(__dirname, 'public'),
     },
     {
       directory: path.join(__dirname, 'assets'),

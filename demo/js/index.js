@@ -30,6 +30,8 @@ var interactPlugin = createInteractPlugin({
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	}],
 	markerColor: { outdoor: '#ff0000' },
+	// closeOnDone: false,
+	// closeOnCancel: false,
 	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
 	multiSelect: false,
 	excludeModes: ['draw']
@@ -113,7 +115,19 @@ defraMap.on('draw:ready', function () {
 })
 
 defraMap.on('interact:done', function (e) {
-	console.log(e)
+	console.log('interact:done', e)
+})
+
+defraMap.on('interact:cancel', function (e) {
+	console.log('interact:cancel', e)
+})
+
+defraMap.on('interact:selectionchange', function (e) {
+	console.log('interact:selectionchange', e)
+})
+
+defraMap.on('interact:markerchange', function (e) {
+	console.log('interact:markerchange', e)
 })
 
 // Update selected feature
@@ -121,7 +135,7 @@ defraMap.on('search:match', function (e) {
 	if (e.type !== 'parcel') {
 		return
 	}
-	interactPlugin.selectFeatures({
+	interactPlugin.selectFeature({
 		idProperty: 'ID',
 		featureId: e.id,
 		layerId: 'field-parcels'

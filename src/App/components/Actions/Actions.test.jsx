@@ -2,6 +2,11 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { Actions } from './Actions.jsx'
 
+// Create a simple component to accept the isHidden prop
+const TestChild = ({ isHidden, children, ...props }) => {
+  return <div {...props}>{children}</div>
+}
+
 describe('Actions component', () => {
   it('renders the correct slot-based class', () => {
     render(<Actions slot='actions'>Content</Actions>)
@@ -17,5 +22,17 @@ describe('Actions component', () => {
     )
     expect(screen.getByTestId('child')).toBeInTheDocument()
     expect(screen.getByTestId('child').textContent).toBe('Child Content')
+  })
+
+  it('hides the container when all children are hidden', () => {
+    render(
+      <Actions slot="actions">
+        <TestChild isHidden={true} data-testid="child1">Child 1</TestChild>
+        <TestChild isHidden={true} data-testid="child2">Child 2</TestChild>
+      </Actions>
+    )
+
+    const container = screen.getByTestId('child1').closest('.dm-c-actions')
+    expect(container).toHaveStyle('display: none')
   })
 })

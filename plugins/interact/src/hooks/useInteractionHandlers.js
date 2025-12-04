@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { getFeaturesAtPoint, findMatchingFeature, buildLayerConfigMap } from '../utils/featureQueries.js'
 
 export const useInteractionHandlers = ({
@@ -8,9 +8,10 @@ export const useInteractionHandlers = ({
   services,
   mapProvider,
 }) => {
+  const isFirstRender = useRef(true)
   const { markers } = mapState
   const { dataLayers, interactionMode = 'marker', multiSelect, markerColor } = pluginConfig
-  const { dispatch } = pluginState
+  const { dispatch, selectedFeatures, selectionBounds } = pluginState
   const { eventBus } = services
 
   const layerConfigMap = buildLayerConfigMap(dataLayers)
@@ -44,12 +45,6 @@ export const useInteractionHandlers = ({
           })
         }
 
-        eventBus.emit('interact:feature', {
-          coords,
-          selectedFeature: feature,
-          allFeatures,
-        })
-
         return
       }
 
@@ -58,7 +53,7 @@ export const useInteractionHandlers = ({
         dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
         markers.add('location', coords, { color: markerColor })
 
-        eventBus.emit('interact:confirm', { coords, allFeatures })
+        eventBus.emit('interact:markerchange', { coords })
       }
     }, [
       mapProvider,
@@ -70,6 +65,17 @@ export const useInteractionHandlers = ({
       markers
     ]
   )
+
+
+  // Emit event when selectedFeatures change
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
+    eventBus.emit('interact:selectionchange', { selectedFeatures, selectionBounds })
+  }, [selectionBounds])
 
   return {
     handleInteraction

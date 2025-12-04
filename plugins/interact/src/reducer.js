@@ -8,45 +8,47 @@ const initialState = {
  * Structure of items in Set: { featureId: string, layerId: string, idProperty: string }
  */
 const toggleSelectedFeatures = (state, payload) => {
-  const { featureId, multiSelect, layerId, idProperty, addToExisting } = payload
+  const { featureId, multiSelect, layerId, idProperty, addToExisting = true } = payload
   const selected = Array.isArray(state.selectedFeatures) ? [...state.selectedFeatures] : []
 
   const existingIndex = selected.findIndex(
     f => f.featureId === featureId && f.layerId === layerId
   )
 
-  // Add-only mode with multiSelect
-  if (addToExisting && multiSelect) {
+  // Handle explicit unselect
+  if (addToExisting === false) {
+    if (existingIndex !== -1) {
+      selected.splice(existingIndex, 1) // remove the feature
+    }
+    return { ...state, selectedFeatures: selected }
+  }
+
+  // Multi-select mode (add to selection)
+  if (multiSelect) {
     if (existingIndex === -1) {
       selected.push({ featureId, layerId, idProperty })
-    }
-    return { ...state, selectedFeatures: selected }
-  }
-
-  // Multi-select logic
-  if (multiSelect) {
-    if (existingIndex !== -1) {
-      selected.splice(existingIndex, 1) // remove
     } else {
-      selected.push({ featureId, layerId, idProperty })
+      // optional: could also remove existing on toggle
+      selected.splice(existingIndex, 1)
     }
     return { ...state, selectedFeatures: selected }
   }
 
-  // Single-select logic
+  // Single-select mode
   const isSameSingle = existingIndex !== -1 && selected.length === 1
   const newSelected = isSameSingle ? [] : [{ featureId, layerId, idProperty }]
 
   return { ...state, selectedFeatures: newSelected }
 }
 
-
 // Update bounds (called from useEffect after map provider calculates them)
 const updateSelectedBounds = (state, payload) => {
-  const { bounds } = payload
+  if (JSON.stringify(payload) === JSON.stringify(state.selectionBounds)) {
+    return state
+  }
   return {
     ...state,
-    selectionBounds: bounds
+    selectionBounds: payload
   }
 }
 

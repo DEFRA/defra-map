@@ -1,7 +1,8 @@
 // /plugins/interact/manifest.js
 import { InteractInit } from './InteractInit.jsx'
 import { initialState, actions } from './reducer.js'
-import { selectFeatures } from './api/selectFeatures.js'
+import { selectFeature } from './api/selectFeature.js'
+import { unselectFeature } from './api/unselectFeature.js'
 
 export const manifest = {
   InitComponent: InteractInit,
@@ -15,6 +16,7 @@ export const manifest = {
     id: 'selectDone',
     label: 'Done',
     variant: 'primary',
+    excludeWhen: ({ appState, pluginConfig }) => !appState.isFullscreen && !pluginConfig.hasSubsequentAction,
     enableWhen: ({ mapState, pluginState }) => !!mapState.markers.items.find(m => m.id === 'location') || !!pluginState.selectionBounds,
     mobile: {
       slot: 'actions',
@@ -72,6 +74,7 @@ export const manifest = {
   }],
 
   api: {
-    selectFeatures
+    selectFeature,
+    unselectFeature
   }
 }

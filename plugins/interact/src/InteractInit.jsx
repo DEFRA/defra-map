@@ -10,12 +10,12 @@ export const InteractInit = ({
   buttonConfig,
   mapProvider,
   pluginConfig,
-  pluginState,
+  pluginState
 }) => {
   const { interfaceType } = appState
   const { dataLayers } = pluginConfig
   const { dispatch, selectedFeatures, selectionBounds } = pluginState
-  const { eventBus } = services
+  const { eventBus, closeApp } = services
   const { crossHair, mapStyle } = mapState
 
   const isTouchOrKeyboard = ['touch', 'keyboard'].includes(interfaceType)
@@ -58,7 +58,8 @@ export const InteractInit = ({
       mapState,
       buttonConfig,
       eventBus,
-      handleInteraction
+      handleInteraction,
+      closeApp
     })
     
     return cleanupEvents

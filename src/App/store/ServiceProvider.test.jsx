@@ -5,6 +5,7 @@ import { ServiceProvider, ServiceContext } from './ServiceProvider.jsx'
 import { createAnnouncer } from '../../services/announcer.js'
 import { reverseGeocode } from '../../services/reverseGeocode.js'
 import eventBus from '../../services/eventBus.js'
+import { closeApp } from '../../services/closeApp.js'
 
 // Mock external dependencies
 jest.mock('../../services/announcer.js', () => ({
@@ -17,9 +18,19 @@ jest.mock('../../services/eventBus.js', () => ({
   publish: jest.fn(),
   subscribe: jest.fn()
 }))
+jest.mock('../../services/closeApp.js', () => ({
+  closeApp: jest.fn()
+}))
+
+// Mock useConfig hook
+jest.mock('../store/configContext.js', () => ({
+  useConfig: jest.fn(() => ({
+    handleExitClick: jest.fn()
+  }))
+}))
 
 describe('ServiceProvider', () => {
-  test('provides announce, reverseGeocode, and eventBus via context', () => {
+  test('provides announce, reverseGeocode, eventBus, and closeApp via context', () => {
     const wrapper = ({ children }) => <ServiceProvider>{children}</ServiceProvider>
 
     const { result } = renderHook(() => React.useContext(ServiceContext), { wrapper })
@@ -35,6 +46,13 @@ describe('ServiceProvider', () => {
 
     // eventBus is injected directly
     expect(result.current.eventBus).toBe(eventBus)
+
+    // closeApp is available
+    expect(typeof result.current.closeApp).toBe('function')
+
+    // mapStatusRef is available
+    expect(result.current.mapStatusRef).toBeDefined()
+    expect(result.current.mapStatusRef.current).toBeNull()
   })
 
   test('renders children', () => {
@@ -47,5 +65,18 @@ describe('ServiceProvider', () => {
 
     // context is still defined, children rendered fine
     expect(result.current).toBeTruthy()
+  })
+
+  test('closeApp calls closeApp service with handleExitClick', () => {
+    const mockHandleExitClick = jest.fn()
+    const { useConfig } = require('../store/configContext.js')
+    useConfig.mockReturnValue({ handleExitClick: mockHandleExitClick })
+
+    const wrapper = ({ children }) => <ServiceProvider>{children}</ServiceProvider>
+    const { result } = renderHook(() => React.useContext(ServiceContext), { wrapper })
+
+    result.current.closeApp()
+
+    expect(closeApp).toHaveBeenCalledWith(mockHandleExitClick)
   })
 })

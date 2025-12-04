@@ -1,4 +1,4 @@
-export function attachEvents ({ appState, mapState, pluginState, pluginConfig, buttonConfig, eventBus, handleInteraction }) {
+export function attachEvents ({ appState, mapState, pluginState, pluginConfig, buttonConfig, eventBus, handleInteraction, closeApp }) {
   const {
     selectDone,
     selectAtTarget,
@@ -31,30 +31,45 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
     
     eventBus.emit('interact:done', {
       ...(coords && { coords }),
-      ...(selectionBounds && { selectionBounds }),
-      ...(selectedFeatures && { selectedFeatures })
+      ...(!coords && selectedFeatures && { selectedFeatures }),
+      ...(!coords && selectionBounds && { selectionBounds })
     })
+
+    if (!(pluginConfig.closeOnDone ?? true)) {
+      return
+    }
+
+    closeApp()
   }
   selectDone.onClick = handleSelectDone
 
   const handleSelectCancel = () => {
     eventBus.emit('interact:cancel')
+
+    if (!(pluginConfig.closeOnCancel ?? true)) {
+      return
+    }
+
+    closeApp()
   }
   selectCancel.onClick = handleSelectCancel
 
-  const handleSelectFeatures = (args) => {
+  const handleToggleFeature = (args, addToExisting) => {
     mapState.markers.remove('location')
 
     pluginState.dispatch({
       type: 'TOGGLE_SELECTED_FEATURES',
       payload: {
         multiSelect: pluginConfig.multiSelect,
-        addToExisting: true,
+        addToExisting,
         ...args
       }
     })
   }
-  eventBus.on('interact:selectFeatures', handleSelectFeatures)
+  const handleSelect = (args) => handleToggleFeature(args, true)
+  const handleUnselect = (args) => handleToggleFeature(args, false)
+  eventBus.on('interact:selectFeature', handleSelect)
+  eventBus.on('interact:unselectFeature', handleUnselect)
 
   // Return cleanup function
   return () => {
@@ -63,6 +78,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
     selectCancel.onClick = null
     appState.layoutRefs.viewportRef.current?.removeEventListener('keyup', handleKeyup)
     eventBus.off('map:click', handleMapClick)
-    eventBus.off('interact:selectFeatures', handleSelectFeatures)
+    eventBus.off('interact:selectFeature', handleSelect)
+    eventBus.off('interact:unselectFeature', handleUnselect)
   }
 }

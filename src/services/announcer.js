@@ -15,6 +15,9 @@ export function createAnnouncer (mapStatusRef) {
     // Clear first (for SR to re-announce)
     mapStatusRef.current.textContent = ''
     setTimeout(() => {
+      if (!mapStatusRef.current) {
+        return
+      }
       mapStatusRef.current.textContent = msg
     }, CLEAR_DELAY)
   }

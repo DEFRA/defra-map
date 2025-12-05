@@ -14,7 +14,9 @@ export const fetchData = async ({
   const bbox = getBbox(map)
 
   for (const layer of layers) {
-    if (zoom < layer.minZoom || zoom > layer.maxZoom) continue
+    if (zoom < layer.minZoom || zoom > layer.maxZoom) {
+      continue
+    }
 
     try {
       // --- Runtime-only layers (e.g. highlight) ---

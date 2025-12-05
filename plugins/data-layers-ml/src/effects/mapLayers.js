@@ -5,6 +5,10 @@ import { getValueForStyle } from '../../../../src/utils/getValueForStyle.js'
  * Shared sources are cached in `sourceCache` by URL.
  */
 export const updateMapSources = (map, mapStyleId, layer, geojson, sourceCache) => {
+  if (!map.getStyle()) {
+    return
+  }
+  
   const layerId = layer.layerId || layer.id
   const urlKey = layer.url
 
@@ -18,7 +22,9 @@ export const updateMapSources = (map, mapStyleId, layer, geojson, sourceCache) =
       type: 'geojson',
       data: geojson || { type: 'FeatureCollection', features: [] }
     })
-    if (urlKey) sourceCache.set(urlKey, sourceId)
+    if (urlKey) {
+      sourceCache.set(urlKey, sourceId)
+    }
   } else if (geojson) {
     map.getSource(sourceId).setData(geojson)
   }
@@ -69,6 +75,3 @@ export const updateMapSources = (map, mapStyleId, layer, geojson, sourceCache) =
 
   return sourceId
 }
-
-
-

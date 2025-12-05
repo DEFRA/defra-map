@@ -1,7 +1,7 @@
 import React from "react"
 import { getValueForStyle } from '../../../src/utils/getValueForStyle'
 
-export const DataLayers = ({ mapState, pluginConfig, services }) => {
+export const DataLayers = ({ mapState, pluginConfig }) => {
   const { mapStyle } = mapState
 
   return (

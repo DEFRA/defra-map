@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { createDataLayers } from './dataLayers.js'
 
-export function DataLayersInit ({ pluginConfig, pluginState, appState, mapState, mapProvider, services }) {
+export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider, services }) {
   const { eventBus } = services
 
   useEffect(() => {
@@ -14,15 +14,7 @@ export function DataLayersInit ({ pluginConfig, pluginState, appState, mapState,
       return
     }
 
-    eventBus.on('search:open', () => {
-      appState.dispatch({ type: 'CLOSE_PANEL', payload: 'dataLayers' })
-    })
-
-    eventBus.on('search:close', () => {
-      // appState.dispatch({ type: 'RESTORE_PREVIOUS_PANELS' })
-    })
-
-    createDataLayers({
+    const dataLayers = createDataLayers({
 			mapStyleId: mapState.mapStyle.id,
       layersConfig: pluginConfig, 
 			mapSize: mapState.mapSize,
@@ -31,9 +23,9 @@ export function DataLayersInit ({ pluginConfig, pluginState, appState, mapState,
     })
 
     return () => {
-      eventBus.off('search:open')
-      eventBus.off('search:close')
+      dataLayers.remove()
     }
+    
   }, [mapState.isMapReady, appState.mode])
 
   return null // no UI output, just side effects

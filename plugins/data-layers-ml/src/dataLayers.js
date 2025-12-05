@@ -36,6 +36,7 @@ export const createDataLayers = ({
 
   return {
     remove() {
+      debouncedFetch.cancel() // Doesn't work here??
       map.off('moveend', debouncedFetch)
       eventBus.off('map:setmapstyle', styleHandler)
     }

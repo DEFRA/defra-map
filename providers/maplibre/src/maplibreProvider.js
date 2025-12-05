@@ -27,6 +27,7 @@ export default class MapLibreProvider {
       container,
       style: mapStyle?.url,
       pixelRatio,
+      padding,
       center,
       zoom,
       fadeDuration: 0,
@@ -40,7 +41,8 @@ export default class MapLibreProvider {
     
     // Set bounds after padding
     if (bounds) {
-      map.fitBounds(bounds, { duration: 0 })
+      console.log('*Requires padding fix')
+      map.fitBounds(bounds, { padding, duration: 0 })
     }
 
     // map.showPadding = true

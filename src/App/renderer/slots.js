@@ -17,6 +17,7 @@ export const layoutSlots = Object.freeze({
 
 export const allowedSlots = Object.freeze({
   control: [
+    layoutSlots.BANNER,
     layoutSlots.TOP_LEFT,
     layoutSlots.TOP_RIGHT,
     layoutSlots.INSET,

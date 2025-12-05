@@ -61,6 +61,11 @@
 }
 
 // 3. Modifiers
+.dm-o-app--mobile .dm-c-search-form--default-expanded .dm-c-search-suggestions {
+    box-shadow: var(--panel-box-shadow);
+    clip-path: inset(0px 0px -20px 0px);
+}
+
 .dm-o-app--tablet .dm-c-search-suggestions,
 .dm-o-app--desktop .dm-c-search-suggestions {
     border-bottom-left-radius: var(--button-border-radius);

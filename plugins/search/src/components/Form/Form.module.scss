@@ -25,3 +25,16 @@
     border-radius: var(--button-border-radius);
   }
 }
+
+// Default expanded
+.dm-o-app--mobile .dm-c-search-form--default-expanded {
+  position: relative;
+  margin: calc(-1 * var(--primary-gap)) calc(-1 * var(--primary-gap)) 0;
+
+  .dm-c-search-suggestions {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    left: 0;
+  }
+}

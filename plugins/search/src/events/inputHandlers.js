@@ -1,4 +1,4 @@
-export const createInputHandlers = ({ dispatch, debouncedFetchSuggestions, services }) => ({
+export const createInputHandlers = ({ dispatch, debouncedFetchSuggestions }) => ({
   handleInputClick() {
     dispatch({ type: 'SHOW_SUGGESTIONS' })
   },

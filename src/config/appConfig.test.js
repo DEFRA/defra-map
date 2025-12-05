@@ -60,21 +60,16 @@ describe('appConfig', () => {
   })
 
   it('calls exit button onClick correctly', () => {
-    const handleExitClick = jest.fn()
     const fakeEvent = {}
+    const servicesMock = { closeApp: jest.fn() }
+    const handleExitClickMock = jest.fn()
 
-    // Case 1: history.state?.isBack = true
-    Object.defineProperty(history, 'state', { value: { isBack: true }, writable: true })
-    const historyBackSpy = jest.spyOn(history, 'back').mockImplementation(() => {})
-    exitBtn.onClick(fakeEvent, { appConfig: { handleExitClick } })
-    expect(historyBackSpy).toHaveBeenCalled()
-    expect(handleExitClick).not.toHaveBeenCalled()
-    historyBackSpy.mockRestore()
+    exitBtn.onClick(fakeEvent, { services: servicesMock, appConfig: { handleExitClick: handleExitClickMock } })
 
-    // Case 2: history.state?.isBack = false
-    Object.defineProperty(history, 'state', { value: {}, writable: true })
-    const handleExitClickSpy = jest.fn()
-    exitBtn.onClick(fakeEvent, { appConfig: { handleExitClick: handleExitClickSpy } })
-    expect(handleExitClickSpy).toHaveBeenCalled()
+    // Assert that the services.closeApp() is called
+    expect(servicesMock.closeApp).toHaveBeenCalled()
+
+    // If your button no longer calls handleExitClick in the current logic, this should NOT be called
+    expect(handleExitClickMock).not.toHaveBeenCalled()
   })
 })

@@ -7,7 +7,7 @@ import { createSuggestionHandlers } from './suggestionHandlers.js'
 const DEBOUNCE_FETCH_TIME = 350
 
 export function attachEvents(args) {
-  const { dispatch } = args
+  const { dispatch, viewportRef, searchContainerRef } = args
 
   // Debounce data fetching
   const debouncedFetchSuggestions = debounce(
@@ -26,14 +26,20 @@ export function attachEvents(args) {
     ...inputHandlers,
     ...suggestionHandlers,
 
-    handleOutside(e, searchContainerRef) {
-      if (args.viewportRef.current?.contains(e.target)) {
-        e.preventDefault()
+    handleOutside(e) {
+      if (searchContainerRef.current.contains(e.relatedTarget)) {
+        return
       }
-      if (!searchContainerRef.current?.contains(e.target)) {
-        dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
-        args.services.eventBus.emit('search:close')
+      dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
+      args.services.eventBus.emit('search:close')
+    },
+
+    handlePointerDown(e) {
+      if (searchContainerRef.current.contains(e.target)) {
+        return
       }
+      dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
+      args.services.eventBus.emit('search:close')
     }
   }
 }

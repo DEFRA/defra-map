@@ -3,7 +3,7 @@ const initialState = {
   hasKeyboardFocusWithin: false,
   value: '',
   suggestions: [],
-  isSuggestionsVisible: false,
+  areSuggestionsVisible: false,
   selectedIndex: -1
 }
 
@@ -12,7 +12,7 @@ const toggleExpanded = (state, payload) => {
   return {
     ...state,
     isExpanded: payload,
-    isSuggestionsVisible: payload
+    areSuggestionsVisible: payload
   }
 }
 
@@ -20,7 +20,7 @@ const setKeyboardFocusWithin = (state, payload) => {
   return {
     ...state,
     hasKeyboardFocusWithin: payload,
-    isSuggestionsVisible: true
+    areSuggestionsVisible: true
   }
 }
 
@@ -28,7 +28,7 @@ const inputBlur = (state, payload) => {
   return {
     ...state,
     hasKeyboardFocusWithin: false,
-    isSuggestionsVisible: state.isSuggestionsVisible && payload !== 'keyboard',
+    areSuggestionsVisible: state.areSuggestionsVisible && payload !== 'keyboard',
     selectedIndex: -1,
   }
 }
@@ -50,14 +50,14 @@ const updateSuggestions = (state, payload) => {
 const showSuggestions = (state) => {
   return {
     ...state,
-    isSuggestionsVisible: true
+    areSuggestionsVisible: true
   }
 }
 
 const hideSuggestions = (state) => {
   return {
     ...state,
-    isSuggestionsVisible: false
+    areSuggestionsVisible: false
   }
 }
 
@@ -65,7 +65,7 @@ const setSelected = (state, payload) => {
   return {
     ...state,
     selectedIndex: payload,
-    isSuggestionsVisible: payload >= 0
+    areSuggestionsVisible: payload >= 0
   }
 }
 

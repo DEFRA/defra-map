@@ -9,14 +9,16 @@ import { attachEvents } from './events/index.js'
 export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, appState, mapState, services, mapProvider }) {
   const { id } = appConfig
   const { interfaceType, breakpoint } = appState
-  const { customDatasets, osNamesURL } = pluginConfig
-  const { dispatch, isExpanded } = pluginState
+  const { isExpanded: defaultExpanded, customDatasets, osNamesURL } = pluginConfig
+  const { dispatch, isExpanded, areSuggestionsVisible, suggestions } = pluginState
 
   const closeIcon = iconRegistry['close']
   const searchIcon = iconRegistry['search']
   const searchContainerRef = useRef(null)
   const buttonRef = useRef(null)
   const inputRef = useRef(null)
+  const closeButtonRef = useRef(null)
+  const viewportRef = appState.layoutRefs.viewportRef
 
   // Build datasets array from default plus custom
   const mergedDatasets = createDatasets({
@@ -33,51 +35,65 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
       datasets: mergedDatasets,
       services,
       mapProvider,
-      viewportRef: appState.layoutRefs.viewportRef,
+      viewportRef,
+      searchContainerRef,
       markers: mapState.markers,
       ...pluginConfig
     })
   }
   const events = eventsRef.current
 
-  // Manage focus outside the search control
+  const searchOpen = isExpanded || !!(defaultExpanded && areSuggestionsVisible && suggestions.length)
+
+  // Set initial focus
   useEffect(() => {
-    appState.dispatch({ type: 'TOGGLE_HAS_EXCLUSIVE_CONTROL', payload: isExpanded })
     if (!isExpanded) {
       return
     }
-
     inputRef.current?.focus()
+  }, [isExpanded])
 
-    const handleOutside = (e) => events.handleOutside(e, searchContainerRef, appState)
+  // Manage focus outside the search control
+  useEffect(() => {
+    appState.dispatch({ type: 'TOGGLE_HAS_EXCLUSIVE_CONTROL', payload: isExpanded })
+    if (!searchOpen) {
+      return
+    }
+
+    // Disable clicks on the viewport while search is open
+    viewportRef.current.style.pointerEvents = 'none'
+
     const handleTouchStart = (e) => events.handleTouchStart(e, inputRef)
 
-    document.addEventListener('pointerdown', handleOutside)
+    document.addEventListener('pointerdown', events.handlePointerDown, true)
     document.addEventListener('touchstart', handleTouchStart)
 
     // Add focusin only for keyboard interaction and on mobile devices
     if (interfaceType === 'keyboard' && breakpoint === 'mobile' ) {
-      document.addEventListener('focusin', handleOutside)
+      document.addEventListener('focusin', events.handleOutside)
     }
 
     return () => {
-      document.removeEventListener('pointerdown', handleOutside)
+      viewportRef.current.style.pointerEvents = 'auto'
+      document.removeEventListener('pointerdown', events.handlePointerDown, true)
       document.removeEventListener('touchstart', handleTouchStart)
       if (interfaceType === 'keyboard') {
-        document.removeEventListener('focusin', handleOutside)
+        document.removeEventListener('focusin', events.handleOutside)
       }
     }
-  }, [isExpanded, interfaceType])
+  }, [isExpanded, interfaceType, areSuggestionsVisible, suggestions])
 
   return (
-    <div className="dm-c-search" ref={searchContainerRef}>
-      <OpenButton
-        id={id}
-        isExpanded={isExpanded}
-        onClick={() => events.handleOpenClick(appState)}
-        buttonRef={buttonRef}
-        searchIcon={searchIcon}
-      />
+    <div className="dm-c-search" ref={searchContainerRef} tabIndex="-1" onBlur={events.handleOutside}>
+      {!defaultExpanded && (
+        <OpenButton
+          id={id}
+          isExpanded={isExpanded}
+          onClick={() => events.handleOpenClick(appState)}
+          buttonRef={buttonRef}
+          searchIcon={searchIcon}
+        />
+      )}
       <Form
         id={id}
         pluginState={pluginState}
@@ -86,7 +102,12 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
         inputRef={inputRef}
         events={events}
       >
-        <CloseButton onClick={(e) => events.handleCloseClick(e, buttonRef, appState)} closeIcon={closeIcon} />
+        <CloseButton
+          defaultExpanded={defaultExpanded}
+          onClick={(e) => events.handleCloseClick(e, buttonRef, appState)}
+          closeIcon={closeIcon}
+          ref={closeButtonRef}
+        />
       </Form>
     </div>
   )

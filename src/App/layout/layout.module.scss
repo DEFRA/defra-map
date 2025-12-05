@@ -376,6 +376,13 @@
     border-bottom: 1px solid var(--app-border-color);
 }
 
+// Banner on mobile and tablet
+.dm-o-app--mobile, .dm-o-app--tablet {
+  .dm-o-app__banner {
+    z-index: 9;
+  }
+}
+
 // Banner on desktop
 .dm-o-app--desktop .dm-c-panel--banner {
   margin-left: auto;

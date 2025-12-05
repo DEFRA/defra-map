@@ -1,11 +1,12 @@
 // src/plugins/search/CloseButton.jsx
-export const CloseButton = ({ onClick, closeIcon }) => {
+export const CloseButton = ({ defaultExpanded, onClick, closeIcon }) => {
   return (
     <button
       aria-label="Close search"
       className="dm-c-map-button dm-c-search-close-button"
       type="button"
       onClick={onClick}
+      style={defaultExpanded ? { display: 'none' } : undefined}
     >
       {closeIcon && (
         <svg

@@ -6,7 +6,7 @@ export const Suggestions = ({ id, pluginState, handleSuggestionClick }) => {
       role="listbox"
       aria-labelledby={`${id}-search`} // Option A: label from input
       className="dm-c-search-suggestions"
-      style={!pluginState.isSuggestionsVisible || !pluginState.suggestions.length ? { display: 'none' } : undefined }
+      style={!pluginState.areSuggestionsVisible || !pluginState.suggestions.length ? { display: 'none' } : undefined }
     >
       {pluginState.suggestions.map((suggestion, i) => (
         <li

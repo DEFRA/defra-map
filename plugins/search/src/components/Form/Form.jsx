@@ -11,13 +11,19 @@ export const Form = ({
   children, // For SearchClose
 }) => {
 
+  const classNames = [
+    'dm-c-search-form',
+    pluginConfig.isExpanded && 'dm-c-search-form--default-expanded',
+    'dm-c-panel'
+  ].filter(Boolean).join(' ')
+
   return (
     <form
       id={`${id}-search-form`}
       role="search"
-      className="dm-c-search-form dm-c-panel"
+      className={classNames}
       style={{
-        display: pluginState.isExpanded ? 'block' : undefined,
+        display: pluginConfig.isExpanded || pluginState.isExpanded ? 'flex' : undefined,
         ...(appState.breakpoint !== 'mobile' && pluginConfig?.width && { width: pluginConfig.width }),
       }}
       aria-controls={`${id}-viewport`}

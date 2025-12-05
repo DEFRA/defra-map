@@ -88,7 +88,8 @@ var defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: false
+			showMarker: false,
+			// isExpanded: true
 		}),
 		useLocationPlugin(),
 		dataLayersPlugin({

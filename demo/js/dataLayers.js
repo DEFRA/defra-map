@@ -23,6 +23,19 @@ export const dataLayers = [{
   symbolDescription: { outdoor: 'blue outline' },
   minZoom: 15,
   maxZoom: 24
-}]
+}
+// {
+//   id: 'hedge-control',
+//   label: 'Hedge control',
+//   // filter: ['==', ['get', 'SBI'], '106223377'],
+//   url: process.env.WFS_HEDGE_CONTROL_URL,
+//   stroke: '#ff0000',
+//   strokeWidth: 2,
+//   fill: 'transparent',
+//   symbolDescription: { outdoor: 'red outline' },
+//   minZoom: 15,
+//   maxZoom: 24
+// }
+]
 
 // Land cover, hedgerows

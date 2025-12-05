@@ -72,6 +72,8 @@ export default {
         // WFS services
         WFS_SERVICE_URL: JSON.stringify(process.env.WFS_SERVICE_URL),
         WFS_DATA_URL: JSON.stringify(process.env.WFS_DATA_URL),
+        WFS_LANDCOVERS_URL: JSON.stringify(process.env.WFS_LANDCOVERS_URL),
+        WFS_HEDGE_CONTROL_URL: JSON.stringify(process.env.WFS_HEDGE_CONTROL_URL),
         PARCEL_SERVICE_URL: JSON.stringify(process.env.PARCEL_SERVICE_URL)
       }
     })

@@ -62,7 +62,7 @@ var defraMap = new DefraMap('map', {
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
 	// enableFullscreen: true,
-	hasExitButton: true,
+	// hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],

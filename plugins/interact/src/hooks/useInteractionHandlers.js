@@ -8,11 +8,11 @@ export const useInteractionHandlers = ({
   services,
   mapProvider,
 }) => {
-  const isFirstRender = useRef(true)
   const { markers } = mapState
   const { dataLayers, interactionMode = 'marker', multiSelect, markerColor } = pluginConfig
   const { dispatch, selectedFeatures, selectionBounds } = pluginState
   const { eventBus } = services
+  const lastEmittedSelectionChange = useRef(null)
 
   const layerConfigMap = buildLayerConfigMap(dataLayers)
 
@@ -69,13 +69,14 @@ export const useInteractionHandlers = ({
 
   // Emit event when selectedFeatures change
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
+    if (!selectionBounds || selectedFeatures === lastEmittedSelectionChange.current) {
       return
     }
 
     eventBus.emit('interact:selectionchange', { selectedFeatures, selectionBounds })
-  }, [selectionBounds])
+
+    lastEmittedSelectionChange.current = selectedFeatures
+  }, [selectedFeatures, selectionBounds])
 
   return {
     handleInteraction

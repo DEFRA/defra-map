@@ -2,7 +2,8 @@ import {
   handleBaseTileLayerLoaded,
   handleStyleChange,
   handleStationary,
-  handleMoveStart
+  handleMoveStart,
+  handleMove
 } from '../../src/js/provider/esri-sdk/events'
 
 import { getDetail } from '../../src/js/provider/esri-sdk/query'
@@ -55,6 +56,7 @@ describe('esri-sdk events', () => {
         }
       },
       isUserInitiated: true,
+      view: { resolution: 100 },
       dispatchEvent: jest.fn()
     }
 
@@ -71,6 +73,17 @@ describe('esri-sdk events', () => {
     }
 
     handleMoveStart(provider)
+
+    expect(provider.dispatchEvent).toHaveBeenCalled()
+  })
+
+  it('should handleMove', () => {
+    const provider = {
+      dispatchEvent: jest.fn(),
+      view: { resolution: 100 }
+    }
+
+    handleMove(provider)
 
     expect(provider.dispatchEvent).toHaveBeenCalled()
   })

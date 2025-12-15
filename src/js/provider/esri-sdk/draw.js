@@ -297,12 +297,12 @@ export class Draw {
       // Dispatch dimensions update
     }
 
-    // Undo draw if attemtped self-intersect
+    // Undo draw if attempted self-intersect
     if (toolInfoType === 'reshape' && graphic?.geometry.isSelfIntersecting) {
       this.undo()
     }
 
-    // Canel draw if attempted polygon move
+    // Cancel draw if attempted polygon move
     if (toolInfoType === 'move-start') {
       this.cancel()
     }

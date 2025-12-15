@@ -58,7 +58,7 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
     hasShortcuts: true,
     padding: null,
     timestamp: Date.now(),
-    isReady: false,
+    isReady: false
   }
 }
 

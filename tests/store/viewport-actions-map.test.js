@@ -653,6 +653,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.SWAP_STYLES(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
+      dimensions: {},
       isUpdate: false,
       minZoom: 1,
       maxZoom: 10,
@@ -667,6 +668,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.SWAP_STYLES(state, payload)).toEqual({
       ...state,
       action: 'STYLE',
+      dimensions: {},
       isUpdate: false,
       minZoom: 1,
       maxZoom: 10,
@@ -680,6 +682,7 @@ describe('store/viewport-actions-map - swapStyles', () => {
     expect(actionsMap.SWAP_STYLES(state, {})).toEqual({
       ...state,
       action: 'STYLE',
+      dimensions: {},
       isUpdate: false,
       minZoom: 1,
       maxZoom: 10,

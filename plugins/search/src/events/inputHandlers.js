@@ -24,11 +24,5 @@ export const createInputHandlers = ({ dispatch, debouncedFetchSuggestions }) => 
 
     dispatch({ type: 'SHOW_SUGGESTIONS' })
     debouncedFetchSuggestions(value)
-  },
-
-  handleTouchStart(e, inputRef) {
-    if (!inputRef.current?.contains(e.target)) {
-      inputRef.current?.blur()
-    }
   }
 })

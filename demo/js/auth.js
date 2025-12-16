@@ -5,7 +5,7 @@ const transformGeocodeRequest = (request) => {
   // Add API key to OS Names service
   if(request.url.startsWith('https://api.os.uk')) {
     const url = new URL(request.url)
-    url.searchParams.set('key', process.env.OS_API_KEY)
+    url.searchParams.set('key', process.env.OS_CLIENT_ID)
     return new Request(url.toString(), {
       method: request.method,
       headers: request.headers

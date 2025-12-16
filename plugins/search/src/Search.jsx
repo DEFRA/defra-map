@@ -63,10 +63,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
     // Disable clicks on the viewport while search is open
     viewportRef.current.style.pointerEvents = 'none'
 
-    const handleTouchStart = (e) => events.handleTouchStart(e, inputRef)
-
     document.addEventListener('pointerdown', events.handlePointerDown, true)
-    document.addEventListener('touchstart', handleTouchStart)
 
     // Add focusin only for keyboard interaction and on mobile devices
     if (interfaceType === 'keyboard' && breakpoint === 'mobile' ) {
@@ -76,7 +73,6 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
     return () => {
       viewportRef.current.style.pointerEvents = 'auto'
       document.removeEventListener('pointerdown', events.handlePointerDown, true)
-      document.removeEventListener('touchstart', handleTouchStart)
       if (interfaceType === 'keyboard') {
         document.removeEventListener('focusin', events.handleOutside)
       }

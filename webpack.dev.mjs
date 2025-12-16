@@ -60,8 +60,7 @@ export default {
         VTS_BLACK_AND_WHITE_URL_27700: JSON.stringify(process.env.VTS_BLACK_AND_WHITE_URL_27700),
         // Aerial photography
         AERIAL_URL: JSON.stringify(process.env.AERIAL_URL),
-        // KEYS
-        OS_API_KEY: JSON.stringify(process.env.OS_API_KEY),
+        // OS Auth
         OS_CLIENT_ID: JSON.stringify(process.env.OS_CLIENT_ID),
         OS_CLIENT_SECRET: JSON.stringify(process.env.OS_CLIENT_SECRET),
         // OS Names API

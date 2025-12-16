@@ -21,7 +21,6 @@ export const createFormHandlers = ({
     },
 
     handleCloseClick(e, buttonRef) {
-      e.preventDefault()
       dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
       dispatch({ type: 'UPDATE_SUGGESTIONS', payload: [] })
       dispatch({ type: 'SET_VALUE', payload: '' })

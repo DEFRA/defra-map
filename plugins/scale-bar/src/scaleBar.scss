@@ -10,7 +10,7 @@
     padding-bottom: 5px;
     color: var(--map-overlay-foreground-color);
     user-select: none;
-    
+    min-height: 20px; // Required to ensure padding is calculated before scale bar is rendered
     width: 100px;
 }
 

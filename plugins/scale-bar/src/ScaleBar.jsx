@@ -26,7 +26,7 @@ export function ScaleBar ({
     <div className="dm-c-scale-bar" ref={elRef} style={{ width: `${scale.width}px` }}>
       <span className="dm-c-scale-bar__label">
         <span className="dm-u-visually-hidden">Scale bar: </span>
-        {scale.label || ' '}
+        {scale.label}
         <span aria-hidden="true">{scale.abbr}</span>
         <span className="dm-u-visually-hidden">{scale.unit}</span>
       </span>

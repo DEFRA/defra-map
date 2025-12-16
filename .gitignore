@@ -32,7 +32,7 @@ npm-debug.log
 node_modules/
 
 # Output
-dist
+# dist
 plugin
 coverage
 public

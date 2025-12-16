@@ -64,7 +64,6 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
       },
       globalObject: 'this',
       chunkLoadingGlobal: 'webpackChunkdefra_DefraMap',
-      // ⚠️ ADD THIS - it helps with external resolution
       auxiliaryComment: {
         root: 'Root Export',
         commonjs: 'CommonJS Export',
@@ -81,7 +80,6 @@ const createUMDConfig = (entryName, entryPath, libraryPath, outDir, isCore = fal
           react: 'preactCompat',
           'react-dom': 'preactCompat',
           'react-dom/client': 'preactCompat',
-          // ⚠️ KEY FIX: Change these to use property access
           'react/jsx-runtime': ['preactJsxRuntime'],
           'react/jsx-dev-runtime': ['preactJsxRuntime'],
           preact: 'preact',

@@ -16,7 +16,6 @@
     "build:umd": "webpack --config webpack.umd.mjs --mode production",
     "build:esm": "webpack --config webpack.esm.mjs --mode production",
     "build": "npm run clean && npm run build:umd && npm run build:esm",
-    "prepare": "npm run build || true",
     "type-check": "tsc --noEmit",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "standard \"src/**/*.{js,jsx,ts,tsx}\"",

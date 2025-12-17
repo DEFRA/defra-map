@@ -32,14 +32,6 @@ export function attachEvents(args) {
       }
       dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
       args.services.eventBus.emit('search:close')
-    },
-
-    handlePointerDown(e) {
-      if (searchContainerRef.current.contains(e.target)) {
-        return
-      }
-      dispatch({ type: 'TOGGLE_EXPANDED', payload: false })
-      args.services.eventBus.emit('search:close')
     }
   }
 }

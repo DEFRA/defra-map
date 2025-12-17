@@ -56,6 +56,7 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
   // Manage focus outside the search control
   useEffect(() => {
     appState.dispatch({ type: 'TOGGLE_HAS_EXCLUSIVE_CONTROL', payload: isExpanded })
+
     if (!searchOpen) {
       return
     }
@@ -63,16 +64,16 @@ export function Search({ appConfig, iconRegistry, pluginState, pluginConfig, app
     // Disable clicks on the viewport while search is open
     viewportRef.current.style.pointerEvents = 'none'
 
-    document.addEventListener('pointerdown', events.handlePointerDown, true)
-
     // Add focusin only for keyboard interaction and on mobile devices
     if (interfaceType === 'keyboard' && breakpoint === 'mobile' ) {
       document.addEventListener('focusin', events.handleOutside)
     }
 
     return () => {
+      // Re-enable viewport pointer events when component unmounts
       viewportRef.current.style.pointerEvents = 'auto'
-      document.removeEventListener('pointerdown', events.handlePointerDown, true)
+
+      // Remove focusin listener on unmount
       if (interfaceType === 'keyboard') {
         document.removeEventListener('focusin', events.handleOutside)
       }

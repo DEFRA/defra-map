@@ -51,7 +51,7 @@ export const manifest = {
     id: 'selectCancel',
     label: 'Cancel',
     variant: 'tertiary',
-    hiddenWhen: ({ appState}) => !appState.isFullscreen,
+    hiddenWhen: ({ appConfig, appState }) => !(['hybrid', 'buttonFirst'].includes(appConfig.behaviour) && appState.isFullscreen),
     mobile: {
       slot: 'actions',
       showLabel: true

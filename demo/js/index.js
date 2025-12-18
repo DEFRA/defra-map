@@ -32,7 +32,7 @@ var interactPlugin = createInteractPlugin({
 	markerColor: { outdoor: '#ff0000' },
 	// closeOnDone: false,
 	// closeOnCancel: false,
-	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+	interactionMode: 'marker', // 'auto', 'select', 'marker' // defaults to 'marker'
 	multiSelect: false,
 	excludeModes: ['draw']
 })
@@ -42,7 +42,7 @@ var drawPlugin = createDrawPlugin({
 })
 
 var defraMap = new DefraMap('map', {
-	behaviour: 'hybrid',
+	behaviour: 'mapOnly',
 	mapProvider: maplibreProvider(),
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,

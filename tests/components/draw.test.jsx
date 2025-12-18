@@ -1,124 +1,78 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import Draw from '../../src/js/components/draw'
-import eventBus from '../../src/js/lib/eventbus'
 import { useApp } from '../../src/js/store/use-app'
-import { useViewport } from '../../src/js/store/use-viewport'
-import { isFeatureSquare } from '../../src/js/lib/viewport'
-import { events } from '../../src/js/store/constants'
+import { useDrawHandlers } from '../../src/js/hooks/use-draw-handlers'
 
-jest.mock('../../src/js/lib/eventbus')
 jest.mock('../../src/js/store/use-app')
-jest.mock('../../src/js/store/use-viewport')
-jest.mock('../../src/js/lib/viewport')
+jest.mock('../../src/js/hooks/use-draw-handlers')
 
 describe('draw', () => {
-  const draw = jest.fn()
   const appDispatch = jest.fn()
-  const viewportDispatch = jest.fn()
-  const activeRef = {}
-  const viewportRef = {}
+  const options = { id: 'test' }
+  const handleAddClick = jest.fn()
+  const handleEditClick = jest.fn()
+  const handleDeleteClick = jest.fn()
 
-  jest.mocked(isFeatureSquare).mockResolvedValue(true)
+  jest.mocked(useDrawHandlers).mockReturnValue({ handleAddClick, handleEditClick, handleDeleteClick })
 
-  jest.mocked(useViewport).mockReturnValue({
-    dispatch: viewportDispatch,
-    size: null,
-    style: 'dummyStyle'
+  it('should not render if queryArea is not specified', () => {
+    jest.mocked(useApp).mockReturnValue({ options })
+    const { container } = render(<Draw />)
+    expect(container.innerHTML).toEqual('')
   })
 
-  jest.mocked(eventBus)
-
-  it('should handle click for Start label', () => {
+  it('should be expandable if queryArea has a collapse value ', async () => {
     jest.mocked(useApp).mockReturnValue({
+      options,
+      queryArea: { heading: 'Expandable area', collapse: 'collapse' },
+      drawTools: [{ id: 'square', name: 'Square' }],
       dispatch: appDispatch,
-      activeRef,
-      viewportRef,
-      mode: 'frame',
-      queryArea: { heading: '' },
-      provider: { draw: { start: draw } }
+      isDrawMenuExpanded: false
+    })
+    render(<Draw />)
+    await fireEvent.click(screen.getByText('Expandable area'))
+    expect(appDispatch).toHaveBeenCalledWith({ type: 'TOGGLE_DRAW_EXPANDED', payload: true })
+  })
+
+  it('should handle a click to add a shape', () => {
+    jest.mocked(useApp).mockReturnValue({
+      options,
+      drawTools: [{ id: 'square', name: 'Square' }],
+      queryArea: { heading: 'TEST' }
     })
 
     render(<Draw />)
-    fireEvent.click(screen.getByText('Add'))
-
-    expect(screen.getByText('Add')).toBeTruthy()
-    expect(draw).toHaveBeenCalled()
-    expect(viewportDispatch).toHaveBeenCalled()
-    expect(eventBus.dispatch).toHaveBeenCalled()
+    fireEvent.click(screen.getByText('Add square'))
+    expect(handleAddClick).toHaveBeenCalled()
   })
 
-  it('should handle click for Edit label', () => {
+  it('should handle a click to edit a shape', () => {
     jest.mocked(useApp).mockReturnValue({
-      dispatch: appDispatch,
-      activeRef,
-      viewportRef,
-      mode: 'draw',
+      options,
+      drawTools: [{ id: 'square', name: 'Square' }],
+      isDrawMenuExpanded: false,
       query: true,
-      queryArea: { heading: '' },
-      provider: { draw: { start: draw } }
+      queryArea: { heading: 'TEST', collapse: 'collapse' }
     })
 
-    render(<Draw />)
-    fireEvent.click(screen.getByText('Edit'))
-
-    expect(screen.getByText('Edit')).toBeTruthy()
-    expect(draw).toHaveBeenCalled()
-    expect(viewportDispatch).toHaveBeenCalled()
-    expect(eventBus.dispatch).toHaveBeenCalled()
+    const { container } = render(<Draw />)
+    console.log(container.innerHTML)
+    fireEvent.click(screen.getByText('Edit shape'))
+    expect(handleEditClick).toHaveBeenCalled()
   })
 
-  it('should handle click for an initial draw', () => {
+  it('should handle a click to delete a shape', () => {
     jest.mocked(useApp).mockReturnValue({
-      dispatch: appDispatch,
-      activeRef,
-      viewportRef,
-      queryArea: { heading: '' },
-      provider: { initDraw: draw },
-      drawMode: 'frame'
-    })
-
-    render(<Draw />)
-    fireEvent.click(screen.getByText('Add'))
-
-    expect(draw).toHaveBeenCalled()
-  })
-
-  it('should handle click for Delete label', () => {
-    const deleteFn = jest.fn()
-    const appDispatchDelete = jest.fn()
-    const viewportDispatchDelete = jest.fn()
-    const focusMock = jest.fn()
-    const activeRefDelete = { current: null }
-    const viewportRefDelete = { current: { focus: focusMock } }
-
-    jest.mocked(useApp).mockReturnValue({
-      dispatch: appDispatchDelete,
-      activeRef: activeRefDelete,
-      viewportRef: viewportRefDelete,
+      options,
+      drawTools: [{ id: 'square', name: 'Square' }],
+      isDrawMenuExpanded: true,
       query: true,
-      parent: 'parentElement',
-      queryArea: { heading: 'Test Heading' },
-      provider: { draw: { delete: deleteFn } }
-    })
-
-    jest.mocked(useViewport).mockReturnValue({
-      dispatch: viewportDispatchDelete,
-      size: 'dummySize',
-      style: 'dummyStyle'
+      queryArea: { heading: 'TEST', collapse: 'expanded' }
     })
 
     render(<Draw />)
-    fireEvent.click(screen.getByText('Delete'))
-
-    expect(deleteFn).toHaveBeenCalled()
-    expect(appDispatchDelete).toHaveBeenCalledWith({ type: 'SET_MODE', payload: { query: null } })
-    expect(eventBus.dispatch).toHaveBeenCalledWith(
-      'parentElement',
-      events.APP_ACTION,
-      { type: 'deletePolygon', query: true }
-    )
-    expect(activeRefDelete.current).toBe(viewportRefDelete.current)
-    expect(focusMock).toHaveBeenCalled()
+    fireEvent.click(screen.getByText('Delete shape'))
+    expect(handleDeleteClick).toHaveBeenCalled()
   })
 })

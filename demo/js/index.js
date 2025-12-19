@@ -1,6 +1,5 @@
 import DefraMap from '../../src/index.js'
 import { openMapStyles, vtsMapStyles3857 } from './mapStyles.js'
-import { dataLayers } from './dataLayers.js'
 import { searchCustomDatasets } from './searchCustomDatasets.js'
 import { transformGeocodeRequest, transformTileRequest, transformDataRequest } from './auth.js'
 // Providers
@@ -93,7 +92,34 @@ var defraMap = new DefraMap('map', {
 		}),
 		useLocationPlugin(),
 		dataLayersPlugin({
-			layers: dataLayers
+			layers: [{
+				id: 'field-parcels',
+				label: 'Field parcels',
+				filter: ['!=', ['get', 'SBI'], '106223377'],
+				tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_filtered/{z}/{x}/{y}'],
+				sourceLayer: 'field_parcels_filtered',
+				stroke: { outdoor: '#b1b4b6', dark: '#28a197', aerial: 'rgba(40,161,151,0.8)', 'black-and-white': '#28a197' },
+				strokeWidth: 2,
+				// strokeDashArray: [1, 2],
+				fill: 'transparent',
+				symbolDescription: { outdoor: 'turquiose outline' },
+				minZoom: 10,
+				maxZoom: 24,
+				showInLegend: true,
+				canToggle: true
+			},{
+				id: 'linked-parcels',
+				label: 'Existing fields',
+				filter: ['==', ['get', 'SBI'], '106223377'],
+				tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_filtered/{z}/{x}/{y}'],
+				sourceLayer: 'field_parcels_filtered',
+				stroke: '#0000ff',
+				strokeWidth: 2,
+				fill: 'rgba(0,0,255,0.1)',
+				symbolDescription: { outdoor: 'blue outline' },
+				minZoom: 10,
+				maxZoom: 24
+			}]
 		}),
 		interactPlugin,
 		// drawPlugin,

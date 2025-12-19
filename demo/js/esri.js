@@ -1,6 +1,5 @@
 import DefraMap from '../../src/index.js'
 import { vtsMapStyles27700 } from './mapStyles.js'
-import { dataLayers } from './dataLayers.js'
 import { searchCustomDatasets } from './searchCustomDatasets.js'
 import { transformGeocodeRequest, transformTileRequest, transformDataRequest, setupEsriConfig } from './auth.js'
 // Providers

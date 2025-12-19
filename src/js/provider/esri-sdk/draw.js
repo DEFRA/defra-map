@@ -166,7 +166,7 @@ export class Draw {
 
   reColour () {
     const { graphicsLayer } = this.provider
-    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === this.shape)
+    const graphic = this.findGraphic(this.shape)
     if (!graphic) {
       return
     }

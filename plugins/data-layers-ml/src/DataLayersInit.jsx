@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { createDataLayers } from './dataLayers.js'
 
 export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider, services }) {
+  console.log('DataLayersInit')
   const { eventBus } = services
 
   const isMapStyleReady = !!mapProvider.map?.getStyle()

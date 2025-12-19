@@ -11,7 +11,6 @@ export const createDataLayers = ({
   const { layers } = layersConfig
 
   // Initialize all layers once
-  console.log(layers)
   layers.forEach(layer => {
     addMapLayers(map, mapStyleId, layer)
   })

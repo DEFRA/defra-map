@@ -6,6 +6,7 @@ export default function createPlugin (options = {}) {
     ...options,
     id: 'dataLayers',
     load: async () => {
+      console.log('Here')
       const module = (await import(/* webpackChunkName: "dm-data-layers-ml-plugin" */ './manifest.js')).manifest
       return module
     }

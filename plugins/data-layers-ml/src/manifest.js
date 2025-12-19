@@ -3,7 +3,6 @@ import { initialState, actions } from './reducer.js'
 import { DataLayersInit } from './DataLayersInit.jsx'
 import { DataLayers } from './DataLayers.jsx'
 
-console.log('Here')
 export const manifest = {
   InitComponent: DataLayersInit,
 

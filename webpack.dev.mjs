@@ -66,13 +66,8 @@ export default {
         // OS Names API
         OS_NAMES_URL: JSON.stringify(process.env.OS_NAMES_URL),
         OS_NEAREST_URL: JSON.stringify(process.env.OS_NEAREST_URL),
-        // Gridref services
+        // Data services
         GRIDREF_SERVICE_URL: JSON.stringify(process.env.GRIDREF_SERVICE_URL),
-        // WFS services
-        WFS_SERVICE_URL: JSON.stringify(process.env.WFS_SERVICE_URL),
-        WFS_DATA_URL: JSON.stringify(process.env.WFS_DATA_URL),
-        WFS_LAND_COVERS_URL: JSON.stringify(process.env.WFS_LAND_COVERS_URL),
-        WFS_HEDGE_CONTROL_URL: JSON.stringify(process.env.WFS_HEDGE_CONTROL_URL),
         PARCEL_SERVICE_URL: JSON.stringify(process.env.PARCEL_SERVICE_URL)
       }
     })

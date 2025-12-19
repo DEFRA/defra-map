@@ -22,17 +22,17 @@ var featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates:
 var interactPlugin = createInteractPlugin({
 	dataLayers: [{
 		layerId: 'field-parcels',
-		idProperty: 'ID',
+		idProperty: 'ngc',
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	},{
 		layerId: 'linked-parcels',
-		idProperty: 'ID',
+		idProperty: 'ngc',
 		selectedFeatureStyle: { stroke: { outdoor: '#ff0000', dark: '#00ff00' }, strokeWidth: 2, fill: 'rgba(255, 0, 0, 0.1)' }
 	}],
 	markerColor: { outdoor: '#ff0000' },
 	// closeOnDone: false,
 	// closeOnCancel: false,
-	interactionMode: 'marker', // 'auto', 'select', 'marker' // defaults to 'marker'
+	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
 	multiSelect: false,
 	excludeModes: ['draw']
 })
@@ -93,7 +93,6 @@ var defraMap = new DefraMap('map', {
 		}),
 		useLocationPlugin(),
 		dataLayersPlugin({
-			transformRequest: transformDataRequest,
 			layers: dataLayers
 		}),
 		interactPlugin,
@@ -137,8 +136,8 @@ defraMap.on('search:match', function (e) {
 		return
 	}
 	interactPlugin.selectFeature({
-		idProperty: 'ID',
-		featureId: e.id,
+		idProperty: 'ngc',
+		featureId: e.properties.ngc,
 		layerId: 'field-parcels'
 	})
 })

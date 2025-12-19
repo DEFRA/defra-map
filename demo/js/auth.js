@@ -35,12 +35,6 @@ const transformTileRequest = (url, resourceType) => {
   }
 }
 
-const transformDataRequest = (request, bbox) => {
-  return {
-    url: `${process.env.WFS_SERVICE_URL}?wfs_url=${encodeURIComponent(request.url)}&bbox=${bbox}`
-  }
-}
-
 const setupEsriConfig = async (esriConfig) => {
   // Set ESRI API key (using cached token)
   esriConfig.apiKey = await getEsriToken()
@@ -97,6 +91,5 @@ async function getOsToken() {
 export {
   transformGeocodeRequest,
   transformTileRequest,
-  transformDataRequest,
   setupEsriConfig
 }

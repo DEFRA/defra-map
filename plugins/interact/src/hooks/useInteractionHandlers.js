@@ -21,8 +21,7 @@ export const useInteractionHandlers = ({
       const allFeatures = getFeaturesAtPoint(mapProvider, point)
       const hasDataLayers = dataLayers.length > 0
 
-      const match =
-        hasDataLayers &&
+      const match = hasDataLayers &&
         (interactionMode === 'select' || interactionMode === 'auto')
           ? findMatchingFeature(allFeatures, layerConfigMap)
           : null
@@ -41,6 +40,7 @@ export const useInteractionHandlers = ({
               multiSelect,
               layerId: config.layerId,
               idProperty: config.idProperty,
+              properties: feature.properties,
             },
           })
         }
@@ -73,7 +73,10 @@ export const useInteractionHandlers = ({
       return
     }
 
-    eventBus.emit('interact:selectionchange', { selectedFeatures, selectionBounds })
+    eventBus.emit('interact:selectionchange', {
+      selectedFeatures,
+      selectionBounds
+    })
 
     lastEmittedSelectionChange.current = selectedFeatures
   }, [selectedFeatures, selectionBounds])

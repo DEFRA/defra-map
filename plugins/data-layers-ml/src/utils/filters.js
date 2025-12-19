@@ -5,8 +5,13 @@
 export const excludeFeatureFromFilter = (filter, featureIds) => {
   const excludeClause = ['!', ['in', ['get', 'id'], ['literal', featureIds]]]
 
-  if (!filter) return ['all', excludeClause]
-  if (filter[0] !== 'all') return ['all', filter, excludeClause]
+  if (!filter) {
+    return ['all', excludeClause]
+  }
+
+  if (filter[0] !== 'all') {
+    return ['all', filter, excludeClause]
+  }
 
   return [...filter, excludeClause]
 }

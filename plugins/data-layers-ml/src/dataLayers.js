@@ -1,6 +1,5 @@
-import { debounce } from './utils/debounce.js'
-import { fetchData } from './effects/fetchData.js'
-import { handleSetMapStyle } from './effects/handleSetMapStyle.js'
+import { handleSetMapStyle } from './handleSetMapStyle.js'
+import { addMapLayers } from './mapLayers.js'
 
 export const createDataLayers = ({
   layersConfig,
@@ -9,36 +8,43 @@ export const createDataLayers = ({
   eventBus
 }) => {
   const { map } = mapProvider
-  const sourceCache = new Map()
-  const dataCache = new Map()
-  const { transformRequest, layers } = layersConfig
+  const { layers } = layersConfig
 
-  const debouncedFetch = debounce(() =>
-    fetchData({
-      map,
-      mapStyleId,
-      layers,
-      transformRequest,
-      dataCache,
-      sourceCache
-    }), 300)
+  // Initialize all layers once
+  layers.forEach(layer => {
+    addMapLayers(map, mapStyleId, layer)
+  })
 
-  map.on('moveend', debouncedFetch)
-
+  // Handle style changes
   const styleHandler = handleSetMapStyle({
     map,
     eventBus,
     layers,
-    transformRequest,
-    dataCache,
-    sourceCache
+    mapStyleId
   })
 
   return {
     remove() {
-      debouncedFetch.cancel() // Doesn't work here??
-      map.off('moveend', debouncedFetch)
       eventBus.off('map:setmapstyle', styleHandler)
+      
+      // Clean up sources and layers
+      layers.forEach(layer => {
+        const sourceId = `${layer.id}-source`
+        const fillLayerId = layer.fill ? layer.id : null
+        const strokeLayerId = layer.stroke ? (layer.fill ? `${layer.id}-stroke` : layer.id) : null
+        
+        if (strokeLayerId && map.getLayer(strokeLayerId)) {
+          map.removeLayer(strokeLayerId)
+        }
+
+        if (fillLayerId && map.getLayer(fillLayerId)) {
+          map.removeLayer(fillLayerId)
+        }
+        
+        if (map.getSource(sourceId)) {
+          map.removeSource(sourceId)
+        }
+      })
     }
   }
 }

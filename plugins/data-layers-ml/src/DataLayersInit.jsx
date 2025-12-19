@@ -5,12 +5,14 @@ import { createDataLayers } from './dataLayers.js'
 export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider, services }) {
   const { eventBus } = services
 
+  const isMapStyleReady = !!mapProvider.map?.getStyle()
+
   useEffect(() => {
     // Don't run init if the app is in non-specified mode
 		const inModeWhitelist = pluginConfig.includeModes?.includes(appState.mode) ?? true
 		const inExcludeModes = pluginConfig.excludeModes?.includes(appState.mode) ?? false
 
-    if (!mapState.isMapReady || !inModeWhitelist || inExcludeModes) {
+    if (!isMapStyleReady || !inModeWhitelist || inExcludeModes) {
       return
     }
 
@@ -26,7 +28,7 @@ export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider,
       dataLayers.remove()
     }
     
-  }, [mapState.isMapReady, appState.mode])
+  }, [isMapStyleReady, appState.mode])
 
   return null // no UI output, just side effects
 }

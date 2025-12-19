@@ -19,6 +19,7 @@ function updateHighlightedFeatures({ LngLatBounds, map, selectedFeatures, styles
     }
 
     const sourceId = layer.source
+
     if (!featuresBySource[sourceId]) {
       featuresBySource[sourceId] = {
         ids: new Set(),
@@ -51,11 +52,11 @@ function updateHighlightedFeatures({ LngLatBounds, map, selectedFeatures, styles
   currentSources.forEach(sourceId => {
     const { ids, idProperty, layerId } = featuresBySource[sourceId]
     const baseLayer = map.getLayer(layerId)
-    const srcLayer = baseLayer['source-layer']
+    const srcLayer = baseLayer.sourceLayer
     const geom = baseLayer.type
     const base = `highlight-${sourceId}`
-    const { stroke, strokeWidth, fill } = stylesMap[layerId]
 
+    const { stroke, strokeWidth, fill } = stylesMap[layerId]
     const filter = ['in', ['get', idProperty], ['literal', [...ids]]]
 
     // Ensure layers

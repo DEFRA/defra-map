@@ -92,7 +92,6 @@ var defraMap = new DefraMap('map', {
 		}),
 		useLocationPlugin(),
 		// dataLayersPlugin({
-		// 	transformRequest: transformDataRequest,
 		// 	layers: dataLayers
 		// }),
 		interactPlugin,

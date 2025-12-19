@@ -87,12 +87,12 @@ describe('Draw Class', () => {
   }
 
   describe('Constructor', () => {
-    it('should initialize Draw with provider reference', () => {
+    it('should initialize Draw with provider reference', async () => {
       const drawInstance = new Draw(mockProvider, {})
       expect(mockProvider.draw).toBe(drawInstance)
     })
 
-    it('should invoke createGraphic() with provided feature', () => {
+    it('should invoke createGraphic() with provided feature', async () => {
       const createSpy = jest.spyOn(Draw.prototype, 'createGraphic')
       createSpy.mockReturnValue(mockProvider.graphicsLayer)
       const addGraphicSpy = jest.spyOn(Draw.prototype, 'addGraphic')
@@ -230,7 +230,7 @@ describe('Draw Class', () => {
       expect(drawInstance.sketchViewModel.cancel).toHaveBeenCalled()
     })
 
-    it('should reinstate the original graphic using addGraphic()', () => {
+    it('should reinstate the original graphic using addGraphic()', async () => {
       const drawInstance = createDrawInstance({ addGraphic: true })
       const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
       drawInstance.cancel()
@@ -377,6 +377,7 @@ describe('Draw Class', () => {
     it('should retrieve and update the first graphic from graphicsLayer', async () => {
       const drawInstance = createDrawInstance({ addGraphic: true })
       const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+      addGraphicSpy.mockClear()
 
       drawInstance.reColour()
 
@@ -392,11 +393,13 @@ describe('Draw Class', () => {
       })
     })
 
-    it('should not perform any action if no graphic exists', () => {
-      const drawInstance = createDrawInstance({ addGraphic: true })
-      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+    it('should not perform any action if no graphic exists', async () => {
+      const drawInstance = createDrawInstance()
       mockProvider.graphicsLayer.graphics.items = []
-      drawInstance.reColour()
+      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+      addGraphicSpy.mockClear()
+
+      drawInstance.reColour(true)
       expect(addGraphicSpy).not.toHaveBeenCalled()
     })
   })

@@ -60,7 +60,7 @@ export default class EsriProvider {
     // Tidy up DOM
     cleanDOM(view.container)
 
-    // Set padding
+    // Set padding before bounds
     view.padding = padding
     
     // Set extent after padding (component uses bounds internally)
@@ -133,7 +133,7 @@ export default class EsriProvider {
   // Feature highlighting
   // ==========================
 
-  updateHighlightedFeatures (selectedFeatures, stylesMap) {
+  updateHighlightedFeatures () {
     console.log('updateHighlightedFeatures')
   }
 

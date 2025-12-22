@@ -9,7 +9,9 @@ export function useButtonStateEvaluator (evaluateProp) {
   const pluginContext = useContext(PluginContext)
 
   useEffect(() => {
-    if (!appState?.dispatch || !pluginContext) return
+    if (!appState?.dispatch || !pluginContext) {
+      return
+    }
     const { dispatch } = appState
 
     registeredPlugins.forEach((plugin) => {

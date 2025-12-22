@@ -20,9 +20,9 @@ export default class MapLibreProvider {
 
   async initMap (config) {
     const { container, padding, mapStyle, center, zoom, bounds, pixelRatio, ...initConfig } = config
-    const { Map } = this.maplibreModule
+    const { Map: MaplibreMap } = this.maplibreModule
 
-    const map = new Map({
+    const map = new MaplibreMap({
       ...initConfig,
       container,
       style: mapStyle?.url,
@@ -38,17 +38,18 @@ export default class MapLibreProvider {
 
     // Disable rotation
     map.touchZoomRotate.disableRotation()
-    
-    // Set bounds after padding
-    if (bounds) {
-      console.log('*Requires padding fix')
-      map.fitBounds(bounds, { padding, duration: 0 })
-    }
 
     // map.showPadding = true
-
     this.map = map
+
+    // Set padding before bounds
     this.map.setPadding(padding)
+
+    // Set bounds after padding
+    if (bounds) {
+      map.fitBounds(bounds, { duration: 0 })
+    }
+
 
     applyPreventDefaultFix(map)
     cleanCanvas(map)

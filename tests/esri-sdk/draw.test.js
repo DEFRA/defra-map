@@ -86,7 +86,7 @@ describe('Draw Class', () => {
   }
 
   const createDrawInstance = (options = { }) => {
-    options = { shape: testShape, ...options }
+    options = { shape: testShape, drawMode: 'default', ...options }
     if (options.addGraphic) {
       const existingGraphic = new (jest.requireMock('@arcgis/core/Graphic'))()
       existingGraphic.clone = jest.fn().mockReturnValue(existingGraphic)
@@ -94,7 +94,7 @@ describe('Draw Class', () => {
     }
 
     const feature = options.noFeature ? undefined : { geometry: { coordinates: mockShapeArray } }
-    return new Draw(mockProvider, { feature, drawMode: 'default', shape: options.shape })
+    return new Draw(mockProvider, { feature, drawMode: options.drawMode, shape: options.shape })
   }
 
   describe('Constructor', () => {
@@ -290,6 +290,18 @@ describe('Draw Class', () => {
         width: 1,
         geometry: mockGraphic.geometry
       })
+    })
+
+    it('should return an empty dimensions object if there is no currentGraphic', async () => {
+      const drawInstance = createDrawInstance({ noFeature: true })
+      const dimensions = drawInstance.getDimensions()
+      expect(dimensions).toEqual({})
+    })
+
+    it('should return an empty dimensions object if there is no currentGraphic and drawMode is "frame"', async () => {
+      const drawInstance = createDrawInstance({ noFeature: true, drawMode: 'frame' })
+      const dimensions = drawInstance.getDimensions()
+      expect(dimensions).toEqual({})
     })
   })
 

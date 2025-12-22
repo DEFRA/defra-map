@@ -2,15 +2,23 @@ import { Draw } from '../../src/js/provider/esri-sdk/draw'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
+import { geometry } from '@turf/helpers'
+import { cache } from 'react'
 
-const mockShapeArray = [[[0, 0], [1, 1], [2, 2]]]
+const areaOperatorSpy = jest.spyOn(require('@arcgis/core/geometry/operators/areaOperator.js'), 'execute').mockReturnValue(0.5)
+jest.spyOn(require('@arcgis/core/geometry/operators/centroidOperator.js'), 'execute').mockReturnValue({
+  x: 1,
+  y: 1
+})
+
+const mockShapeArray = [[[0, 0], [0, 1], [1, 2], [0, 0]]]
 const testShape = 'siteBoundary'
 const mockGraphic = {
   attributes: {
     id: testShape
   },
   symbol: {},
-  geometry: { rings: mockShapeArray }
+  geometry: { rings: mockShapeArray, type: 'polygon', cache: {}, spatialReference: 27700, extent: { width: 1, height: 2 } }
 }
 
 const expectedSymbol = {
@@ -35,7 +43,10 @@ jest.mock('@arcgis/core/widgets/Sketch/SketchViewModel.js', () => {
     update: jest.fn(),
     complete: jest.fn(),
     cancel: jest.fn(),
-    activeTool: null
+    activeTool: null,
+    layer: {
+      remove: jest.fn()
+    }
   }))
 })
 
@@ -82,7 +93,7 @@ describe('Draw Class', () => {
       mockProvider.graphicsLayer.graphics.items = [existingGraphic]
     }
 
-    const feature = { geometry: { coordinates: mockShapeArray } }
+    const feature = options.noFeature ? undefined : { geometry: { coordinates: mockShapeArray } }
     return new Draw(mockProvider, { feature, drawMode: 'default', shape: options.shape })
   }
 
@@ -134,6 +145,16 @@ describe('Draw Class', () => {
         polygonSymbol: expectedSymbol
       })
     })
+
+    it('should assign not call sketchViewModel.create if drawMode is not "vertex"', async () => {
+      jest.useFakeTimers()
+      const drawInstance = createDrawInstance()
+      drawInstance.add('not-vertex', testShape)
+      expect(drawInstance.shape).toEqual(testShape)
+      expect(drawInstance.drawMode).toEqual('not-vertex')
+      jest.runAllTimers()
+      expect(drawInstance.sketchViewModel.create).not.toHaveBeenCalled()
+    })
   })
 
   describe('edit()', () => {
@@ -150,6 +171,19 @@ describe('Draw Class', () => {
       const drawInstance = createDrawInstance()
       drawInstance.edit('default')
       expect(mockProvider.view.goTo).toHaveBeenCalledWith({ target: drawInstance.oGraphic })
+    })
+
+    it('should zoom to the existing graphic when available and drawMode is "frame" and this.originalZoom is set', async () => {
+      const drawInstance = createDrawInstance()
+      drawInstance.originalZoom = '10'
+      drawInstance.edit('frame')
+      expect(mockProvider.view.goTo).toHaveBeenNthCalledWith(1, { target: drawInstance.oGraphic, zoom: '10' })
+    })
+
+    it('should not zoom to the existing graphic when feature is not available', async () => {
+      const drawInstance = createDrawInstance({ noFeature: true })
+      drawInstance.edit('default')
+      expect(mockProvider.view.goTo).not.toHaveBeenCalled()
     })
 
     it('should remove all graphics when edit is in "frame" mode"', () => {
@@ -235,6 +269,98 @@ describe('Draw Class', () => {
       const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
       drawInstance.cancel()
       expect(addGraphicSpy).toHaveBeenCalledWith(drawInstance.oGraphic)
+    })
+
+    it('should not call addGraphic() if there is not graphic / feature', async () => {
+      const drawInstance = createDrawInstance({ noFeature: true })
+      const addGraphicSpy = jest.spyOn(drawInstance, 'addGraphic')
+      drawInstance.cancel()
+      expect(addGraphicSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getDimensions', () => {
+    it('should return the dimensions of the polygon', async () => {
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      const dimensions = drawInstance.getDimensions()
+      expect(dimensions).toEqual({
+        area: 0.5,
+        center: [1, 1],
+        radius: 0.5,
+        width: 1,
+        geometry: mockGraphic.geometry
+      })
+    })
+  })
+
+  describe('handleCreate', () => {
+    it('should update graphic attribute and symbol', async () => {
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      const mockEvent = {
+        state: 'complete',
+        graphic: {
+          geometry: mockGraphic.geometry
+        }
+      }
+      drawInstance.handleCreate(mockEvent)
+      expect(mockEvent.graphic.attributes.id).toEqual(drawInstance.shape)
+      expect(mockEvent.graphic.symbol).toEqual(expectedSymbol)
+    })
+
+    it('should update remove graphic if area is <= 0', async () => {
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      const mockEvent = {
+        state: 'complete',
+        graphic: {
+          geometry: mockGraphic.geometry
+        }
+      }
+      areaOperatorSpy.mockReturnValue(-1)
+      drawInstance.handleCreate(mockEvent)
+      expect(drawInstance.sketchViewModel.layer.remove).toHaveBeenCalledWith(mockEvent.graphic)
+      expect(drawInstance.sketchViewModel.create).toHaveBeenCalledWith('polygon')
+    })
+  })
+
+  describe('handleUpdateDelete', () => {
+    const mockEvent = {
+      undo: jest.fn(),
+      cancel: jest.fn(),
+      toolEventInfo: { type: 'reshape-stop' },
+      graphics: [{
+        geometry: { ...mockGraphic.geometry }
+      }]
+    }
+
+    let handleUpdateDelete
+    beforeEach(async () => {
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      // handleUpdateDelete is bound to sketchViewModel.on(['update', 'delete'],
+      // so at run time, handleUpdateDelete's "this" refers to the event NOT the
+      // instance of draw. So to test we bind the function to the mockEvent
+      // - which has a mocked undo and cancel method.
+      handleUpdateDelete = drawInstance.handleUpdateDelete.bind(mockEvent)
+    })
+
+    it('should call undo if area is <= 0 and toolEventInfo.type is "reshape-stop"', async () => {
+      areaOperatorSpy.mockReturnValue(-1)
+      handleUpdateDelete(mockEvent)
+      expect(mockEvent.undo).toHaveBeenCalled()
+    })
+
+    it('should call undo if geometry.isSelfIntersecting and toolEventInfo.type is "reshape"', async () => {
+      areaOperatorSpy.mockReturnValue(-1)
+      mockEvent.toolEventInfo.type = 'reshape'
+      mockEvent.graphics[0].geometry.isSelfIntersecting = true
+      handleUpdateDelete(mockEvent)
+      expect(mockEvent.undo).toHaveBeenCalled()
+    })
+
+    it('should call cancel if geometry.isSelfIntersecting and toolEventInfo.type is "move-start"', async () => {
+      areaOperatorSpy.mockReturnValue(-1)
+      mockEvent.toolEventInfo.type = 'move-start'
+      handleUpdateDelete(mockEvent)
+      expect(mockEvent.cancel).toHaveBeenCalled()
     })
   })
 
@@ -387,7 +513,7 @@ describe('Draw Class', () => {
       const expectedItem = { ...drawInstance.provider.graphicsLayer.graphics.items[0] }
       expect(addGraphicSpy).toHaveBeenCalledWith({
         ...expectedItem,
-        geometry: { ...expectedItem.geometry, spatialReference: 27700, type: 'polygon' },
+        geometry: { ...expectedItem.geometry, spatialReference: 27700, type: 'polygon', cache: undefined, extent: undefined },
         symbol: expectedSymbol,
         clone
       })

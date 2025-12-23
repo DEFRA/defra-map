@@ -46,7 +46,7 @@ export const createMapboxDraw = ({ colorScheme, mapProvider, eventBus }) => {
   map.addControl(draw)
 
   // We need a reference to this
-  map.draw = draw
+  mapProvider.draw = draw
 
   // --- Update colour scheme ---
   const handleSetMapStyle = (e) => {

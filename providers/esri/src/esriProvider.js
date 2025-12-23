@@ -1,3 +1,4 @@
+// src/plugins/mapStyles/EsriProvider.jsx
 import './esriProvider.scss'
 import esriConfig from '@arcgis/core/config.js'
 import Map from '@arcgis/core/Map.js'
@@ -18,27 +19,26 @@ export default class EsriProvider {
       supportedShortcuts,
       supportsMapSizes: false
     }
-    // Spread all config properties onto the instance
     Object.assign(this, mapProviderConfig)
+
+    // Initialize arrays to track event handles
+    this.mapEventHandles = []
+    this.appEventHandles = []
   }
 
   async initMap (config) {
     const { container, padding, mapStyle, maxExtent, ...initConfig } = config
     const { eventBus } = this
 
-    // Implementation has full control over esriConfig
     if (this.setupConfig) {
       await this.setupConfig(esriConfig)
     }
 
-    // Define layers
     const baseTileLayer = new VectorTileLayer({ id: 'baselayer', url: mapStyle.url, visible: true })
     const map = new Map({ layers: [baseTileLayer] })
     const geometry = maxExtent ? getExtentFromFlatCoords(maxExtent) : null
 
-    // Create MapView
     const view = new MapView({
-      // ...initConfig,
       spatialReference: 27700,
       container,
       map,
@@ -57,19 +57,16 @@ export default class EsriProvider {
       popupEnabled: false
     })
 
-    // Tidy up DOM
     cleanDOM(view.container)
-
-    // Set padding before bounds
     view.padding = padding
-    
-    // Set extent after padding (component uses bounds internally)
+
+    // Uses bounds internally
     if (config.bounds) {
       view.when(() => view.goTo(getExtentFromFlatCoords(config.bounds), { duration: 0 }))
     }
 
-    // Map related events
-    attachMapEvents({
+    // Attach map events and store handles
+    this.mapEventHandles = attachMapEvents({
       map,
       view,
       baseTileLayer,
@@ -80,25 +77,37 @@ export default class EsriProvider {
       getResolution: this.getResolution.bind(this)
     })
 
-    // App related events
-    attachAppEvents({
-      baseTileLayer,
-      eventBus
-    })
+    // Attach app events and store handles
+    this.appEventHandles = attachAppEvents({ baseTileLayer, eventBus }) || []
 
-    // Refs to map and view
+    // Save references
     this.map = map
     this.view = view
+    this.baseTileLayer = baseTileLayer
   }
 
   destroyMap () {
-    // this.map.remove()
+    this.mapEvents?.remove()
+    this.appEvents?.remove()
+
+    this.mapEvents = null
+    this.appEvents = null
+
+    if (this.view) {
+      this.view.container = null
+      this.view.destroy()
+      this.view = null
+    }
+
+    if (this.map) {
+      this.map.removeAll()
+      this.map = null
+    }
   }
 
   // ==========================
   // Side-effects
   // ==========================
-
   setView ({ center, zoom }) {
     this.view.animation?.destroy()
     this.view.goTo({ center, zoom, duration: defaults.animationDuration })
@@ -132,15 +141,11 @@ export default class EsriProvider {
   // ==========================
   // Feature highlighting
   // ==========================
-
-  updateHighlightedFeatures () {
-    console.log('updateHighlightedFeatures')
-  }
+  // updateHighlightedFeatures () {}
 
   // ==========================
   // Read-only getters
   // ==========================
-
   getCenter () {
     const center = this.view.center
     return [center.x, center.y].map(n => Math.round(n * 100) / 100)
@@ -162,9 +167,8 @@ export default class EsriProvider {
   // ==========================
   // Spatial helpers
   // ==========================
-
   getAreaDimensions () {
-    return getAreaDimensions(getPaddedExtent(this.view)) // Use padded bounds
+    return getAreaDimensions(getPaddedExtent(this.view))
   }
 
   getCardinalMove (from, to) {

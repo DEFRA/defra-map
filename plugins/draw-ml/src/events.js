@@ -35,13 +35,13 @@ export function attachEvents ({ appState, appConfig, mapState, pluginState, mapP
 
     // Switch SimpleSelect to EditVertexMode
     if (e.mode === 'simple_select') {
-      map.draw.changeMode('edit_vertex', {
+      mapProvider.draw.changeMode('edit_vertex', {
         container: appState.layoutRefs.viewportRef.current,
         deleteVertexButtonId: `${appConfig.id}-draw-delete-point`,
         isPanEnabled: appState.interfaceType !== 'keyboard',
         interfaceType: appState.interfaceType,
         scale: { small: 1, medium: 1.5, large: 2 }[mapState.mapSize],
-        featureId: map.draw.getAll().features[0].id
+        featureId: mapProvider.draw.getAll().features[0].id
       })
     }
   }
@@ -73,16 +73,16 @@ export function attachEvents ({ appState, appConfig, mapState, pluginState, mapP
   map.on('draw.vertexselection', onVertexSelection)
 
   return () => {
-    drawDone.onClick = null,
-    drawAddPoint.onClick = null,
-    drawUndo.onClick = null,
-    drawFinish.onClick = null,
-    drawDeletePoint.onClick = null,
-    drawSnap.onClick = null,
-    drawCancel.onClick = null,
-    map.off('draw.modechange', onModeChange),
-    map.off('styledata', handleStyleData),
-    map.off('draw.create', onCreate),
+    drawDone.onClick = null
+    drawAddPoint.onClick = null
+    drawUndo.onClick = null
+    drawFinish.onClick = null
+    drawDeletePoint.onClick = null
+    drawSnap.onClick = null
+    drawCancel.onClick = null
+    map.off('draw.modechange', onModeChange)
+    map.off('styledata', handleStyleData)
+    map.off('draw.create', onCreate)
     map.off('draw.vertexselection', onVertexSelection)
   }
 }

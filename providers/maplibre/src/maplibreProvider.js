@@ -72,6 +72,12 @@ export default class MapLibreProvider {
   }
 
   destroyMap () {
+    this.mapEvents?.remove()
+    this.appEvents?.remove()
+
+    this.mapEvents = null
+    this.appEvents = null
+
     this.map.remove()
   }
 

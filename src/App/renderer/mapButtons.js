@@ -67,7 +67,7 @@ function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, gro
       href={evaluateProp(config.href, config.pluginId)}
       showLabel={bp.showLabel}
       isDisabled={appState.disabledButtons.has(buttonId)}
-      isHidden={appState.hiddenButtons.has(buttonId) || undefined}
+      isHidden={appState.hiddenButtons.has(buttonId)}
       isPressed={config.pressedWhen ? appState.pressedButtons.has(buttonId) : undefined}
       isOpen={isOpen}
       onClick={handleClick}

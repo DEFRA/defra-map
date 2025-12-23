@@ -119,8 +119,8 @@ var defraMap = new DefraMap('map', {
 				maxZoom: 24
 			}]
 		}),
-		interactPlugin,
-		// drawPlugin,
+		// interactPlugin,
+		drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']

@@ -4,8 +4,7 @@
  * @param {object} feature - A single geoJSON feature
  */
 export const editFeature = ({ appState, appConfig, mapState, mapProvider, services }, feature) => {
-  const { map } = mapProvider
-  const { draw } = map
+  const { map, draw } = mapProvider
   const { eventBus } = services
 
   if (!draw) {

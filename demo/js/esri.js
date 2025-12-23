@@ -11,13 +11,12 @@ import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import menuDataLayersPlugin from '/plugins/menu-data-layers/src/index.js'
-import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
-import createDrawPlugin from '/plugins/draw-ml/src/index.js'
+import createDrawPlugin from '/plugins/draw-es/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import createInteractPlugin from '/plugins/interact/src/index.js'
 
-var featureGeoJSON = { id: 'test1234', type: 'Feature', geometry: { coordinates: [[[-2.9406643378873127,54.918060570259456],[-2.9092219779267054,54.91564249172612],[-2.904350626383433,54.90329530000005],[-2.909664828067463,54.89540129642464],[-2.9225074821353587,54.88979816151294],[-2.937121536764323,54.88826989853317],[-2.95682836800691,54.88916139231736],[-2.965463945742613,54.898966521920045],[-2.966349646023133,54.910805898763385],[-2.9406643378873127,54.918060570259456]]], type: 'Polygon' }}
+var featureGeoJSON = {id: 'test', type: 'feature', geometry: {type: 'polygon', coordinates: [[[324667,537194],[325298,537194],[325298,536563],[324667,536563],[324667, 537194]]]}}
 
 var interactPlugin = createInteractPlugin({
 	dataLayers: [{
@@ -35,11 +34,11 @@ var interactPlugin = createInteractPlugin({
 })
 
 var drawPlugin = createDrawPlugin({
-	includeModes: ['draw']
+	// includeModes: ['draw']
 })
 
 var defraMap = new DefraMap('map', {
-	behaviour: 'mapOnly',
+	behaviour: 'hybrid',
 	mapProvider: esriProvider({
 		setupConfig: setupEsriConfig
 	}),
@@ -90,11 +89,8 @@ var defraMap = new DefraMap('map', {
 			showMarker: false
 		}),
 		useLocationPlugin(),
-		// dataLayersPlugin({
-		// 	layers: dataLayers
-		// }),
-		interactPlugin,
-		// drawPlugin,
+		// interactPlugin,
+		drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']
@@ -112,23 +108,7 @@ defraMap.on('draw:ready', function () {
 	// drawPlugin.editFeature(featureGeoJSON)
 })
 
-defraMap.on('interact:done', function (e) {
+defraMap.on('draw:create', function (e) {
 	console.log(e)
-})
-
-// Update selected feature
-defraMap.on('search:match', function (e) {
-	if (e.type !== 'parcel') {
-		return
-	}
-	interactPlugin.selectFeature({
-		idProperty: 'ID',
-		featureId: e.id,
-		layerId: 'field-parcels'
-	})
-})
-
-// Hide selected feature
-defraMap.on('search:clear', function (e) {
-	// console.log('Search clear')
+	// drawPlugin.editFeature(featureGeoJSON)
 })

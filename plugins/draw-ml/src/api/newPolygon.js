@@ -4,8 +4,7 @@
  * @param {object} feature - A single geoJSON feature
  */
 export const newPolygon = ({ appState, appConfig, mapProvider, services }, featureId) => {
-  const { map } = mapProvider
-  const { draw } = map
+  const { draw } = mapProvider
   const { eventBus } = services
 
   if (!draw) {
@@ -25,7 +24,7 @@ export const newPolygon = ({ appState, appConfig, mapProvider, services }, featu
   eventBus.emit('draw:modechange', { mode: 'draw_vertex' })
 
   return () => {
-    map.off('draw.modechange', onModeChange)
-    map.off('draw.create', onCreate)
+    // map.off('draw.modechange', onModeChange)
+    // map.off('draw.create', onCreate)
   }
 }

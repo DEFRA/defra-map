@@ -2,101 +2,108 @@ import { watch, when, once } from '@arcgis/core/core/reactiveUtils.js'
 import { debounce } from '../../../src/utils/debounce.js'
 import { throttle } from '../../../src/utils/throttle.js'
 
-const DEBOUNCE_IDLE_TIME = 500 // Must be greater than provider animation duration (400ms)
-const MOVE_THROTTLE_TIME = 10 // Small delay for performance
+const DEBOUNCE_IDLE_TIME = 500
+const MOVE_THROTTLE_TIME = 10
 const ZOOM_TOLERANCE = 0.01
 
-export function attachMapEvents ({ map, view, baseTileLayer, eventBus, getZoom, getCenter, getBounds, getResolution }) {
-  // Helper to get common map state
+export function attachMapEvents ({
+  map,
+  view,
+  baseTileLayer,
+  eventBus,
+  getZoom,
+  getCenter,
+  getBounds,
+  getResolution
+}) {
+  let destroyed = false
+  const handles = []
+  const debouncers = []
+
   const getMapState = () => {
+    if (destroyed || !view || view.destroyed) {
+      return null
+    }
+
     const { maxZoom, minZoom } = view.constraints
-    const isAtMaxZoom = view.zoom + ZOOM_TOLERANCE >= maxZoom
-    const isAtMinZoom = view.zoom - ZOOM_TOLERANCE <= minZoom
+
     return {
       center: getCenter(),
       bounds: getBounds(),
       resolution: getResolution(),
       zoom: getZoom(),
-      isAtMaxZoom,
-      isAtMinZoom
+      isAtMaxZoom: view.zoom + ZOOM_TOLERANCE >= maxZoom,
+      isAtMinZoom: view.zoom - ZOOM_TOLERANCE <= minZoom
     }
   }
 
-  // Generic emitter wrapper
-  const emitEvent = (name, state) => eventBus.emit(name, state)
+  const emit = (name) => {
+    const state = getMapState()
+    if (state) eventBus.emit(name, state)
+  }
 
-  // Map loaded
-  when(() => baseTileLayer.loaded && view.resolution > 0, () => {
-    emitEvent('map:loaded')
-  })
+  // loaded
+  when(
+    () => baseTileLayer.loaded && view.resolution > 0,
+    () => emit('map:loaded')
+  )
 
-  // Map ready
+  // ready
   once(() => view.ready).then(() => {
-    emitEvent('map:ready', { map, view })
-  })
-
-  // Map first idle
-  once(() => view.stationary).then(() => {
-    emitEvent('map:firstidle', getMapState())
-  })
-
-  // Map movestart
-  watch(() => [view.interacting, view.animation], ([interacting, animation]) => {
-    if (interacting || animation) {
-      emitEvent('map:movestart')
+    if (!destroyed) {
+      eventBus.emit('map:ready', { map, view })
     }
   })
 
-  // Map moveend (debounced)
-  const emitMoveEnd = debounce(() => {
-    emitEvent('map:moveend', getMapState())
-  }, DEBOUNCE_IDLE_TIME)
-  watch(() => [view.interacting, view.animation], ([interacting, animation]) => {
-    if (!interacting && !animation) {
-      emitMoveEnd()
+  // first idle
+  once(() => view.stationary).then(() => emit('map:firstidle'))
+
+  // movestart + moveend
+  const emitMoveEnd = debounce(() => emit('map:moveend'), DEBOUNCE_IDLE_TIME)
+  debouncers.push(emitMoveEnd)
+
+  handles.push(watch(
+    () => [view.interacting, view.animation],
+    ([interacting, animation]) => {
+      if (interacting || animation) eventBus.emit('map:movestart')
+      if (!interacting && !animation) emitMoveEnd()
     }
-  })
+  ))
 
-  // Map move (throttled)
-  watch(() => view.zoom,
-    throttle(() => {
-      emitEvent('map:move', getMapState())
-    }, MOVE_THROTTLE_TIME)
-  )
+  // move
+  const emitMove = throttle(() => emit('map:move'), MOVE_THROTTLE_TIME)
+  debouncers.push(emitMove)
 
-  // Map render (unthrottled - realtime anchoring to map)
-  watch(() => view.extent, () => {
-      emitEvent('map:render')
-    }, { initial: false } // optional: skip first call
-  )
+  handles.push(watch(() => view.zoom, emitMove))
 
-  // Feature changes (debounced)
-  const emitDataChange = debounce(() => {
-    emitEvent('map:datachange', getMapState())
-  }, DEBOUNCE_IDLE_TIME)
-  watch(() => view.updating, (isUpdating) => {
-    if (!isUpdating) {
-      emitDataChange()
+  // render
+  handles.push(watch(
+    () => view.extent,
+    () => eventBus.emit('map:render'),
+    { initial: false }
+  ))
+
+  // datachange
+  const emitDataChange = debounce(() => emit('map:datachange'), DEBOUNCE_IDLE_TIME)
+  debouncers.push(emitDataChange)
+
+  handles.push(watch(
+    () => view.updating,
+    updating => !updating && emitDataChange()
+  ))
+
+  // click
+  handles.push(view.on('click', e => {
+    const p = e.mapPoint
+    eventBus.emit('map:click', { point: p, coords: [p.x, p.y] })
+  }))
+
+  // Cleanup
+  return {
+    remove () {
+      destroyed = true
+      debouncers.forEach(d => d.cancel())
+      handles.forEach(h => h.remove())
     }
-  })
-
-  // Map style change
-  view.on('layerview-create', (e) => {
-    if (e.layer === baseTileLayer) {
-      emitEvent('map:stylechange')
-    }
-  })
-
-  /* ==================================== */
-  /* Interactions
-  /* ==================================== */
-
-  // Map click
-  view.on('click', (e) => {
-    const point = e.mapPoint
-    emitEvent("map:click", {
-      point: point,
-      coords: [point.x, point.y]
-    })
-  })
+  }
 }

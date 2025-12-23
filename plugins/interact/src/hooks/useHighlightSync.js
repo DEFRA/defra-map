@@ -19,7 +19,7 @@ export const useHighlightSync = ({
 
   // Force re-application of all selected features
   const updateHighlightedFeatures = () => {
-    const bounds = mapProvider.updateHighlightedFeatures(selectedFeatures, stylesMap)
+    const bounds = mapProvider.updateHighlightedFeatures?.(selectedFeatures, stylesMap)
 
     dispatch({
       type: 'UPDATE_SELECTED_BOUNDS',

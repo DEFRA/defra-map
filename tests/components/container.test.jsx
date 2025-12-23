@@ -63,10 +63,14 @@ jest.mock('../../src/js/components/location.jsx', () => () => <div>Location Mock
 jest.mock('../../src/js/components/logo.jsx', () => () => <div>Logo Mock</div>)
 jest.mock('../../src/js/components/map-error.jsx', () => () => <div>MapError Mock</div>)
 jest.mock('../../src/js/components/viewport-label.jsx', () => () => <div>ViewportLabel Mock</div>)
-jest.mock('../../src/js/components/draw-edit.jsx', () => () => <div>DrawEdit Mock</div>)
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
+jest.mock('../../src/js/components/edit-button.jsx', () => () => <div>EditButton Mock</div>)
+jest.mock('../../src/js/components/inspector.jsx', () => () => <div>Inspector Mock</div>)
+jest.mock('../../src/js/components/warningPanel.jsx', () => () => <div>WarningPanel Mock</div>)
+jest.mock('../../src/js/components/banner.jsx', () => () => <div>Banner Mock</div>)
+jest.mock('../../src/js/components/scale-bar.jsx', () => () => <div>ScaleBar Mock</div>)
 
 jest.mock('../../src/js/components/panel.jsx', () => ({ label, children, html }) => (
   <div className='mock-panel'>
@@ -604,7 +608,7 @@ describe('Container', () => {
       useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true })
       const { container } = render(<Container />)
       const div = container.querySelector('div div div')
-      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class')
+      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class fm-draw')
     })
 
     it('has expected classNames in draw mode', async () => {

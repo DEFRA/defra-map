@@ -360,6 +360,16 @@ describe('Provider', () => {
       expect(provider.isMove).toBe(true)
     })
 
+    it('should not call handleMoveStart if onMapZoomOrPan is called without changes', async () => {
+      options.container = document.getElementById('test-container')
+
+      await provider.addMap(modules, options)
+      expect(provider.isMove).toBe(false)
+      provider.onMapZoomOrPan([TEST_ZOOM, 100, 100], [TEST_ZOOM, 100, 100])
+      expect(handleMoveStart).not.toHaveBeenCalled()
+      expect(provider.isMove).toBe(false)
+    })
+
     it('should call debounceStationary when view becomes stationary the 2nd time', async () => {
       options.container = document.getElementById('test-container')
 
@@ -782,6 +792,18 @@ describe('Provider', () => {
 
       expect(provider.removeTargetMarker).toHaveBeenCalled()
       expect(mockDraw).toHaveBeenCalledWith(provider, options)
+    })
+
+    it('should call a callback if it is passed to initDraw', async () => {
+      const options = {
+        type: 'polygon',
+        color: '#ff0000'
+      }
+      const callback = jest.fn()
+      provider.initDraw(options, callback)
+      // Wait for dynamic import to resolve
+      await new Promise(process.nextTick)
+      expect(callback).toHaveBeenCalled()
     })
 
     it('should handle setTargetMarker with null coordinates', (done) => {

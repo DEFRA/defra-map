@@ -368,7 +368,7 @@ describe('Provider', () => {
       }
       await provider.addMap(modules, options)
       expect(provider.isMove).toBe(false)
-      provider.onZoomChange([TEST_ZOOM, 100, 100], [TEST_ZOOM + 1, 100, 100])
+      provider.onMapZoomOrPan([TEST_ZOOM, 100, 100], [TEST_ZOOM + 1, 100, 100])
       expect(handleMoveStart).toHaveBeenCalledWith(provider)
       expect(provider.isMove).toBe(true)
     })

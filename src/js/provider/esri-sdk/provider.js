@@ -45,7 +45,7 @@ class Provider extends EventTarget {
   }, defaults.THROTTLE)
 
   isMove = false
-  onZoomChange ([newZoom, newX, newY], [oldZoom, oldX, oldY]) {
+  onMapZoomOrPan ([newZoom, newX, newY], [oldZoom, oldX, oldY]) {
     const zoomChanged = newZoom !== oldZoom
     const centerChanged = newX !== oldX || newY !== oldY
     if (!(zoomChanged || centerChanged)) {
@@ -60,7 +60,6 @@ class Provider extends EventTarget {
 
   // Debounce update 500ms
   debounceStationary = debounce(() => {
-    console.log('calling handleStationary')
     handleStationary(this)
   }, defaults.DELAY)
 
@@ -133,7 +132,7 @@ class Provider extends EventTarget {
 
     // When the view is ready, start watching for zoomChanges
     reactiveWhen(() => view.ready, () => {
-      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], this.onZoomChange.bind(this))
+      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], this.onMapZoomOrPan.bind(this))
     })
 
     reactiveWatch(() => [view.stationary, view.updating], this.onStationaryChange.bind(this))

@@ -329,43 +329,30 @@ describe('Provider', () => {
   })
 
   describe('Map Operations', () => {
-    it('should handle user-initiated map movement', async () => {
-      const container = document.getElementById('test-container')
+    const options = {
+      paddingBox: {},
+      bounds: TEST_BOUNDS,
+      maxExtent: TEST_BOUNDS,
+      TEST_CENTER,
+      zoom: TEST_ZOOM,
+      minZoom: TEST_MIN_ZOOM,
+      maxZoon: TEST_MAX_ZOOM,
+      style: { url: 'test-url', name: 'default' },
+      locationLayers: [],
+      callBack: jest.fn()
+    }
 
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: TEST_MIN_ZOOM,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
+    it('should handle user-initiated map movement', async () => {
+      options.container = document.getElementById('test-container')
+
       await provider.addMap(modules, options)
       provider.view.emit('drag', { action: 'start' })
       expect(provider.isUserInitiated).toBe(true)
     })
 
     it('should handle move start correctly', async () => {
-      const container = document.getElementById('test-container')
+      options.container = document.getElementById('test-container')
 
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: TEST_MIN_ZOOM,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
       await provider.addMap(modules, options)
       expect(provider.isMove).toBe(false)
       provider.onMapZoomOrPan([TEST_ZOOM, 100, 100], [TEST_ZOOM + 1, 100, 100])
@@ -374,28 +361,12 @@ describe('Provider', () => {
     })
 
     it('should call debounceStationary when view becomes stationary the 2nd time', async () => {
-      const container = document.createElement('div')
-      container.id = 'test-container'
-      document.body.appendChild(container)
+      options.container = document.getElementById('test-container')
 
       // Create and append the .esri-view-surface element
       const viewSurface = document.createElement('div')
       viewSurface.classList.add('esri-view-surface')
-      container.appendChild(viewSurface)
-
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: 5,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
+      options.container.appendChild(viewSurface)
 
       await provider.addMap(modules, options)
       provider.isMove = true

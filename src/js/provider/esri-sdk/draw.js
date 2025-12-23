@@ -51,7 +51,7 @@ export class Draw {
 
   findGraphic (shape) {
     if (!this.provider?.graphicsLayer?.graphics?.items?.length) {
-      return
+      return undefined
     }
     return this.provider.graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
   }
@@ -103,7 +103,6 @@ export class Draw {
 
       // Another timeout hack
       setTimeout(() => {
-        const graphic = this.findGraphic(shape)
         sketchViewModel.update([graphic], {
           tool: 'reshape',
           enableRotation: false,

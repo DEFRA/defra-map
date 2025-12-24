@@ -489,6 +489,7 @@ describe('FloodMap', () => {
     // Cleanup
     document.body.removeChild(div)
   })
+
   it('should handle responsive changes correctly', () => {
     // Create spies for _removeComponent and _importComponent
     const removeComponentSpy = jest.spyOn(FloodMap.prototype, '_removeComponent')
@@ -1009,6 +1010,25 @@ describe('FloodMap', () => {
 
     // Verify event was NOT dispatched
     expect(eventBus.dispatch).not.toHaveBeenCalled()
+  })
+
+  describe('setBanner', () => {
+    const values = { message: 'Click on the map for more information', isDismissable: true }
+    it('should handle setBanner method when ready', () => {
+      const props = { parent: 'test-parent' }
+      floodMap = new FloodMap('test-id', props)
+      floodMap.isReady = true
+      floodMap.setBanner(values)
+      expect(eventBus.dispatch).toHaveBeenCalledWith(props.parent, events.SET_BANNER, values)
+    })
+
+    it('should handle setBanner method when when not ready', () => {
+      const props = { parent: 'test-parent' }
+      floodMap = new FloodMap('test-id', props)
+      floodMap.isReady = false
+      floodMap.setBanner(values)
+      expect(eventBus.dispatch).not.toHaveBeenCalled()
+    })
   })
 
   describe('setModal', () => {

@@ -35,6 +35,9 @@ class Provider extends EventTarget {
     ]).then(modules => this.addMap(modules, options))
   }
 
+  remove () {
+  }
+
   // Throttle move 100ms
   throttleMove = throttle(() => {
     handleMove(this)

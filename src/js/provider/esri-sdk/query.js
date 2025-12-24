@@ -71,4 +71,5 @@ export function getDimensions (provider) {
   if (['frame', 'vertex'].includes(provider?.draw?.drawMode)) {
     return provider.draw.getDimensions()
   }
+  return {}
 }

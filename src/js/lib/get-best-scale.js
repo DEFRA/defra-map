@@ -1,12 +1,18 @@
+const METRE = 1
+const KILOMETRE = 1000
+const MILE = 1609.344
+const YARD = 0.9144
+const FOOT = 0.3048
+
 const units = {
   metric: [
-    { threshold: 1, symbol: 'm', unit: 'metre', plural: 'metres', factor: 1 },
-    { threshold: 1000, symbol: 'km', unit: 'kilometre', plural: 'kilometres', factor: 0.001 }
+    { symbol: 'm', unit: 'metre', plural: 'metres', factor: METRE },
+    { symbol: 'km', unit: 'kilometre', plural: 'kilometres', factor: METRE / KILOMETRE }
   ],
   imperial: [
-    { threshold: 1609.344, symbol: 'mi', unit: 'mile', plural: 'miles', factor: 1 / 1609.344 },
-    { threshold: 0.9144, symbol: 'yd', unit: 'yard', plural: 'yards', factor: 1 / 0.9144 },
-    { threshold: 0.3048, symbol: 'ft', unit: 'foot', plural: 'feet', factor: 1 / 0.3048 }
+    { symbol: 'mi', unit: 'mile', plural: 'miles', factor: METRE / MILE },
+    { symbol: 'yd', unit: 'yard', plural: 'yards', factor: METRE / YARD },
+    { symbol: 'ft', unit: 'foot', plural: 'feet', factor: METRE / FOOT }
   ]
 }
 

@@ -309,17 +309,6 @@ const metresToKilometres = (metres) => {
   }
 }
 
-export const squareMetresToKm = (metres) => {
-  const SQ_KM = 1_000_000
-  if (metres >= SQ_KM) {
-    let km2 = (metres / SQ_KM).toFixed(2)
-    km2 = Number(km2).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-    return `${km2}km²`
-  } else {
-    return `${Math.ceil(metres).toLocaleString()}m²`
-  }
-}
-
 function displayArea (area, units) {
   units = units?.toLowerCase() || 'hectares'
 

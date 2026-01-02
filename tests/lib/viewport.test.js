@@ -1,4 +1,4 @@
-import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey, spatialNavigate, isFeatureSquare, getScale, getPoint, getStyle } from '../../src/js/lib/viewport'
+import { getFocusPadding, getFocusBounds, getMapPixel, getDescription, getStatus, getPlace, parseCentre, parseZoom, getShortcutKey, spatialNavigate, isFeatureSquare, getScale, getPoint, getStyle, getFeatureShape, parseDimensions } from '../../src/js/lib/viewport'
 import { defaults } from '../../src/js/store/constants'
 
 const mockElement = (boundingRect, closestMock = null) => {
@@ -430,5 +430,46 @@ describe('lib/viewport - getStyle', () => {
 
     // Should return undefined since there are no valid styles
     expect(result).toBeUndefined()
+  })
+
+  it('should handle no parameters', () => {
+    // Call with empty styles array
+    expect(getStyle()).toBeUndefined()
+  })
+})
+
+describe('getFeatureShape', () => {
+  const square = [[100, 200], [110, 200], [110, 210], [210, 100], [100, 200]]
+  const polygon = [[100, 200], [111, 200], [110, 210], [210, 100], [100, 200]]
+
+  const tests = [
+    [undefined, null],
+    [{ geometry: { type: 'Polygon', coordinates: [square] } }, 'square'],
+    [{ geometry: { type: 'Polygon', coordinates: [polygon] } }, 'polygon']
+  ]
+  tests.forEach(([feature, expectedResponse]) => {
+    it(`should return ${JSON.stringify(expectedResponse)} if ${JSON.stringify(feature)}`, async () => {
+      expect(getFeatureShape(feature)).toEqual(expectedResponse)
+    })
+  })
+})
+
+describe('parseDimensions', () => {
+  const tests = [
+    [400, [160, 180], 20, 20, '0.04 ha', '160, 180', '20m', '20m'],
+    [400, [160, 180], 2000, 20, '400 m²', '160, 180', '2km', '20m', 'm2'],
+    [400_000, [160, 180], 20, 20, '0.40 km²', '160, 180', '20m', '20m', 'm2']
+  ]
+  tests.forEach(([area, center, width, radius, areaDisplay, centerDisplay, widthDisplay, radiusDisplay, units]) => {
+    const dimensions = { area, center, width, radius }
+    const expectedResult = { ...dimensions, areaDisplay, centerDisplay, widthDisplay, radiusDisplay }
+
+    it(`should return ${JSON.stringify(expectedResult)}`, async () => {
+      const extendedDimensions = parseDimensions(dimensions, units)
+      expect(extendedDimensions).toEqual(expectedResult)
+    })
+    it('should throw if units is invalid', async () => {
+      expect(() => parseDimensions(dimensions, 'parsecs')).toThrow()
+    })
   })
 })

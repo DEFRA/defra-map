@@ -1,6 +1,7 @@
 // src/core/renderers/mapButtons.js
 import { MapButton } from '../components/MapButton/MapButton.jsx'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
+import { getPanelConfig } from '../registry/panelRegistry.js'
 import { allowedSlots } from './slots.js'
 
 function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
@@ -10,19 +11,19 @@ function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
   }
 
   return Object.entries(buttonConfig).filter(([_, config]) => {
-    const bp = config[breakpoint]
+    const bpConfig = config[breakpoint]
 
     // Dynamic exclusion
     if (typeof config.excludeWhen === 'function' && evaluateProp(config.excludeWhen, config.pluginId)) {
       return false
     }
-    if (config.includeModes && !config.includeModes.includes(mode)) {
+    if (config.includeModes && !config.includeModes?.includes(mode)) {
       return false
     }
-    if (config.excludeModes && config.excludeModes.includes(mode)) {
+    if (config.excludeModes?.includes(mode)) {
       return false
     }
-    if (bp?.slot !== slot || !allowedSlots.button.includes(bp.slot)) {
+    if (bpConfig?.slot !== slot || !allowedSlots.button.includes(bpConfig.slot)) {
       return false
     }
     return true
@@ -40,11 +41,13 @@ function createButtonClickHandler (btn, appState, evaluateProp) {
 
     if (config.panelId) {
       const triggeringElement = document.activeElement
+      const panelConfig = getPanelConfig()
+      const isExclusive = panelConfig[config.panelId][appState.breakpoint]?.isExclusive
       appState.dispatch({
         type: isOpen ? 'CLOSE_PANEL' : 'OPEN_PANEL',
         payload: isOpen
           ? config.panelId
-          : { panelId: config.panelId, props: { triggeringElement } }
+          : { panelId: config.panelId, props: { triggeringElement, isExclusive } }
       })
     }
   }
@@ -52,7 +55,7 @@ function createButtonClickHandler (btn, appState, evaluateProp) {
 
 function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, groupMiddle, groupEnd }) {
   const [buttonId, config] = btn
-  const bp = config[appState.breakpoint] ?? {}
+  const bpConfig = config[appState.breakpoint] ?? {}
   const handleClick = createButtonClickHandler(btn, appState, evaluateProp)
   const isOpen = !!(config.panelId && appState.openPanels[config.panelId])
 
@@ -65,7 +68,7 @@ function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, gro
       variant={config.variant}
       label={evaluateProp(config.label, config.pluginId)}
       href={evaluateProp(config.href, config.pluginId)}
-      showLabel={bp.showLabel}
+      showLabel={bpConfig.showLabel}
       isDisabled={appState.disabledButtons.has(buttonId)}
       isHidden={appState.hiddenButtons.has(buttonId)}
       isPressed={config.pressedWhen ? appState.pressedButtons.has(buttonId) : undefined}

@@ -35,4 +35,16 @@ describe('Actions component', () => {
     const container = screen.getByTestId('child1').closest('.dm-c-actions')
     expect(container).toHaveStyle('display: none')
   })
+
+  it('shows the container when at least one child is visible', () => {
+    render(
+      <Actions slot="actions">
+        <TestChild isHidden={false} data-testid="child1">Child 1</TestChild>
+        <TestChild isHidden={true} data-testid="child2">Child 2</TestChild>
+      </Actions>
+    )
+
+    const container = screen.getByTestId('child1').closest('.dm-c-actions')
+    expect(container).not.toHaveStyle('display: none')
+  })
 })

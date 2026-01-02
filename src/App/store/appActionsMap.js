@@ -51,17 +51,26 @@ const setInterfaceType = (state, payload) => {
 
 const openPanel = (state, payload) => {
   const { panelId, props = {} } = payload
+  const isExclusive = payload.props?.isExclusive === true
+  const openPanels = Object.fromEntries(
+    Object.entries(state.openPanels).filter(([_, p]) => !p.props?.isExclusive)
+  )
+
   return {
     ...state,
     previousOpenPanels: state.openPanels,
-    openPanels: {
-      ...state.openPanels,
+    openPanels: isExclusive ? {
+      [panelId]: { props }
+    } : {
+      ...openPanels,
       [panelId]: { props }
     }
   }
 }
 
+
 const closePanel = (state, payload) => {
+  // eslint-disable-next-line no-unused-vars
   const { [payload]: _, ...remainingPanels } = state.openPanels
   return {
     ...state,

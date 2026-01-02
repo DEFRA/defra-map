@@ -108,6 +108,7 @@ export default class EsriProvider {
   // ==========================
   // Side-effects
   // ==========================
+
   setView ({ center, zoom }) {
     this.view.animation?.destroy()
     this.view.goTo({ center, zoom, duration: defaults.animationDuration })
@@ -141,11 +142,13 @@ export default class EsriProvider {
   // ==========================
   // Feature highlighting
   // ==========================
+
   // updateHighlightedFeatures () {}
 
   // ==========================
   // Read-only getters
   // ==========================
+
   getCenter () {
     const center = this.view.center
     return [center.x, center.y].map(n => Math.round(n * 100) / 100)
@@ -167,6 +170,7 @@ export default class EsriProvider {
   // ==========================
   // Spatial helpers
   // ==========================
+  
   getAreaDimensions () {
     return getAreaDimensions(getPaddedExtent(this.view))
   }

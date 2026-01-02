@@ -56,7 +56,7 @@ export const MapButton = ({
     },
     'aria-disabled': isDisabled || undefined,
     'aria-expanded': typeof isExpanded === 'boolean' ? isExpanded : undefined,
-    'aria-pressed': panelId ? (isOpen ? 'true' : 'false') : isPressed,
+    'aria-pressed': panelId ? String(isOpen) : isPressed,
     'aria-controls': panelId ? `${idPrefix}-panel-${stringToKebab(panelId)}` : undefined,
     ...(href
       ? { href, target: '_blank', onKeyUp: handleKeyUp, role: 'button' } // only <a>

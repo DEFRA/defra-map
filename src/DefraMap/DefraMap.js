@@ -185,11 +185,19 @@ export default class DefraMap {
     eventBus.emit('app:addpanel', { id, config })
   }
 
-  addControl (id, config) {
-    eventBus.emit('app:addcontrol', { id, config })
-  }
-
   removePanel (id) {
     eventBus.emit('app:removepanel', id)
+  }
+
+  showPanel (id) {
+    eventBus.emit('app:showpanel', id)
+  }
+
+  hidePanel (id) {
+    eventBus.emit('app:hidepanel', id)
+  }
+
+  addControl (id, config) {
+    eventBus.emit('app:addcontrol', { id, config })
   }
 }

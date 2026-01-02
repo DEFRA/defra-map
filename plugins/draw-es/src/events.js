@@ -1,10 +1,17 @@
+import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
+import * as simplifyOperator from "@arcgis/core/geometry/operators/simplifyOperator.js"
+
 import { createGraphic, createSymbol } from './graphic.js'
 
 export function attachEvents({ pluginState, mapProvider, eventBus }) {
-  const { view } = mapProvider
+  const { view, sketchViewModel, sketchLayer } = mapProvider
   
+  // Re-colour graphics
   const reColour = async (mapColorScheme) => {
-    const { sketchViewModel, sketchLayer } = mapProvider
+    if (!sketchViewModel && !sketchLayer) {
+      return
+    }
+
     const activeGraphicId = pluginState.feature?.properties?.id
     let activeGraphic = null
     const isCreating = sketchViewModel.state === 'active' && !activeGraphicId
@@ -51,15 +58,55 @@ export function attachEvents({ pluginState, mapProvider, eventBus }) {
     }
   }
 
-  // Register the listener
+  // Re-enter update graphic mode
+  const updateGraphic = () => {
+    const graphic = sketchLayer.graphics?.items?.[0] ?? null
+    if (graphic) {
+      setTimeout(() => sketchViewModel.update(graphic), 0)
+    }
+  }
+
+  // Handle map style change
   const handleMapStyleChange = (e) => {
     reColour(e.mapColorScheme)
   }
   eventBus.on('map:stylechange', handleMapStyleChange)
 
+  // Handle sketchViewModel update event
+  const handleUpdate = (e) => {
+    const toolInfoType = e.toolEventInfo?.type
+    const graphic = e.graphics[0]
+    
+    // Prevent polygon move
+    if (toolInfoType === 'move-start') {
+      sketchViewModel.cancel()
+      updateGraphic()
+    }
+
+    // Prevent self-intersect
+    if (toolInfoType === 'reshape') {
+      const isSimple = simplifyOperator.isSimple(graphic.geometry)
+      if (!isSimple) {
+        sketchViewModel.undo()
+      }
+    }
+
+    // Prevent zero area polygon
+    if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
+      const area = areaOperator.execute(graphic.geometry)
+      if (area <= 0) {
+        sketchViewModel.undo()
+      }
+    }
+  }
+  sketchViewModel?.on('update', handleUpdate)
+
   // Prevent deselection when clicking outside
   view.on('click', async () => {
-    const { sketchViewModel, sketchLayer } = mapProvider
+    if (!sketchViewModel && !sketchLayer) {
+      return
+    }
+
     const updateGraphics = sketchViewModel.updateGraphics || []
 
     // If not updating, ignore
@@ -68,27 +115,7 @@ export function attachEvents({ pluginState, mapProvider, eventBus }) {
     }
 
     // Reinstate update
-    const graphic = sketchLayer.graphics?.items?.[0] ?? null
-    if (graphic) {
-      setTimeout(() => sketchViewModel.update(graphic), 0)
-    }
-  })
-
-  // Prevent dragging shape
-  view.on('pointer-move', async (e) => {
-    const { sketchViewModel, sketchLayer } = mapProvider
-    console.log(sketchViewModel.state)
-    if (sketchViewModel.state !== 'active') {
-      return
-    }
-    const graphic = sketchLayer.graphics?.items?.[0] ?? null
-    const hit = await view.hitTest(e)
-    console.log(graphic)
-    console.log(hit.results)
-    const graphicHit = hit.results.find(r => r.graphic === graphic)
-    if (graphicHit && e.isDragging) {
-      console.log('User is dragging polygon fill')
-    }
+    updateGraphic()
   })
 
   // Return cleanup function

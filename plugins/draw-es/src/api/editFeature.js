@@ -1,9 +1,10 @@
 import { createGraphic, graphicToGeoJSON } from '../graphic.js'
 
-export const editFeature = ({ pluginState, mapState, mapProvider }, feature) => {
+export const editFeature = ({ pluginState, mapState, mapProvider, services }, feature) => {
   const { dispatch } = pluginState
   const { mapStyle } = mapState
   const { sketchViewModel, sketchLayer } = mapProvider
+  const { eventBus } = services
 
   const graphic = createGraphic(feature.id, feature.geometry.coordinates, mapStyle.mapColorScheme)
 
@@ -12,15 +13,14 @@ export const editFeature = ({ pluginState, mapState, mapProvider }, feature) => 
   // Store initial feature in plugin state
   dispatch({ type: 'SET_FEATURE', payload: feature })
 
-  // Listen for updates
+  // Update geojson in state and emit update
   sketchViewModel.on('update', (e) => {
     if (e.state === 'complete') {
       const newFeature = graphicToGeoJSON(e.graphics[0])
+      eventBus.emit('draw:update', newFeature)
       dispatch({ type: 'SET_FEATURE', payload: newFeature })
     }
   })
-
-  // Disable deselection when clicking outside the shape
 
   sketchViewModel.update(graphic, {
     tool: 'reshape',

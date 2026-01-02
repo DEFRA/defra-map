@@ -49,6 +49,19 @@ describe('useMarkers', () => {
     expect(result.current).toMatchObject({ markers: mockMarkers, markerRef: expect.any(Function) })
   })
 
+  it('returns early when mapProvider is null (line 24)', () => {
+    useConfig.mockReturnValue({ mapProvider: null })
+    mockMarkers.items = [{ id: 'm1', label: 'Test' }]
+    
+    const { result } = renderHook(() => useMarkers())
+    
+    // The markers object should not have the API methods attached
+    expect(result.current.markers.add).toBeUndefined()
+    expect(result.current.markers.remove).toBeUndefined()
+    expect(result.current.markers.getMarker).toBeUndefined()
+    expect(result.current.markers.markerRefs).toBeUndefined()
+  })
+
   it('getMarker returns correct marker', () => {
     mockMarkers.items = [{ id: 'm1', label: 'First' }, { id: 'm2', label: 'Second' }]
     const { result } = renderHook(() => useMarkers())

@@ -61,6 +61,8 @@
 // ---------------------------------------------------
 
 .dm-o-app__side .dm-c-panel {
+  height: 100%;
+
   @include tools.border-focus-base(
     $is-inset: true,
     $type: panel
@@ -69,10 +71,6 @@
   @include tools.border-focus-corner-override(
     $corners: 'none'
   );
-
-  & {
-    height: 100%;
-  }
 }
 
 // ---------------------------------------------------
@@ -282,6 +280,9 @@
   }
 
   .dm-c-panel--side {
+    width: 100%;
+    max-width: 80%;
+
     @include tools.border-focus-base(
       $is-inset: true,
       $type: panel
@@ -399,5 +400,6 @@
   left: 0;
   top: 0;
   width: 100%;
+  max-width: 80%;
   pointer-events: none;
 }

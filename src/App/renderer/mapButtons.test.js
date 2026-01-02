@@ -1,8 +1,10 @@
 import React from 'react'
 import { mapButtons, getMatchingButtons, renderButton } from './mapButtons.js'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
+import { getPanelConfig } from '../registry/panelRegistry.js'
 
 jest.mock('../registry/buttonRegistry.js')
+jest.mock('../registry/panelRegistry.js')
 jest.mock('../components/MapButton/MapButton.jsx', () => ({
   MapButton: (props) => <button data-testid='map-button' {...props} />
 }))
@@ -35,6 +37,7 @@ describe('mapButtons module', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     getButtonConfig.mockReturnValue({})
+    getPanelConfig.mockReturnValue({})
     Object.defineProperty(document, 'activeElement', {
       value: document.createElement('div'),
       writable: true,
@@ -101,11 +104,18 @@ describe('mapButtons module', () => {
     it('opens and closes panel on button click to cover all branches', () => {
       const btn = { ...baseBtn, panelId: 'p1' }
 
+      // Mock panel config for this panel
+      getPanelConfig.mockReturnValue({
+        p1: {
+          desktop: { isExclusive: false }
+        }
+      })
+
       // OPEN_PANEL branch
       render(btn).props.onClick({})
       expect(appState.dispatch).toHaveBeenCalledWith({
         type: 'OPEN_PANEL',
-        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } }
+        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement, isExclusive: false } }
       })
 
       // CLOSE_PANEL branch

@@ -17,7 +17,7 @@ export const registerPanel = (panel) => {
   panelConfig = { ...panelConfig, ...normalizedPanelConfig }
 }
 
-// Add a panel to the registry
+// Add a panel to the registry at run time
 export const addPanel = (id, config) => {
   const mergedConfig = deepMerge(defaultPanelConfig, config)
 
@@ -30,7 +30,7 @@ export const addPanel = (id, config) => {
   return panelConfig[id]
 }
 
-// Remove a panel from the registry
+// Remove a panel from the registry at run time
 export const removePanel = (id) => {
   delete panelConfig[id]
 }

@@ -1,4 +1,4 @@
-import { getDetail, getViewport, getFeatures } from '../../src/js/provider/esri-sdk/query'
+import { getDetail, getViewport, getFeatures, getDimensions } from '../../src/js/provider/esri-sdk/query'
 import { defaults } from '../../src/js/provider/esri-sdk/constants'
 
 jest.mock('@arcgis/core/views/MapView', () => {
@@ -66,6 +66,12 @@ describe('Query Module', () => {
       const point = [10, 10]
       await getDetail(mockProvider, point, false)
 
+      expect(mockProvider.getNearest).not.toHaveBeenCalled()
+    })
+
+    it('should not call getNearest if user-initiated is not passed', async () => {
+      const point = [10, 10]
+      await getDetail(mockProvider, point)
       expect(mockProvider.getNearest).not.toHaveBeenCalled()
     })
 
@@ -211,6 +217,19 @@ describe('Query Module', () => {
 
       expect(features).toHaveProperty('resultType', 'pixel')
       expect(features).toHaveProperty('items')
+    })
+  })
+
+  describe('getDimensions', () => {
+    it('should return {} if drawMode is not frame or vertex', async () => {
+      expect(getDimensions({})).toEqual({})
+    })
+
+    it('should call provider.draw.getDimensions if it exists', async () => {
+      const getDimensionsMock = jest.fn(() => 'TEST DIMENSIONS')
+      const result = getDimensions({ draw: { getDimensions: getDimensionsMock, drawMode: 'vertex' } })
+      expect(result).toEqual('TEST DIMENSIONS')
+      expect(getDimensionsMock).toHaveBeenCalled()
     })
   })
 })

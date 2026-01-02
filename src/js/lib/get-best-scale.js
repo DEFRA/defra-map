@@ -27,7 +27,7 @@ const getBestScale = (metersPerPx, maxWidthPx, unitSystem) => {
 
     // We want a label like "50 km", not "50000 m"
     if (rounded >= 1 && rounded < 1000) {
-      const width = (rounded / factor) / metersPerPx
+      const width = parseFloat(((rounded / factor) / metersPerPx).toFixed(2))
       if (width <= maxWidthPx) {
         return {
           label: rounded,
@@ -48,7 +48,7 @@ const getBestScale = (metersPerPx, maxWidthPx, unitSystem) => {
   return {
     label: fallbackRounded,
     symbol: fallback.symbol,
-    width: (fallbackRounded / fallback.factor) / metersPerPx,
+    width: parseFloat(((fallbackRounded / fallback.factor) / metersPerPx).toFixed(2)),
     unit: fallbackUnit
   }
 }

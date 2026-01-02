@@ -15,7 +15,6 @@ export default function ScaleBar () {
   const CSS_SCALE = 1
 
   const isVisible = scale.width >= 0
-  console.log('isVisible', isVisible, scale)
 
   useEffect(() => {
     if (hasScaleBar && resolution) {

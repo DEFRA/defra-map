@@ -3,6 +3,26 @@ import { getInitialOpenPanels } from '../../config/getInitialOpenPanels.js'
 import { getIsFullscreen } from '../../utils/getIsFullscreen.js'
 import { shallowEqual } from '../../utils/shallowEqual.js'
 
+// Interal helper
+function buildOpenPanels(state, panelId, breakpoint, props = {}) {
+  const panelConfig = getPanelConfig()
+  const bpConfig = panelConfig[panelId]?.[breakpoint]
+  const isExclusiveNonModal = !!bpConfig.exclusive && !bpConfig.modal
+  const isModal = !!bpConfig.modal
+
+  const filteredPanels = Object.fromEntries(
+    Object.entries(state.openPanels).filter(
+      ([key]) => !panelConfig[key]?.[breakpoint]?.exclusive
+    )
+  )
+
+  return {
+    ...(isExclusiveNonModal ? {} : filteredPanels),
+    ...(isModal ? state.openPanels : {}),
+    [panelId]: { props }
+  }
+}
+
 const setMode = (state, payload) => {
   const panelConfig = getPanelConfig()
 
@@ -34,11 +54,17 @@ const setMedia = (state, payload) => {
 
 const setBreakpoint = (state, payload) => {
   const isFullscreen = getIsFullscreen(payload.behaviour, payload.breakpoint)
+  const panelIds = Object.keys(state.openPanels)
+  const lastPanelId = panelIds.at(-1)
 
   return {
     ...state,
     breakpoint: payload.breakpoint,
-    isFullscreen
+    isFullscreen,
+    previousOpenPanels: state.openPanels,
+    openPanels: lastPanelId
+      ? buildOpenPanels(state, lastPanelId, payload.breakpoint)
+      : {}
   }
 }
 
@@ -51,20 +77,11 @@ const setInterfaceType = (state, payload) => {
 
 const openPanel = (state, payload) => {
   const { panelId, props = {} } = payload
-  const isExclusive = payload.props?.isExclusive === true
-  const openPanels = Object.fromEntries(
-    Object.entries(state.openPanels).filter(([_, p]) => !p.props?.isExclusive)
-  )
 
   return {
     ...state,
     previousOpenPanels: state.openPanels,
-    openPanels: isExclusive ? {
-      [panelId]: { props }
-    } : {
-      ...openPanels,
-      [panelId]: { props }
-    }
+    openPanels: buildOpenPanels(state, panelId, state.breakpoint, props)
   }
 }
 
@@ -72,6 +89,7 @@ const openPanel = (state, payload) => {
 const closePanel = (state, payload) => {
   // eslint-disable-next-line no-unused-vars
   const { [payload]: _, ...remainingPanels } = state.openPanels
+
   return {
     ...state,
     previousOpenPanels: state.openPanels,

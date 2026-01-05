@@ -12,7 +12,7 @@ export function mapPanels ({ slot, appState, evaluateProp }) {
   const panelConfig = getPanelConfig()
 
   const openPanelEntries = Object.entries(openPanels)
- 
+  
   const modalPanels = openPanelEntries.filter(([panelId]) => {
     const cfg = panelConfig[panelId]?.[breakpoint]
     return cfg?.modal

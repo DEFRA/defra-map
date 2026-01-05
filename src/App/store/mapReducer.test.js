@@ -69,6 +69,28 @@ describe('mapReducer', () => {
 
       expect(state.markers.items).toEqual([])
     })
+
+    test('uses extent when bounds is not provided', () => {
+      const config = { 
+        ...baseConfig, 
+        bounds: undefined,
+        extent: [5, 6, 7, 8]
+      }
+      const state = initialState(config)
+
+      expect(state.bounds).toEqual([5, 6, 7, 8])
+    })
+
+    test('prefers bounds over extent when both are provided', () => {
+      const config = { 
+        ...baseConfig, 
+        bounds: [1, 2, 3, 4],
+        extent: [5, 6, 7, 8]
+      }
+      const state = initialState(config)
+
+      expect(state.bounds).toEqual([1, 2, 3, 4])
+    })
   })
 
   describe('reducer', () => {

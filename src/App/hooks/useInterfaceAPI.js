@@ -19,9 +19,7 @@ export const useInterfaceAPI = () => {
       if (!panel[breakpoint]?.initiallyOpen) {
         return
       }
-      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id, props: {
-        isExclusive: panel[breakpoint]?.isExclusive }
-      }})
+      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id }})
     }
 
     const handleRemovePanel = (id) => {
@@ -30,11 +28,7 @@ export const useInterfaceAPI = () => {
     }
 
     const handleShowPanel = (id) => {
-      const panelConfig = getPanelConfig()
-      const bpConfig = panelConfig[id][breakpoint]
-      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id, props: {
-        isExclusive: bpConfig.isExclusive
-      }}})
+      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id }})
     }
 
     const handleHidePanel = (id) => {

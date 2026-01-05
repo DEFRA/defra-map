@@ -1,7 +1,6 @@
 // src/core/renderers/mapButtons.js
 import { MapButton } from '../components/MapButton/MapButton.jsx'
 import { getButtonConfig } from '../registry/buttonRegistry.js'
-import { getPanelConfig } from '../registry/panelRegistry.js'
 import { allowedSlots } from './slots.js'
 
 function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
@@ -41,13 +40,11 @@ function createButtonClickHandler (btn, appState, evaluateProp) {
 
     if (config.panelId) {
       const triggeringElement = document.activeElement
-      const panelConfig = getPanelConfig()
-      const isExclusive = panelConfig[config.panelId][appState.breakpoint]?.isExclusive
       appState.dispatch({
         type: isOpen ? 'CLOSE_PANEL' : 'OPEN_PANEL',
         payload: isOpen
           ? config.panelId
-          : { panelId: config.panelId, props: { triggeringElement, isExclusive } }
+          : { panelId: config.panelId, props: { triggeringElement } }
       })
     }
   }

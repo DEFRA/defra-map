@@ -104,18 +104,11 @@ describe('mapButtons module', () => {
     it('opens and closes panel on button click to cover all branches', () => {
       const btn = { ...baseBtn, panelId: 'p1' }
 
-      // Mock panel config for this panel
-      getPanelConfig.mockReturnValue({
-        p1: {
-          desktop: { isExclusive: false }
-        }
-      })
-
       // OPEN_PANEL branch
       render(btn).props.onClick({})
       expect(appState.dispatch).toHaveBeenCalledWith({
         type: 'OPEN_PANEL',
-        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement, isExclusive: false } }
+        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } }
       })
 
       // CLOSE_PANEL branch

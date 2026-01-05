@@ -126,9 +126,9 @@ defraMap.on('map:ready', function (e) {
 	defraMap.addPanel('key', {
 		label: 'Key',
 		html: '<p>Key</p>',
-		mobile: { slot: 'bottom', initiallyOpen: true, isExclusive: true },
-		tablet: { slot: 'inset', width: '260px', initiallyOpen: true, isExclusive: true },
-		desktop: { slot: 'inset', width: '280px', initiallyOpen: true, isExclusive: true }
+		mobile: { slot: 'bottom', initiallyOpen: true, exclusive: true },
+		tablet: { slot: 'inset', width: '260px', initiallyOpen: true, exclusive: true },
+		desktop: { slot: 'inset', width: '280px', initiallyOpen: true, exclusive: true }
 	})
 	// defraMap.setMode('draw')
 })

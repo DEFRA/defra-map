@@ -29,6 +29,18 @@ describe('createAnnouncer', () => {
     expect(true).toBe(true) // just confirm no throw
   })
 
+  it('returns early if mapStatusRef.current becomes null during setTimeout', () => {
+    announce('Test message', 'plugin')
+    expect(mapStatusRef.current.textContent).toBe('') // cleared immediately
+    
+    // Set current to null before setTimeout fires
+    mapStatusRef.current = null
+    
+    jest.advanceTimersByTime(100)
+    // Should not throw, just return early
+    expect(true).toBe(true)
+  })
+
   it('sets textContent for a plugin message immediately', () => {
     announce('Plugin message', 'plugin')
     expect(mapStatusRef.current.textContent).toBe('') // cleared immediately

@@ -23,21 +23,56 @@ describe('actionsMap', () => {
       hiddenButtons: new Set(['btn3']),
       pressedButtons: new Set(['btn5'])
     }
-    jest.spyOn(panelRegistry, 'getPanelConfig').mockReturnValue({ panel1: {} })
-    jest.spyOn(getInitialOpenPanelsModule, 'getInitialOpenPanels').mockImplementation(() => ({ panel1: { props: {} } }))
-    jest.spyOn(shallowEqualModule, 'shallowEqual').mockImplementation((a, b) => JSON.stringify(a) === JSON.stringify(b))
+
+    // Mock realistic panel config including breakpoints + exclusive/modal flags
+    jest.spyOn(panelRegistry, 'getPanelConfig').mockReturnValue({
+      panel1: {
+        desktop: { exclusive: true, modal: false, initiallyOpen: true },
+        mobile: { exclusive: true, modal: false }
+      },
+      panel2: {
+        desktop: { exclusive: false, modal: true },
+        mobile: { exclusive: false, modal: true }
+      },
+      panel3: {
+        desktop: { exclusive: false, modal: false },
+        mobile: { exclusive: false, modal: false }
+      }
+    })
+
+    jest.spyOn(getInitialOpenPanelsModule, 'getInitialOpenPanels').mockImplementation(
+      () => ({ panel1: { props: {} } })
+    )
+
+    jest.spyOn(shallowEqualModule, 'shallowEqual').mockImplementation(
+      (a, b) => JSON.stringify(a) === JSON.stringify(b)
+    )
+
     jest.spyOn(getIsFullscreenModule, 'getIsFullscreen').mockReturnValue(false)
   })
 
   afterEach(() => jest.restoreAllMocks())
 
-  test('SET_BREAKPOINT sets breakpoint and isFullscreen', () => {
+  test('SET_BREAKPOINT sets breakpoint, isFullscreen, and openPanels (both branches)', () => {
     const payload = { breakpoint: 'mobile', behaviour: 'responsive' }
+
+    // Branch 1 — lastPanelId exists (normal state)
     getIsFullscreenModule.getIsFullscreen.mockReturnValueOnce(true)
-    const result = actionsMap.SET_BREAKPOINT(state, payload)
-    expect(result.breakpoint).toBe('mobile')
-    expect(result.isFullscreen).toBe(true)
+    const result1 = actionsMap.SET_BREAKPOINT(state, payload)
+
+    expect(result1.breakpoint).toBe('mobile')
+    expect(result1.isFullscreen).toBe(true)
+    expect(result1.openPanels).toHaveProperty('panel1') // last panel rebuilt
     expect(getIsFullscreenModule.getIsFullscreen).toHaveBeenCalledWith('responsive', 'mobile')
+
+    // Branch 2 — lastPanelId does NOT exist (openPanels empty)
+    const emptyState = { ...state, openPanels: {} }
+    getIsFullscreenModule.getIsFullscreen.mockReturnValueOnce(false)
+    const result2 = actionsMap.SET_BREAKPOINT(emptyState, payload)
+
+    expect(result2.breakpoint).toBe('mobile')
+    expect(result2.isFullscreen).toBe(false)
+    expect(result2.openPanels).toEqual({}) // falsy branch executed
   })
 
   test('SET_MEDIA merges payload into state', () => {
@@ -47,29 +82,33 @@ describe('actionsMap', () => {
   })
 
   test('SET_INTERFACE_TYPE sets interfaceType', () => {
-    expect(actionsMap.SET_INTERFACE_TYPE(state, 'compact').interfaceType).toBe('compact')
+    const result = actionsMap.SET_INTERFACE_TYPE(state, 'compact')
+    expect(result.interfaceType).toBe('compact')
   })
 
   test('SET_MODE updates mode, previousMode, and openPanels', () => {
     const result = actionsMap.SET_MODE(state, 'edit')
-    expect(result).toMatchObject({ mode: 'edit', previousMode: 'view' })
+    expect(result.mode).toBe('edit')
+    expect(result.previousMode).toBe('view')
     expect(result.openPanels).toHaveProperty('panel1')
   })
 
   test('REVERT_MODE swaps mode and previousMode and updates openPanels', () => {
     const result = actionsMap.REVERT_MODE(state)
-    expect(result).toMatchObject({ mode: 'edit', previousMode: 'view' })
+    expect(result.mode).toBe('edit')
+    expect(result.previousMode).toBe('view')
     expect(result.openPanels).toHaveProperty('panel1')
   })
 
   test('OPEN_PANEL adds a panel with props', () => {
     const result = actionsMap.OPEN_PANEL(state, { panelId: 'panel2', props: { foo: 'bar' } })
-    expect(result.openPanels.panel2.props).toEqual({ foo: 'bar' })
+    expect(result.openPanels.panel2?.props).toEqual({ foo: 'bar' })
     expect(result.previousOpenPanels).toBe(state.openPanels)
   })
 
   test('OPEN_PANEL defaults props to empty object', () => {
-    expect(actionsMap.OPEN_PANEL(state, { panelId: 'panel3' }).openPanels.panel3.props).toEqual({})
+    const result = actionsMap.OPEN_PANEL(state, { panelId: 'panel3' })
+    expect(result.openPanels.panel3?.props).toEqual({})
   })
 
   test('CLOSE_PANEL removes a panel', () => {
@@ -90,7 +129,7 @@ describe('actionsMap', () => {
     expect(result.openPanels).toBe(state.previousOpenPanels)
     expect(result.previousOpenPanels).toBe(state.openPanels)
 
-    // Case 2: previousOpenPanels undefined -> triggers fallback {}
+    // Case 2: previousOpenPanels undefined -> fallback {}
     const localState = { ...state, previousOpenPanels: undefined }
     result = actionsMap.RESTORE_PREVIOUS_PANELS(localState)
     expect(result.openPanels).toEqual({})
@@ -98,42 +137,56 @@ describe('actionsMap', () => {
   })
 
   test('TOGGLE_HAS_EXCLUSIVE_CONTROL sets hasExclusiveControl', () => {
-    expect(actionsMap.TOGGLE_HAS_EXCLUSIVE_CONTROL(state, true).hasExclusiveControl).toBe(true)
+    const result = actionsMap.TOGGLE_HAS_EXCLUSIVE_CONTROL(state, true)
+    expect(result.hasExclusiveControl).toBe(true)
   })
 
   describe('SET_SAFE_ZONE_INSET', () => {
     test('updates safeZoneInset when changed', () => {
       const inset = { top: 10, bottom: 10 }
       shallowEqualModule.shallowEqual.mockReturnValueOnce(false)
+
       const result = actionsMap.SET_SAFE_ZONE_INSET(state, { safeZoneInset: inset, syncMapPadding: false })
-      expect(result).toMatchObject({ safeZoneInset: inset, syncMapPadding: false, isLayoutReady: true })
+
+      expect(result.safeZoneInset).toMatchObject(inset)
+      expect(result.syncMapPadding).toBe(false)
+      expect(result.isLayoutReady).toBe(true)
     })
 
     test('returns same state if shallowEqual returns true', () => {
       shallowEqualModule.shallowEqual.mockReturnValueOnce(true)
-      expect(actionsMap.SET_SAFE_ZONE_INSET(state, { safeZoneInset: { top: 0, bottom: 0 } })).toBe(state)
+      const result = actionsMap.SET_SAFE_ZONE_INSET(state, { safeZoneInset: { top: 0, bottom: 0 } })
+      expect(result).toBe(state)
     })
   })
 
   describe('TOGGLE_BUTTON_DISABLED', () => {
     test('adds or removes button from disabledButtons', () => {
-      expect(actionsMap.TOGGLE_BUTTON_DISABLED(state, { id: 'btn2', isDisabled: true }).disabledButtons.has('btn2')).toBe(true)
-      expect(actionsMap.TOGGLE_BUTTON_DISABLED(state, { id: 'btn1', isDisabled: false }).disabledButtons.has('btn1')).toBe(false)
+      const result1 = actionsMap.TOGGLE_BUTTON_DISABLED(state, { id: 'btn2', isDisabled: true })
+      expect(result1.disabledButtons.has('btn2')).toBe(true)
+
+      const result2 = actionsMap.TOGGLE_BUTTON_DISABLED(state, { id: 'btn1', isDisabled: false })
+      expect(result2.disabledButtons.has('btn1')).toBe(false)
     })
   })
 
   describe('TOGGLE_BUTTON_HIDDEN', () => {
     test('adds or removes button from hiddenButtons', () => {
-      expect(actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn4', isHidden: true }).hiddenButtons.has('btn4')).toBe(true)
-      expect(actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn3', isHidden: false }).hiddenButtons.has('btn3')).toBe(false)
+      const result1 = actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn4', isHidden: true })
+      expect(result1.hiddenButtons.has('btn4')).toBe(true)
+
+      const result2 = actionsMap.TOGGLE_BUTTON_HIDDEN(state, { id: 'btn3', isHidden: false })
+      expect(result2.hiddenButtons.has('btn3')).toBe(false)
     })
   })
 
-  // ---------------- TOGGLE_BUTTON_PRESSED ----------------
   describe('TOGGLE_BUTTON_PRESSED', () => {
     test('adds or removes button from pressedButtons', () => {
-      expect(actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn6', isPressed: true }).pressedButtons.has('btn6')).toBe(true)
-      expect(actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn5', isPressed: false }).pressedButtons.has('btn5')).toBe(false)
+      const result1 = actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn6', isPressed: true })
+      expect(result1.pressedButtons.has('btn6')).toBe(true)
+
+      const result2 = actionsMap.TOGGLE_BUTTON_PRESSED(state, { id: 'btn5', isPressed: false })
+      expect(result2.pressedButtons.has('btn5')).toBe(false)
     })
   })
 })

@@ -206,6 +206,30 @@ describe('DefraMap Core Functionality', () => {
     expect(map.unmount).toHaveBeenCalled()
     expect(updateDOMState).toHaveBeenCalled()
   })
+
+  it('_handleExitClick removes app and calls replaceState', () => {
+    const replaceStateSpy = jest.spyOn(history, 'replaceState').mockImplementation(() => {})
+    
+    const map = new DefraMap('map', { 
+      behaviour: 'buttonFirst', 
+      mapProvider: mapProviderMock,
+      mapViewParamKey: 'mv'
+    })
+    
+    const removeAppSpy = jest.spyOn(map, 'removeApp').mockImplementation(() => {})
+    
+    map._handleExitClick()
+    
+    expect(removeAppSpy).toHaveBeenCalled()
+    expect(replaceStateSpy).toHaveBeenCalledWith(
+      history.state, 
+      '', 
+      expect.any(String)
+    )
+    
+    removeAppSpy.mockRestore()
+    replaceStateSpy.mockRestore()
+  })
 })
 
 describe('DefraMap Public API Methods', () => {
@@ -237,19 +261,29 @@ describe('DefraMap Public API Methods', () => {
     expect(eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
   })
 
-  it('delegates addButton, addPanel, addControl, removePanel correctly', () => {
+  it('delegates addButton, addPanel, addControl, removePanel, showPanel, hidePanel correctly', () => {
     const buttonConfig = { label: 'MyButton' }
     const panelConfig = { title: 'MyPanel' }
     const controlConfig = { type: 'zoom' }
 
+    // Existing API calls
     map.addButton('btn1', buttonConfig)
     map.addPanel('panel1', panelConfig)
     map.addControl('ctrl1', controlConfig)
     map.removePanel('panel1')
 
+    // New API calls to cover missing lines
+    map.showPanel('panel2')
+    map.hidePanel('panel3')
+
+    // Existing assertions
     expect(eventBus.emit).toHaveBeenCalledWith('app:addbutton', { id: 'btn1', config: buttonConfig })
     expect(eventBus.emit).toHaveBeenCalledWith('app:addpanel', { id: 'panel1', config: panelConfig })
     expect(eventBus.emit).toHaveBeenCalledWith('app:addcontrol', { id: 'ctrl1', config: controlConfig })
     expect(eventBus.emit).toHaveBeenCalledWith('app:removepanel', 'panel1')
+
+    // New assertions for coverage
+    expect(eventBus.emit).toHaveBeenCalledWith('app:showpanel', 'panel2')
+    expect(eventBus.emit).toHaveBeenCalledWith('app:hidepanel', 'panel3')
   })
 })

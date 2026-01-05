@@ -1,9 +1,6 @@
-// -----------------------------------------------------------------------------
-// Internal (not exported)
-// -----------------------------------------------------------------------------
-
-const getMapStateFromURL = (id) => {
-  const params = new URLSearchParams(window.location.search)
+// Internal (not exported) - Accept optional search string for testing
+const getMapStateFromURL = (id, search) => {
+  const params = new URLSearchParams(search)
   const centerStr = params.get(`${id}:center`)
   const zoomStr = params.get(`${id}:zoom`)
   if (!centerStr || !zoomStr) {
@@ -14,48 +11,49 @@ const getMapStateFromURL = (id) => {
   return { center: [lng, lat], zoom }
 }
 
-// -----------------------------------------------------------------------------
-// Public API
-// -----------------------------------------------------------------------------
-
-const setMapStateInURL = (id, state) => {
-  const url = new URL(window.location.href)
+const setMapStateInURL = (id, state, currentHref = globalThis.location.href) => {
+  // Use the passed href or the global one
+  const url = new URL(currentHref || 'http://localhost')
   const params = [...new URLSearchParams(url.search)].map(([key, value]) => `${key}=${value}`)
   const newParams = []
+  
   if (state.center) {
     newParams.push(`${id}:center=${state.center[0]},${state.center[1]}`)
   }
   if (state.zoom != null) {
     newParams.push(`${id}:zoom=${state.zoom}`)
   }
+  
   const filteredParams = params.filter(p => {
     return !newParams.some(np => np.split('=')[0] === p.split('=')[0])
   })
+  
   const hash = url.hash || ''
   const newUrl = `${url.origin}${url.pathname}?${[...filteredParams, ...newParams].join('&')}${hash}`
-  history.replaceState(history.state, '', newUrl)
+  globalThis.history.replaceState(globalThis.history.state, '', newUrl)
 }
 
-// Determine initial map state based on URL, bounds, or defaults
-const getInitialMapState = ({ id, center, zoom, bounds }) => {
-  const savedState = getMapStateFromURL(id)
+const getInitialMapState = ({ id, center, zoom, bounds }, search = globalThis.location.search) => {
+  // Pass search string down to the internal function
+  const savedState = getMapStateFromURL(id, search)
   if (savedState) {
     return {
       center: savedState.center,
       zoom: savedState.zoom,
-      bounds: undefined
+      bounds: null
     }
   } else if (bounds) {
     return {
-      center: undefined,
-      zoom: undefined,
+      center: null,
+      zoom: null,
       bounds
     }
-  }
-  return {
-    center,
-    zoom,
-    bounds: undefined
+  } else {
+    return {
+      center,
+      zoom,
+      bounds: null
+    }
   }
 }
 

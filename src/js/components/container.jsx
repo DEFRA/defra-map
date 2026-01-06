@@ -133,7 +133,7 @@ export default function Container () {
                 )}
                 {activePanel === 'LEGEND' && !isMobile && isLegendInset && (
                   <Panel className='legend' isNotObscure={false} label={legend.title} width={legend.width} instigatorRef={legendBtnRef} isInset={isLegendInset} isModal={isLegendModal} isHideHeading={!hasLengedHeading}>
-                    {queryArea && <Draw/>}
+                    {queryArea && <Draw />}
                     <Segments />
                     <Layers hasSymbols={!!legend.display} hasInputs />
                   </Panel>

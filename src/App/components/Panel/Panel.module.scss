@@ -75,10 +75,6 @@
 }
 
 // 3. Modifiers
-.dm-c-panel--hidden {
-    display: none;
-}
-
 .dm-c-panel--bottom {
     @include tools.border-focus-base(
         $is-inset: true,

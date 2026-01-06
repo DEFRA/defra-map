@@ -39,20 +39,16 @@ const getInitialMapState = ({ id, center, zoom, bounds }, search = globalThis.lo
   if (savedState) {
     return {
       center: savedState.center,
-      zoom: savedState.zoom,
-      bounds: null
+      zoom: savedState.zoom
     }
   } else if (bounds) {
     return {
-      center: null,
-      zoom: null,
       bounds
     }
   } else {
     return {
       center,
-      zoom,
-      bounds: null
+      zoom
     }
   }
 }

@@ -238,7 +238,9 @@ class Provider extends EventTarget {
     import(/* webpackChunkName: "esri-sdk-draw" */ './draw.js').then(module => {
       const Draw = module.default
       this.draw ??= new Draw(this, options)
-      callback()
+      if (callback) {
+        callback()
+      }
     })
   }
 

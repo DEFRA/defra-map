@@ -107,13 +107,6 @@ export class Draw {
     }
   }
 
-  editPolygon () {
-    const paddingBox = this.provider.paddingBox
-    const elGraphic = this.getGraphicFromElement(paddingBox, 'polygon')
-    this.addGraphic(elGraphic)
-    this.edit('vertex', 'polygon')
-  }
-
   cancel () {
     const { sketchViewModel, emptyLayer, oGraphic } = this
     const { graphicsLayer } = this.provider

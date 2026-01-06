@@ -33,6 +33,15 @@ var interactPlugin = createInteractPlugin({
 	// multiSelect: true
 })
 
+var menuHTML = () => { return `
+	<h3 class="govuk-heading-s">Get a boundary report</h3>
+	<ul class="menu">
+		<li>
+			<button>Add area</button>
+		</li>
+	</ul>
+`}
+
 var drawPlugin = createDrawPlugin({
 	// includeModes: ['draw']
 })
@@ -118,7 +127,7 @@ defraMap.on('map:ready', function (e) {
 	})
 	defraMap.addPanel('menu', {
 		label: 'Menu',
-		html: '<p>Menu</p>',
+		html: menuHTML(),
 		mobile: { slot: 'side', modal: true, initiallyOpen: false },
 		tablet: { slot: 'side', width: '260px', initiallyOpen: false },
 		desktop: { slot: 'side', width: '280px', initiallyOpen: false }
@@ -134,7 +143,7 @@ defraMap.on('map:ready', function (e) {
 })
 
 defraMap.on('draw:ready', function () {
-	drawPlugin.newPolygon('test')
+	// drawPlugin.newPolygon('test')
 	// drawPlugin.editFeature(featureGeoJSON)
 })
 

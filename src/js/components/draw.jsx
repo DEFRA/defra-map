@@ -1,76 +1,76 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { useApp } from '../store/use-app.js'
-import { useViewport } from '../store/use-viewport.js'
-import { events } from '../store/constants.js'
-import eventBus from '../lib/eventbus.js'
-import { isFeatureSquare } from '../lib/viewport.js'
+import { tools as defaultTools } from '../store/constants.js'
+import { useDrawHandlers } from '../hooks/use-draw-handlers'
 
 export default function Draw () {
-  const { provider, parent, queryArea, segments, layers, dispatch: appDispatch, query, activeRef, viewportRef } = useApp()
-  const { styles, minZoom, maxZoom } = queryArea
-  const { dispatch: viewportDispatch, size, style } = useViewport()
+  const { dispatch, options, queryArea, isDrawMenuExpanded, query, shape, drawTools, interfaceType } = useApp()
+  const { id } = options
+  const isDetails = ['expanded', 'collapse'].includes(queryArea?.collapse)
+  const { handleAddClick, handleEditClick, handleDeleteClick } = useDrawHandlers()
 
-  const startBtnRef = useRef(null)
-
-  const isFrameMode = !query || (query && isFeatureSquare(query))
-  const drawMode = isFrameMode ? 'frame' : 'draw'
-
-  const handleStartClick = () => {
-    provider.draw?.start ? provider.draw.start(drawMode) : provider.initDraw(queryArea)
-    appDispatch({ type: 'SET_MODE', payload: { value: drawMode, query } })
-    viewportDispatch({ type: 'SWAP_STYLES', payload: { styles, minZoom, maxZoom } })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: drawMode, style, size, segments, layers })
-    activeRef.current = viewportRef.current
-    activeRef.current?.focus()
+  // Tools displayed in draw action menu instead
+  if (!queryArea?.heading) {
+    return null
   }
 
-  const handleDeleteClick = () => {
-    provider.draw.delete()
-    appDispatch({ type: 'SET_MODE', payload: { query: null } })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: 'deletePolygon', query })
-    activeRef.current = viewportRef.current
-    activeRef.current?.focus()
+  const handleDetailsClick = () => {
+    dispatch({ type: 'TOGGLE_DRAW_EXPANDED', payload: !isDrawMenuExpanded })
   }
 
   return (
-    <div className='fm-c-menu__group'>
-      <h2 className='fm-c-menu__heading'>{queryArea.heading}</h2>
-      <div className='fm-c-menu__item'>
-        <button className='fm-c-btn-menu' onClick={handleStartClick} ref={startBtnRef}>
-          {isFrameMode
-            ? (
-              <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20'>
-                <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' fill='none' stroke='currentColor' strokeWidth='2' />
-                <path d='M2.081 2H6v4H2.081zm0 12H6v4H2.081zm11.96-12h3.919v4h-3.919zm0 11.996h3.919v4h-3.919z' fill='currentColor' stroke='none' />
-              </svg>
-              )
-            : (
-              <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='none' stroke='currentColor' strokeWidth='2'>
-                <path d='M16 6v7.996M14 16H6m-2-2.004V6m2-2h8' />
-                <circle cx='4' cy='4' r='2' />
-                <circle cx='4' cy='15.996' r='2' />
-                <circle cx='16' cy='4' r='2' />
-                <circle cx='16' cy='15.996' r='2' />
-              </svg>
-              )}
-          <span className='fm-c-btn__label'>
-            {`${query ? 'Edit' : 'Add'}`}
-          </span>
-        </button>
-      </div>
-      {query && (
-        <div className='fm-c-menu__item'>
-          <button className='fm-c-btn-menu' onClick={handleDeleteClick}>
-            <svg aria-hidden='true' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd'>
-              <path d='M3 5.963H2V3.989h4V2h8v1.989h4v1.974h-.956V18H3V5.963zm12 0H5.044v10.063H15V5.963z' fill='currentColor' />
-              <path d='M6.953 7L7 15m2.977-8l.046 8m2.954-8l.046 8' fill='none' stroke='currentColor' strokeWidth='2' />
-            </svg>
-            <span className='fm-c-btn__label'>
-              Delete
-            </span>
-          </button>
+    <div className='fm-c-menu'>
+      <div className={`fm-c-menu__group ${isDrawMenuExpanded ? ' fm-c-menu__group--expanded' : ''}`} role='group' aria-labelledby={`${id}-tools-menu`}>
+        {isDetails
+          ? (
+            <h3 className='fm-c-menu__heading'>
+              <button className='fm-c-details' aria-expanded={isDrawMenuExpanded} aria-controls={`content-${id}`} onClick={handleDetailsClick}>
+                <span className='fm-c-details__label'>
+                  <span id={`${id}-tools-menu`} className='fm-c-details__label-focus'>{queryArea?.heading}</span>
+                </span>
+                <span className='fm-c-details__summary'>
+                  <span className='fm-c-details__summary-focus'>{queryArea?.summary}</span>
+                </span>
+                <span className='fm-c-details__toggle'>
+                  <span className='fm-c-details__toggle-focus'>
+                    <span className='fm-c-details__chevron' />
+                    {isDrawMenuExpanded ? 'Hide' : 'Show'}
+                  </span>
+                </span>
+              </button>
+            </h3>
+            )
+          : (
+            <h3  id={`${id}-tools-menu`} className='fm-c-menu__heading'>{queryArea?.heading}</h3>
+            )}
+
+        <div className='fm-c-menu__items' {...!isDrawMenuExpanded ? { style: { display: 'none' } } : {}}>
+          {[...drawTools, ...defaultTools].map(tool => (
+            <div key={tool.id} className='fm-c-menu__item'>
+              <button
+                className='fm-c-btn-menu'
+                aria-disabled={drawTools.includes(tool) ? !!query : !query}
+                onClick={() => {
+                  if (drawTools.includes(tool) && !query) {
+                    handleAddClick({ shapeId: tool.id, interfaceType })
+                  }
+                  if (tool.id === 'edit' && query) {
+                    handleEditClick({ shapeId: shape, interfaceType })
+                  }
+                  if (tool.id === 'delete' && query) {
+                    handleDeleteClick()
+                  }
+                }}
+              >
+                <svg aria-hidden='true' focusable='false' width='20' height='20' viewBox='0 0 20 20' fillRule='evenodd' fill='currentColor' dangerouslySetInnerHTML={{__html: tool.svg}}/>
+                <span className='fm-c-btn__label'>
+                  {drawTools.includes(tool) ? `Add ${tool.id}` : `${tool.name} shape`}
+                </span>
+              </button>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   )
 }

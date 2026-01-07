@@ -1,110 +1,26 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js'
+import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Graphic from '@arcgis/core/Graphic'
 import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    this.provider = provider
+    const { drawMode, shape, feature } = options
     Object.assign(this, options)
+    this.provider = provider
 
     // Provider needs ref to draw moudule and draw need ref to provider
     provider.draw = this
 
-    // Add existing feature
-    if (options.feature) {
-      this.create(options.feature)
-      return
-    }
+    // Empty layer hack to disable sketchViewModel
+    const emptyLayer = new GraphicsLayer({ id: 'empty', visible: false })
+    this.emptyLayer = emptyLayer
 
-    // Start new
-    this.start('frame')
-  }
-
-  start (mode) {
-    const { provider, oGraphic } = this
-    const isFrame = mode === 'frame'
-
-    // Zoom to extent if we have an existing graphic
-    if (oGraphic) {
-      // Additional zoom fix to address goTo graphic not respecting true size?
-      provider.view.goTo({ target: oGraphic, ...(isFrame && this.originalZoom && { zoom: this.originalZoom }) })
-    }
-
-    // Remove graphic if frame mode
-    if (isFrame) {
-      const { graphicsLayer } = this.provider
-      graphicsLayer.removeAll()
-      return
-    }
-
-    // Edit graphic
-    this.editGraphic(this.oGraphic)
-  }
-
-  edit () {
-    const { graphicsLayer, paddingBox } = this.provider
-    const hasExisting = graphicsLayer.graphics.length
-    const elGraphic = this.getGraphicFromElement(paddingBox)
-    const graphic = hasExisting ? graphicsLayer.graphics.items[0] : elGraphic
-    this.editGraphic(graphic)
-  }
-
-  reset () {
-    const { graphicsLayer } = this.provider
-    this.sketchViewModel?.cancel()
-    graphicsLayer.removeAll()
-  }
-
-  delete () {
-    const { graphicsLayer } = this.provider
-    this.oGraphic = null
-    graphicsLayer.removeAll()
-  }
-
-  cancel () {
-    this.sketchViewModel?.cancel()
-    if (this.sketchViewModel) {
-      this.sketchViewModel.layer = null
-    }
-
-    // Re-instate orginal graphic
-    this.addGraphic(this.oGraphic)
-  }
-
-  create (feature) {
-    const graphic = this.getGraphicFromFeature(feature)
-    this.oGraphic = graphic.clone()
-    this.addGraphic(graphic)
-  }
-
-  finish () {
-    const { view, graphicsLayer, paddingBox } = this.provider
-    const currentGraphic = graphicsLayer.graphics.items.length ? graphicsLayer.graphics.items[0] : null
-    const elGraphic = this.getGraphicFromElement(paddingBox)
-    const graphic = this.finishEdit() || currentGraphic || elGraphic
-    this.sketchViewModel?.cancel()
-    this.oGraphic = graphic.clone()
-    this.originalZoom = view.zoom
-    this.addGraphic(graphic)
-    return this.getFeature(graphic)
-  }
-
-  reColour () {
-    const { graphicsLayer } = this.provider
-    const graphic = graphicsLayer.graphics.items[0]
-    if (!graphic) {
-      return
-    }
-    this.addGraphic(graphic)
-  }
-
-  editGraphic (graphic) {
-    const { view, graphicsLayer } = this.provider
-
+    // Create sketchViewModel instance
     const sketchViewModel = new SketchViewModel({
-      view,
-      layer: graphicsLayer,
+      view: provider.view,
+      layer: emptyLayer,
       defaultUpdateOptions: {
         tool: 'reshape',
         updateOnGraphicClick: false,
@@ -116,21 +32,153 @@ export class Draw {
       }
     })
 
+    // Add update event handler
+    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
+    sketchViewModel.on(['create'], this.handleCreate.bind(this))
     this.sketchViewModel = sketchViewModel
 
-    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
-    setTimeout(() => sketchViewModel.update(this.addGraphic(graphic)), 0)
+    // Add existing feature
+    if (feature) {
+      this.oGraphic = this.createGraphic(shape, feature.geometry.coordinates)
+    }
+
+    // Add graphic
+    if (feature && drawMode === 'default') {
+      this.addGraphic(this.oGraphic)
+    }
   }
 
-  finishEdit () {
+  add (drawMode, shape) {
     const { provider, sketchViewModel } = this
-    let graphic
-    if (sketchViewModel) {
-      sketchViewModel.complete()
-      sketchViewModel.layer = null
-      graphic = provider.graphicsLayer.graphics.items[0]
+    const { graphicsLayer, isDark } = provider
+    this.shape = shape
+    this.drawMode = drawMode
+
+    // Create new polygon
+    if (drawMode === 'vertex') {
+      sketchViewModel.layer = graphicsLayer
+
+      // Another timeout hack
+      setTimeout(() => sketchViewModel.create(shape, {
+        drawMode: 'click',
+        polygonSymbol: this.createPolygonSymbol(isDark)
+      }), 100)
     }
-    return graphic
+  }
+
+  edit (drawMode, shape) {
+    const { provider, oGraphic, sketchViewModel, emptyLayer } = this
+    const { view, graphicsLayer } = provider
+    this.shape = shape
+    this.drawMode = drawMode
+
+    // Disable sketchViewModel
+    sketchViewModel.cancel()
+    sketchViewModel.layer = emptyLayer
+
+    // Zoom to extent if we have an existing graphic
+    if (oGraphic) {
+      // Additional zoom fix to address goTo graphic not respecting true size?
+      view.goTo({ target: oGraphic, ...(drawMode === 'frame' && this.originalZoom && { zoom: this.originalZoom }) })
+    }
+
+    // Remove graphic if frame drawMode
+    if (drawMode === 'frame') {
+      graphicsLayer.removeAll()
+    }
+
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+
+    // Edit existing graphic
+    if (drawMode === 'vertex' && graphic) {
+      sketchViewModel.layer = graphicsLayer
+
+      // Another timeout hack
+      setTimeout(() => {
+        const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+        sketchViewModel.update([graphic], {
+          tool: 'reshape',
+          enableRotation: false,
+          enableScaling: false,
+          preserveAspectRatio: false,
+          toggleToolOnClick: false
+        })
+      }, 100)
+    }
+  }
+
+  editPolygon () {
+    const paddingBox = this.provider.paddingBox
+    const elGraphic = this.getGraphicFromElement(paddingBox, 'polygon')
+    this.addGraphic(elGraphic)
+    this.edit('vertex', 'polygon')
+  }
+
+  cancel () {
+    const { sketchViewModel, emptyLayer, oGraphic } = this
+    const { graphicsLayer } = this.provider
+
+    // Remove any drawn graphics
+    graphicsLayer.removeAll()
+
+    // Reset sketch and disable tool
+    sketchViewModel.cancel?.()
+    sketchViewModel.layer = emptyLayer
+    this.drawMode = null
+
+    // Reinstate original
+    if (this.oGraphic) {
+      const revertGraphic = this.createGraphic(oGraphic.attributes.id, oGraphic.geometry.rings)
+      this.addGraphic(revertGraphic)
+    }
+  }
+
+  finish (shape) {
+    const { sketchViewModel, emptyLayer } = this
+    const { view, graphicsLayer, paddingBox } = this.provider
+
+    // Draw graphic from padding box and shape
+    if (['square', 'circle'].includes(shape)) {
+      const elGraphic = this.getGraphicFromElement(paddingBox, shape)
+      this.addGraphic(elGraphic)
+    }
+
+    // Complete sketch and destroy sketchViewModel
+    sketchViewModel.complete?.()
+    sketchViewModel.layer = emptyLayer
+    this.drawMode = null
+
+    // Replace original graphic with new sketch
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+
+    this.oGraphic = graphic.clone()
+    this.originalZoom = view.zoom
+
+    return this.getFeature(graphic)
+  }
+
+  delete () {
+    const { graphicsLayer } = this.provider
+    this.oGraphic = null
+    graphicsLayer.removeAll()
+  }
+
+  reColour () {
+    const { graphicsLayer } = this.provider
+    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === this.shape)
+    if (!graphic) {
+      return
+    }
+    const newGraphic = this.createGraphic(graphic.attributes.id, graphic.geometry.rings)
+    graphicsLayer.remove(graphic)
+    this.addGraphic(newGraphic)
+  }
+
+  addGraphic (graphic) {
+    const { map, graphicsLayer } = this.provider
+    graphicsLayer.add(graphic)
+    const zIndex = 99
+    map.reorder(graphicsLayer, zIndex)
   }
 
   getBounds (el) {
@@ -144,65 +192,39 @@ export class Draw {
     return [nw.x, nw.y, se.x, se.y]
   }
 
-  getGraphicFromElement (el) {
+  getGraphicFromElement (el, shape) {
     const bounds = this.getBounds(el)
-    const coords = [[
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[1]],
-      [bounds[2], bounds[3]],
-      [bounds[0], bounds[3]],
-      [bounds[0], bounds[1]]
-    ]]
-
-    const graphic = new Graphic({
-      geometry: {
-        type: 'polygon',
-        rings: coords,
-        spatialReference: 27700
-      },
-      symbol: {
-        type: 'simple-line',
-        color: defaults.POLYGON_QUERY_STROKE,
-        width: '2px',
-        cap: 'square'
-      }
-    })
-
-    return graphic
+    const rings = [[[bounds[0], bounds[1]], [bounds[2], bounds[1]], [bounds[2], bounds[3]], [bounds[0], bounds[3]], [bounds[0], bounds[1]]]]
+    return this.createGraphic(shape, rings)
   }
 
-  getGraphicFromFeature = (feature) => {
+  createGraphic (id, coordinates) {
+    const { isDark } = this.provider
     return new Graphic({
       geometry: {
         type: 'polygon',
-        rings: feature.geometry.coordinates,
+        rings: coordinates,
         spatialReference: 27700
       },
-      symbol: {
-        type: 'simple-line',
-        color: defaults.POLYGON_QUERY_STROKE,
-        width: '2px',
-        cap: 'square'
+      symbol: this.createPolygonSymbol(isDark),
+      attributes: {
+        id
       }
     })
   }
 
-  addGraphic (graphic) {
-    const { map, graphicsLayer, isDark } = this.provider
-    graphicsLayer.removeAll()
-    let clone
-    if (graphic) {
-      const { sketchViewModel } = this
-      clone = graphic.clone()
-      clone.symbol.color = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
-      graphicsLayer.add(clone)
-      if (sketchViewModel?.activeTool) {
-        sketchViewModel.update(clone)
+  createPolygonSymbol (isDark) {
+    const stroke = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
+    const fill = isDark ? defaults.POLYGON_QUERY_FILL_DARK : defaults.POLYGON_QUERY_FILL
+    return {
+      type: 'simple-fill',
+      color: fill,
+      outline: {
+        color: stroke,
+        width: '2px',
+        cap: 'square'
       }
-      const zIndex = 99
-      map.reorder(graphicsLayer, zIndex)
     }
-    return clone
   }
 
   getFeature (graphic) {
@@ -215,16 +237,42 @@ export class Draw {
     }
   }
 
+  handleCreate (e) {
+    const graphic = e.graphic
+    if (e.state === 'complete') {
+      const area = areaOperator.execute(graphic.geometry)
+
+      // Prevent zero area or self intersecting geometries
+      if (area <= 0 || graphic?.geometry.isSelfIntersecting || graphic?.geometry.rings.length > 1) {
+        this.sketchViewModel.layer.remove(graphic)
+        this.sketchViewModel.create('polygon')
+        return
+      }
+
+      graphic.attributes = {
+        id: this.shape
+      }
+      graphic.symbol = this.createPolygonSymbol(this.provider.isDark)
+
+      // Dispatch dimensions update
+    }
+  }
+
   handleUpdateDelete (e) {
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
 
-    // Undo draw if polygon has a zero area
+    // Area events
     if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
-      const area = geometryEngine.planarArea(graphic.geometry, 'square-meters')
+      const area = areaOperator.execute(graphic.geometry)
+
+      // Undo if polygon has a zero area
       if (area <= 0) {
         this.undo()
+        return
       }
+
+      // Dispatch dimensions update
     }
 
     // Undo draw if attempted self-intersect

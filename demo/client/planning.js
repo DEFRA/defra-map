@@ -126,7 +126,7 @@ const renderFloodStorage = () => {
 
 const toggleVisibility = (type, mode, segments, layers) => {
   // Conditionally add/remove layers might offer better for performance
-  const isDrawMode = ['frame', 'draw'].includes(mode)
+  const isDrawMode = ['frame', 'vertex'].includes(mode)
   vtLayers.forEach((l, i) => {
     const id = l.n
     const layer = map.findLayerById(id)
@@ -476,10 +476,12 @@ const fm = new FloodMap('map', {
   //     html: '<p class="govuk-body-s">[dynamic body]</p>'
   // },
   queryArea: {
-    heading: 'Site boundary',
+    heading: 'Get a boundary report',
+    summary: 'Add or edit site boundary',
     submitLabel: 'Get site report',
     helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
+    // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
     styles: [{
       name: 'default',

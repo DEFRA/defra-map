@@ -3,7 +3,7 @@ import { useApp } from '../store/use-app'
 
 export default function KeyButton ({ keyBtnRef }) {
   const { dispatch, activePanel, options, mode } = useApp()
-  const isQueryMode = ['frame', 'draw'].includes(mode)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   if (!(options?.legend && !isQueryMode && !options?.legend?.display)) {
     return null

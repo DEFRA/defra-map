@@ -1,14 +1,13 @@
+@use '../tools/mixins' as *;
+
 .fm-c-menu {
-    padding-top: 20px;
-    padding-bottom: 15px;
-    line-height: 1rem;
+    padding-top: 15px;
 
     &__heading {
-        @include body-font(1.125rem, 400);
+        @include body-font(16px, 700);
         color: var(--foreground-colour);
-        font-weight: 700;
         margin-bottom: 0;
-        padding-bottom: 15px;
+        padding-bottom: 10px;
     }
 }
 
@@ -16,10 +15,27 @@
     border-top: 1px solid var(--border-colour);
 }
 
+.fm-c-menu__items {
+    padding-bottom: 15px;
+}
+
 .fm-c-menu__item {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    margin-top: 5px;
     
     &:last-child {
         margin-bottom: 2px;
+    }
+}
+
+.fm-c-menu .fm-c-details {
+    font-weight: 700;
+}
+
+// Temporary fixes until updated CSS
+.fm-c-menu .fm-c-details {
+    padding: 0;
+    .fm-c-details__label-focus, .fm-c-details__summary, .fm-c-details__summary-focus {
+        line-height: 1.25;
     }
 }

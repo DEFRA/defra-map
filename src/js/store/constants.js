@@ -73,3 +73,31 @@ export const margin = {
   BOTTOM: 15,
   LEFT: 70
 }
+
+export const tools = [
+  {
+    id: 'edit',
+    name: 'Edit',
+    svg: '<path d="M11.298 4.666l3.536 3.536-7.071 7.071-3.536-3.536 7.071-7.071zm2.475-2.475a1.5 1.5 0 0 1 2.121 0l1.415 1.415a1.5 1.5 0 0 1 0 2.121l-1.768 1.768-3.536-3.536 1.768-1.768zM3.52 12.444l3.536 3.536-5.304 1.768 1.768-5.304z"/>'
+  },
+  {
+    id: 'delete',
+    name: 'Delete',
+    svg: '<path d="M3 5.963H2V3.989h4V2h8v1.989h4v1.974h-.956V18H3V5.963zm12 0H5.044v10.063H15V5.963zm-8.547 1.04l1-.006.047 8-1 .006-.047-8zm3.024 0l1-.006.046 8-1 .006-.046-8zm3 0l1-.006.046 8-1 .006-.046-8z"/>'
+  }
+]
+
+export const drawTools = [
+  {
+    id: 'square',
+    name: 'Square',
+    drawMode: 'frame',
+    svg: '<path d="M18.002 18H2.001V2h16.001v16zM16.001 4H4.002v12h11.999V4z"/>'
+  },
+  {
+    id: 'polygon',
+    name: 'Polygon',
+    drawMode: 'vertex',
+    svg: '<path d="M2.98 6h-.919V2H5.98v1h8.041V2h3.919v4h-.96v7.996h.96v4h-3.919V17H5.98v1H2.061v-4h.919V6zm3-1v1h-1v8h1v1h8.041v-1.004h.959V6h-.959V5H5.98z"/>'
+  }
+]

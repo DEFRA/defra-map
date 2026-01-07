@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useApp } from '../store/use-app.js'
 import { useViewport } from '../store/use-viewport.js'
 import { events } from '../store/constants.js'
@@ -8,29 +8,32 @@ const getIsPixelVisible = (interfaceType, isTargetVisible, activePanel) => {
   return interfaceType === 'touch' && isTargetVisible && !activePanel
 }
 
-const getIsPolygonVisible = (isDrawVisible, query, activePanel, isMobile) => {
-  return !isDrawVisible && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
+const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
+  return isDefaultMode && query && activePanel !== 'INFO' && !(isMobile && activePanel === 'KEY')
 }
 
 export default function Actions () {
-  const { provider, style, parent, mode, segments, layers, dispatch: appDispatch, viewportRef, queryArea, query, activePanel, isMobile, interfaceType, isTargetVisible } = useApp()
-  const { dispatch: viewportDispatch, size } = useViewport()
+  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
+  const { dispatch: viewportDispatch, size, } = useViewport()
 
   const handleUpdateClick = () => {
-    const newQuery = provider.draw.finish()
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default', query: newQuery } })
+    if (!provider.map) {
+      return
+    }
+    const feature = provider.draw.finish(shape)
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape, query: feature } })
     viewportDispatch({ type: 'SWAP_STYLES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
-    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: newQuery })
+    eventBus.dispatch(parent, events.APP_ACTION, { type: query ? 'updatePolygon' : 'confirmPolygon', query: feature })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
   }
 
   const handleCancelClick = () => {
     provider.draw.cancel()
-    appDispatch({ type: 'SET_MODE', payload: { value: 'default' } })
-    viewportDispatch({ type: 'SWAP_STYLES' })
-    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'mode', mode: 'default', style, size, segments, layers })
     eventBus.dispatch(parent, events.APP_ACTION, { type: 'cancelUpdatePolygon', query })
+    appDispatch({ type: 'SET_MODE', payload: { value: 'default', shape, query } })
+    viewportDispatch({ type: 'SWAP_STYLES' })
+    eventBus.dispatch(parent, events.APP_CHANGE, { type: 'drawMode', drawMode: 'default', style, size, segments, layers })
     viewportRef.current.focus()
   }
 
@@ -43,24 +46,24 @@ export default function Actions () {
     eventBus.dispatch(parent, events.APP_QUERY, { resultType: 'polygon', query, style, size, segments, layers })
   }
 
-  const isDrawVisible = ['frame', 'draw'].includes(mode)
+  const isDefaultMode = mode === 'default'
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
-  const isPolygonVisible = getIsPolygonVisible(isDrawVisible, query, activePanel, isMobile)
-  const hasActions = isDrawVisible || isPixelVisible || isPolygonVisible
-
+  const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
+  const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
+ 
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...(!isDrawVisible && { style: { display: 'none' } })}>
-        {`${query ? 'Update' : 'Confirm'}`} area
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...isDefaultMode && { style: { display: 'none' } }}>
+        <span>{`${query ? 'Done' : 'Finish'}`}</span>
       </button>
-      <button onClick={handleCancelClick} aria-label='Cancel' className='fm-c-btn fm-c-btn--secondary' {...(!isDrawVisible && { style: { display: 'none' } })}>
-        Cancel
+      <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...isDefaultMode && { style: { display: 'none' } }}>
+        <span>Cancel</span>
       </button>
-      <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...(!isPolygonVisible && { style: { display: 'none' } })}>
+      <button onClick={handlePolygonClick} className='fm-c-btn fm-c-btn--primary' {...!isPolygonVisible && { style: { display: 'none' } }}>
         {queryArea?.submitLabel}
       </button>
       <button onClick={handlePixelClick} className='fm-c-btn fm-c-btn--primary' {...(!isPixelVisible && { style: { display: 'none' } })}>
-        Get feature information
+        Get info
       </button>
     </div>
   )

@@ -1,6 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
-import { getStyle } from '../lib/viewport'
+import { getStyle, getFeatureShape } from '../lib/viewport'
+import { drawTools } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -19,11 +20,13 @@ const getActivePanel = (info, featureId, targetMarker, legend) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, queryArea, hasAutoMode } = options
+  const { styles, legend, search, info, queryArea, hasAutoMode, feature } = options
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
   const activePanel = getActivePanel(info, featureId, targetMarker, legend)
+  const featureShape = getFeatureShape(feature)
+  const shape = featureShape
 
   return {
     isContainerReady: false,
@@ -35,6 +38,7 @@ export const initialState = (options) => {
     segments: legend && parseSegments(legend.segments),
     layers: legend?.key && parseLayers(legend.key),
     isKeyExpanded: false,
+    isDrawMenuExpanded: queryArea?.collapse !== 'collapse',
     isDarkMode: getIsDarkMode(style.name, hasAutoMode),
     hasAutoMode,
     featureId,
@@ -45,6 +49,8 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode: 'default',
+    drawTools,
+    shape,
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,

@@ -16,7 +16,7 @@ const getClassName = (size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortc
 }
 
 export default function Viewport () {
-  const { isContainerReady, provider, options, parent, mode, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
+  const { isContainerReady, provider, options, parent, mode, shape, segments, layers, viewportRef, frameRef, activePanel, activeRef, featureId, targetMarker, interfaceType } = useApp()
   const { id, hasAutoMode, backgroundColor, queryFeature, queryLocation, queryArea } = options
   const appDispatch = useApp().dispatch
 
@@ -292,6 +292,13 @@ export default function Viewport () {
       viewportDispatch({ type: 'SET_STYLE', payload: { style: style.name, colourScheme } })
     }
   }, [window?.matchMedia('(prefers-color-scheme: dark)').matches])
+
+  // Initialise draw if we have an existing feature
+  useEffect(() => {
+    if (provider.map && !provider.draw && queryArea?.feature) {
+      provider.initDraw({ ...queryArea, mode, shape, interfaceType })
+    }
+  }, [provider.map, mode])
 
   // Set initial selected feature
   useEffect(() => {

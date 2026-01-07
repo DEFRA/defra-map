@@ -28,7 +28,7 @@ const parseDrawTools = (tools, defaultTools) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, queryArea, hasAutoMode, feature, warningPosition } = options
+  const { styles, legend, search, info, banner, queryArea, hasAutoMode, feature, warningPosition } = options
   const drawTools = queryArea?.drawTools
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
@@ -42,6 +42,7 @@ export const initialState = (options) => {
     search,
     legend,
     info,
+    banner,
     modal: null,
     queryArea,
     segments: legend && parseSegments(legend.segments),

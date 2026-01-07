@@ -37,6 +37,13 @@ const setSelected = (state, payload) => {
   }
 }
 
+const setBanner = (state, payload) => {
+  return {
+    ...state,
+    banner: payload
+  }
+}
+
 const setNextSelected = (state, payload) => {
   let featureId = state.featureId
   const { key, features } = payload
@@ -76,7 +83,8 @@ const open = (state, payload) => {
     hasViewportLabel: false,
     targetMarker: payload === 'SEARCH' && null,
     featureId: payload === 'INFO' ? state.featureId : '',
-    hash: Date.now()
+    hash: Date.now(),
+    banner: null
   }
 }
 
@@ -202,6 +210,7 @@ export const actionsMap = {
   CLOSE: close,
   SET_MODE: setMode,
   SET_SELECTED: setSelected,
+  SET_BANNER: setBanner,
   SET_NEXT_SELECTED: setNextSelected,
   SET_IS_DARK_MODE: setIsDarkMode,
   SET_IS_TARGET_VISIBLE: setIsTargetVisible,

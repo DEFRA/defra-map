@@ -1,0 +1,43 @@
+.fm-c-banner {
+    &__inner {
+        // padding: 10px;
+        margin: 5px 5px 0;
+        position: relative;
+        background-color: var(--background-colour);
+        box-shadow: $panel-shadow;
+        border-radius: $panel-radius;
+        @include body-font(16px, 400);
+        pointer-events: auto;
+        color: var(--foreground-colour);
+        display: flex;
+        align-items: flex-start;
+    }
+
+    &__content {
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+    }
+
+   &__content span {
+        padding-right: 10px;
+   }
+
+    &__content svg {
+        flex-shrink: 0;
+        margin-left: 10px;
+        margin-right: 7px;
+    }
+
+    a {
+        color: var(--foreground-colour);
+    }
+
+    .fm-c-btn {
+        margin-left: auto;
+    }
+}
+
+.fm-desktop .fm-c-banner__inner {
+    margin: 0;
+}

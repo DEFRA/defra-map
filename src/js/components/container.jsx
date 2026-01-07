@@ -29,6 +29,7 @@ import Attribution from './attribution.jsx'
 import EditButton from './edit-button.jsx'
 import Inspector from './inspector.jsx'
 import WarningPanel from './warningPanel.jsx'
+import Banner from './banner.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -67,6 +68,7 @@ export default function Container () {
   useEffect(() => {
     eventBus.on(parent, events.SET_INFO, data => { dispatch({ type: 'SET_INFO', payload: data }) })
     eventBus.on(parent, events.SET_SELECTED, data => { dispatch({ type: 'SET_SELECTED', payload: { featureId: data } }) })
+    eventBus.on(parent, events.SET_BANNER, data => { dispatch({ type: 'SET_BANNER', payload: data }) })
     eventBus.on(parent, events.SET_MODAL, data => { dispatch({ type: 'SET_MODAL', payload: data }) })
 
     // Dark mode media query
@@ -123,6 +125,9 @@ export default function Container () {
             <div className='fm-o-warning'>
               {isMobile && warningPosition === 'top' && <WarningPanel />}
             </div>
+            <div className='fm-o-banner'>
+              {!isDesktop && <Banner />}
+            </div>
             <div className='fm-o-top'>
               <div className='fm-o-top__column'>
                 <Exit />
@@ -152,6 +157,7 @@ export default function Container () {
               </div>
               <div className='fm-o-top__column'>
                 {!isMobile && warningPosition === 'top' && <WarningPanel />}
+                {isDesktop && <Banner />}
                 <ViewportLabel />
               </div>
               <div className='fm-o-top__column'>

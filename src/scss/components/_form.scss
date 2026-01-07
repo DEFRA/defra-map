@@ -1,0 +1,65 @@
+@use '../tools/mixins' as *;
+@use '../settings/colours' as *;
+
+.fm-mobile {
+    .fm-c-form-row {
+        display: flex;
+        align-items: end;
+        padding-bottom: 15px;
+        gap: 10px;
+    }
+
+    .fm-c-form-row:last-child {
+        padding-bottom: 0;
+    }
+}
+
+.fm-c-form-group {
+    @include body-font(16px, 400);
+    flex: 1;
+    min-width: 0;
+
+    &__wrapper {
+        display: flex;
+        min-width: 0;
+    }
+
+    &__input {
+        outline: 3px transparent;
+        padding: 5px;
+        border: 2px solid var(--foreground-colour);
+        width: 100%;
+        min-width: 0;
+    }
+
+    &__read-only {
+        font-weight: 700;
+    }
+
+    &__input-suffix {
+        padding: 5px;
+        border: 2px solid var(--foreground-colour);
+        background-color: var(--button-hover-colour);
+        border-left: 0;
+        min-width: 20px;
+        text-align: center;
+    }
+}
+
+// Borders
+.fm-tablet, .fm-desktop {
+    .fm-c-form-group {
+        padding-bottom: 15px;
+    }
+}
+
+// Width overides
+.fm-mobile .fm-c-form-group--short {
+    flex: 0.6;
+}
+
+// Button overides
+.fm-c-form-row .fm-c-btn-secondary {
+    padding: 7px 8px 6px;
+    margin-bottom: 1px;
+}

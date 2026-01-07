@@ -23,10 +23,11 @@ import Reset from './reset.jsx'
 import Location from './location.jsx'
 import MapError from './map-error.jsx'
 import ViewportLabel from './viewport-label.jsx'
-// import DrawEdit from './draw-edit.jsx'
 import Actions from './actions.jsx'
 import HelpButton from './help-button.jsx'
 import Attribution from './attribution.jsx'
+import EditButton from './edit-button.jsx'
+import Inspector from './inspector.jsx'
 
 const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
   return `fm-o-container${isDarkMode ? ' fm-o-container--dark' : ''} fm-${device} ${behaviour}${isQueryMode ? ' fm-draw' : ''}`
@@ -34,13 +35,14 @@ const getClassNames = (isDarkMode, device, behaviour, isQueryMode) => {
 
 export default function Container () {
   // Derived from state and props
-  const { dispatch, provider, options, parent, info, modal, queryArea, mode, activePanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
+  const { dispatch, provider, options, parent, info, search, queryArea, mode, activePanel, previousPanel, isPage, isMobile, isDesktop, isDarkMode, isKeyExpanded, activeRef, viewportRef, hash, error } = useApp()
 
   // Refs to elements
   const legendBtnRef = useRef(null)
   const keyBtnRef = useRef(null)
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
+  const editBtnRef = useRef(null)
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
@@ -53,6 +55,7 @@ export default function Container () {
   const hasLengedHeading = !(legend.display === 'inset' || (isLegendFixed && isPage))
   const isQueryMode = ['frame', 'vertex'].includes(mode)
   const hasButtons = !(isMobile && (activePanel === 'SEARCH' || (isDesktop && search?.isExpanded)))
+  const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
 
   const handleColorSchemeMQ = () => dispatch({
     type: 'SET_IS_DARK_MODE',
@@ -106,6 +109,11 @@ export default function Container () {
                 <Layers hasSymbols={!!legend.display} hasInputs />
               </Panel>
             )}
+            {isDesktop && isQueryMode && (hasInspector || isLegendFixed) && (
+              <Panel className='edit' label='Dimensions' {...!isLegendFixed ? { instigatorRef: editBtnRef } : {}} width={legend?.width}>
+                <Inspector />
+              </Panel>
+            )}
           </div>
         )}
         <div className='fm-o-main' data-fm-main>
@@ -154,6 +162,7 @@ export default function Container () {
                     <HelpButton />
                     <StylesButton stylesBtnRef={stylesBtnRef} />
                     <Reset />
+                    <EditButton editBtnRef={editBtnRef} />
                     <Location provider={provider} />
                     <Zoom />
                   </>
@@ -166,6 +175,11 @@ export default function Container () {
                   {queryArea && <Draw />}
                   <Segments />
                   <Layers hasSymbols={!!legend.display} hasInputs />
+                </Panel>
+              )}
+              {activePanel === 'INSPECTOR' && !isMobile && !isDesktop && (
+                <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width} isModal>
+                  <Inspector />
                 </Panel>
               )}
               {activePanel === 'STYLE' && (
@@ -214,6 +228,13 @@ export default function Container () {
             </div>
             <Attribution />
           </div>
+        </div>
+        <div className='fm-o-side'>
+          {isMobile && hasInspector && (
+            <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
+              <Inspector />
+            </Panel>
+          )}
         </div>
       </div>
     </ViewportProvider>

@@ -242,16 +242,6 @@
     margin: 0 -12px 0 0;
 }
 
-// Draw
-.fm-o-viewport-controls .fm-c-btn {
-    display: flex;
-    justify-content: center;
-}
-
-.fm-c-btn--edit svg {
-    margin-right: 5px;
-}
-
 // Zoom in/out
 .fm-c-zoom {
     width: 40px;
@@ -277,8 +267,6 @@
 .fm-c-btn.fm-c-btn--help {
     display: flex;
     justify-content: center;
-    width: 40px;
-    height: 40px;
 }
 
 // Styles
@@ -294,6 +282,12 @@
         transform: scale(0.5);
         transform-origin: 0 0;
     }
+}
+
+// Edit
+.fm-c-btn.fm-c-btn--edit {
+    display: flex;
+    justify-content: center;
 }
 
 // Attribution

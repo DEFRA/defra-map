@@ -1,5 +1,6 @@
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel.js'
 import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
+import * as centroidOperator from '@arcgis/core/geometry/operators/centroidOperator.js'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Graphic from '@arcgis/core/Graphic'
 import { defaults } from './constants'
@@ -190,6 +191,26 @@ export class Draw {
     const nw = view.toMap({ x: left, y: top })
     const se = view.toMap({ x: left + eRect.width, y: top + eRect.height })
     return [nw.x, nw.y, se.x, se.y]
+  }
+
+  getDimensions () {
+    const { shape, drawMode } = this
+    const { paddingBox, graphicsLayer } = this.provider
+    const currentGraphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = currentGraphic || (drawMode === 'frame' && this.getGraphicFromElement(paddingBox, shape))
+    const geometry = graphic.geometry
+    const dimensions = {}
+    if (geometry?.type === 'polygon') {
+      const center = centroidOperator.execute(geometry)
+      const area = areaOperator.execute(geometry)
+      const width = geometry.extent.width
+      const radius = width / 2
+      dimensions.center = [center.x, center.y]
+      dimensions.area = area
+      dimensions.width = width
+      dimensions.radius = radius
+    }
+    return dimensions
   }
 
   getGraphicFromElement (el, shape) {

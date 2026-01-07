@@ -295,3 +295,52 @@ export const getFeatureShape = (feature) => {
   }
   return null
 }
+
+const metresToKilometres = (metres) => {
+  const KILOMETRE = 1000
+  // const pluralize = (value, singular, plural) => `${value} ${value === 1 ? singular : plural}`
+  if (metres >= KILOMETRE) {
+    const kilometres = metres / KILOMETRE
+    const roundedKm = Math.round(kilometres * 100) / 100
+    return `${roundedKm}km`
+  } else {
+    // return `${pluralize(Math.round(metres), 'metre', 'metres')}`
+    return `${Math.round(metres)}m`
+  }
+}
+
+export const squareMetresToKm = (metres) => {
+  const SQ_KM = 1_000_000
+  if (metres >= SQ_KM) {
+    let km2 = (metres / SQ_KM).toFixed(2)
+    km2 = Number(km2).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    return `${km2}km²`
+  } else {
+    return `${Math.ceil(metres).toLocaleString()}m²`
+  }
+}
+
+function displayArea(area, units) {
+  units = units?.toLowerCase() || 'hectares'
+
+  if (units === 'm2' || units === 'km2' || units === 'auto') {
+    if (area >= 100_000) {
+      return `${(area / 1_000_000).toFixed(2)} km²`
+    } else {
+      return `${Math.round(area)} m²`
+    }
+  } else if (units === 'hectares' || units === 'hectare') {
+    return `${(area / 10_000).toFixed(2)} ha`
+  } else {
+    throw new Error(`Unsupported unit: ${units}. Choose from 'm2', 'km2', 'auto', 'hectares'.`)
+  }
+}
+
+export const parseDimensions = (dimensions, units) => {
+  const { area, center, width, radius } = dimensions
+  const areaDisplay = area ? displayArea(area, units) : null
+  const centerDisplay = center ? center.map(c => Math.round(c)).join(', ') : null
+  const widthDisplay = width ? metresToKilometres(width) : null
+  const radiusDisplay = radius ? metresToKilometres(radius) : null
+  return { ...dimensions, areaDisplay, centerDisplay, widthDisplay, radiusDisplay }
+}

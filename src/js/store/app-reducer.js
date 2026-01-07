@@ -56,6 +56,7 @@ export const initialState = (options) => {
     previousPanel: null,
     activePanel,
     activePanelHasFocus: false,
+    previousPanel: null,
     hasViewportLabel: false,
     mode: 'default',
     drawTools: parseDrawTools(drawTools, defaultDrawTools),

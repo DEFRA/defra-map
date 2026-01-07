@@ -40,6 +40,7 @@ export const initialState = ({ bounds, extent, center, zoom, maxZoom, minZoom, p
     originalStyles: styles,
     styles,
     style,
+    dimensions: {},
     place: !cz ? place : null,
     originalZoom: zoom,
     size: getSize(framework),

@@ -15,7 +15,7 @@ $govuk-new-typography-scale: true;
 .fm-mobile.fm-inline.fm-o-container {
     position:fixed;
     box-sizing: border-box;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     justify-content: space-between;
     z-index: 999;

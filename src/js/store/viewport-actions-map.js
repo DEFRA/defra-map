@@ -2,6 +2,15 @@ import { getDescription, getStatus, getPlace, parseDimensions } from '../lib/vie
 import { isSame } from '../lib/utils'
 import { margin } from './constants'
 
+const ready = (state, payload) => {
+  const zoom = payload.zoom
+  return {
+    ...state,
+    zoom,
+    isReady: !state.style?.url || zoom
+  }
+}
+
 const update = (state, payload) => {
   const { oPlace, originalZoom, isUserInitiated, action } = state
   const { bounds, center, zoom, features } = payload
@@ -11,6 +20,7 @@ const update = (state, payload) => {
   const isUpdate = ['GEOLOC', 'DATA'].includes(action) || isPanZoom
   const dimensions = payload.dimensions ? parseDimensions(payload.dimensions, payload?.units) : {}
   const status = getStatus(action, isPanZoom, place, state, payload)
+  const resolution = payload.resolution
 
   return {
     ...state,
@@ -24,7 +34,8 @@ const update = (state, payload) => {
     isUpdate,
     isMoving: false,
     action: null,
-    dimensions
+    dimensions,
+    resolution
   }
 }
 
@@ -53,11 +64,12 @@ const moveStart = (state, payload) => {
 }
 
 const move = (state, payload) => {
-  const dimensions = payload.dimensions ? parseDimensions(payload.dimensions) : {}
+  const { dimensions, resolution } = payload
 
   return {
     ...state,
-    dimensions
+    dimensions: dimensions ? parseDimensions(dimensions) : {},
+    resolution
   }
 }
 
@@ -208,6 +220,7 @@ const toggleShortcuts = (state, payload) => {
 }
 
 export const actionsMap = {
+  READY: ready,
   UPDATE: update,
   UPDATE_PLACE: updatePlace,
   MOVE_START: moveStart,

@@ -291,6 +291,8 @@
 }
 
 .fm-o-attribution {
+    position: relative;
+    z-index: -2;
     pointer-events: auto;
 }
 
@@ -303,8 +305,21 @@
 
 .fm-o-logo,
 .fm-o-scale {
-    flex-grow: 1;
-    flex-basis: 0;
+    flex: 0 0 auto;
+    width: 120px;
+    margin-right: auto;
+}
+
+.fm-o-scale {
+    flex: 0 0 auto;
+    width: 120px;
+    align-self: flex-end;
+    margin: 0 5px 5px auto;
+    text-align: right;
+}
+
+.fm-tablet .fm-o-scale, .fm-desktop .fm-o-scale {
+    margin-bottom: calc($margin + 10px);
 }
 
 .fm-o-actions {
@@ -319,6 +334,11 @@
         box-shadow: $panel-shadow;
         padding: calc($margin / 2);
     }
+}
+
+.fm-tablet .fm-o-actions,
+.fm-desktop .fm-o-actions {
+    margin-bottom: 5px;
 }
 
 .fm-tablet .fm-o-footer,

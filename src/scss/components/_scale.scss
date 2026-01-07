@@ -1,0 +1,62 @@
+.fm-c-scale {
+    @include body-font(16px, 400);
+    position: relative;
+    padding-bottom: 5px;
+    margin-left: auto;
+    margin-top: 20px;
+    text-align: right;
+    opacity: 1;
+    transition: opacity 100ms ease;
+    color: var(--black);
+
+    &__label {
+        text-shadow:
+            -1px -1px 0 var(--white),
+            1px -1px 0 var(--white),
+            -1px  1px 0 var(--white),
+            1px  1px 0 var(--white);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        width: 100%;
+        background-color: var(--black);
+        box-shadow:
+            -1px -1px 0 var(--white),
+            1px -1px 0 var(--white),
+            -1px  1px 0 var(--white),
+            1px  1px 0 var(--white);
+        
+        @media (forced-colors: active) {
+            background-color: Canvas;
+        }
+    }
+}
+
+.fm-c-scale--dark, .fm-c-scale--aerial {
+    .fm-c-scale__label {
+        color: var(--white);
+        text-shadow:
+            -1px -1px 0 var(--black),
+            1px -1px 0 var(--black),
+            -1px  1px 0 var(--black),
+            1px  1px 0 var(--black);
+    }
+    
+    &::after {
+        background-color: var(--white);
+        box-shadow:
+            -1px -1px 0 var(--black),
+            1px -1px 0 var(--black),
+            -1px  1px 0 var(--black),
+            1px  1px 0 var(--black);
+
+        @media (forced-colors: active) {
+            background-color: ButtonText;
+        }
+    }
+}

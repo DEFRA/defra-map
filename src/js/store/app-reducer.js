@@ -1,7 +1,7 @@
 import { parseSegments, parseLayers } from '../lib/query'
 import { actionsMap } from './app-actions-map'
 import { getStyle, getFeatureShape } from '../lib/viewport'
-import { drawTools } from '../store/constants'
+import { drawTools as defaultDrawTools } from '../store/constants'
 
 const getIsDarkMode = (style, hasAutoMode) => {
   return style === 'dark' || (hasAutoMode && window?.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -19,8 +19,17 @@ const getActivePanel = (info, featureId, targetMarker, legend) => {
   return panel
 }
 
+const parseDrawTools = (tools, defaultTools) => {
+  // Remove invalid tools
+  let validTools = tools ? defaultTools.filter(d => tools.includes(d.id)) : defaultTools
+  // Sort tools on order provided by config if any
+  validTools = validTools.sort((a, b) => { return tools?.indexOf(a.id) - tools?.indexOf(b.id) })
+  return validTools
+}
+
 export const initialState = (options) => {
   const { styles, legend, search, info, queryArea, hasAutoMode, feature } = options
+  const drawTools = queryArea?.drawTools
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
   const targetMarker = info?.coord ? { coord: info.coord, hasData: info.hasData } : null
@@ -49,7 +58,7 @@ export const initialState = (options) => {
     activePanelHasFocus: false,
     hasViewportLabel: false,
     mode: 'default',
-    drawTools,
+    drawTools: parseDrawTools(drawTools, defaultDrawTools),
     shape,
     isFrameVisible: false,
     isTargetVisible: false,

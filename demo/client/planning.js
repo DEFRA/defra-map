@@ -176,7 +176,7 @@ const fm = new FloodMap('map', {
   // extent: [338388, 554644, 340881, 557137],
   maxExtent: [167161, 13123, 670003, 663805],
   height: '100%',
-  hasGeoLocation: true,
+  // hasGeoLocation: true,
   symbols,
   transformSearchRequest: getRequest,
   tokenCallback: getEsriToken,
@@ -185,6 +185,7 @@ const fm = new FloodMap('map', {
   // deviceTestCallback: () => true,
   // geocodeProvider: 'esri-world-geocoder',
   backgroundColor: 'default: #f5f5f0, dark: #060606',
+  helpURL: 'https://www.google.co.uk',
   styles: [{
     name: 'default',
     url: process.env.OS_VTAPI_DEFAULT_URL,
@@ -479,10 +480,10 @@ const fm = new FloodMap('map', {
     heading: 'Get a boundary report',
     summary: 'Add or edit site boundary',
     submitLabel: 'Get site report',
-    helpLabel: 'How to draw a shape',
     keyLabel: 'Report area',
     // collapse: 'collapse',
     html: '<p class="govuk-body-s">Instructions</p>',
+    drawTools: ['square', 'polygon'],
     styles: [{
       name: 'default',
       url: process.env.OS_VTAPI_DEFAULT_DRAW_URL,

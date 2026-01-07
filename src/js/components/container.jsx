@@ -41,7 +41,6 @@ export default function Container () {
   const keyBtnRef = useRef(null)
   const searchBtnRef = useRef(null)
   const stylesBtnRef = useRef(null)
-  const helpBtnRef = useRef(null)
 
   // Template properties
   const device = (isMobile && 'mobile') || (isDesktop && 'desktop') || 'tablet'
@@ -123,7 +122,6 @@ export default function Container () {
                 )}
                 <LegendButton legendBtnRef={legendBtnRef} />
                 <KeyButton keyBtnRef={keyBtnRef} />
-                <HelpButton helpBtnRef={helpBtnRef} label={queryArea?.helpLabel} />
                 {activePanel === 'KEY' && !isMobile && (
                   <Panel isNotObscure={false} className='key' label='Key' width={legend.keyWidth || legend.width} instigatorRef={keyBtnRef} isModal={isKeyExpanded} isInset>
                     <Layers hasInputs={false} hasSymbols />
@@ -153,6 +151,7 @@ export default function Container () {
                 )}
                 {hasButtons && (
                   <>
+                    <HelpButton />
                     <StylesButton stylesBtnRef={stylesBtnRef} />
                     <Reset />
                     <Location provider={provider} />
@@ -168,9 +167,6 @@ export default function Container () {
                   <Segments />
                   <Layers hasSymbols={!!legend.display} hasInputs />
                 </Panel>
-              )}
-              {activePanel === 'HELP' && (
-                <Panel className='help' label={queryArea.helpLabel} width={legend.width} instigatorRef={helpBtnRef} html={queryArea.html} isModal />
               )}
               {activePanel === 'STYLE' && (
                 <Panel className='style' label='Map style' instigatorRef={stylesBtnRef} width='400px' isInset={!isMobile} isModal>

@@ -243,18 +243,12 @@
 }
 
 // Draw
-.fm-o-viewport-controls .fm-c-btn,
-.fm-c-btn--help {
+.fm-o-viewport-controls .fm-c-btn {
     display: flex;
     justify-content: center;
 }
 
 .fm-c-btn--edit svg {
-    margin-right: 5px;
-}
-
-.fm-tablet .fm-c-btn--help svg,
-.fm-desktop .fm-c-btn--help svg {
     margin-right: 5px;
 }
 
@@ -277,6 +271,14 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     margin: 0;
+}
+
+// Help
+.fm-c-btn.fm-c-btn--help {
+    display: flex;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
 // Styles

@@ -126,17 +126,6 @@ const setModal = (state, payload) => {
   }
 }
 
-const setModal = (state, payload) => {
-  return {
-    ...state,
-    activePanel: payload ? 'MODAL' : state.previousPanel,
-    activePanelHasFocus: true,
-    modal: payload
-      ? { width: payload.width, label: payload.label, html: payload.html }
-      : null
-  }
-}
-
 const setIsDarkMode = (state, payload) => {
   const { style, colourScheme } = payload
   const { hasAutoMode } = state

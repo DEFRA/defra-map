@@ -10,7 +10,8 @@ jest.mock('../../src/js/lib/query', () => ({
 
 // Mock getStyle to return an object with a name property based on the input
 jest.mock('../../src/js/lib/viewport', () => ({
-  getStyle: jest.fn(() => ({ name: 'light' }))
+  getStyle: jest.fn(() => ({ name: 'light' })),
+  getFeatureShape: jest.fn(() => null)
 }))
 
 describe('app-reducer and initialState', () => {

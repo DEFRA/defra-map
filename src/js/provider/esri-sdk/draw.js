@@ -49,6 +49,13 @@ export class Draw {
     }
   }
 
+  findGraphic (shape) {
+    if (!this.provider?.graphicsLayer?.graphics?.items?.length) {
+      return undefined
+    }
+    return this.provider.graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+  }
+
   add (drawMode, shape) {
     const { provider, sketchViewModel } = this
     const { graphicsLayer, isDark } = provider
@@ -88,7 +95,7 @@ export class Draw {
       graphicsLayer.removeAll()
     }
 
-    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = this.findGraphic(shape)
 
     // Edit existing graphic
     if (drawMode === 'vertex' && graphic) {
@@ -96,7 +103,6 @@ export class Draw {
 
       // Another timeout hack
       setTimeout(() => {
-        const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
         sketchViewModel.update([graphic], {
           tool: 'reshape',
           enableRotation: false,
@@ -106,13 +112,6 @@ export class Draw {
         })
       }, 100)
     }
-  }
-
-  editPolygon () {
-    const paddingBox = this.provider.paddingBox
-    const elGraphic = this.getGraphicFromElement(paddingBox, 'polygon')
-    this.addGraphic(elGraphic)
-    this.edit('vertex', 'polygon')
   }
 
   cancel () {
@@ -136,7 +135,7 @@ export class Draw {
 
   finish (shape) {
     const { sketchViewModel, emptyLayer } = this
-    const { view, graphicsLayer, paddingBox } = this.provider
+    const { view, paddingBox } = this.provider
 
     // Draw graphic from padding box and shape
     if (['square', 'circle'].includes(shape)) {
@@ -150,7 +149,7 @@ export class Draw {
     this.drawMode = null
 
     // Replace original graphic with new sketch
-    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const graphic = this.findGraphic(shape)
 
     this.oGraphic = graphic.clone()
     this.originalZoom = view.zoom
@@ -166,7 +165,7 @@ export class Draw {
 
   reColour () {
     const { graphicsLayer } = this.provider
-    const graphic = graphicsLayer.graphics.items.find(g => g.attributes.id === this.shape)
+    const graphic = this.findGraphic(this.shape)
     if (!graphic) {
       return
     }
@@ -195,8 +194,8 @@ export class Draw {
 
   getDimensions () {
     const { shape, drawMode } = this
-    const { paddingBox, graphicsLayer } = this.provider
-    const currentGraphic = graphicsLayer.graphics.items.find(g => g.attributes.id === shape)
+    const { paddingBox } = this.provider
+    const currentGraphic = this.findGraphic(shape)
     const graphic = currentGraphic || (drawMode === 'frame' && this.getGraphicFromElement(paddingBox, shape))
     const geometry = graphic.geometry
     const dimensions = {}
@@ -237,10 +236,9 @@ export class Draw {
 
   createPolygonSymbol (isDark) {
     const stroke = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
-    const fill = isDark ? defaults.POLYGON_QUERY_FILL_DARK : defaults.POLYGON_QUERY_FILL
     return {
       type: 'simple-fill',
-      color: fill,
+      color: undefined,
       outline: {
         color: stroke,
         width: '2px',

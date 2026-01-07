@@ -79,7 +79,7 @@ describe('search-button', () => {
     jest.mocked(useApp).mockReturnValue({
       options: { id: 'test-id' },
       search: {},
-      mode: 'draw'
+      mode: 'vertex'
     })
 
     const { container } = render(<SearchButton />)

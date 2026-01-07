@@ -59,15 +59,15 @@ describe('key-button', () => {
   })
   it.each([
     // [options, mode, shouldRender, description]
-    [{ legend: undefined }, null, false, 'should not render when legend is undefined'],
-    [{ legend: null }, null, false, 'should not render when legend is null'],
-    [{ legend: false }, null, false, 'should not render when legend is false'],
-    [{ legend: { display: true } }, null, false, 'should not render when legend display is true'],
-    [{ legend: { key: {} } }, 'frame', false, 'should not render when mode is frame'],
-    [{ legend: { key: {} } }, 'draw', false, 'should not render when mode is draw'],
-    [{ legend: {} }, null, true, 'should render when legend is empty object'],
-    [{ legend: { display: false } }, null, true, 'should render when legend display is false']
-  ])('component rendering: %s', (options, mode, shouldRender, description) => {
+    ['should not render when legend is undefined', { legend: undefined }, null, false],
+    ['should not render when legend is null', { legend: null }, null, false],
+    ['should not render when legend is false', { legend: false }, null, false],
+    ['should not render when legend display is true', { legend: { display: true } }, null, false],
+    ['should not render when mode is frame', { legend: { key: {} } }, 'frame', false],
+    ['should not render when mode is vertex', { legend: { key: {} } }, 'vertex', false],
+    ['should render when legend is empty object', { legend: {} }, null, true],
+    ['should render when legend display is false', { legend: { display: false } }, null, true]
+  ])('component rendering: %s', (_description, options, mode, shouldRender) => {
     jest.mocked(useApp).mockReturnValue({
       dispatch: mockDispatch,
       options,

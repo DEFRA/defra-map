@@ -28,7 +28,8 @@ const parseDrawTools = (tools, defaultTools) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, banner, queryArea, hasAutoMode, feature, warningPosition } = options
+  const { styles, legend, search, info, banner, queryArea, hasAutoMode, warningPosition } = options
+  const feature = queryArea?.feature
   const drawTools = queryArea?.drawTools
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
@@ -57,14 +58,13 @@ export const initialState = (options) => {
     previousPanel: null,
     activePanel,
     activePanelHasFocus: false,
-    previousPanel: null,
     hasViewportLabel: false,
     mode: 'default',
     drawTools: parseDrawTools(drawTools, defaultDrawTools),
     shape,
     isFrameVisible: false,
     isTargetVisible: false,
-    query: queryArea?.feature,
+    query: feature,
     warningText: null,
     warningPosition,
     hash: null

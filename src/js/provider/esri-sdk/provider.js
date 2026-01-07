@@ -36,7 +36,42 @@ class Provider extends EventTarget {
   }
 
   remove () {
-    // console.log('Remove and tidy up')
+  }
+
+  // Throttle move 100ms
+  throttleMove = throttle(() => {
+    handleMove(this)
+  }, defaults.THROTTLE)
+
+  isMove = false
+  onMapZoomOrPan ([newZoom, newX, newY], [oldZoom, oldX, oldY]) {
+    const zoomChanged = newZoom !== oldZoom
+    const centerChanged = newX !== oldX || newY !== oldY
+    if (!(zoomChanged || centerChanged)) {
+      return
+    }
+    if (!this.isMove) {
+      handleMoveStart(this)
+      this.isMove = true
+    }
+    this.throttleMove()
+  }
+
+  // Debounce update 500ms
+  debounceStationary = debounce(() => {
+    handleStationary(this)
+  }, defaults.DELAY)
+
+  isStationary = false
+  onStationaryChange ([stationary]) {
+    if (this.isStationary && stationary) {
+      this.debounceStationary()
+    }
+    // Address the event firing twice on page load
+    if (stationary) {
+      this.isMove = false
+      this.isStationary = true
+    }
   }
 
   async addMap (modules, options) {
@@ -94,43 +129,12 @@ class Provider extends EventTarget {
     // Map ready event (first load)
     baseTileLayer.watch('loaded', () => handleBaseTileLayerLoaded(this))
 
-    // Throttle move 100ms
-    const throttleMove = throttle(() => {
-      handleMove(this)
-    }, defaults.THROTTLE)
-
-    // Movestart / Move
-    let isMove = false
+    // When the view is ready, start watching for zoomChanges
     reactiveWhen(() => view.ready, () => {
-      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], ([newZoom, newX, newY], [oldZoom, oldX, oldY]) => {
-        const zoomChanged = newZoom !== oldZoom
-        const centerChanged = newX !== oldX || newY !== oldY
-        if (!(zoomChanged || centerChanged)) {
-          return
-        }
-        if (!isMove) {
-          handleMoveStart(this)
-          isMove = true
-        }
-        throttleMove()
-      })
+      reactiveWatch(() => [view.zoom, view.center.x, view.center.y], this.onMapZoomOrPan.bind(this))
     })
 
-    // Debounce update 500ms
-    const debounceStationary = debounce(() => {
-      handleStationary(this)
-    }, defaults.DELAY)
-
-    reactiveWatch(() => [view.stationary, view.updating], ([stationary]) => {
-      if (this.isStationary && stationary) {
-        debounceStationary()
-      }
-      // Address event firing twice on page load
-      if (stationary) {
-        isMove = false
-        this.isStationary = true
-      }
-    })
+    reactiveWatch(() => [view.stationary, view.updating], this.onStationaryChange.bind(this))
 
     // Detect user initiated map movement
     view.on('drag', e => {
@@ -140,7 +144,7 @@ class Provider extends EventTarget {
     })
     view.on('mouse-wheel', () => { this.isUserInitiated = true })
 
-    // Implementation callback after initialisation
+    // Implementation callBack after initialisation
     if (callBack) {
       callBack(this)
     }
@@ -256,7 +260,9 @@ class Provider extends EventTarget {
     import(/* webpackChunkName: "esri-sdk-draw" */ './draw.js').then(module => {
       const Draw = module.default
       this.draw ??= new Draw(this, options)
-      callback()
+      if (callback) {
+        callback()
+      }
     })
   }
 

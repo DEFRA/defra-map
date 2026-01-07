@@ -16,6 +16,7 @@ const TEST_PADDING = { top: 10, left: 10, right: 10, bottom: 10 }
 const TEST_POINT = { x: 100, y: 200 }
 
 jest.mock('../../src/js/provider/esri-sdk/events', () => ({
+  handleMove: jest.fn(),
   handleBaseTileLayerLoaded: jest.fn(),
   handleStyleChange: jest.fn(),
   handleMoveStart: jest.fn(),
@@ -235,7 +236,10 @@ describe('Provider', () => {
           }))
         }
       }, // TileInfo
-      { watch: jest.fn() } // reactiveUtils
+      {
+        watch: jest.fn(),
+        when: jest.fn()
+      } // reactiveUtils
     ]
 
     const testContainer = document.createElement('div')
@@ -325,99 +329,74 @@ describe('Provider', () => {
   })
 
   describe('Map Operations', () => {
-    it('should handle user-initiated map movement', async () => {
-      const container = document.getElementById('test-container')
+    const options = {
+      paddingBox: {},
+      bounds: TEST_BOUNDS,
+      maxExtent: TEST_BOUNDS,
+      TEST_CENTER,
+      zoom: TEST_ZOOM,
+      minZoom: TEST_MIN_ZOOM,
+      maxZoon: TEST_MAX_ZOOM,
+      style: { url: 'test-url', name: 'default' },
+      locationLayers: [],
+      callBack: jest.fn()
+    }
 
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: TEST_MIN_ZOOM,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
+    it('should handle user-initiated map movement', async () => {
+      options.container = document.getElementById('test-container')
+
       await provider.addMap(modules, options)
       provider.view.emit('drag', { action: 'start' })
       expect(provider.isUserInitiated).toBe(true)
     })
 
     it('should handle move start correctly', async () => {
-      const container = document.getElementById('test-container')
-
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: TEST_MIN_ZOOM,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
+      options.container = document.getElementById('test-container')
 
       await provider.addMap(modules, options)
-
-      const reactiveWatch = modules[9].watch
-      const view = provider.view
-
-      // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[0][1]
-
-      // Initial state
-      let isMoving = false
-
-      // Simulate view change to trigger move start
-      watchCallback([view.center, view.zoom, false])
-
+      expect(provider.isMove).toBe(false)
+      provider.onMapZoomOrPan([TEST_ZOOM, 100, 100], [TEST_ZOOM + 1, 100, 100])
       expect(handleMoveStart).toHaveBeenCalledWith(provider)
-      isMoving = true
-      expect(isMoving).toBe(true)
+      expect(provider.isMove).toBe(true)
     })
 
-    it('should call debounceStationary when view becomes stationary', async () => {
-      const container = document.createElement('div')
-      container.id = 'test-container'
-      document.body.appendChild(container)
+    it('should not call handleMoveStart if onMapZoomOrPan is called without changes', async () => {
+      options.container = document.getElementById('test-container')
+
+      await provider.addMap(modules, options)
+      expect(provider.isMove).toBe(false)
+      provider.onMapZoomOrPan([TEST_ZOOM, 100, 100], [TEST_ZOOM, 100, 100])
+      expect(handleMoveStart).not.toHaveBeenCalled()
+      expect(provider.isMove).toBe(false)
+    })
+
+    it('should call debounceStationary when view becomes stationary the 2nd time', async () => {
+      options.container = document.getElementById('test-container')
 
       // Create and append the .esri-view-surface element
       const viewSurface = document.createElement('div')
       viewSurface.classList.add('esri-view-surface')
-      container.appendChild(viewSurface)
-
-      const options = {
-        container,
-        paddingBox: {},
-        bounds: TEST_BOUNDS,
-        maxExtent: TEST_BOUNDS,
-        TEST_CENTER,
-        zoom: TEST_ZOOM,
-        minZoom: 5,
-        maxZoon: TEST_MAX_ZOOM,
-        style: { url: 'test-url', name: 'default' },
-        locationLayers: [],
-        callBack: jest.fn()
-      }
+      options.container.appendChild(viewSurface)
 
       await provider.addMap(modules, options)
+      provider.isMove = true
+      expect(provider.isStationary).toBeFalsy()
+      // When the map loads, the onStationaryChange is called twice
+      // so the provider needs to ensure that handleStationary only gets called once
 
-      const reactiveWatch = modules[9].watch
+      // Mimic the 1st call to onStationaryChange
+      provider.onStationaryChange([true])
+      // It should have toggled the isStationary value
+      expect(provider.isStationary).toBeTruthy()
+      // But is should not have called handleStationary
+      expect(handleStationary).not.toHaveBeenCalled()
+      expect(provider.isMove).toEqual(false)
 
-      // Mock the reactiveWatch callback
-      const watchCallback = reactiveWatch.mock.calls[1][1]
-
-      // Simulate view becoming stationary
-      watchCallback([true, false]) // stationary is true
-
-      expect(debounce).toHaveBeenCalled()
+      // Now call again to instigate a call to handleStationary
+      provider.onStationaryChange([true])
+      // This time, handleStationary should have been called
       expect(handleStationary).toHaveBeenCalledWith(provider)
+      expect(debounce).toHaveBeenCalled()
     })
   })
 
@@ -813,6 +792,18 @@ describe('Provider', () => {
 
       expect(provider.removeTargetMarker).toHaveBeenCalled()
       expect(mockDraw).toHaveBeenCalledWith(provider, options)
+    })
+
+    it('should call a callback if it is passed to initDraw', async () => {
+      const options = {
+        type: 'polygon',
+        color: '#ff0000'
+      }
+      const callback = jest.fn()
+      provider.initDraw(options, callback)
+      // Wait for dynamic import to resolve
+      await new Promise(process.nextTick)
+      expect(callback).toHaveBeenCalled()
     })
 
     it('should handle setTargetMarker with null coordinates', (done) => {

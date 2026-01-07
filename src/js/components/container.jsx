@@ -245,13 +245,13 @@ export default function Container () {
             <Attribution />
           </div>
         </div>
-        <div className='fm-o-side'>
-          {isMobile && hasInspector && (
+        {isMobile && hasInspector && (
+          <div className='fm-o-side'>
             <Panel className='edit' label='Dimensions' instigatorRef={editBtnRef} width={legend?.width}>
               <Inspector />
             </Panel>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </ViewportProvider>
   )

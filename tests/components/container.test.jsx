@@ -63,10 +63,14 @@ jest.mock('../../src/js/components/location.jsx', () => () => <div>Location Mock
 jest.mock('../../src/js/components/logo.jsx', () => () => <div>Logo Mock</div>)
 jest.mock('../../src/js/components/map-error.jsx', () => () => <div>MapError Mock</div>)
 jest.mock('../../src/js/components/viewport-label.jsx', () => () => <div>ViewportLabel Mock</div>)
-jest.mock('../../src/js/components/draw-edit.jsx', () => () => <div>DrawEdit Mock</div>)
 jest.mock('../../src/js/components/actions.jsx', () => () => <div>Actions Mock</div>)
 jest.mock('../../src/js/components/help-button.jsx', () => () => <div>HelpButton Mock</div>)
 jest.mock('../../src/js/components/attribution.jsx', () => () => <div>Attribution Mock</div>)
+jest.mock('../../src/js/components/edit-button.jsx', () => () => <div>EditButton Mock</div>)
+jest.mock('../../src/js/components/inspector.jsx', () => () => <div id='test-inspector'>Inspector Mock</div>)
+jest.mock('../../src/js/components/warningPanel.jsx', () => () => <div id='test-warning-panel'>WarningPanel Mock</div>)
+jest.mock('../../src/js/components/banner.jsx', () => () => <div>Banner Mock</div>)
+jest.mock('../../src/js/components/scale-bar.jsx', () => () => <div>ScaleBar Mock</div>)
 
 jest.mock('../../src/js/components/panel.jsx', () => ({ label, children, html }) => (
   <div className='mock-panel'>
@@ -157,13 +161,6 @@ describe('Container', () => {
     render(<Container />)
     // Validate that "Legend Title" is rendered
     expect(screen.getByText('Legend Title')).toBeInTheDocument()
-  })
-
-  it('renders the Help panel when activePanel is HELP', () => {
-    mockUseApp.activePanel = 'HELP'
-    mockUseApp.isLegendFixed = true
-    render(<Container />)
-    expect(screen.getByText('Help')).toBeInTheDocument()
   })
 
   it('renders the Style panel when activePanel is STYLE', () => {
@@ -477,8 +474,8 @@ describe('Container', () => {
     mockUseApp.isQueryMode = false
     mockUseApp.queryArea = { some: 'data' }
 
-    const { container } = render(<Container />)
-    expect(container.querySelector('.fm-c-menu')).toBeInTheDocument()
+    render(<Container />)
+    expect(screen.getByText('Draw Mock')).toBeInTheDocument()
   })
 
   it('does not render Draw component when queryArea is null', () => {
@@ -611,11 +608,11 @@ describe('Container', () => {
       useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'draw' })
       const { container } = render(<Container />)
       const div = container.querySelector('div div div')
-      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class fm-draw')
+      expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class')
     })
 
-    it('has expected classNames in draw mode', async () => {
-      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'draw' })
+    it('has expected classNames in query mode', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, isDarkMode: true, mode: 'frame' })
       const { container } = render(<Container />)
       const div = container.querySelector('div div div')
       expect(div.className).toEqual('fm-o-container fm-o-container--dark fm-tablet default-class fm-draw')
@@ -634,6 +631,63 @@ describe('Container', () => {
       const { container } = render(<Container />)
       const div = container.querySelector('div#test-styles-button')
       expect(div).toBeNull()
+    })
+  })
+
+  describe('Inspector', () => {
+    it('should not have an Inspector panel by default', async () => {
+      useApp.mockReturnValue({ ...mockUseApp })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div#test-inspector')
+      expect(div).toBeNull()
+    })
+    it('should have an Inspector panel when activePanel is "INSPECTOR"', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, activePanel: 'INSPECTOR' })
+      render(<Container />)
+      expect(screen.getByText('Inspector Mock')).toBeInTheDocument()
+    })
+
+    it('should have an Inspector panel when isLegendFixed is true', async () => {
+      useApp.mockReturnValue({
+        ...mockUseApp,
+        isDesktop: true,
+        mode: 'vertex'
+      })
+      render(<Container />)
+      expect(screen.getByText('Inspector Mock')).toBeInTheDocument()
+    })
+  })
+
+  describe('WarningPanel', () => {
+    it('should not have a WarningPanel by default', async () => {
+      useApp.mockReturnValue({ ...mockUseApp })
+      const { container } = render(<Container />)
+      const div = container.querySelector('div#test-warning-panel')
+      expect(div).toBeNull()
+    })
+
+    it('should have a WarningPanel when warningPosition=top is set', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, warningPosition: 'top' })
+      render(<Container />)
+      expect(screen.getByText('WarningPanel Mock')).toBeInTheDocument()
+    })
+
+    it('should have a WarningPanel when warningPosition=bottom is set', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, warningPosition: 'bottom' })
+      render(<Container />)
+      expect(screen.getByText('WarningPanel Mock')).toBeInTheDocument()
+    })
+
+    it('should have a WarningPanel when warningPosition=top is set on mobile', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, warningPosition: 'top', isMobile: true })
+      render(<Container />)
+      expect(screen.getByText('WarningPanel Mock')).toBeInTheDocument()
+    })
+
+    it('should have a WarningPanel when warningPosition=bottom is set on mobile', async () => {
+      useApp.mockReturnValue({ ...mockUseApp, warningPosition: 'bottom', isMobile: true })
+      render(<Container />)
+      expect(screen.getByText('WarningPanel Mock')).toBeInTheDocument()
     })
   })
 })

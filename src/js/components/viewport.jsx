@@ -38,6 +38,7 @@ export default function Viewport () {
   const className = getClassName(size, isDarkBasemap, isFocusVisible, isKeyboard, hasShortcuts)
   const scale = getScale(size)
   const bgColor = getColor(backgroundColor, style.name)
+  const isQueryMode = ['frame', 'vertex'].includes(mode)
 
   const handleKeyDown = e => {
     // Pan map (Cursor keys)
@@ -175,9 +176,20 @@ export default function Viewport () {
     }
   }
 
+  // Get is min or max zoom during animation
+  const handleMove = e => {
+    const areaValidation = queryArea?.onShapeUpdate?.(e.detail.dimensions || {})
+    const dimensions = { ...e.detail?.dimensions, ...areaValidation }
+    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && dimensions.area && areaValidation?.warningText })
+    viewportDispatch({ type: 'MOVE', payload: { ...e.detail, dimensions } })
+  }
+
   // Get new bounds after map has moved
   const handleUpdate = e => {
-    viewportDispatch({ type: 'UPDATE', payload: { ...e.detail, units: queryArea.areaUnits } })
+    const areaValidation = queryArea?.onShapeUpdate?.(e.detail.dimensions || {})
+    const dimensions = { ...e.detail?.dimensions, ...areaValidation }
+    appDispatch({ type: 'SET_WARNING_TEXT', payload: isQueryMode && dimensions.area && areaValidation?.warningText })
+    viewportDispatch({ type: 'UPDATE', payload: { ...e.detail, dimensions } })
   }
 
   // Map query
@@ -214,7 +226,6 @@ export default function Viewport () {
       })
 
       provider.addEventListener('load', handleMapLoad)
-      provider.addEventListener('update', handleUpdate)
       provider.addEventListener('mapquery', handleMapQuery)
     }
 
@@ -225,7 +236,6 @@ export default function Viewport () {
 
     return () => {
       provider.removeEventListener('load', handleMapLoad)
-      provider.removeEventListener('update', handleUpdate)
       provider.removeEventListener('mapquery', handleMapQuery)
       provider?.remove()
     }
@@ -234,11 +244,15 @@ export default function Viewport () {
   // Movestart need access to some state
   useEffect(() => {
     provider.addEventListener('movestart', handleMoveStart)
+    provider.addEventListener('update', handleUpdate)
+    provider.addEventListener('move', handleMove)
 
     return () => {
       provider.removeEventListener('movestart', handleMoveStart)
+      provider.removeEventListener('update', handleUpdate)
+      provider.removeEventListener('move', handleMove)
     }
-  }, [isKeyboard, activePanel, action])
+  }, [isKeyboard, activePanel, action, mode])
 
   // Handle viewport action
   useEffect(() => {

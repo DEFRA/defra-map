@@ -28,7 +28,7 @@ const parseDrawTools = (tools, defaultTools) => {
 }
 
 export const initialState = (options) => {
-  const { styles, legend, search, info, queryArea, hasAutoMode, feature } = options
+  const { styles, legend, search, info, queryArea, hasAutoMode, feature, warningPosition } = options
   const drawTools = queryArea?.drawTools
   const style = getStyle(styles)
   const featureId = info?.featureId || options.featureId
@@ -64,6 +64,8 @@ export const initialState = (options) => {
     isFrameVisible: false,
     isTargetVisible: false,
     query: queryArea?.feature,
+    warningText: null,
+    warningPosition,
     hash: null
   }
 }

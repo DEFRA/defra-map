@@ -12,6 +12,7 @@
     max-height: 100%;
     max-width: 100%;
     z-index: 5;
+    @include body-font(16px, 400);
 
     &.fm-u-focus-visible::after {
         @include focus($offset: 3px);
@@ -90,14 +91,42 @@
 }
 
 // Viewport keyboard shortcuts label
-.fm-c-panel--viewport-label {
+.fm-c-panel--viewport-label,
+.fm-c-panel--warning-panel {
     display: none;
     position: relative;
     margin: 0 auto 5px;
     width: auto;
     border-radius: $button-radius;
     text-align: center;
+    // padding: 10px;
+}
+
+.fm-c-panel--warning-panel {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    align-items: center;
+    text-align: left;
+
+    svg {
+        color: currentcolor;
+        margin-right: 5px;
+        flex-shrink: 0;
+    }
+}
+
+.fm-c-panel--warning-panel:not(:empty) {
     padding: 10px;
+}
+
+.fm-mobile .fm-c-panel--warning-panel {
+    margin: $margin $margin 0;
+}
+
+.fm-tablet .fm-c-panel--warning-panel,
+.fm-desktop .fm-c-panel--warning-panel {
+    max-width: 400px;
 }
 
 // Overides

@@ -28,13 +28,11 @@
     }
 }
 
-.fm-c-menu .fm-c-details {
-    font-weight: 700;
-}
-
 // Temporary fixes until updated CSS
 .fm-c-menu .fm-c-details {
+    font-weight: 700;
     padding: 0;
+
     .fm-c-details__label-focus, .fm-c-details__summary, .fm-c-details__summary-focus {
         line-height: 1.25;
     }

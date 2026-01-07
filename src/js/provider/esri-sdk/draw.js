@@ -209,6 +209,7 @@ export class Draw {
       dimensions.area = area
       dimensions.width = width
       dimensions.radius = radius
+      dimensions.geometry = geometry
     }
     return dimensions
   }

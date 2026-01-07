@@ -13,12 +13,13 @@ const getIsPolygonVisible = (isDefaultMode, query, activePanel, isMobile) => {
 }
 
 export default function Actions () {
-  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible } = useApp()
-  const { dispatch: viewportDispatch, size, } = useViewport()
+  const { provider, style, parent, queryArea, mode, shape, segments, layers, dispatch: appDispatch, viewportRef, query, activePanel, previousPanel, isMobile, interfaceType, isTargetVisible, warningText } = useApp()
+  const { dispatch: viewportDispatch, size, dimensions } = useViewport()
   const hasInspector = activePanel === 'INSPECTOR' || (activePanel === 'STYLE' && previousPanel === 'INSPECTOR')
+  const isValid = dimensions.area && (!warningText || dimensions.allowShape !== false)
 
   const handleUpdateClick = () => {
-    if (!provider.map) {
+    if (!provider.map || !isValid) {
       return
     }
     const feature = provider.draw.finish(shape)
@@ -51,10 +52,10 @@ export default function Actions () {
   const isPixelVisible = getIsPixelVisible(interfaceType, isTargetVisible, activePanel)
   const isPolygonVisible = getIsPolygonVisible(isDefaultMode, query, activePanel, isMobile)
   const hasActions = !isDefaultMode || isPixelVisible || isPolygonVisible
- 
+
   return (
     <div className={`fm-o-actions${hasActions ? ' fm-o-actions--has-actions' : ''}`} {...hasInspector && { style: { display: 'none' } }}>
-      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...isDefaultMode && { style: { display: 'none' } }}>
+      <button onClick={handleUpdateClick} className='fm-c-btn fm-c-btn--primary' {...!isValid && { 'aria-disabled': true }} {...isDefaultMode && { style: { display: 'none' } }}>
         <span>{`${query ? 'Done' : 'Finish'}`}</span>
       </button>
       <button onClick={handleCancelClick} className='fm-c-btn fm-c-btn--secondary' {...isDefaultMode && { style: { display: 'none' } }}>

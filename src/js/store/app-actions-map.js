@@ -102,7 +102,19 @@ const setMode = (state, payload) => {
     shape: payload.shape,
     activePanel: null,
     featureId: null,
-    targetMarker: null
+    targetMarker: null,
+    warningText: null
+  }
+}
+
+const setModal = (state, payload) => {
+  return {
+    ...state,
+    activePanel: payload ? 'MODAL' : state.previousPanel,
+    activePanelHasFocus: true,
+    modal: payload
+      ? { width: payload.width, label: payload.label, html: payload.html }
+      : null
   }
 }
 
@@ -174,6 +186,13 @@ const toggleViewportLabel = (state, payload) => {
   }
 }
 
+const setWarningText = (state, payload) => {
+  return {
+    ...state,
+    warningText: payload
+  }
+}
+
 export const actionsMap = {
   CONTAINER_READY: containerReady,
   SET_AVAILABILITY: setSearch,
@@ -190,5 +209,7 @@ export const actionsMap = {
   TOGGLE_LAYERS: toggleLayers,
   TOGGLE_KEY_EXPANDED: toggleKeyExpanded,
   TOGGLE_DRAW_EXPANDED: toggleDrawExpanded,
-  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel
+  TOGGLE_VIEWPORT_LABEL: toggleViewportLabel,
+  SET_WARNING_TEXT: setWarningText,
+  SET_MODAL: setModal
 }

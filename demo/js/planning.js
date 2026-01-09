@@ -239,11 +239,3 @@ defraMap.on('draw:delete', function (e) {
 	// console.log('draw:delete', e)
 	drawOptions = ['shape', 'square']
 })
-
-defraMap.on('app:panelopened', function(e) {
-	console.log('app:panelopened', e)
-})
-
-defraMap.on('app:panelclosed', function(e) {
-	console.log('app:panelclosed', e)
-})

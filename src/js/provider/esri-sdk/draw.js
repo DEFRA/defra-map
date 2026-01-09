@@ -7,7 +7,7 @@ import { defaults } from './constants'
 
 export class Draw {
   constructor (provider, options) {
-    const { drawMode, shape, feature } = options
+    const { shape, feature } = options
     Object.assign(this, options)
     this.provider = provider
 
@@ -44,7 +44,7 @@ export class Draw {
     }
 
     // Add graphic
-    if (feature && drawMode === 'default') {
+    if (feature) {
       this.addGraphic(this.oGraphic)
     }
   }

@@ -143,7 +143,7 @@ export default function Viewport () {
   const handleMapLoad = e => {
     // Add polygonFeature
     if (queryArea?.feature) {
-      provider.initDraw(queryArea)
+      provider.initDraw({ ...queryArea, shape })
     }
     eventBus.dispatch(parent, events.APP_READY, {
       ...e.detail, mode, segments, layers, style, size

@@ -13,6 +13,8 @@ export const EVENTS = {
 
   // App responses
   APP_READY: 'app:ready',
+  APP_PANEL_OPENED: 'app:panelopened',
+  APP_PANEL_CLOSED: 'app:panelclosed',
 
   // Map commands
   MAP_SET_STYLE: 'map:setstyle',

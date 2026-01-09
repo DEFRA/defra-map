@@ -14,11 +14,13 @@ import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import createInteractPlugin from '/plugins/interact/src/index.js'
 import createFramePlugin from '/plugins/frame/src/index.js'
+// Demo utils
+import { hideMenu } from './planning-utils.js'
 
-// var feature
-var feature = { id: 'boundary', type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[371013.629737365,518087.27160546643],[371026.76930227707,518103.6431258204],[371076.00861123804,518150.38583537703],[371082.5004262571,518144.458668744],[371088.1419858577,518146.24617482634],[371119.04499505187,518121.1373772673],[371061.7528809118,518034.9300132221],[371044.3521903893,518057.18438187643],[371013.629737365,518087.27160546643]]]}, properties: { id: 'boundary' }}
+// const feature
+const feature = { id: 'boundary', type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[371013.629737365,518087.27160546643],[371026.76930227707,518103.6431258204],[371076.00861123804,518150.38583537703],[371082.5004262571,518144.458668744],[371088.1419858577,518146.24617482634],[371119.04499505187,518121.1373772673],[371061.7528809118,518034.9300132221],[371044.3521903893,518057.18438187643],[371013.629737365,518087.27160546643]]]}, properties: { id: 'boundary' }}
 
-var interactPlugin = createInteractPlugin({
+const interactPlugin = createInteractPlugin({
 	dataLayers: [{
 		layerId: 'field-parcels',
 		idProperty: 'ID',
@@ -33,9 +35,9 @@ var interactPlugin = createInteractPlugin({
 	// multiSelect: true
 })
 
-var drawOptions = feature ? ['edit', 'delete'] : ['shape', 'square']
+let drawOptions = feature ? ['edit', 'delete'] : ['shape', 'square']
 
-var menuHTML = function () {
+const menuHTML = function () {
 	return `
 		<div class="fmp-menu">
 			<h3 class="govuk-heading-s" id="boundary-heading">Get a boundary report</h3>
@@ -69,10 +71,10 @@ var menuHTML = function () {
 	`
 }
 
-var drawPlugin = createDrawPlugin()
-var framePlugin = createFramePlugin()
+const drawPlugin = createDrawPlugin()
+const framePlugin = createFramePlugin()
 
-var defraMap = new DefraMap('map', {
+const defraMap = new DefraMap('map', {
 	behaviour: 'hybrid',
 	mapProvider: esriProvider({
 		setupConfig: setupEsriConfig
@@ -173,14 +175,6 @@ defraMap.on('map:exit', function (e) {
 })
 
 defraMap.on('draw:ready', function () {
-	// Conditionally hide the menu on button click
-	var hideMenu = function () {
-		var menu = document.querySelector('#map-panel-menu')
-		if (menu?.getAttribute('aria-modal') === 'true') {
-			defraMap.hidePanel('menu')
-		}
-	}
-
 	// Add a feature if provided
 	if (feature) {
 		drawPlugin.addFeature(feature)
@@ -193,27 +187,32 @@ defraMap.on('draw:ready', function () {
 		if (drawShapeBtn && drawShapeBtn.getAttribute('aria-disabled') !== 'true') {
 			drawOptions = []
 			drawPlugin.newPolygon('boundary')
-			hideMenu()
+			hideMenu(defraMap)
 		}
 		// Draw frame
 		const drawSquareBtn = e.target.closest('#drawSquareBtn')
 		if (drawSquareBtn && drawSquareBtn.getAttribute('aria-disabled') !== 'true') {
 			drawOptions = []
 			framePlugin.addFrame(feature)
-			hideMenu()
+			hideMenu(defraMap)
 		}
 		// Edit area
 		const editAreaBtn = e.target.closest('#editAreaBtn')
 		if (editAreaBtn && editAreaBtn.getAttribute('aria-disabled') !== 'true') {
 			drawOptions = []
-			drawPlugin.editFeature('boundary')
-			hideMenu()
+			const isFrame = getShape(feature.geometry)
+			if (isFrame) {
+				framePlugin.addFrame(feature)
+			} else {
+				drawPlugin.editFeature('boundary')
+			}
+			hideMenu(defraMap)
 		}
 		// Delete area
 		const deleteAreaBtn = e.target.closest('#deleteAreaBtn')
 		if (deleteAreaBtn && deleteAreaBtn.getAttribute('aria-disabled') !== 'true') {
 			drawPlugin.deleteFeature('boundary')
-			hideMenu()
+			hideMenu(defraMap)
 		}
 	})
 })
@@ -239,4 +238,12 @@ defraMap.on('draw:cancel', function (e) {
 defraMap.on('draw:delete', function (e) {
 	// console.log('draw:delete', e)
 	drawOptions = ['shape', 'square']
+})
+
+defraMap.on('app:panelopened', function(e) {
+	console.log('app:panelopened', e)
+})
+
+defraMap.on('app:panelclosed', function(e) {
+	console.log('app:panelclosed', e)
 })

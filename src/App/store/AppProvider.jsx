@@ -1,6 +1,7 @@
 // src/core/store/AppProvider.jsx
-import React, { createContext, useRef, useEffect, useReducer, useMemo } from 'react'
+import React, { createContext, useRef, useEffect, useReducer, useMemo, useCallback } from 'react'
 import { initialState, reducer } from './appReducer.js'
+import { handleActionSideEffects } from './appDispatchMiddleware.js'
 import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 import { ConfigContext } from './configContext.js'
@@ -13,7 +14,6 @@ import { getButtonConfig } from '../registry/buttonRegistry.js'
 export const AppContext = createContext(null)
 
 export const AppProvider = ({ options, children }) => {
-  // Add refs for layout elements
   const layoutRefs = {
     appContainerRef: useRef(null),
     sideRef: useRef(null),
@@ -29,7 +29,6 @@ export const AppProvider = ({ options, children }) => {
     viewportRef: useRef(null)
   }
 
-  // Add refs for button elements
   const buttonRefs = useRef({})
 
   const config = {
@@ -38,7 +37,14 @@ export const AppProvider = ({ options, children }) => {
     panelConfig: getPanelConfig()
   }
 
-  const [state, dispatch] = useReducer(reducer, initialState(config))
+  const [state, rawDispatch] = useReducer(reducer, initialState(config))
+
+  // Wrap dispatch to handle side effects
+  const dispatch = useCallback((action) => {
+    const previousState = state
+    rawDispatch(action)
+    handleActionSideEffects(action, previousState, config)
+  }, [state, config])
 
   useMediaQueryDispatch(dispatch, config)
 
@@ -75,7 +81,7 @@ export const AppProvider = ({ options, children }) => {
     dispatch,
     layoutRefs,
     buttonRefs
-  }), [state])
+  }), [state, dispatch])
 
   return (
     <ConfigContext.Provider value={config}>

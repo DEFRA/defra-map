@@ -31,8 +31,8 @@ var interactPlugin = createInteractPlugin({
 	markerColor: { outdoor: '#ff0000' },
 	// closeOnDone: false,
 	// closeOnCancel: false,
-	interactionMode: 'marker', // 'auto', 'select', 'marker' // defaults to 'marker'
-	// multiSelect: true,
+	interactionMode: 'auto', // 'auto', 'select', 'marker' // defaults to 'marker'
+	multiSelect: true,
 	// excludeModes: ['draw']
 })
 
@@ -120,8 +120,8 @@ var defraMap = new DefraMap('map', {
 			}]
 		}),
 		// interactPlugin,
-		framePlugin(),
-		// drawPlugin,
+		// framePlugin(),
+		drawPlugin,
 		// menuDataLayersPlugin({
 		// 	dataLayers: [],
 		// 	excludeModes: ['circle', 'square', 'polygon']

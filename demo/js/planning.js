@@ -41,25 +41,25 @@ var menuHTML = function () {
 			<h3 class="govuk-heading-s" id="boundary-heading">Get a boundary report</h3>
 			<ul class="fmp-menu-list" aria-labelledby="boundary-heading" role="menu">
 				<li class="fmp-menu-item" role="presentation">
-					<button id="drawShapeBtn" class="fmp-menu-button" aria-disabled="${!drawOptions.includes('shape')}">
+					<button id="drawShapeBtn" class="govuk-body-s fmp-menu-button" aria-disabled="${!drawOptions.includes('shape')}">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19.5 7v10M4.5 7v10M7 19.5h10M7 4.5h10"/><path d="M22 18v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1zm0-15v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1zM7 18v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1zM7 3v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1z"/></svg>
 						<span class="fmp-menu-button__label">Draw shape</span>
 					</button>
 				</li>
 				<li class="fmp-menu-item" role="presentation">
-					<button id="drawSquareBtn" class="fmp-menu-button" aria-disabled="${!drawOptions.includes('square')}">
+					<button id="drawSquareBtn" class="govuk-body-s fmp-menu-button" aria-disabled="${!drawOptions.includes('square')}">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
 						<span class="fmp-menu-button__label">Draw square</span>
 					</button>
 				</li>
 				<li class="fmp-menu-item" role="presentation">
-					<button id="editAreaBtn" class="fmp-menu-button" aria-disabled="${!drawOptions.includes('edit')}">
+					<button id="editAreaBtn" class="govuk-body-s fmp-menu-button" aria-disabled="${!drawOptions.includes('edit')}">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
 						<span class="fmp-menu-button__label">Edit area</span>
 					</button>
 				</li>
 				<li class="fmp-menu-item" role="presentation">
-					<button id="deleteAreaBtn" class="fmp-menu-button" aria-disabled="${!drawOptions.includes('delete')}">
+					<button id="deleteAreaBtn" class="govuk-body-s fmp-menu-button" aria-disabled="${!drawOptions.includes('delete')}">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
 						<span class="fmp-menu-button__label">Delete area</span>
 					</button>
@@ -94,20 +94,20 @@ var defraMap = new DefraMap('map', {
 	extent: [337047, 503795, 338120, 505281],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
-	// enableFullscreen: true,
+	enableFullscreen: false,
 	hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],
 	// 	color: { outdoor: '#ff0000', dark: '#00ff00' }
 	// }],
-	mapStyle: {
-		url: process.env.VTS_OUTDOOR_URL_27700,
-		logo: '/assets/images/os-logo.svg',
-		logoAltText: 'Ordnance survey logo',
-		attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
-		backgroundColor: '#f5f5f0'
-	},
+	// mapStyle: {
+	// 	url: process.env.VTS_OUTDOOR_URL_27700,
+	// 	logo: '/assets/images/os-logo.svg',
+	// 	logoAltText: 'Ordnance survey logo',
+	// 	attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+	// 	backgroundColor: '#f5f5f0'
+	// },
 	plugins: [
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles27700

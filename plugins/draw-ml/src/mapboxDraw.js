@@ -11,7 +11,7 @@ import { createDrawStyles, updateDrawStyles } from './styles.js'
  *
  * Features:
  * - Custom modes for editing and drawing vertices
- * - Dynamic runtime style updates on `map:setmapstyle` event
+ * - Dynamic runtime style updates on `events.MAP_SET_STYLE` event
  * - Safe reapplication of styles if map.setStyle is called
  *
  * @param {string} options.colorScheme - Color scheme name used for styles
@@ -19,7 +19,7 @@ import { createDrawStyles, updateDrawStyles } from './styles.js'
  * @param {Object} options.eventBus - Event bus for app-level events
  * @returns {{ draw: MapboxDraw, remove: Function }} draw instance and cleanup function
  */
-export const createMapboxDraw = ({ colorScheme, mapProvider, eventBus }) => {
+export const createMapboxDraw = ({ colorScheme, mapProvider, events, eventBus }) => {
   const { map } = mapProvider
 
   // --- Configure MapLibre GL Draw CSS classes ---
@@ -54,20 +54,20 @@ export const createMapboxDraw = ({ colorScheme, mapProvider, eventBus }) => {
       updateDrawStyles(map, e.mapColorScheme)
     })
   }
-  eventBus.on('map:setmapstyle', handleSetMapStyle)
+  eventBus.on(events.MAP_SET_STYLE, handleSetMapStyle)
 
   // --- Update map scale ---
   const handleSetMapSize = (e) => {
     map.fire('draw.scalechange', { scale: { small: 1, medium: 1.5, large: 2 }[e] })
   }
-  eventBus.on('map:setmapsize', handleSetMapSize)
+  eventBus.on(events.MAP_SET_SIZE, handleSetMapSize)
 
   // --- Return instance and cleanup function ---
   return {
     draw,
     remove() {
       // Remove event listeners
-      eventBus.off('map:setmapstyle', handleSetMapStyle)
+      eventBus.off(events.MAP_SET_STYLE, handleSetMapStyle)
       // Delete all features and disable draw
       draw.deleteAll()
       draw.changeMode('disabled')

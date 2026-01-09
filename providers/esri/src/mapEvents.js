@@ -10,6 +10,7 @@ export function attachMapEvents ({
   map,
   view,
   baseTileLayer,
+  events,
   eventBus,
   getZoom,
   getCenter,
@@ -17,11 +18,11 @@ export function attachMapEvents ({
   getResolution
 }) {
   let destroyed = false
-  const handles = []
+  const handlers = []
   const debouncers = []
 
   const getMapState = () => {
-    if (destroyed || !view || view.destroyed) {
+    if (destroyed || !view || view.destroyed || !view.extent) {
       return null
     }
 
@@ -39,63 +40,69 @@ export function attachMapEvents ({
 
   const emit = (name) => {
     const state = getMapState()
-    if (state) eventBus.emit(name, state)
+    if (state) {
+      eventBus.emit(name, state)
+    }
   }
 
   // loaded
   when(
     () => baseTileLayer.loaded && view.resolution > 0,
-    () => emit('map:loaded')
+    () => emit(events.MAP_LOADED)
   )
 
   // ready
   once(() => view.ready).then(() => {
     if (!destroyed) {
-      eventBus.emit('map:ready', { map, view })
+      eventBus.emit(events.MAP_READY, { map, view })
     }
   })
 
   // first idle
-  once(() => view.stationary).then(() => emit('map:firstidle'))
+  once(() => view.stationary).then(() => emit(events.MAP_FIRST_IDLE))
 
   // movestart + moveend
-  const emitMoveEnd = debounce(() => emit('map:moveend'), DEBOUNCE_IDLE_TIME)
+  const emitMoveEnd = debounce(() => emit(events.MAP_MOVE_END), DEBOUNCE_IDLE_TIME)
   debouncers.push(emitMoveEnd)
 
-  handles.push(watch(
+  handlers.push(watch(
     () => [view.interacting, view.animation],
     ([interacting, animation]) => {
-      if (interacting || animation) eventBus.emit('map:movestart')
-      if (!interacting && !animation) emitMoveEnd()
+      if (interacting || animation) {
+        eventBus.emit(events.MAP_MOVE_START)
+      }
+      if (!interacting && !animation) {
+        emitMoveEnd()
+      }
     }
   ))
 
   // move
-  const emitMove = throttle(() => emit('map:move'), MOVE_THROTTLE_TIME)
+  const emitMove = throttle(() => emit(events.MAP_MOVE), MOVE_THROTTLE_TIME)
   debouncers.push(emitMove)
 
-  handles.push(watch(() => view.zoom, emitMove))
+  handlers.push(watch(() => view.zoom, emitMove))
 
   // render
-  handles.push(watch(
+  handlers.push(watch(
     () => view.extent,
-    () => eventBus.emit('map:render'),
+    () => eventBus.emit(events.MAP_RENDER),
     { initial: false }
   ))
 
   // datachange
-  const emitDataChange = debounce(() => emit('map:datachange'), DEBOUNCE_IDLE_TIME)
+  const emitDataChange = debounce(() => emit(events.MAP_DATA_CHANGE), DEBOUNCE_IDLE_TIME)
   debouncers.push(emitDataChange)
 
-  handles.push(watch(
+  handlers.push(watch(
     () => view.updating,
     updating => !updating && emitDataChange()
   ))
 
   // click
-  handles.push(view.on('click', e => {
+  handlers.push(view.on('click', e => {
     const p = e.mapPoint
-    eventBus.emit('map:click', { point: p, coords: [p.x, p.y] })
+    eventBus.emit(events.MAP_CLICK, { point: p, coords: [p.x, p.y] })
   }))
 
   // Cleanup
@@ -103,7 +110,7 @@ export function attachMapEvents ({
     remove () {
       destroyed = true
       debouncers.forEach(d => d.cancel())
-      handles.forEach(h => h.remove())
+      handlers.forEach(h => h.remove())
     }
   }
 }

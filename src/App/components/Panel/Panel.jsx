@@ -11,9 +11,9 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
 
   const rootEl = document.getElementById(`${id}-dm-app`)
   const bpConfig = panelConfig[breakpoint]
-  const newPanelId = `${id}-panel-${stringToKebab(panelId)}`
+  const elementId = `${id}-panel-${stringToKebab(panelId)}`
 
-  const isAside = bpConfig.slot === 'side' && bpConfig.initiallyOpen
+  const isAside = bpConfig.slot === 'side' && bpConfig.initiallyOpen && !bpConfig.modal
   const isDialog = !isAside && bpConfig.dismissable
   const isModal = bpConfig.modal === true
   const isDismissable = bpConfig.dismissable === true
@@ -50,8 +50,8 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
   return (
     <div
       ref={panelRef}
-      id={newPanelId}
-      aria-labelledby={`${newPanelId}-label`}
+      id={elementId}
+      aria-labelledby={`${elementId}-label`}
       tabIndex={shouldFocus ? -1 : undefined}
       role={isDialog ? 'dialog' : isDismissable ? 'complementary' : 'region'}
       aria-modal={isDialog && isModal ? 'true' : undefined}
@@ -59,7 +59,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
       className={panelClass}
     >
       <h2
-        id={`${newPanelId}-label`}
+        id={`${elementId}-label`}
         className={panelConfig.showLabel ? 'dm-c-panel__heading dm-e-heading-m' : 'dm-u-visually-hidden'}
       >
         {label}

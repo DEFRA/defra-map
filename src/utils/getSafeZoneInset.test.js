@@ -8,18 +8,20 @@ describe('getSafeZoneInset', () => {
   afterAll(() => { window.getComputedStyle = originalGetComputedStyle })
 
   beforeEach(() => {
-    mainRef = { current: { offsetWidth: 800, offsetHeight: 600, offsetLeft: 0 } }
-    insetRef = { current: { offsetWidth: 100, offsetHeight: 50, offsetTop: 50, offsetLeft: 20 } }
+    mainRef = { current: { offsetWidth: 800, offsetHeight: 600, offsetLeft: 0, offsetLeft: 0 } }
+    insetRef = { current: { offsetWidth: 100, offsetHeight: 50, offsetTop: 50, offsetLeft: 20, offsetLeft: 20 } }
     rightRef = { current: { offsetWidth: 50, offsetLeft: 0 } }
     footerRef = { current: { offsetTop: 550 } }
     actionsRef = { current: { offsetTop: 520 } }
+
+    // Mock CSS var --divider-gap = 10
     window.getComputedStyle = jest.fn().mockReturnValue({ getPropertyValue: () => '10' })
   })
 
   const runScenario = ({ isLandscape, insetHeight }) => {
     insetRef.current.offsetHeight = insetHeight
 
-    // Force isLandscape by adjusting widths/heights
+    // Manipulate dimensions to influence landscape heuristic
     if (isLandscape) {
       mainRef.current.offsetWidth = 1000
       insetRef.current.offsetWidth = 400
@@ -31,33 +33,39 @@ describe('getSafeZoneInset', () => {
     return getSafeZoneInset({ mainRef, insetRef, rightRef, footerRef, actionsRef })
   }
 
-  it('topOffset adds 0 when portrait and height = 0, leftOffset = rightOffset', () => {
+  it('topOffset adds 0 when portrait and height = 0', () => {
     const result = runScenario({ isLandscape: false, insetHeight: 0 })
-    expect(result.top).toBe(insetRef.current.offsetTop) // 0 added
-    expect(result.left).toBeGreaterThanOrEqual(rightRef.current.offsetWidth + insetRef.current.offsetLeft)
+    expect(result.top).toBe(insetRef.current.offsetTop)
   })
 
-  it('topOffset adds 0 when landscape and height > 0, leftOffset = insetWidth + insetLeft + dividerGap', () => {
+  it('landscape returns left = rightOffset when there is enough room', () => {
     const result = runScenario({ isLandscape: true, insetHeight: 50 })
-    expect(result.top).toBe(insetRef.current.offsetTop) // 0 added
-    expect(result.left).toBeGreaterThan(insetRef.current.offsetWidth + insetRef.current.offsetLeft)
+    expect(result.top).toBe(insetRef.current.offsetTop)
+    expect(result.left).toBe(80) // rightOffset = 20 + 50 + 10
+    expect(result.left).toBe(result.right) // left equals returned rightOffset
   })
 
-  it('topOffset adds 0 when landscape and height = 0, leftOffset = insetWidth + insetLeft + dividerGap', () => {
+  it('landscape returns left = rightOffset even when inset height = 0', () => {
     const result = runScenario({ isLandscape: true, insetHeight: 0 })
-    expect(result.top).toBe(insetRef.current.offsetTop) // 0 added
-    expect(result.left).toBeGreaterThan(insetRef.current.offsetWidth + insetRef.current.offsetLeft)
+    expect(result.top).toBe(insetRef.current.offsetTop)
+    expect(result.left).toBe(80)
+    expect(result.left).toBe(result.right)
   })
 
-  it('topOffset adds insetHeight when portrait and height > 0, leftOffset = rightOffset', () => {
+  it('portrait shifts inset below itself when it does NOT have enough vertical room', () => {
+    // Force a portrait overflow case
+    mainRef.current.offsetWidth = 200
+    insetRef.current.offsetWidth = 100
     insetRef.current.offsetHeight = 50
     insetRef.current.offsetTop = 50
-    mainRef.current.offsetWidth = 200 // ensure availableWidth < availableHeight - insetHeight => portrait
-    mainRef.current.offsetHeight = 600
+    window.getComputedStyle = jest.fn().mockReturnValue({ getPropertyValue: () => '10' })
+
     const result = getSafeZoneInset({ mainRef, insetRef, rightRef, footerRef, actionsRef })
-    // topOffset = insetTop + insetHeight + dividerGap = 50 + 50 + 10 = 110
+
+    // topOffset = 50 + 50 + 10 = 110
     expect(result.top).toBe(110)
-    // leftOffset = rightOffset = insetLeft + rightWidth + dividerGap = 20 + 50 + 10 = 80
+    // left = rightOffset = 20 + 50 + 10 = 80
     expect(result.left).toBe(80)
+    expect(result.right).toBe(80)
   })
 })

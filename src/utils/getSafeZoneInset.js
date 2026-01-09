@@ -2,12 +2,14 @@ export const getSafeZoneInset = ({
   mainRef,
   insetRef,
   rightRef,
-  actionsRef
+  actionsRef,
+  footerRef
 }) => {
   const main = mainRef.current
   const inset = insetRef.current
   const right = rightRef.current
   const actions = actionsRef.current
+  const footer = footerRef.current
 
   const root = document.documentElement
   const dividerGap = Number.parseInt(getComputedStyle(root).getPropertyValue('--divider-gap'), 10)
@@ -21,14 +23,14 @@ export const getSafeZoneInset = ({
   const topOffset = inset.offsetTop + (!isLandscape && inset.offsetHeight > 0 ? inset.offsetHeight + dividerGap : 0)
   const leftOffset = isLandscape ? inset.offsetWidth + inset.offsetLeft + dividerGap : rightOffset
   const actionsOffset = main.offsetHeight - actions.offsetTop
+  const footerOffset = main.offsetHeight - footer.offsetTop
 
-  const RATIO = 3
+  const RATIO = 2 // At what point is there enough room to leave the inset above
   const hasRoom = insetOverlapWidth < availableWidth / RATIO && inset.offsetHeight < availableHeight / RATIO
 
-  return {
-    top: hasRoom ? inset.offsetTop : topOffset,
-    right: rightOffset,
-    left: main.offsetLeft + (hasRoom ? rightOffset : Math.max(leftOffset, rightOffset)),
-    bottom: actionsOffset + dividerGap
-  }
+  const top = hasRoom ? inset.offsetTop : topOffset
+  const left = main.offsetLeft + (hasRoom ? rightOffset : Math.max(leftOffset, rightOffset))
+  const bottom = Math.max(actionsOffset, footerOffset) + dividerGap
+
+  return { top, right: rightOffset, left, bottom }
 }

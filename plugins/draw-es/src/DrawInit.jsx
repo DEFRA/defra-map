@@ -2,42 +2,64 @@ import { useEffect } from 'react'
 import { createSketchViewModel } from './sketchViewModel.js'
 import { attachEvents } from './events.js'
 
-export const DrawInit = ({ appState, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
-	const { eventBus } = services
+export const DrawInit = ({ 
+  appState, 
+  mapState, 
+  pluginConfig, 
+  pluginState, 
+  services, 
+  mapProvider, 
+  buttonConfig 
+}) => {
+  const { events, eventBus } = services
+  const { mapColorScheme } = mapState.mapStyle || {}
 
-	useEffect(() => {
-		// Don't run init if the app is in non-specified mode
-		const inModeWhitelist = pluginConfig.includeModes?.includes(appState.mode) ?? true
-		const inExcludeModes = pluginConfig.excludeModes?.includes(appState.mode) ?? false
+  // Check if plugin should be active
+  const inModeWhitelist = pluginConfig.includeModes?.includes(appState.mode) ?? true
+  const inExcludeModes = pluginConfig.excludeModes?.includes(appState.mode) ?? false
+  const isActive = mapState.isMapReady && inModeWhitelist && !inExcludeModes
 
-		if (!mapState.isMapReady || !inModeWhitelist || inExcludeModes) {
+  // Initialize sketch components once
+  useEffect(() => {
+    if (!isActive || mapProvider.sketchViewModel) {
+			return
+		}
+    
+    const { sketchViewModel, sketchLayer, emptySketchLayer } = createSketchViewModel({
+      pluginState,
+      mapProvider,
+      eventBus
+    })
+
+    mapProvider.sketchViewModel = sketchViewModel
+    mapProvider.sketchLayer = sketchLayer
+		mapProvider.emptySketchLayer = emptySketchLayer
+    eventBus.emit('draw:ready')
+
+    return () => {
+      mapProvider.sketchViewModel = null
+      mapProvider.sketchLayer = null
+			mapProvider.emptySketchLayer = null
+    }
+  }, [mapState.isMapReady, appState.mode])
+
+  // Attach/detach events
+  useEffect(() => {
+    if (!isActive || !mapProvider.sketchViewModel) {
 			return
 		}
 
-		attachEvents({ pluginState, mapProvider, eventBus })
+    const cleanup = attachEvents({
+      pluginState,
+      mapProvider,
+      events,
+      eventBus,
+      buttonConfig,
+      mapColorScheme
+    })
 
-    if (mapProvider.sketchViewModel && mapProvider.sketchLayer) {
-      return
+    return () => {
+      cleanup?.()
     }
-		
-		// Create sketchViewModel instance
-    const { sketchViewModel, sketchLayer } = createSketchViewModel({
-			pluginState,
-			mapProvider,
-			eventBus
-		})
-
-		// Store instances on the mapProvider
-		mapProvider.sketchViewModel = sketchViewModel
-		mapProvider.sketchLayer = sketchLayer
-
-		// Draw ready
-		eventBus.emit('draw:ready')
-
-		// return () => {
-		// 	cleanupEvents
-		// 	remove()
-		// }
-
-  }, [mapState.isMapReady, mapState.mapStyle, appState.mode, pluginState.feature])
+  }, [isActive, mapColorScheme, pluginState])
 }

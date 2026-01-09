@@ -32,7 +32,7 @@ export default merge(common, {
     }
   },
   performance: {
-    // hints: false,
+    hints: false,
     maxEntrypointSize: 2048000,
     maxAssetSize: 2048000
   }

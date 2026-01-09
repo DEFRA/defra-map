@@ -43,7 +43,7 @@ export function useEvaluateProp () {
 
     const fullContext = { ...ctx, pluginConfig, pluginState }
 
-    return typeof prop === 'function' ? prop(fullContext) : prop
+    return pluginId && typeof prop === 'function' ? prop(fullContext) : prop
   }
 
   evaluateProp.ctx = ctx

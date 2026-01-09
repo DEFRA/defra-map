@@ -1,5 +1,6 @@
 const initialState = {
   feature: null,
+  tempFeature: null,
   mode: null
 }
 
@@ -10,16 +11,17 @@ const setMode = (state, payload) => {
   }
 }
 
-const setfeature = (state, payload) => {
+const setFeature = (state, payload) => {
   return {
     ...state,
-    feature: payload
+    feature: payload.feature === undefined ? state.feature : payload.feature,
+    tempFeature: payload.tempFeature === undefined ? state.tempFeature : payload.tempFeature
   }
 }
 
 const actions = {
   SET_MODE: setMode,
-  SET_FEATURE: setfeature
+  SET_FEATURE: setFeature
 }
 
 export {

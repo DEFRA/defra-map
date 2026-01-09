@@ -84,14 +84,14 @@ describe('MapProvider', () => {
     // Ensure all events subscribed
     expect(eventBus.on).toHaveBeenCalledWith('map:ready', expect.any(Function))
     expect(eventBus.on).toHaveBeenCalledWith('map:initmapstyles', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:setmapstyle', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:setmapsize', expect.any(Function))
+    expect(eventBus.on).toHaveBeenCalledWith('map:setstyle', expect.any(Function))
+    expect(eventBus.on).toHaveBeenCalledWith('map:setsize', expect.any(Function))
 
     // Trigger handlers → covers reducer calls
     act(() => {
       capturedHandlers['map:ready']()
-      capturedHandlers['map:setmapstyle']({ id: 'style1' })
-      capturedHandlers['map:setmapsize']('300x300')
+      capturedHandlers['map:setstyle']({ id: 'style1' })
+      capturedHandlers['map:setsize']('300x300')
       capturedHandlers['map:initmapstyles']([{ id: 'style1' }])
     })
   })
@@ -142,8 +142,8 @@ describe('MapProvider', () => {
 
     act(() => {
       capturedHandlers['map:ready']()
-      capturedHandlers['map:setmapstyle']({ id: 'style2' })
-      capturedHandlers['map:setmapsize']('400x400')
+      capturedHandlers['map:setstyle']({ id: 'style2' })
+      capturedHandlers['map:setsize']('400x400')
     })
   })
 })

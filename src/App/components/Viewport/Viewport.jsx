@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
+import { EVENTS as events } from '../../../config/events.js'
 import { createPortal } from 'react-dom'
 import { useConfig } from '../../store/configContext.js'
 import { useApp } from '../../store/appContext.js'
@@ -27,7 +28,7 @@ export const Viewport = ({ keyboardHintPortalRef }) => {
 
   // Attach map events
   useMapEvents({
-    'map:click': (e) => mapProvider?.clearHighlightedLabel?.()
+    [events.MAP_CLICK]: (e) => mapProvider?.clearHighlightedLabel?.()
   })
 
   // Manage keyboard hint visibility using local state

@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import { EVENTS as events } from '../config/events.js'
 import eventBus from '../services/eventBus.js'
 import { appConfig } from '../config/appConfig.js'
 import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
@@ -19,7 +20,7 @@ export async function initialiseApp (rootElement, {
   // Reuse or create mapProvider
   let mapProvider = mapProviderMap.get(rootElement)
   if (!mapProvider) {
-    mapProvider = new MapProviderClass({ mapFramework, mapProviderConfig, eventBus })
+    mapProvider = new MapProviderClass({ mapFramework, mapProviderConfig, events, eventBus })
     mapProviderMap.set(rootElement, mapProvider)
   }
 

@@ -1,31 +1,35 @@
-import { createGraphic, graphicToGeoJSON } from '../graphic.js'
+import { graphicToGeoJSON } from '../graphic.js'
 
-export const editFeature = ({ pluginState, mapState, mapProvider, services }, feature) => {
+export const editFeature = ({ pluginState, mapProvider, services }, featureId) => {
   const { dispatch } = pluginState
-  const { mapStyle } = mapState
   const { sketchViewModel, sketchLayer } = mapProvider
   const { eventBus } = services
 
-  const graphic = createGraphic(feature.id, feature.geometry.coordinates, mapStyle.mapColorScheme)
+  // Graphic must already exist on sketchLayer
+  const graphic = sketchLayer.graphics.items.find(g => g.attributes.id === featureId)
 
-  sketchLayer.add(graphic)
+  // Fit view to extent of feature
+  const extent = graphic.geometry.extent
+  const bounds = [extent.xmin, extent.ymin, extent.xmax, extent.ymax]
+  mapProvider.fitToBounds(bounds)
 
-  // Store initial feature in plugin state
-  dispatch({ type: 'SET_FEATURE', payload: feature })
-
-  // Update geojson in state and emit update
+  // Update temp feature in state and emit update event
   sketchViewModel.on('update', (e) => {
     if (e.state === 'complete') {
-      const newFeature = graphicToGeoJSON(e.graphics[0])
-      eventBus.emit('draw:update', newFeature)
-      dispatch({ type: 'SET_FEATURE', payload: newFeature })
+      const tempFeature = graphicToGeoJSON(e.graphics[0])
+      eventBus.emit('draw:update', tempFeature)
+      dispatch({ type: 'SET_FEATURE', payload: { tempFeature }})
     }
   })
 
+  // Enter update mode
+  sketchViewModel.layer = sketchLayer
   sketchViewModel.update(graphic, {
     tool: 'reshape',
     toggleToolOnClick: false,
     enableRotation: false,
     enableScaling: false 
   })
+
+  dispatch({ type: 'SET_MODE', payload: 'edit-feature' })
 }

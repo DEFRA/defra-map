@@ -1,8 +1,9 @@
 // src/hooks/usePanels.js
 import { useEffect } from 'react'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 import { addButton } from '../registry/buttonRegistry.js'
-import { addPanel, removePanel, getPanelConfig } from '../registry/panelRegistry.js'
+import { addPanel, removePanel } from '../registry/panelRegistry.js'
 import { addControl } from '../registry/controlRegistry.js'
 import { useApp } from '../store/appContext.js'
 
@@ -39,20 +40,20 @@ export const useInterfaceAPI = () => {
       addControl(id, config)
     }
 
-    eventBus.on('app:addbutton', handleAddButton)
-    eventBus.on('app:addpanel', handleAddPanel)
-    eventBus.on('app:removepanel', handleRemovePanel)
-    eventBus.on('app:showpanel', handleShowPanel)
-    eventBus.on('app:hidepanel', handleHidePanel)
-    eventBus.on('app:addcontrol', handleAddControl)
+    eventBus.on(events.APP_ADD_BUTTON, handleAddButton)
+    eventBus.on(events.APP_ADD_PANEL, handleAddPanel)
+    eventBus.on(events.APP_REMOVE_PANEL, handleRemovePanel)
+    eventBus.on(events.APP_SHOW_PANEL, handleShowPanel)
+    eventBus.on(events.APP_HIDE_PANEL, handleHidePanel)
+    eventBus.on(events.APP_ADD_CONTROL, handleAddControl)
 
     return () => {
-      eventBus.off('app:addbutton', handleAddButton)
-      eventBus.off('app:addpanel', handleAddPanel)
-      eventBus.off('app:removepanel', handleRemovePanel)
-      eventBus.off('app:showpanel', handleShowPanel)
-      eventBus.off('app:hidepanel', handleHidePanel)
-      eventBus.off('app:addcontrol', handleAddControl)
+      eventBus.off(events.APP_ADD_BUTTON, handleAddButton)
+      eventBus.off(events.APP_ADD_PANEL, handleAddPanel)
+      eventBus.off(events.APP_REMOVE_PANEL, handleRemovePanel)
+      eventBus.off(events.APP_SHOW_PANEL, handleShowPanel)
+      eventBus.off(events.APP_HIDE_PANEL, handleHidePanel)
+      eventBus.off(events.APP_ADD_CONTROL, handleAddControl)
     }
   }, [dispatch])
 }

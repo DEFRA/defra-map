@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 // Pure function - easier to test
@@ -40,7 +41,7 @@ export const useMarkers = () => {
     }
   }, [mapProvider, markers, dispatch, mapSize])
 
-  // Update marker position on map:render
+  // Update marker position on events.MAP_RENDER
   const markerRef = useCallback((id) => (el) => {
     if (!el) {
       markerRefs.current.delete(id)
@@ -64,10 +65,10 @@ export const useMarkers = () => {
         ref.style.display = 'block'
       })
     }
-    eventBus.on('map:render', updateMarkers)
+    eventBus.on(events.MAP_RENDER, updateMarkers)
 
     return () => {
-      eventBus.off('map:render', updateMarkers)
+      eventBus.off(events.MAP_RENDER, updateMarkers)
     }
   }, [markers, mapProvider, isMapReady, mapSize])
 
@@ -97,7 +98,7 @@ export const useMarkers = () => {
       const { id, coords, options } = payload
       markers.add(id, coords, options)
     }
-    eventBus.on('app:addmarker', handleAddMarker)
+    eventBus.on(events.APP_ADD_MARKER, handleAddMarker)
 
     const handleRemoveMarker = (id) => {
       if (!id) {
@@ -105,11 +106,11 @@ export const useMarkers = () => {
       }
       markers.remove(id)
     }
-    eventBus.on('app:removemarker', handleRemoveMarker)
+    eventBus.on(events.APP_REMOVE_MARKER, handleRemoveMarker)
 
     return () => {
-      eventBus.off('app:addmarker', handleAddMarker)
-      eventBus.off('app:removemarker', handleRemoveMarker)
+      eventBus.off(events.APP_ADD_MARKER, handleAddMarker)
+      eventBus.off(events.APP_REMOVE_MARKER, handleRemoveMarker)
     }
   }, [])
 

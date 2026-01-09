@@ -5,16 +5,16 @@ import { scaleFactor } from '../../../src/config/appConfig.js'
 export const MapStyles = ({ mapState, pluginConfig, services, mapProvider }) => {
   const { mapStyle: currentMapStyle, mapSize: currentMapSize } = mapState
   const { mapStyles } = pluginConfig
-  const { eventBus } = services
+  const { events, eventBus } = services
   const { supportsMapSizes } = mapProvider.capabilities
 
   const handleMapStyleClick = (newMapStyle) => {
-    eventBus.emit('map:setmapstyle', newMapStyle)
+    eventBus.emit(events.MAP_SET_STYLE, newMapStyle)
   }
 
   const handleMapSizeClick = (newMapSize) => {
-    eventBus.emit('map:setmapsize', newMapSize)
-    eventBus.emit('map:setpixelratio', window.devicePixelRatio * scaleFactor[newMapSize])
+    eventBus.emit(events.MAP_SET_SIZE, newMapSize)
+    eventBus.emit(events.MAP_SET_PIXEL_RATIO, window.devicePixelRatio * scaleFactor[newMapSize])
   }
 
   return (

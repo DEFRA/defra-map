@@ -2,6 +2,7 @@ import { addMapLayers } from './mapLayers.js'
 
 export const handleSetMapStyle = ({
   map,
+  events,
   eventBus,
   layers
 }) => {
@@ -16,6 +17,6 @@ export const handleSetMapStyle = ({
     })
   }
 
-  eventBus.on('map:setmapstyle', onSetStyle)
+  eventBus.on(events.MAP_SET_STYLE, onSetStyle)
   return onSetStyle
 }

@@ -11,7 +11,9 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist",
-    "dev": "webpack serve --config webpack.dev.mjs",
+    "sass:watch": "sass --watch demo/scss/demo.scss:public/demo.css",
+    "webpack:serve": "webpack serve --config webpack.dev.mjs",
+    "dev": "npm-run-all --parallel sass:watch webpack:serve",
     "prod": "webpack serve --config webpack.prod.mjs",
     "build:umd": "webpack --config webpack.umd.mjs --mode production",
     "build:esm": "webpack --config webpack.esm.mjs --mode production",
@@ -75,6 +77,7 @@
     "jest-environment-jsdom": "^30.0.4",
     "mini-css-extract-plugin": "^2.9.2",
     "node-fetch": "^3.3.2",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.6.2",
     "proj4": "^2.19.10",
     "react": "^19.2.0",
@@ -112,7 +115,7 @@
     "@turf/helpers": "^7.2.0",
     "core-js": "^3.44.0",
     "govuk-frontend": "^5.13.0",
-    "maplibre-gl": "^5.12.0",
+    "maplibre-gl": "^5.15.0",
     "maplibre-gl-legacy": "npm:maplibre-gl@1.15.3",
     "preact": "^10.27.2"
   }

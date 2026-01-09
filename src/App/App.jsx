@@ -6,12 +6,13 @@ import { removeLoadingState } from '..//DefraMap/domStateManager.js'
 import { PluginProvider } from './store/PluginProvider.jsx'
 import { PluginInits } from './renderer/PluginInits.jsx'
 import { Layout } from './layout/Layout.jsx'
+import { EVENTS as events } from '../config/events.js'
 import eventBus from '../services/eventBus.js'
 
 export const App = (props) => {
   useEffect(() => {
     removeLoadingState()
-    eventBus.emit('app:ready')
+    eventBus.emit(events.APP_READY)
   }, [])
 
   return (

@@ -1,4 +1,7 @@
 export const cleanDOM = (container) => {
+  if (!container) {
+    return
+  }
   const canvasContainer = container.querySelector('.esri-view-surface')
   canvasContainer.removeAttribute('role')
   canvasContainer.tabIndex = -1

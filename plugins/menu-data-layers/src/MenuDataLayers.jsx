@@ -1,10 +1,10 @@
 import React from 'react'
 
 export const MenuDataLayers = ({ services }) => {
-  const { eventBus } = services
+  const { events, eventBus } = services
 
   const handleClick = (e) => {
-    eventBus.emit('app:setmode', 'polygon')
+    eventBus.emit(events.APP_SET_MODE, 'polygon')
   }
 
   return (

@@ -50,7 +50,7 @@ function evalInterpolate(expr, zoom) {
   return stops[stops.length - 1]
 }
 
-export function createMapLabelNavigator(map, mapColorScheme, eventBus) {
+export function createMapLabelNavigator(map, mapColorScheme, events, eventBus) {
   let isDarkStyle = mapColorScheme === 'dark'
   let labels = []
   let currentPixel = null
@@ -78,7 +78,7 @@ export function createMapLabelNavigator(map, mapColorScheme, eventBus) {
   })
   initLabelSource()
 
-  eventBus?.on('map:setmapstyle', style => {
+  eventBus?.on(events.MAP_SET_STYLE, style => {
     map.once('styledata', () => map.once('idle', () => {
       map.getStyle().layers.filter(l => l.layout?.['symbol-placement'] === 'line').forEach(l => {
         map.setLayoutProperty(l.id, 'symbol-placement', 'line-center')
@@ -131,8 +131,10 @@ export function createMapLabelNavigator(map, mapColorScheme, eventBus) {
     removeHighlight()
     const { feature, layer } = labelData
     highlightLayerId = `highlight-${layer.id}`
-    highlightedFeature = labelData
-    map.getSource('highlighted-label').setData(feature)
+
+    const { id, type, properties, geometry } = feature
+    highlightedFeature = { id, type, properties, geometry }
+    map.getSource('highlighted-label').setData(highlightedFeature)
     highlightedExpr = layer.layout['text-size']
     const zoom = map.getZoom()
     const baseSize = evalInterpolate(highlightedExpr, zoom)

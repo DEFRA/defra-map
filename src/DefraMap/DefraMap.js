@@ -10,6 +10,7 @@ import { mergeConfig } from '../config/mergeConfig.js'
 import { createBreakpointDetector, getBreakpoint } from '../utils/detectBreakpoint.js'
 import { createInterfaceDetector, getInterfaceType } from '../utils/detectInterfaceType.js'
 import { createReverseGeocode } from '../services/reverseGeocode.js'
+import { EVENTS as events } from '../config/events.js'
 import eventBus from '../services/eventBus.js'
 
 export default class DefraMap {
@@ -147,6 +148,8 @@ export default class DefraMap {
     }
 
     updateDOMState(this)
+
+    eventBus.emit(events.MAP_DESTROY, { mapId: this.id })
   }
 
   // API - EventBus methods
@@ -164,40 +167,40 @@ export default class DefraMap {
 
   // API - location markers
   addMarker (id, coords, options) {
-    eventBus.emit('app:addmarker', { id, coords, options })
+    eventBus.emit(events.APP_ADD_MARKER, { id, coords, options })
   }
 
   removeMarker (id) {
-    eventBus.emit('app:removemarker', id)
+    eventBus.emit(events.APP_REMOVE_MARKER, id)
   }
 
   // API - change app mode
   setMode (mode) {
-    eventBus.emit('app:setmode', mode)
+    eventBus.emit(events.APP_SET_MODE, mode)
   }
 
   // Interface API add button/panel/control, remove panel
   addButton (id, config) {
-    eventBus.emit('app:addbutton', { id, config })
+    eventBus.emit(events.APP_ADD_BUTTON, { id, config })
   }
 
   addPanel (id, config) {
-    eventBus.emit('app:addpanel', { id, config })
+    eventBus.emit(events.APP_ADD_PANEL, { id, config })
   }
 
   removePanel (id) {
-    eventBus.emit('app:removepanel', id)
+    eventBus.emit(events.APP_REMOVE_PANEL, id)
   }
 
   showPanel (id) {
-    eventBus.emit('app:showpanel', id)
+    eventBus.emit(events.APP_SHOW_PANEL, id)
   }
 
   hidePanel (id) {
-    eventBus.emit('app:hidepanel', id)
+    eventBus.emit(events.APP_HIDE_PANEL, id)
   }
 
   addControl (id, config) {
-    eventBus.emit('app:addcontrol', { id, config })
+    eventBus.emit(events.APP_ADD_CONTROL, { id, config })
   }
 }

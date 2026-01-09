@@ -7,6 +7,7 @@ export const useHighlightSync = ({
   dataLayers,
   selectedFeatures,
   dispatch,
+  events,
   eventBus
 }) => {
   // Memoize stylesMap so it only recalculates when style or layers change
@@ -36,10 +37,10 @@ export const useHighlightSync = ({
     updateHighlightedFeatures()
 
     // Update updateHighlightedFeatures on stylechange
-    eventBus.on('map:datachange', updateHighlightedFeatures)
+    eventBus.on(events.MAP_DATA_CHANGE, updateHighlightedFeatures)
 
     return () => {
-      eventBus.off('map:datachange', updateHighlightedFeatures)
+      eventBus.off(events.MAP_DATA_CHANGE, updateHighlightedFeatures)
     }
   }, [selectedFeatures, mapProvider, stylesMap])
 }

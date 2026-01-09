@@ -3,6 +3,8 @@ import { initialState, actions } from './reducer.js'
 import { DrawInit } from './DrawInit.jsx'
 import { newPolygon } from './api/newPolygon.js'
 import { editFeature } from './api/editFeature.js'
+import { addFeature } from './api/addFeature.js'
+import { deleteFeature } from './api/deleteFeature.js'
 
 const buttonSlots = {
   mobile:  { slot: 'actions', showLabel: true },
@@ -22,14 +24,14 @@ export const manifest = {
     id: 'drawDone',
     label: 'Done',
     variant: 'primary',
-    // hiddenWhen: ({ appState, pluginState }) => { console.log(pluginState); return !!pluginState.feature },
-    enableWhen: ({ pluginState }) => !!pluginState.feature,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
+    enableWhen: ({ pluginState }) => !!pluginState.tempFeature,
     ...buttonSlots
   },{
     id: 'drawCancel',
     label: 'Cancel',
     variant: 'tertiary',
-    // hiddenWhen: ({ appState }) => !appState.isFullscreen,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
     ...buttonSlots
   }],
 
@@ -42,6 +44,8 @@ export const manifest = {
 
   api: {
     newPolygon,
-    editFeature
+    editFeature,
+    addFeature,
+    deleteFeature
   }
 }

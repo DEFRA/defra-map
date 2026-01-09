@@ -1,4 +1,4 @@
-export function attachAppEvents (map, eventBus) {
+export function attachAppEvents ({ map, events, eventBus }) {
   const handleSetMapStyle = (mapStyle) => {
     map.setStyle(mapStyle.url, { diff: false })
   }
@@ -7,13 +7,13 @@ export function attachAppEvents (map, eventBus) {
     map.setPixelRatio(pixelRatio)
   }
 
-  eventBus.on('map:setmapstyle', handleSetMapStyle)
-  eventBus.on('map:setpixelratio', handleSetPixelRatio)
+  eventBus.on(events.MAP_SET_STYLE, handleSetMapStyle)
+  eventBus.on(events.MAP_SET_PIXEL_RATIO, handleSetPixelRatio)
 
   return {
     remove () {
-      eventBus.off('map:setmapstyle', handleSetMapStyle)
-      eventBus.off('map:setpixelratio', handleSetPixelRatio)
+      eventBus.off(events.MAP_SET_STYLE, handleSetMapStyle)
+      eventBus.off(events.MAP_SET_PIXEL_RATIO, handleSetPixelRatio)
     }
   }
 }

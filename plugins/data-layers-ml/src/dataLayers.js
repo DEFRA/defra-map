@@ -5,6 +5,7 @@ export const createDataLayers = ({
   layersConfig,
   mapStyleId,
   mapProvider,
+  events,
   eventBus
 }) => {
   const { map } = mapProvider
@@ -18,6 +19,7 @@ export const createDataLayers = ({
   // Handle style changes
   const styleHandler = handleSetMapStyle({
     map,
+    events,
     eventBus,
     layers,
     mapStyleId
@@ -25,7 +27,7 @@ export const createDataLayers = ({
 
   return {
     remove() {
-      eventBus.off('map:setmapstyle', styleHandler)
+      eventBus.off(events.MAP_SET_STYLE, styleHandler)
       
       // Clean up sources and layers
       layers.forEach(layer => {

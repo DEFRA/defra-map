@@ -7,8 +7,9 @@ import { createMapLabelNavigator } from './utils/labels.js'
 import { updateHighlightedFeatures } from './utils/highlightFeatures.js'
 
 export default class MapLibreProvider {
-  constructor ({ mapFramework, mapProviderConfig = {}, eventBus }) {
+  constructor ({ mapFramework, mapProviderConfig = {}, events, eventBus }) {
     this.maplibreModule = mapFramework
+    this.events = events
     this.eventBus = eventBus
     this.capabilities = {
       supportedShortcuts,
@@ -21,6 +22,7 @@ export default class MapLibreProvider {
   async initMap (config) {
     const { container, padding, mapStyle, center, zoom, bounds, pixelRatio, ...initConfig } = config
     const { Map: MaplibreMap } = this.maplibreModule
+    const { events, eventBus } = this
 
     const map = new MaplibreMap({
       ...initConfig,
@@ -54,21 +56,28 @@ export default class MapLibreProvider {
     applyPreventDefaultFix(map)
     cleanCanvas(map)
 
-    attachMapEvents(map, this.eventBus, {
+    attachMapEvents({
+      map,
+      events,
+      eventBus,
       getCenter: this.getCenter.bind(this),
       getZoom: this.getZoom.bind(this),
       getBounds: this.getBounds.bind(this),
       getResolution: this.getResolution.bind(this)
     })
 
-    attachAppEvents(map, this.eventBus)
+    attachAppEvents({
+      map,
+      events,
+      eventBus
+    })
 
     // Add highlight layer after map load
     map.on('load', () => {
-      this.labelNavigator = createMapLabelNavigator(map, mapStyle?.mapColorScheme, this.eventBus)
+      this.labelNavigator = createMapLabelNavigator(map, mapStyle?.mapColorScheme, events, eventBus)
     })
 
-    this.eventBus.emit('map:ready', { map })
+    this.eventBus.emit(events.MAP_READY, { map })
   }
 
   destroyMap () {

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { setMapStateInURL } from '../../utils/mapStateSync.js'
 import { useConfig } from '../store/configContext.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 export function useMapURLSync () {
@@ -18,7 +19,7 @@ export function useMapURLSync () {
       })
     }
 
-    eventBus.on('map:stateupdated', handleStateUpdate)
-    return () => eventBus.off('map:stateupdated', handleStateUpdate)
+    eventBus.on(events.MAP_STATE_UPDATED, handleStateUpdate)
+    return () => eventBus.off(events.MAP_STATE_UPDATED, handleStateUpdate)
   }, [id])
 }

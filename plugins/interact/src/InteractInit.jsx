@@ -15,7 +15,7 @@ export const InteractInit = ({
   const { interfaceType } = appState
   const { dataLayers } = pluginConfig
   const { dispatch, selectedFeatures, selectionBounds } = pluginState
-  const { eventBus, closeApp } = services
+  const { events, eventBus, closeApp } = services
   const { crossHair, mapStyle } = mapState
 
   const isTouchOrKeyboard = ['touch', 'keyboard'].includes(interfaceType)
@@ -30,7 +30,7 @@ export const InteractInit = ({
     mapProvider,
   })
 
-  // Highlight feaytures and sync state selectedBounds from mapProvider
+  // Highlight features and sync state selectedBounds from mapProvider
   useHighlightSync({
     mapProvider,
     mapStyle,
@@ -38,6 +38,7 @@ export const InteractInit = ({
     selectedFeatures,
     selectionBounds,
     dispatch,
+    events,
     eventBus
   })
 
@@ -57,6 +58,7 @@ export const InteractInit = ({
       pluginConfig,
       mapState,
       buttonConfig,
+      events,
       eventBus,
       handleInteraction,
       closeApp

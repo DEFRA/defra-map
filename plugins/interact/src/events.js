@@ -1,4 +1,14 @@
-export function attachEvents ({ appState, mapState, pluginState, pluginConfig, buttonConfig, eventBus, handleInteraction, closeApp }) {
+export function attachEvents ({
+  appState,
+  mapState,
+  pluginState,
+  pluginConfig,
+  buttonConfig,
+  events,
+  eventBus,
+  handleInteraction,
+  closeApp
+}) {
   const {
     selectDone,
     selectAtTarget,
@@ -17,7 +27,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
   const handleMapClick = (e) => {
     handleInteraction(e)
   }
-  eventBus.on('map:click', handleMapClick)
+  eventBus.on(events.MAP_CLICK, handleMapClick)
 
   const handleSelectAtTarget = () => {
     handleInteraction(mapState.crossHair.getDetail())
@@ -77,7 +87,7 @@ export function attachEvents ({ appState, mapState, pluginState, pluginConfig, b
     selectAtTarget.onClick = null
     selectCancel.onClick = null
     appState.layoutRefs.viewportRef.current?.removeEventListener('keyup', handleKeyup)
-    eventBus.off('map:click', handleMapClick)
+    eventBus.off(events.MAP_CLICK, handleMapClick)
     eventBus.off('interact:selectFeature', handleSelect)
     eventBus.off('interact:unselectFeature', handleUnselect)
   }

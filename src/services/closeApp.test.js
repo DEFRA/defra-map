@@ -1,4 +1,10 @@
+import eventBus from '../services/eventBus.js'
 import { closeApp } from './closeApp'
+
+jest.mock('../services/eventBus.js', () => ({
+  __esModule: true,
+  default: { emit: jest.fn() }
+}))
 
 describe('closeApp', () => {
   let handleExitClickMock
@@ -10,6 +16,7 @@ describe('closeApp', () => {
 
   afterEach(() => {
     jest.restoreAllMocks()
+    jest.clearAllMocks()
   })
 
   it('calls history.back() when history.state.isBack is true', () => {
@@ -19,8 +26,9 @@ describe('closeApp', () => {
       configurable: true
     })
 
-    closeApp(handleExitClickMock)
+    closeApp('map-123', handleExitClickMock)
 
+    expect(eventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
     expect(history.back).toHaveBeenCalled()
     expect(handleExitClickMock).not.toHaveBeenCalled()
   })
@@ -32,8 +40,9 @@ describe('closeApp', () => {
       configurable: true
     })
 
-    closeApp(handleExitClickMock)
+    closeApp('map-123', handleExitClickMock)
 
+    expect(eventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
     expect(history.back).not.toHaveBeenCalled()
     expect(handleExitClickMock).toHaveBeenCalled()
   })

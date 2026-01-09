@@ -13,7 +13,8 @@ import { getExtentFromFlatCoords, getPointFromFlatCoords } from './utils/coords.
 import { cleanDOM } from './utils/esriFixes.js'
 
 export default class EsriProvider {
-  constructor ({ mapProviderConfig = {}, eventBus }) {
+  constructor ({ mapProviderConfig = {}, events, eventBus }) {
+    this.events = events
     this.eventBus = eventBus
     this.capabilities = {
       supportedShortcuts,
@@ -28,7 +29,7 @@ export default class EsriProvider {
 
   async initMap (config) {
     const { container, padding, mapStyle, maxExtent, ...initConfig } = config
-    const { eventBus } = this
+    const { events, eventBus } = this
 
     if (this.setupConfig) {
       await this.setupConfig(esriConfig)
@@ -70,6 +71,7 @@ export default class EsriProvider {
       map,
       view,
       baseTileLayer,
+      events,
       eventBus,
       getZoom: this.getZoom.bind(this),
       getCenter: this.getCenter.bind(this),
@@ -78,7 +80,11 @@ export default class EsriProvider {
     })
 
     // Attach app events and store handles
-    this.appEventHandles = attachAppEvents({ baseTileLayer, eventBus }) || []
+    this.appEventHandles = attachAppEvents({
+      baseTileLayer,
+      events,
+      eventBus
+    }) || []
 
     // Save references
     this.map = map

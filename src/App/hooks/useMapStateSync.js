@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 export function useMapStateSync () {
@@ -31,7 +32,7 @@ export function useMapStateSync () {
       })
 
       // Emit event with both previous and current state for other hooks
-      eventBus.emit('map:stateupdated', {
+      eventBus.emit(events.MAP_STATE_UPDATED, {
         previous: previousState.current,
         current: payload
       })
@@ -57,14 +58,14 @@ export function useMapStateSync () {
     }
 
     // Listen to map events
-    eventBus.on('map:move', handleMapMove)
-    eventBus.on('map:moveend', handleMapMoveEnd)
-    eventBus.on('map:firstidle', handleMapFirstIdle)
+    eventBus.on(events.MAP_MOVE, handleMapMove)
+    eventBus.on(events.MAP_MOVE_END, handleMapMoveEnd)
+    eventBus.on(events.MAP_FIRST_IDLE, handleMapFirstIdle)
 
     return () => {
-      eventBus.off('map:move', handleMapMove)
-      eventBus.off('map:moveend', handleMapMoveEnd)
-      eventBus.off('map:firstidle', handleMapFirstIdle)
+      eventBus.off(events.MAP_MOVE, handleMapMove)
+      eventBus.off(events.MAP_MOVE_END, handleMapMoveEnd)
+      eventBus.off(events.MAP_FIRST_IDLE, handleMapFirstIdle)
     }
   }, [mapProvider, dispatch])
 }

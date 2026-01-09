@@ -1,6 +1,7 @@
 // src/core/store/AppProvider.jsx
 import React, { createContext, useRef, useEffect, useReducer, useMemo } from 'react'
 import { initialState, reducer } from './appReducer.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 import { ConfigContext } from './configContext.js'
 import { subscribeToBreakpointChange } from '../../utils/detectBreakpoint.js'
@@ -58,12 +59,12 @@ export const AppProvider = ({ options, children }) => {
   }
 
   useEffect(() => {
-    eventBus.on('app:setmode', handleSetMode)
-    eventBus.on('app:revertmode', handleRevertMode)
+    eventBus.on(events.APP_SET_MODE, handleSetMode)
+    eventBus.on(events.APP_REVERT_MODE, handleRevertMode)
 
     return () => {
-      eventBus.off('app:setmode', handleSetMode)
-      eventBus.off('app:revertmode', handleRevertMode)
+      eventBus.off(events.APP_SET_MODE, handleSetMode)
+      eventBus.off(events.APP_REVERT_MODE, handleRevertMode)
       handleBreakpointChange()
       handleInterfaceTypeChange()
     }

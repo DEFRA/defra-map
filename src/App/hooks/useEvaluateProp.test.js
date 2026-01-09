@@ -45,10 +45,20 @@ describe('useEvaluateProp hook', () => {
     const evaluate = result.current
 
     const fn = jest.fn(ctx => ctx.appState.user)
+
+    // Because no pluginId is passed, the function is NOT auto-called anymore
     const value = evaluate(fn)
 
-    expect(fn).toHaveBeenCalled()
-    expect(value).toBe('alice')
+    // We now expect it NOT to have been called
+    expect(fn).not.toHaveBeenCalled()
+
+    // And the raw function should be returned
+    expect(value).toBe(fn)
+
+    // If we manually call it, it should still work with the correct context:
+    const manualResult = value(evaluate.ctx)
+    expect(manualResult).toBe('alice')
+
     expect(fn.mock.calls[0][0]).toMatchObject({
       appConfig: { mapProvider: { name: 'leaflet' } },
       appState: { user: 'alice' },

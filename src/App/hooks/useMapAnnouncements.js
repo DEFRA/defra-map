@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useService } from '../store/serviceContext.js'
 import { getMapStatusMessage } from '../../utils/getMapStatusMessage.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 export function useMapAnnouncements () {
@@ -52,10 +53,10 @@ export function useMapAnnouncements () {
       }
     }
 
-    eventBus.on('map:stateupdated', handleAnnounceStateUpdate)
+    eventBus.on(events.MAP_STATE_UPDATED, handleAnnounceStateUpdate)
 
     return () => {
-      eventBus.off('map:stateupdated', handleAnnounceStateUpdate)
+      eventBus.off(events.MAP_STATE_UPDATED, handleAnnounceStateUpdate)
     }
   }, [mapProvider, announce])
 }

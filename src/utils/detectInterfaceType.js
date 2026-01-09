@@ -40,9 +40,11 @@ function createInterfaceDetector () {
 
   mql.addEventListener('change', handleMediaChange)
 
+  const REACT_CLICK_DELAY = 150
+  
   const handlePointer = event => {
     const type = normalizePointerType(event.pointerType)
-    notifyListeners(type)
+    setTimeout(() => notifyListeners(type), REACT_CLICK_DELAY)
   }
 
   const handleKeyDown = e => {
@@ -51,14 +53,14 @@ function createInterfaceDetector () {
     }
   }
 
-  window.addEventListener('pointerdown', handlePointer, { passive: true })
-  window.addEventListener('keydown', handleKeyDown, { passive: true })
+  globalThis.addEventListener('pointerdown', handlePointer, { passive: true })
+  globalThis.addEventListener('keydown', handleKeyDown, { passive: true })
 
   // cleanup
   return () => {
     mql.removeEventListener('change', handleMediaChange)
-    window.removeEventListener('pointerdown', handlePointer)
-    window.removeEventListener('keydown', handleKeyDown)
+    globalThis.removeEventListener('pointerdown', handlePointer)
+    globalThis.removeEventListener('keydown', handleKeyDown)
   }
 }
 

@@ -2,16 +2,16 @@
 import { useEffect } from 'react'
 
 export function MapStylesInit ({ pluginConfig, services }) {
-  const { eventBus } = services
+  const { events, eventBus } = services
 
   const handler = () => {
-    eventBus.emit('map:initmapstyles', pluginConfig.mapStyles)
+    eventBus.emit(events.MAP_INIT_MAP_STYLES, pluginConfig.mapStyles)
   }
 
   useEffect(() => {
-    eventBus.on('app:ready', handler)
+    eventBus.on(events.APP_READY, handler)
 
-    return () => eventBus.off('app:ready', handler)
+    return () => eventBus.off(events.APP_READY, handler)
   }, [])
 
   return <></> // no UI output, just side effects

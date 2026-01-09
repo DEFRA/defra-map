@@ -74,12 +74,12 @@ export function useLayoutMeasurements () {
       const safeZoneInset = getSafeZoneInset(layoutRefs)
       dispatch({ type: 'SET_SAFE_ZONE_INSET', payload: { safeZoneInset } })
     })
-  }, [breakpoint, mapSize]) //, isMapReady
+  }, [breakpoint, mapSize, isMapReady])
 
   // --------------------------------
   // 3. Recaluclate CSS vars when elements resize
   // --------------------------------
-  useResizeObserver([bannerRef, mainRef, insetRef, actionsRef], () => { // topRightColRef removed??
+  useResizeObserver([bannerRef, mainRef, actionsRef, footerRef], () => {
     requestAnimationFrame(() => {
       calculateLayout()
     })

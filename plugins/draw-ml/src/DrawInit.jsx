@@ -3,7 +3,7 @@ import { attachEvents } from './events.js'
 import { createMapboxDraw } from './mapboxDraw.js'
 
 export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
-	const { eventBus } = services
+	const { events, eventBus } = services
 
 	useEffect(() => {
 		// Don't run init if the app is in non-specified mode
@@ -22,6 +22,7 @@ export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginSt
 			mapProvider,
 			buttonConfig,
 			pluginState,
+			events,
 			eventBus
 		})
 

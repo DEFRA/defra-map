@@ -1,17 +1,20 @@
-import * as areaOperator from '@arcgis/core/geometry/operators/areaOperator.js'
 import * as simplifyOperator from "@arcgis/core/geometry/operators/simplifyOperator.js"
+import { createGraphic, createSymbol, graphicToGeoJSON } from './graphic.js'
 
-import { createGraphic, createSymbol } from './graphic.js'
+const MODE_CHANGE_DELAY = 50
 
-export function attachEvents({ pluginState, mapProvider, eventBus }) {
-  const { view, sketchViewModel, sketchLayer } = mapProvider
+export function attachEvents({ pluginState, mapProvider, events, eventBus, buttonConfig, mapColorScheme }) {
+  const { view, sketchViewModel, sketchLayer, emptySketchLayer } = mapProvider
+
+  if (!sketchViewModel) {
+    return null
+  }
+
+  const { drawDone, drawCancel } = buttonConfig
+  const { dispatch, mode, feature } = pluginState
   
-  // Re-colour graphics
-  const reColour = async (mapColorScheme) => {
-    if (!sketchViewModel && !sketchLayer) {
-      return
-    }
-
+  // Re-colour graphics when map style changes
+  const reColour = async () => {
     const activeGraphicId = pluginState.feature?.properties?.id
     let activeGraphic = null
     const isCreating = sketchViewModel.state === 'active' && !activeGraphicId
@@ -19,32 +22,28 @@ export function attachEvents({ pluginState, mapProvider, eventBus }) {
     // Cancel and wait, but only if we're in update mode (not create mode)
     if (sketchViewModel.state === 'active' && activeGraphicId) {
       sketchViewModel.cancel()
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise(resolve => setTimeout(resolve, MODE_CHANGE_DELAY))
     }
     
-    // Always update the default symbol for new polygons
+    // Update the default symbol for new polygons
     sketchViewModel.polygonSymbol = createSymbol(mapColorScheme)
     
     // Update existing graphics
     sketchLayer?.graphics.items.forEach(graphic => {
-      // Create a new graphic to get the updated colors
       const newGraphic = createGraphic(
         graphic.attributes.id, 
         graphic.geometry.rings, 
         mapColorScheme
       )
-      
-      // Update the existing graphic's symbol
       graphic.symbol = newGraphic.symbol
       
-      // Keep reference to the active graphic
       if (activeGraphicId === graphic.attributes.id) {
         activeGraphic = graphic
       }
     })
     
     // Re-enter update mode only if we were editing (not creating)
-    if (activeGraphic && !isCreating) {
+    if (activeGraphic && !isCreating && sketchViewModel.layer === sketchLayer) {
       try {
         await sketchViewModel.update(activeGraphic, {
           tool: 'reshape',
@@ -66,14 +65,10 @@ export function attachEvents({ pluginState, mapProvider, eventBus }) {
     }
   }
 
-  // Handle map style change
-  const handleMapStyleChange = (e) => {
-    reColour(e.mapColorScheme)
-  }
-  eventBus.on('map:stylechange', handleMapStyleChange)
+  // Event handlers
+  const handleMapStyleChange = () => reColour()
 
-  // Handle sketchViewModel update event
-  const handleUpdate = (e) => {
+  const handleSketchUpdate = (e) => {
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
     
@@ -91,35 +86,76 @@ export function attachEvents({ pluginState, mapProvider, eventBus }) {
       }
     }
 
-    // Prevent zero area polygon
-    if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
-      const area = areaOperator.execute(graphic.geometry)
-      if (area <= 0) {
-        sketchViewModel.undo()
-      }
+    // Emit event on update
+    if (toolInfoType === 'reshape-stop') {
+      const tempFeature = graphicToGeoJSON(graphic)
+      eventBus.emit('draw:update', tempFeature)
+      dispatch({ type: 'SET_FEATURE', payload: { tempFeature }})
     }
   }
-  sketchViewModel?.on('update', handleUpdate)
 
-  // Prevent deselection when clicking outside
-  view.on('click', async () => {
-    if (!sketchViewModel && !sketchLayer) {
+  const handleViewClick = async () => {
+    if (!mode) {
       return
     }
 
     const updateGraphics = sketchViewModel.updateGraphics || []
-
-    // If not updating, ignore
     if (updateGraphics.length) {
       return
     }
 
     // Reinstate update
     updateGraphic()
-  })
+  }
+
+  const handleDone = () => {
+    sketchViewModel.cancel()
+    sketchViewModel.layer = emptySketchLayer
+    dispatch({ type: 'SET_MODE', payload: null })
+    dispatch({ type: 'SET_FEATURE', payload: { feature: pluginState.tempFeature }})
+    eventBus.emit('draw:done', pluginState.tempFeature)
+  }
+
+  const handleCancel = () => {
+    sketchViewModel.cancel()
+    
+    // Clear all graphics
+    sketchLayer.removeAll()
+
+    // Reinstate initial feature
+    if (feature) {
+      const graphic = createGraphic(
+        feature.id || feature.properties.id,
+        feature.geometry.coordinates,
+        mapColorScheme
+      )
+      sketchLayer.add(graphic)
+    }
+
+    // Prevent selection
+    sketchViewModel.layer = emptySketchLayer
+
+    dispatch({ type: 'SET_MODE', payload: null })
+    eventBus.emit('draw:cancel', { originalFeature: feature })
+  }
+
+  // Attach all event listeners
+  eventBus.on(events.MAP_STYLE_CHANGE, handleMapStyleChange)
+  const sketchUpdateHandler = sketchViewModel.on('update', handleSketchUpdate)
+  const viewClickHandler = view.on('click', handleViewClick)
+  
+  const prevDoneClick = drawDone.onClick
+  const prevCancelClick = drawCancel.onClick
+  
+  drawDone.onClick = handleDone
+  drawCancel.onClick = handleCancel
 
   // Return cleanup function
   return () => {
-    eventBus.off('map:stylechange', handleMapStyleChange)
+    eventBus.off(events.MAP_STYLE_CHANGE, handleMapStyleChange)
+    sketchUpdateHandler.remove()
+    viewClickHandler.remove()
+    drawDone.onClick = prevDoneClick
+    drawCancel.onClick = prevCancelClick
   }
 }

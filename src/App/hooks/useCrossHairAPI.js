@@ -3,6 +3,7 @@ import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 export const useCrossHair = () => {
@@ -80,10 +81,10 @@ export const useCrossHair = () => {
       }
     }
 
-    eventBus.on('map:render', handleRender)
+    eventBus.on(events.MAP_RENDER, handleRender)
 
     return () => {
-      eventBus.off('map:render', handleRender)
+      eventBus.off(events.MAP_RENDER, handleRender)
     }
   }, [crossHair, mapProvider, mapSize, dispatch, safeZoneInset])
 

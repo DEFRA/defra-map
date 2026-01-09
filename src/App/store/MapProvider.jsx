@@ -1,6 +1,7 @@
 // src/core/store/MapProvider.jsx
 import React, { createContext, useEffect, useReducer, useMemo } from 'react'
 import { initialState, reducer } from './mapReducer.js'
+import { EVENTS as events } from '../../config/events.js'
 import eventBus from '../../services/eventBus.js'
 
 export const MapContext = createContext(null)
@@ -31,16 +32,16 @@ export const MapProvider = ({ options, children }) => {
 
   // Listen to eventBus and update state
   useEffect(() => {
-    eventBus.on('map:ready', handleMapReady)
-    eventBus.on('map:initmapstyles', handleInitMapStyles)
-    eventBus.on('map:setmapstyle', handleSetMapStyle)
-    eventBus.on('map:setmapsize', handleSetMapSize)
+    eventBus.on(events.MAP_READY, handleMapReady)
+    eventBus.on(events.MAP_INIT_MAP_STYLES, handleInitMapStyles)
+    eventBus.on(events.MAP_SET_STYLE, handleSetMapStyle)
+    eventBus.on(events.MAP_SET_SIZE, handleSetMapSize)
 
     return () => {
-      eventBus.off('map:ready', handleMapReady)
-      eventBus.off('map:initmapstyles', handleInitMapStyles)
-      eventBus.off('map:setmapstyle', handleSetMapStyle)
-      eventBus.off('map:setmapsize', handleSetMapSize)
+      eventBus.off(events.MAP_READY, handleMapReady)
+      eventBus.off(events.MAP_INIT_MAP_STYLES, handleInitMapStyles)
+      eventBus.off(events.MAP_SET_STYLE, handleSetMapStyle)
+      eventBus.off(events.MAP_SET_SIZE, handleSetMapSize)
     }
   }, [])
 

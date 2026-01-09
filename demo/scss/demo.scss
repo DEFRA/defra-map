@@ -1,0 +1,54 @@
+.fmp-menu h3 {
+  color: var(--foreground-color);
+}
+
+.fmp-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fmp-menu-item {
+  display: flex;
+  margin-top: 15px;
+}
+
+.fmp-menu-button {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  margin: 0;
+  outline: 3px solid transparent;
+
+  svg {
+    color: var(--foreground-color);
+  }
+
+  svg + .fmp-menu-button__label {
+    margin-left: 7px;
+  }
+
+  .fmp-menu-button__label {
+    color: var(--content-link-color);
+  }
+
+  &:hover > .fmp-menu-button__label,
+  &:focus-visible > .fmp-menu-button__label {
+    color: var(--foreground-color);
+  }
+
+  &:focus-visible {
+    color: var(--foreground-color);
+    background-color: var(--focus-outline-color);
+    box-shadow: 0 -2px var(--focus-outline-color), 0 4px var(--foreground-color);
+    text-decoration: none;
+  }
+
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+  }
+}

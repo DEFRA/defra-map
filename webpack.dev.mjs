@@ -13,11 +13,8 @@ export default {
   mode: 'development',
   target: ['web', 'es5'],
   entry: {
-    // Main CSS entry: guarantees it is output first
-    main: path.join(__dirname, 'demo/scss/index.scss'),
-    // App entry: all JS and plugin dynamic imports
     index: path.join(__dirname, 'demo/js/index.js'),
-    esri: path.join(__dirname, 'demo/js/esri.js')
+    planning: path.join(__dirname, 'demo/js/planning.js')
   },
   output: {
     path: path.resolve(__dirname, 'public'),

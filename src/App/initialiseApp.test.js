@@ -5,6 +5,7 @@ import eventBus from '../services/eventBus.js'
 import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 import { mergeManifests } from './registry/mergeManifests.js'
+import { EVENTS as events } from '../config/events.js'
 
 jest.mock('react-dom/client', () => ({ createRoot: jest.fn(() => ({ render: jest.fn(), unmount: jest.fn() })) }))
 jest.mock('../services/eventBus.js', () => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() }))
@@ -17,9 +18,11 @@ describe('initialiseApp', () => {
   let rootElement, MapProviderMock
 
   const createMapProviderMock = (capabilities) => {
-    return jest.fn(function ({ mapFramework, eventBus }) {
+    return jest.fn(function ({ mapFramework, eventBus, events: evt, mapProviderConfig }) {
       this.mapFramework = mapFramework
       this.eventBus = eventBus
+      this.events = evt
+      this.mapProviderConfig = mapProviderConfig
       if (capabilities) this.capabilities = capabilities
     })
   }
@@ -41,7 +44,7 @@ describe('initialiseApp', () => {
     const restProps = { foo: 'bar' }
     const appInstance = await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'mockFramework', plugins: [], ...restProps })
 
-    expect(MapProviderMock).toHaveBeenCalledWith({ mapFramework: 'mockFramework', eventBus })
+    expect(MapProviderMock).toHaveBeenCalledWith({ mapFramework: 'mockFramework', mapProviderConfig: undefined, events, eventBus })
     expect(setProviderSupportedShortcuts).toHaveBeenCalledWith(['ctrl+a'])
     expect(registerPlugin).toHaveBeenCalledWith(expect.objectContaining({ id: 'appConfig' }))
 
@@ -97,14 +100,12 @@ describe('initialiseApp', () => {
   test('does not call setProviderSupportedShortcuts when capabilities are undefined', async () => {
     const MapProviderWithoutCapabilities = createMapProviderMock()
     await initialiseApp(rootElement, { MapProvider: MapProviderWithoutCapabilities, mapFramework: 'test', plugins: [] })
-
     expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
   })
 
   test('does not call setProviderSupportedShortcuts when supportedShortcuts are undefined', async () => {
     const MapProviderWithEmptyCapabilities = createMapProviderMock({})
     await initialiseApp(rootElement, { MapProvider: MapProviderWithEmptyCapabilities, mapFramework: 'test', plugins: [] })
-
     expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
   })
 })

@@ -238,7 +238,6 @@ export class Draw {
     const stroke = isDark ? defaults.POLYGON_QUERY_STROKE_DARK : defaults.POLYGON_QUERY_STROKE
     return {
       type: 'simple-fill',
-      color: undefined,
       outline: {
         color: stroke,
         width: '2px',

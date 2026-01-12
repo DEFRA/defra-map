@@ -57,7 +57,6 @@ const getRounded = (num) => {
   // Round to nice numbers: 1, 2, 5, 10, 20, 50, 100...
   const pow10 = Math.pow(10, Math.floor(Math.log10(num)))
   const d = num / pow10
-  console.log('num:', num, 'd:', d)
   let rounded
   if (d >= 10) {
     rounded = 10

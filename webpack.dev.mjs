@@ -14,6 +14,7 @@ export default {
   target: ['web', 'es5'],
   entry: {
     index: path.join(__dirname, 'demo/js/index.js'),
+    forms: path.join(__dirname, 'demo/js/forms.js'),
     planning: path.join(__dirname, 'demo/js/planning.js')
   },
   output: {

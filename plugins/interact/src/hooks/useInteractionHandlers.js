@@ -14,57 +14,48 @@ export const useInteractionHandlers = ({
   const { eventBus } = services
   const lastEmittedSelectionChange = useRef(null)
 
+  console.log(pluginConfig)
   const layerConfigMap = buildLayerConfigMap(dataLayers)
 
-  const handleInteraction = useCallback(
-    ({ point, coords }) => {
-      const allFeatures = getFeaturesAtPoint(mapProvider, point)
-      const hasDataLayers = dataLayers.length > 0
+  const handleInteraction = useCallback(({ point, coords }) => {
+    const allFeatures = getFeaturesAtPoint(mapProvider, point)
+    const hasDataLayers = dataLayers.length > 0
 
-      const match = hasDataLayers &&
-        (interactionMode === 'select' || interactionMode === 'auto')
-          ? findMatchingFeature(allFeatures, layerConfigMap)
-          : null
+    const match = hasDataLayers &&
+      (interactionMode === 'select' || interactionMode === 'auto')
+        ? findMatchingFeature(allFeatures, layerConfigMap)
+        : null
 
-      if (match) {
-        markers.remove('location')
+    if (match) {
+      markers.remove('location')
 
-        const { feature, config } = match
-        const featureId = feature.properties?.[config.idProperty]
+      const { feature, config } = match
+      const featureId = feature.properties?.[config.idProperty]
 
-        if (featureId) {
-          dispatch({
-            type: 'TOGGLE_SELECTED_FEATURES',
-            payload: {
-              featureId,
-              multiSelect,
-              layerId: config.layerId,
-              idProperty: config.idProperty,
-              properties: feature.properties,
-            },
-          })
-        }
-
-        return
+      if (featureId) {
+        dispatch({
+          type: 'TOGGLE_SELECTED_FEATURES',
+          payload: {
+            featureId,
+            multiSelect,
+            layerId: config.layerId,
+            idProperty: config.idProperty,
+            properties: feature.properties,
+          },
+        })
       }
 
-      // Marker mode
-      if (interactionMode === 'marker' || (interactionMode === 'auto' && hasDataLayers)) {
-        dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
-        markers.add('location', coords, { color: markerColor })
+      return
+    }
 
-        eventBus.emit('interact:markerchange', { coords })
-      }
-    }, [
-      mapProvider,
-      dataLayers,
-      interactionMode,
-      multiSelect,
-      eventBus,
-      dispatch,
-      markers
-    ]
-  )
+    // Marker mode
+    if (interactionMode === 'marker' || (interactionMode === 'auto' && hasDataLayers)) {
+      dispatch({ type: 'CLEAR_SELECTED_FEATURES' })
+      markers.add('location', coords, { color: markerColor })
+
+      eventBus.emit('interact:markerchange', { coords })
+    }
+  }, [mapProvider, dataLayers, interactionMode, multiSelect, eventBus, dispatch, markers])
 
 
   // Emit event when selectedFeatures change

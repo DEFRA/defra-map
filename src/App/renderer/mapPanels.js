@@ -31,7 +31,14 @@ export function mapPanels ({ slot, appState, evaluateProp }) {
       return null
     }
 
-    const targetSlot = bpConfig.modal ? 'modal' : bpConfig.slot
+    // Slot constriant: modal panels have a dedicated slot
+    let targetSlot = bpConfig.modal ? 'modal' : bpConfig.slot
+
+    // Slot constraint: bottom slot only permitted for mobile, revert to inset
+    if (targetSlot === 'bottom' && ['tablet', 'desktop'].includes(breakpoint)) {
+      targetSlot = 'inset'
+    }
+
     const isNextToButton = `${stringToKebab(panelId)}-button` === targetSlot
     const slotAllowed = allowedSlots.panel.includes(targetSlot) || isNextToButton
     const inModeWhitelist = config.includeModes?.includes(mode) ?? true

@@ -75,7 +75,7 @@
 }
 
 // 3. Modifiers
-.dm-c-panel--bottom {
+.dm-o-app--mobile .dm-c-panel--bottom {
     @include tools.border-focus-base(
         $is-inset: true,
         $type: panel

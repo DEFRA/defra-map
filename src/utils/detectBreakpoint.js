@@ -1,36 +1,71 @@
 let lastBreakpoint = 'unknown'
 const listeners = new Set()
+let cleanup = null
 
-function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth }) {
-  const mobileQuery = window.matchMedia(`(max-width: ${maxMobileWidth}px)`)
-  const desktopQuery = window.matchMedia(`(min-width: ${minDesktopWidth}px)`)
+function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerEl }) {
+  cleanup?.()
 
-  function detectAndNotify () {
-    let type = 'tablet'
+  const getBreakpointType = (width) => {
+    if (width <= maxMobileWidth) return 'mobile'
+    if (width >= minDesktopWidth) return 'desktop'
+    return 'tablet'
+  }
 
-    if (mobileQuery.matches) {
-      type = 'mobile'
-    } else if (desktopQuery.matches) {
-      type = 'desktop'
-    }
-
+  const notifyListeners = (type) => {
     if (type !== lastBreakpoint) {
       lastBreakpoint = type
-      listeners.forEach(fn => fn(type))
+      requestAnimationFrame(() => listeners.forEach(fn => fn(type)))
     }
   }
 
-  mobileQuery.addEventListener('change', detectAndNotify)
-  desktopQuery.addEventListener('change', detectAndNotify)
+  // Container-based detection
+  if (containerEl) {
+    containerEl.style.containerType = 'inline-size'
 
-  // Initial detection
-  detectAndNotify()
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0]?.borderBoxSize?.[0]?.inlineSize || entries[0]?.contentRect.width
+      const type = getBreakpointType(width)
+      containerEl.setAttribute('data-breakpoint', type)
+      notifyListeners(type)
+    })
 
-  // Return cleanup function
-  return () => {
-    mobileQuery.removeEventListener('change', detectAndNotify)
-    desktopQuery.removeEventListener('change', detectAndNotify)
+    observer.observe(containerEl)
+    
+    // Initial detection
+    const initialWidth = containerEl.getBoundingClientRect().width
+    const initialType = getBreakpointType(initialWidth)
+    containerEl.setAttribute('data-breakpoint', initialType)
+    notifyListeners(initialType)
+
+    cleanup = () => {
+      observer.disconnect()
+      containerEl.style.containerType = ''
+      containerEl.removeAttribute('data-breakpoint')
+    }
+  } 
+  // Viewport-based fallback
+  else {
+    const mq = {
+      mobile: window.matchMedia(`(max-width: ${maxMobileWidth}px)`),
+      desktop: window.matchMedia(`(min-width: ${minDesktopWidth}px)`)
+    }
+
+    const detect = () => {
+      const type = mq.mobile.matches ? 'mobile' : mq.desktop.matches ? 'desktop' : 'tablet'
+      notifyListeners(type)
+    }
+
+    mq.mobile.addEventListener('change', detect)
+    mq.desktop.addEventListener('change', detect)
+    detect()
+
+    cleanup = () => {
+      mq.mobile.removeEventListener('change', detect)
+      mq.desktop.removeEventListener('change', detect)
+    }
   }
+
+  return cleanup
 }
 
 function subscribeToBreakpointChange (fn) {

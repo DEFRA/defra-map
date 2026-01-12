@@ -37,7 +37,8 @@ export default class DefraMap {
 
     createBreakpointDetector({
       maxMobileWidth: this.config.maxMobileWidth,
-      minDesktopWidth: this.config.minDesktopWidth
+      minDesktopWidth: this.config.minDesktopWidth,
+      containerEl: this.rootEl
     })
     createInterfaceDetector()
 

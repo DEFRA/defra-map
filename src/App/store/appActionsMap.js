@@ -10,6 +10,7 @@ function buildOpenPanels(state, panelId, breakpoint, props = {}) {
   const isExclusiveNonModal = !!bpConfig.exclusive && !bpConfig.modal
   const isModal = !!bpConfig.modal
 
+  // Remove exclusive panels
   const filteredPanels = Object.fromEntries(
     Object.entries(state.openPanels).filter(
       ([key]) => !panelConfig[key]?.[breakpoint]?.exclusive
@@ -56,14 +57,19 @@ const setBreakpoint = (state, payload) => {
   const isFullscreen = getIsFullscreen(payload.behaviour, payload.breakpoint)
   const panelIds = Object.keys(state.openPanels)
   const lastPanelId = panelIds.at(-1)
-
+  
   return {
     ...state,
     breakpoint: payload.breakpoint,
     isFullscreen,
     previousOpenPanels: state.openPanels,
     openPanels: lastPanelId
-      ? buildOpenPanels(state, lastPanelId, payload.breakpoint)
+      ? buildOpenPanels(
+          state,
+          lastPanelId,
+          payload.breakpoint,
+          state.openPanels[lastPanelId]?.props || {}
+        )
       : {}
   }
 }

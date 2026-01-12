@@ -14,7 +14,6 @@ export const useInteractionHandlers = ({
   const { eventBus } = services
   const lastEmittedSelectionChange = useRef(null)
 
-  console.log(pluginConfig)
   const layerConfigMap = buildLayerConfigMap(dataLayers)
 
   const handleInteraction = useCallback(({ point, coords }) => {

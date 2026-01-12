@@ -1,148 +1,153 @@
-// --- MOCK SETUP for window.matchMedia ---
+// --- MOCKS ---
+let rafQueue = []
+global.requestAnimationFrame = jest.fn(cb => (rafQueue.push(cb), rafQueue.length))
+global.cancelAnimationFrame = jest.fn()
+const flushRAF = () => { rafQueue.forEach(cb => cb()); rafQueue = [] }
+
 const mediaListeners = {}
 let mockedQueries = {}
 
+class MockResizeObserver {
+  constructor(callback) { this.callback = callback }
+  observe(el) { MockResizeObserver.instance = this }
+  disconnect() { MockResizeObserver.instance = null }
+  trigger(width, fallback) { 
+    this.callback([fallback ? { contentRect: { width } } : { borderBoxSize: [{ inlineSize: width }], contentRect: { width } }])
+  }
+}
+MockResizeObserver.instance = null
+global.ResizeObserver = MockResizeObserver
+
 const mockMatchMedia = (query) => {
-  const mediaQuery = {
+  const mq = {
     matches: false,
     media: query,
-    // Note: addEventListener/removeEventListener calls are necessary for cleanup coverage.
-    addEventListener: jest.fn((event, fn) => {
-      if (event === 'change') {
-        if (!mediaListeners[query]) mediaListeners[query] = []
-        mediaListeners[query].push(fn)
-      }
-    }),
-    removeEventListener: jest.fn((event, fn) => {
-      if (event === 'change' && mediaListeners[query]) {
-        mediaListeners[query] = mediaListeners[query].filter(l => l !== fn)
-      }
-    })
+    addEventListener: jest.fn((e, fn) => e === 'change' && (mediaListeners[query] ||= []).push(fn)),
+    removeEventListener: jest.fn((e, fn) => e === 'change' && (mediaListeners[query] = mediaListeners[query]?.filter(l => l !== fn)))
   }
-  mockedQueries[query] = mediaQuery
-  return mediaQuery
+  mockedQueries[query] = mq
+  return mq
 }
 
-// Replace the global window.matchMedia with our mock
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn(mockMatchMedia)
-})
+window.matchMedia = jest.fn(mockMatchMedia)
 
-const triggerMediaQueryChange = (query, matches) => {
-  const queryListeners = mediaListeners[query]
-  const queryObject = mockedQueries[query]
-
-  if (queryObject) {
-    // Crucial: Update the .matches property BEFORE running the listener
-    queryObject.matches = matches
-  }
-
-  if (queryListeners) {
-    queryListeners.forEach(fn => fn({ matches, media: query }))
-  }
+const triggerMQ = (query, matches) => {
+  if (mockedQueries[query]) mockedQueries[query].matches = matches
+  mediaListeners[query]?.forEach(fn => fn({ matches }))
 }
 
-// --- TEST SUITE ---
-describe('Breakpoint Detection Utility Module', () => {
+// --- TESTS ---
+describe('detectBreakpoint', () => {
   let createBreakpointDetector, subscribeToBreakpointChange, getBreakpoint
-  const BREAKPOINTS = {
-    MOBILE_QUERY: '(max-width: 768px)',
-    DESKTOP_QUERY: '(min-width: 1024px)',
-    CONFIG: { maxMobileWidth: 768, minDesktopWidth: 1024 }
-  }
+  const cfg = { maxMobileWidth: 768, minDesktopWidth: 1024 }
 
-  // NOTE: Switched to async/await for dynamic import
   beforeEach(async () => {
-    // 1. Resetting module-level state is essential for isolation
     jest.resetModules()
-
-    // Switched from require() to dynamic import() to load the module
-    const importedModule = await import('./detectBreakpoint')
-
-    // Assign imported functions
-    createBreakpointDetector = importedModule.createBreakpointDetector
-    subscribeToBreakpointChange = importedModule.subscribeToBreakpointChange
-    getBreakpoint = importedModule.getBreakpoint
-
-    // Clear global mock and query state
-    Object.keys(mediaListeners).forEach(key => delete mediaListeners[key])
+    Object.keys(mediaListeners).forEach(k => delete mediaListeners[k])
     mockedQueries = {}
-    window.matchMedia.mockClear()
+    MockResizeObserver.instance = null
+    rafQueue = []
+    const mod = await import('./detectBreakpoint')
+    ;({ createBreakpointDetector, subscribeToBreakpointChange, getBreakpoint } = mod)
   })
 
-  // Covers initial 'unknown' check inside getBreakpoint
-  it('should return "desktop" initially before detection runs', () => {
+  it('returns desktop initially', () => {
     expect(getBreakpoint()).toBe('desktop')
   })
 
-  // Covers all initial detection states (Mobile, Desktop, Tablet)
-  it.each([
-    ['mobile', true, false, 'mobile'],
-    ['desktop', false, true, 'desktop'],
-    ['tablet (fallback)', false, false, 'tablet']
-  ])('should detect %s on initial run', (name, mobileMatch, desktopMatch, expected) => {
-    // Arrange: Configure matchMedia mock for the specific test case
-    window.matchMedia.mockImplementation((query) => {
-      const mock = mockMatchMedia(query)
-      if (query === BREAKPOINTS.MOBILE_QUERY) {
-        mock.matches = mobileMatch
-      } else if (query === BREAKPOINTS.DESKTOP_QUERY) {
-        mock.matches = desktopMatch
-      }
-      return mock
+  describe('viewport mode', () => {
+    it.each([
+      ['mobile', true, false],
+      ['desktop', false, true],
+      ['tablet', false, false]
+    ])('detects %s', (name, mobile, desktop) => {
+      window.matchMedia.mockImplementation(q => {
+        const mq = mockMatchMedia(q)
+        if (q === '(max-width: 768px)') mq.matches = mobile
+        if (q === '(min-width: 1024px)') mq.matches = desktop
+        return mq
+      })
+      createBreakpointDetector(cfg)
+      flushRAF()
+      expect(getBreakpoint()).toBe(name)
     })
 
-    createBreakpointDetector(BREAKPOINTS.CONFIG)
-    expect(getBreakpoint()).toBe(expected)
+    it('handles changes and cleanup', () => {
+      const fn = jest.fn()
+      const unsubscribe = subscribeToBreakpointChange(fn)
+      const cleanup = createBreakpointDetector(cfg)
+      flushRAF()
+      fn.mockClear()
+      
+      triggerMQ('(max-width: 768px)', true)
+      flushRAF()
+      expect(getBreakpoint()).toBe('mobile')
+      expect(fn).toHaveBeenCalledTimes(1)
+      
+      triggerMQ('(max-width: 768px)', true) // no change
+      flushRAF()
+      expect(fn).toHaveBeenCalledTimes(1)
+      
+      unsubscribe() // Test unsubscribe function
+      triggerMQ('(min-width: 1024px)', true)
+      flushRAF()
+      expect(fn).toHaveBeenCalledTimes(1) // not called after unsubscribe
+      
+      cleanup()
+    })
   })
 
-  it('should handle all subscription, dynamic change, no-change, and cleanup scenarios', () => {
-    const fn1 = jest.fn()
-    const fn2 = jest.fn()
+  describe('container mode', () => {
+    let el
+    beforeEach(() => {
+      el = document.createElement('div')
+      el.getBoundingClientRect = jest.fn(() => ({ width: 800 }))
+    })
 
-    // --- Subscription and Initial State (Covers listeners.add(fn)) ---
-    const unsubscribe1 = subscribeToBreakpointChange(fn1)
-    subscribeToBreakpointChange(fn2)
+    it.each([
+      [500, 'mobile'],
+      [800, 'tablet'],
+      [1200, 'desktop']
+    ])('detects width %i as %s', (width, expected) => {
+      el.getBoundingClientRect.mockReturnValue({ width })
+      createBreakpointDetector({ ...cfg, containerEl: el })
+      flushRAF()
+      expect(getBreakpoint()).toBe(expected)
+      expect(el.getAttribute('data-breakpoint')).toBe(expected)
+    })
 
-    // Unsubscribe fn1 immediately (Covers listeners.delete(fn))
-    unsubscribe1()
+    it('handles resize, fallback, and cleanup', () => {
+      const fn = jest.fn()
+      subscribeToBreakpointChange(fn)
+      const cleanup = createBreakpointDetector({ ...cfg, containerEl: el })
+      flushRAF()
+      fn.mockClear()
+      
+      MockResizeObserver.instance.trigger(500)
+      flushRAF()
+      expect(fn).toHaveBeenCalledTimes(1)
+      
+      MockResizeObserver.instance.trigger(500, true) // fallback path
+      flushRAF()
+      expect(getBreakpoint()).toBe('mobile')
+      
+      cleanup()
+      expect(el.style.containerType).toBe('')
+    })
 
-    const cleanup = createBreakpointDetector(BREAKPOINTS.CONFIG)
-    expect(getBreakpoint()).toBe('tablet')
+    it('cleans up previous detector', () => {
+      const el2 = document.createElement('div')
+      el2.getBoundingClientRect = jest.fn(() => ({ width: 600 }))
+      
+      createBreakpointDetector({ ...cfg, containerEl: el })
+      flushRAF()
+      createBreakpointDetector({ ...cfg, containerEl: el2 })
+      flushRAF()
+      expect(el.style.containerType).toBe('')
+    })
+  })
 
-    const mobileQueryMock = mockedQueries[BREAKPOINTS.MOBILE_QUERY]
-    const desktopQueryMock = mockedQueries[BREAKPOINTS.DESKTOP_QUERY]
-
-    // --- Dynamic Transitions ---
-    // 1. Mobile
-    triggerMediaQueryChange(BREAKPOINTS.MOBILE_QUERY, true)
-    expect(getBreakpoint()).toBe('mobile')
-    expect(fn1).not.toHaveBeenCalled() // fn1 unsubscribed
-    expect(fn2).toHaveBeenCalledWith('mobile')
-    fn2.mockClear()
-
-    // 2. No change (Covers `if (type !== lastBreakpoint)` being false)
-    triggerMediaQueryChange(BREAKPOINTS.MOBILE_QUERY, true)
-    expect(fn2).not.toHaveBeenCalled()
-
-    // 3. Desktop
-    triggerMediaQueryChange(BREAKPOINTS.MOBILE_QUERY, false)
-    triggerMediaQueryChange(BREAKPOINTS.DESKTOP_QUERY, true)
-    expect(getBreakpoint()).toBe('desktop')
-    expect(fn2).toHaveBeenCalledWith('desktop')
-    fn2.mockClear()
-
-    // --- Cleanup and Isolation ---
-    // 4. Call detector cleanup (Covers mobileQuery.removeEventListener/desktopQuery.removeEventListener)
-    cleanup()
-
-    // Check that the mock's removeEventListener was called (for coverage verification)
-    expect(mobileQueryMock.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function))
-    expect(desktopQueryMock.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function))
-
-    // 5. Test that nothing is called after full cleanup
-    triggerMediaQueryChange(BREAKPOINTS.MOBILE_QUERY, true)
-    expect(fn2).not.toHaveBeenCalled()
+  it('handles cleanup when none exists', () => {
+    expect(() => createBreakpointDetector(cfg)()).not.toThrow()
   })
 })

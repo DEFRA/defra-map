@@ -84,7 +84,21 @@ var defraMap = new DefraMap('map', {
 })
 
 defraMap.on('map:ready', function (e) {
-	// defraMap.setMode('draw')
+	defraMap.addPanel('tooltip', {
+		label: 'How to use the map',
+		html: `
+			<p>Help text...</p>
+		`,
+		mobile: {
+			slot: 'bottom',
+		},
+		tablet: {
+			slot: 'bottom'
+		},
+		desktop: {
+			slot: 'bottom'
+		}
+	})
 })
 
 defraMap.on('draw:ready', function () {

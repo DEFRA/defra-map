@@ -155,7 +155,7 @@
 /// @param {Boolean} $is-inset (false)  
 ///   If true, offsets the ring inward by the focus border width.
 @mixin focus-base($type: null, $is-inset: false) {
-  position: relative;
+  position: absolute;
 
   // Border radius
   $border-radius: 0px;
@@ -166,8 +166,6 @@
     $border-radius: var(--button-border-radius);
   }
 
-  border-radius: $border-radius;
-
   // Offset
   $offset: -1px;
   @if $is-inset == true {
@@ -176,7 +174,6 @@
 
   content: '';
   pointer-events: none;
-  position: absolute;
   z-index: 99;
   top: $offset;
   right: $offset;

@@ -11,6 +11,8 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
+
+  touch-action: none;
 }
 
 // 2. Elements
@@ -253,7 +255,7 @@
 // Modal:
 // ---------------------------------------------------
 
-.dm-o-app__modal {
+.dm-o-app .dm-o-app__modal { // Extra specificity required to force absolute position
   display: flex;
   position: absolute;
   top: 0;
@@ -344,6 +346,20 @@
   opacity: 0;
 }
 
+// Banner on mobile and tablet
+.dm-o-app--mobile, .dm-o-app--tablet {
+  .dm-o-app__banner {
+    z-index: 9;
+  }
+}
+
+// Banner on desktop
+.dm-o-app--desktop .dm-c-panel--banner {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: var(--banner-max-desktop-width);
+}
+
 // Actions inset when width is greater
 .dm-o-app--tablet, .dm-o-app--desktop {
   .dm-o-app__actions {
@@ -359,7 +375,7 @@
   }
 }
 
-// Corners removed when placed at the bottom
+// Bottom panels corners removed on mobile
 .dm-o-app--mobile .dm-o-app__bottom,
 .dm-o-app--mobile .dm-o-app__actions {
   margin: var(--primary-gap) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1) calc(var(--primary-gap) * -1);
@@ -374,22 +390,15 @@
 }
 .dm-o-app--mobile .dm-o-app__bottom .dm-c-panel {
     clip-path: inset(-20px 0px 0px 0px);
+    margin-bottom: -1px;
     border-bottom: 1px solid var(--app-border-color);
 }
 
-// Banner on mobile and tablet
-.dm-o-app--mobile, .dm-o-app--tablet {
-  .dm-o-app__banner {
-    z-index: 9;
-  }
-}
-
-// Banner on desktop
-.dm-o-app--desktop .dm-c-panel--banner {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: var(--banner-max-desktop-width);
-}
+// Bottom inset on large devices
+// .dm-o-app--tablet .dm-o-app__bottom,
+// .dm-o-app--desktop .dm-o-app__bottom {
+//   margin-top: var(--primary-gap);
+// }
 
 // 4. State styles
 

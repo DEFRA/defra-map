@@ -1,5 +1,5 @@
 // src/core/store/dispatchMiddleware.js
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 import { EVENTS as events } from '../../config/events.js'
 
 /**
@@ -42,7 +42,7 @@ function getClosedPanelIds(panelId, previousOpenPanels, breakpoint, panelConfig)
 /**
  * Handles side effects for actions
  */
-export function handleActionSideEffects(action, previousState, config) {
+export function handleActionSideEffects(action, previousState, panelConfig, eventBus) {
   const { type, payload } = action
 
   if (type === 'CLOSE_PANEL') {
@@ -66,7 +66,7 @@ export function handleActionSideEffects(action, previousState, config) {
       panelId,
       previousState.openPanels,
       previousState.breakpoint,
-      config.panelConfig
+      panelConfig
     )
 
     queueMicrotask(() => {

@@ -7,18 +7,18 @@ import { PluginProvider } from './store/PluginProvider.jsx'
 import { PluginInits } from './renderer/PluginInits.jsx'
 import { Layout } from './layout/Layout.jsx'
 import { EVENTS as events } from '../config/events.js'
-import eventBus from '../services/eventBus.js'
+// import eventBus from '../services/eventBus.js'
 
 export const App = (props) => {
   useEffect(() => {
     removeLoadingState()
-    eventBus.emit(events.APP_READY)
+    props.eventBus.emit(events.APP_READY)
   }, [])
 
   return (
     <AppProvider options={props}>
       <MapProvider options={props}>
-        <ServiceProvider>
+        <ServiceProvider eventBus={props.eventBus}>
           <PluginProvider>
             <PluginInits />
             <Layout />

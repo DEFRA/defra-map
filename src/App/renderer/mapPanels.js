@@ -1,15 +1,15 @@
 // src/core/renderers/mapPanels.js
 import React from 'react'
 import { stringToKebab } from '../../utils/stringToKebab.js'
-import { getPanelConfig } from '../registry/panelRegistry.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+// import { getPanelConfig } from '../registry/panelRegistry.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'
 
 export function mapPanels ({ slot, appState, evaluateProp }) {
-  const { breakpoint, mode, openPanels } = appState
-  const panelConfig = getPanelConfig()
+  const { breakpoint, pluginRegistry, panelRegistry, mode, openPanels } = appState
+  const panelConfig = panelRegistry.getPanelConfig()
 
   const openPanelEntries = Object.entries(openPanels)
   
@@ -56,7 +56,7 @@ export function mapPanels ({ slot, appState, evaluateProp }) {
       return null
     }
 
-    const plugin = registeredPlugins.find(p => p.id === config.pluginId)
+    const plugin = pluginRegistry.registeredPlugins.find(p => p.id === config.pluginId)
     const pluginId = plugin?.id
 
     const WrappedChild = config.render

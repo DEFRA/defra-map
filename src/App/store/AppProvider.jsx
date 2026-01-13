@@ -3,17 +3,20 @@ import React, { createContext, useRef, useEffect, useReducer, useMemo, useCallba
 import { initialState, reducer } from './appReducer.js'
 import { handleActionSideEffects } from './appDispatchMiddleware.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 import { ConfigContext } from './configContext.js'
 import { subscribeToBreakpointChange } from '../../utils/detectBreakpoint.js'
 import { subscribeToInterfaceChanges } from '../../utils/detectInterfaceType.js'
 import { useMediaQueryDispatch } from '../hooks/useMediaQueryDispatch.js'
-import { getPanelConfig } from '../registry/panelRegistry.js'
-import { getButtonConfig } from '../registry/buttonRegistry.js'
+// import { getPanelConfig } from '../registry/panelRegistry.js'
+// import { getButtonConfig } from '../registry/buttonRegistry.js'
+// import { getControlConfig } from '../registry/controlRegistry.js'
 
 export const AppContext = createContext(null)
 
 export const AppProvider = ({ options, children }) => {
+  const { pluginRegistry, buttonRegistry, panelRegistry, controlRegistry, eventBus } = options
+
   const layoutRefs = {
     appContainerRef: useRef(null),
     sideRef: useRef(null),
@@ -31,25 +34,20 @@ export const AppProvider = ({ options, children }) => {
 
   const buttonRefs = useRef({})
 
-  const config = {
-    ...options,
-    buttonConfig: getButtonConfig(),
-    panelConfig: getPanelConfig()
-  }
-
-  const [state, rawDispatch] = useReducer(reducer, initialState(config))
+  const [state, rawDispatch] = useReducer(reducer, initialState(options))
 
   // Wrap dispatch to handle side effects
   const dispatch = useCallback((action) => {
+    const panelConfig = options.panelRegistry.getPanelConfig()
     const previousState = state
     rawDispatch(action)
-    handleActionSideEffects(action, previousState, config)
-  }, [state, config])
+    handleActionSideEffects(action, previousState, panelConfig, eventBus)
+  }, [state, options])
 
-  useMediaQueryDispatch(dispatch, config)
+  useMediaQueryDispatch(dispatch, options)
 
   const handleBreakpointChange = subscribeToBreakpointChange((breakpoint) => {
-    dispatch({ type: 'SET_BREAKPOINT', payload: { behaviour: config.behaviour, breakpoint } })
+    dispatch({ type: 'SET_BREAKPOINT', payload: { behaviour: options.behaviour, breakpoint } })
   })
 
   const handleInterfaceTypeChange = subscribeToInterfaceChanges((newType) => {
@@ -80,11 +78,15 @@ export const AppProvider = ({ options, children }) => {
     ...state,
     dispatch,
     layoutRefs,
-    buttonRefs
+    buttonRefs,
+    pluginRegistry,
+    buttonRegistry,
+    panelRegistry,
+    controlRegistry
   }), [state, dispatch])
 
   return (
-    <ConfigContext.Provider value={config}>
+    <ConfigContext.Provider value={options}>
       <AppContext.Provider value={appStore}>
         {children}
       </AppContext.Provider>

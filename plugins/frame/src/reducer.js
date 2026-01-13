@@ -1,5 +1,5 @@
 const initialState = {
-  frame: false
+  frame: null
 }
 
 const setFrame = (state, payload) => {

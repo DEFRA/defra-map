@@ -1,8 +1,11 @@
 import { createRoot } from 'react-dom/client'
 import { EVENTS as events } from '../config/events.js'
-import eventBus from '../services/eventBus.js'
+// import eventBus from '../services/eventBus.js'
 import { appConfig } from '../config/appConfig.js'
-import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
+import { createButtonRegistry } from './registry/buttonRegistry.js'
+import { createPanelRegistry } from './registry/panelRegistry.js'
+import { createControlRegistry } from './registry/controlRegistry.js'
+import { createPluginRegistry } from './registry/pluginRegistry.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 import { mergeManifests } from './registry/mergeManifests.js'
 import { App } from './App.jsx'
@@ -17,6 +20,9 @@ export async function initialiseApp (rootElement, {
   plugins = [],
   ...restProps
 }) {
+  const { eventBus } = restProps
+
+
   // Reuse or create mapProvider
   let mapProvider = mapProviderMap.get(rootElement)
   if (!mapProvider) {
@@ -29,8 +35,19 @@ export async function initialiseApp (rootElement, {
     setProviderSupportedShortcuts(mapProvider.capabilities.supportedShortcuts)
   }
 
+  // Create registries
+  const buttonRegistry = createButtonRegistry()
+  const panelRegistry = createPanelRegistry()
+  const controlRegistry = createControlRegistry()
+  const pluginRegistry = createPluginRegistry({
+    registerButton: buttonRegistry.registerButton,
+    registerPanel: panelRegistry.registerPanel, 
+    registerControl: controlRegistry.registerControl
+  })
+  const { registerPlugin } = pluginRegistry
+
   // Clear previous plugins
-  registeredPlugins.length = 0
+  pluginRegistry.clear()
 
   // Register default appConfig as a plugin
   registerPlugin({
@@ -58,7 +75,7 @@ export async function initialiseApp (rootElement, {
       rootMap.delete(rootElement)
       mapProvider.destroyMap?.()
       mapProviderMap.delete(rootElement)
-      registeredPlugins.length = 0
+      pluginRegistry.clear()
     }
   }
 
@@ -84,7 +101,14 @@ export async function initialiseApp (rootElement, {
     }
   }
 
-  root.render(<App {...restProps} mapProvider={mapProvider} />)
+  root.render(<App 
+    {...restProps} 
+    buttonRegistry={buttonRegistry}
+    panelRegistry={panelRegistry} 
+    controlRegistry={controlRegistry} 
+    pluginRegistry={pluginRegistry} 
+    mapProvider={mapProvider} 
+  />)
 
   return appInstance
 }

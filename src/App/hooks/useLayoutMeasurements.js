@@ -9,6 +9,7 @@ export function useLayoutMeasurements () {
   const { mapSize, isMapReady } = useMap()
 
   const {
+    appContainerRef,
     mainRef,
     bannerRef,
     topRef,
@@ -23,6 +24,7 @@ export function useLayoutMeasurements () {
   // 1. Calculate layout CSS vars (side effect)
   // -----------------------------
   const calculateLayout = () => {
+    const appContainer = appContainerRef.current
     const main = mainRef.current
     const top = topRef.current
     const topLeftCol = topLeftColRef.current
@@ -41,26 +43,26 @@ export function useLayoutMeasurements () {
     // === Inset offsets ===
     const insetOffsetTop = topLeftCol.offsetHeight + top.offsetTop
     const insetMaxHeight = main.offsetHeight - insetOffsetTop - top.offsetTop
-    root.style.setProperty('--inset-offset-top', `${insetOffsetTop}px`)
-    root.style.setProperty('--inset-max-height', `${insetMaxHeight}px`)
+    appContainer.style.setProperty('--inset-offset-top', `${insetOffsetTop}px`)
+    appContainer.style.setProperty('--inset-max-height', `${insetMaxHeight}px`)
 
     // === Bottom left offset ===
     const insetBottom = inset.offsetHeight + insetOffsetTop
     const bottomOffsetTop = Math.min(bottom.offsetTop, actions.offsetTop)
     const bottomOffsetLeft = bottomOffsetTop - dividerGap > insetBottom ? 0 : inset.offsetLeft + inset.offsetWidth
-    root.style.setProperty('--offset-left', `${bottomOffsetLeft}px`)
+    appContainer.style.setProperty('--offset-left', `${bottomOffsetLeft}px`)
 
     // === Right container offsets ===
     const rightOffsetTop = topRightCol.offsetHeight + top.offsetTop
     const rightOffsetBottom = main.offsetHeight - bottom.offsetTop + dividerGap
-    root.style.setProperty('--right-offset-top', `${rightOffsetTop}px`)
-    root.style.setProperty('--right-offset-bottom', `${rightOffsetBottom}px`)
+    appContainer.style.setProperty('--right-offset-top', `${rightOffsetTop}px`)
+    appContainer.style.setProperty('--right-offset-bottom', `${rightOffsetBottom}px`)
 
     // === Top column width ===
     const leftWidth = topLeftCol.offsetWidth || 0
     const rightWidth = topRightCol.offsetWidth || 0
     const finalWidth = leftWidth || rightWidth ? Math.max(leftWidth, rightWidth) : 0
-    root.style.setProperty('--top-col-width', `${finalWidth}px`)
+    appContainer.style.setProperty('--top-col-width', `${finalWidth}px`)
   }
 
   // --------------------------------
@@ -79,7 +81,7 @@ export function useLayoutMeasurements () {
   // --------------------------------
   // 3. Recaluclate CSS vars when elements resize
   // --------------------------------
-  useResizeObserver([bannerRef, mainRef, actionsRef, footerRef], () => {
+  useResizeObserver([bannerRef, mainRef, topRef, actionsRef, footerRef], () => {
     requestAnimationFrame(() => {
       calculateLayout()
     })

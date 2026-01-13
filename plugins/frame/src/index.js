@@ -1,10 +1,10 @@
 // /plugins/frame/index.js
 import './frame.scss'
 
-export default function createPlugin ({ manifest } = {}) {
+export default function createPlugin (options = {}) {
   return {
+    ...options,
     id: 'frame',
-    manifest,
     load: async () => {
       const module = (await import(/* webpackChunkName: "dm-frame-plugin" */ './manifest.js')).manifest
       return module

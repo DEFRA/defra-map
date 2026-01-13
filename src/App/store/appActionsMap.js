@@ -1,11 +1,11 @@
-import { getPanelConfig } from '../registry/panelRegistry.js'
+// import { getPanelConfig } from '../registry/panelRegistry.js'
 import { getInitialOpenPanels } from '../../config/getInitialOpenPanels.js'
 import { getIsFullscreen } from '../../utils/getIsFullscreen.js'
 import { shallowEqual } from '../../utils/shallowEqual.js'
 
 // Interal helper
 function buildOpenPanels(state, panelId, breakpoint, props) {
-  const panelConfig = getPanelConfig()
+  const panelConfig = state.panelRegistry.getPanelConfig()
   const bpConfig = panelConfig[panelId]?.[breakpoint]
   const isExclusiveNonModal = !!bpConfig.exclusive && !bpConfig.modal
   const isModal = !!bpConfig.modal
@@ -25,7 +25,7 @@ function buildOpenPanels(state, panelId, breakpoint, props) {
 }
 
 const setMode = (state, payload) => {
-  const panelConfig = getPanelConfig()
+  const panelConfig = state.panelRegistry.getPanelConfig()
 
   return {
     ...state,
@@ -36,7 +36,7 @@ const setMode = (state, payload) => {
 }
 
 const revertMode = (state) => {
-  const panelConfig = getPanelConfig()
+  const panelConfig = state.panelRegistry.getPanelConfig()
 
   return {
     ...state,

@@ -2,7 +2,7 @@
 import React, { createContext, useEffect, useReducer, useMemo } from 'react'
 import { initialState, reducer } from './mapReducer.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 
 export const MapContext = createContext(null)
 
@@ -31,6 +31,8 @@ export const MapProvider = ({ options, children }) => {
   }
 
   // Listen to eventBus and update state
+  const { eventBus } = options
+  
   useEffect(() => {
     eventBus.on(events.MAP_READY, handleMapReady)
     eventBus.on(events.MAP_INIT_MAP_STYLES, handleInitMapStyles)

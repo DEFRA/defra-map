@@ -1,90 +1,106 @@
 // src/core/registry/pluginRegistry.js
 
-import { registerButton } from './buttonRegistry.js'
-import { registerPanel } from './panelRegistry.js'
-import { registerControl } from './controlRegistry.js'
+// import { registerButton } from './buttonRegistry.js'
+// import { registerPanel } from './panelRegistry.js'
+// import { registerControl } from './controlRegistry.js'
 import { registerIcon } from './iconRegistry.js'
 import { registerKeyboardShortcut } from './keyboardShortcutRegistry.js'
 
-export const registeredPlugins = []
+export function createPluginRegistry ({ registerButton, registerPanel, registerControl }) {
+  const registeredPlugins = []
 
-export function registerPlugin (plugin) {
-  const { manifest } = plugin
+  function registerPlugin (plugin) {
+    const { manifest } = plugin
 
-  const pluginConfig = {
-    pluginId: plugin.id,
-    includeModes: plugin.config?.includeModes,
-    excludeModes: plugin.config?.excludeModes
-  }
+    const pluginConfig = {
+      pluginId: plugin.id,
+      includeModes: plugin.config?.includeModes,
+      excludeModes: plugin.config?.excludeModes
+    }
 
-  // --- Register buttons ---
-  if (manifest.buttons) {
-    const buttons = Array.isArray(manifest.buttons)
-      ? manifest.buttons
-      : [manifest.buttons]
+    // --- Register buttons ---
+    if (manifest.buttons) {
+      const buttons = Array.isArray(manifest.buttons)
+        ? manifest.buttons
+        : [manifest.buttons]
 
-    buttons.forEach(button => {
-      registerButton({
-        [button.id]: {
-          ...pluginConfig,
-          ...button
-        }
+      buttons.forEach(button => {
+        registerButton({
+          [button.id]: {
+            ...pluginConfig,
+            ...button
+          }
+        })
       })
-    })
-  }
+    }
 
-  // --- Register panels ---
-  if (manifest.panels) {
-    const panels = Array.isArray(manifest.panels)
-      ? manifest.panels
-      : [manifest.panels]
+    // --- Register panels ---
+    if (manifest.panels) {
+      const panels = Array.isArray(manifest.panels)
+        ? manifest.panels
+        : [manifest.panels]
 
-    panels.forEach(panel => {
-      registerPanel({
-        [panel.id]: {
-          ...pluginConfig,
-          ...panel
-        }
+      panels.forEach(panel => {
+        registerPanel({
+          [panel.id]: {
+            ...pluginConfig,
+            ...panel
+          }
+        })
       })
-    })
-  }
+    }
 
-  // --- Register controls ---
-  if (manifest.controls) {
-    const controls = Array.isArray(manifest.controls)
-      ? manifest.controls
-      : [manifest.controls]
+    // --- Register controls ---
+    if (manifest.controls) {
+      const controls = Array.isArray(manifest.controls)
+        ? manifest.controls
+        : [manifest.controls]
 
-    controls.forEach(control => {
-      registerControl({
-        [control.id]: {
-          ...pluginConfig,
-          ...control
-        }
+      controls.forEach(control => {
+        registerControl({
+          [control.id]: {
+            ...pluginConfig,
+            ...control
+          }
+        })
       })
-    })
+    }
+
+    // --- Register icons ---
+    if (manifest.icons) {
+      const icons = Array.isArray(manifest.icons)
+        ? manifest.icons
+        : [manifest.icons]
+
+      icons.forEach(icon =>
+        registerIcon({ [icon.id]: icon.svgContent })
+      )
+    }
+
+    // --- Register keyboard shortcuts ---
+    if (manifest.keyboardShortcuts) {
+      const shortcuts = Array.isArray(manifest.keyboardShortcuts)
+        ? manifest.keyboardShortcuts
+        : [manifest.keyboardShortcuts]
+
+      shortcuts.forEach(shortcut =>
+        registerKeyboardShortcut({
+          ...pluginConfig,
+          shortcut
+        })
+      )
+    }
+
+    registeredPlugins.push(plugin)
   }
 
-  // --- Register icons ---
-  if (manifest.icons) {
-    const icons = Array.isArray(manifest.icons)
-      ? manifest.icons
-      : [manifest.icons]
-
-    icons.forEach(icon => registerIcon({ [icon.id]: icon.svgContent }))
+  function clear () {
+    registeredPlugins.length = 0
   }
 
-  // --- Register keyboard shortcuts ---
-  if (manifest.keyboardShortcuts) {
-    const shortcuts = Array.isArray(manifest.keyboardShortcuts)
-      ? manifest.keyboardShortcuts
-      : [manifest.keyboardShortcuts]
-
-    shortcuts.forEach(shortcut => registerKeyboardShortcut({
-      ...pluginConfig,
-      shortcut
-    }))
+  return {
+    registeredPlugins,
+    registerPlugin,
+    clear
   }
-
-  registeredPlugins.push(plugin)
 }

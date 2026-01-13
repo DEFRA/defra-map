@@ -4,11 +4,11 @@ import { useConfig } from '../store/configContext.js'
 import { useService } from '../store/serviceContext.js'
 import { getMapStatusMessage } from '../../utils/getMapStatusMessage.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 
 export function useMapAnnouncements () {
   const { mapProvider } = useConfig()
-  const { announce } = useService()
+  const { eventBus, announce } = useService()
 
   useEffect(() => {
     const handleAnnounceStateUpdate = ({ previous, current }) => {

@@ -14,7 +14,7 @@ export const SlotRenderer = ({ slot }) => {
   const evaluateProp = useEvaluateProp()
 
   // Get all slot items (controls, panels, buttons)
-  const slotItems = getSlotItems({ slot, appState, appConfig, evaluateProp })
+  const slotItems = getSlotItems({ slot, appConfig, appState, evaluateProp })
 
   if (!slotItems.length) {
     return null

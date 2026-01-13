@@ -1,6 +1,6 @@
 // src/core/renderers/mapButtons.js
 import { MapButton } from '../components/MapButton/MapButton.jsx'
-import { getButtonConfig } from '../registry/buttonRegistry.js'
+// import { getButtonConfig } from '../registry/buttonRegistry.js'
 import { allowedSlots } from './slots.js'
 
 function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
@@ -81,8 +81,8 @@ function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, gro
 }
 
 function mapButtons ({ slot, appState, appConfig, evaluateProp }) {
-  const buttonConfig = getButtonConfig()
-  const breakpoint = appState.breakpoint
+  const { buttonRegistry, breakpoint } = appState
+  const buttonConfig = buttonRegistry.getButtonConfig()
   const matching = getMatchingButtons({ appState, appConfig, buttonConfig, slot, evaluateProp })
 
   if (!matching.length) {

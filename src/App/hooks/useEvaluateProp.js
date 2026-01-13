@@ -6,7 +6,7 @@ import { useService } from '../store/serviceContext.js'
 import { useContext } from 'react'
 import { PluginContext } from '../store/PluginProvider.jsx'
 import { getIconRegistry } from '../registry/iconRegistry.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export function useEvaluateProp () {
   const appConfig = useConfig()
@@ -29,7 +29,7 @@ export function useEvaluateProp () {
     let pluginState
 
     if (pluginId) {
-      const pluginEntry = registeredPlugins.find(p => p.id === pluginId)
+      const pluginEntry = appConfig.pluginRegistry.registeredPlugins.find(p => p.id === pluginId)
       pluginConfig = pluginEntry
         ? {
             pluginId: pluginEntry.id,

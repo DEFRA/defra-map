@@ -5,7 +5,7 @@ import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 import { usePlugin } from '../store/PluginProvider.jsx'
 import { getIconRegistry } from '../registry/iconRegistry.js'
-import { getButtonConfig } from '../registry/buttonRegistry.js'
+// import { getButtonConfig } from '../registry/buttonRegistry.js'
 
 /**
  * Cache for storing wrapped components
@@ -60,7 +60,7 @@ export function withPluginContexts (Component, { pluginId, pluginConfig }) {
           services={services}
           mapProvider={appConfig.mapProvider}
           iconRegistry={getIconRegistry()}
-          buttonConfig={getButtonConfig()}
+          buttonConfig={appState.buttonRegistry.getButtonConfig(pluginId)}
         />
       )
     })

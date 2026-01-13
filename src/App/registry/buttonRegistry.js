@@ -1,19 +1,39 @@
-// src/registry/buttonRegistry.js
+// src/registry/createButtonRegistry.js
 import { defaultButtonConfig } from '../../config/appConfig.js'
 import { deepMerge } from '../../utils/deepMerge.js'
 
-let buttonConfig = {}
+export function createButtonRegistry() {
+  let buttonConfig = {}
 
-export const registerButton = (button) => {
-  buttonConfig = { ...buttonConfig, ...button }
+  const registerButton = (button) => {
+    buttonConfig = { ...buttonConfig, ...button }
+  }
+
+  const addButton = (id, config) => {
+    const mergedConfig = deepMerge(defaultButtonConfig, config)
+    buttonConfig[id] = mergedConfig
+    return id
+  }
+
+  const getButtonConfig = (pluginId) => {
+    if (pluginId) {
+      return Object.fromEntries(
+        Object.entries(buttonConfig).filter(
+          ([_, btn]) => btn.pluginId === pluginId
+        )
+      )
+    }
+    return buttonConfig
+  }
+
+  const clear = () => {
+    buttonConfig = {}
+  }
+
+  return {
+    registerButton,
+    addButton,
+    getButtonConfig,
+    clear
+  }
 }
-
-// Add a button to the registry
-export const addButton = (id, config) => {
-  const mergedConfig = deepMerge(defaultButtonConfig, config)
-
-  buttonConfig[id] = mergedConfig
-  return id
-}
-
-export const getButtonConfig = () => buttonConfig

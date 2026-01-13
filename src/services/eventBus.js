@@ -43,6 +43,17 @@ class EventBus {
   }
 }
 
+/**
+ * Factory for map-local EventBus
+ */
+export function createEventBus () {
+  return new EventBus()
+}
+
+/**
+ * Legacy singleton eventbus
+ */
+
 // Create singleton instance
 const eventBus = new EventBus()
 

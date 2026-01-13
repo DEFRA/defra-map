@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 
 // Pure function - easier to test
 export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {
@@ -16,6 +17,7 @@ export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {
 
 export const useMarkers = () => {
   const { mapProvider } = useConfig()
+  const { eventBus } = useService()
   const { markers, dispatch, mapSize, isMapReady } = useMap()
   const markerRefs = useRef(new Map())
 

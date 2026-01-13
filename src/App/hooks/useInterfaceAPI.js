@@ -1,18 +1,21 @@
 // src/hooks/usePanels.js
 import { useEffect } from 'react'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
-import { addButton } from '../registry/buttonRegistry.js'
-import { addPanel, removePanel } from '../registry/panelRegistry.js'
-import { addControl } from '../registry/controlRegistry.js'
+// import eventBus from '../../services/eventBus.js'
+// import { addButton } from '../registry/buttonRegistry.js'
+// import { addPanel, removePanel } from '../registry/panelRegistry.js'
+// import { addControl } from '../registry/controlRegistry.js'
 import { useApp } from '../store/appContext.js'
+import { useService } from '../store/serviceContext.js'
 
 export const useInterfaceAPI = () => {
-  const { dispatch, breakpoint } = useApp()
+  const { dispatch, breakpoint, buttonRegistry, controlRegistry, panelRegistry } = useApp()
+  const { addPanel, removePanel } = panelRegistry
+  const { eventBus } = useService()
 
   useEffect(() => {
     const handleAddButton = ({ id, config }) => {
-      addButton(id, config)
+      buttonRegistry.addButton(id, config)
     }
 
     const handleAddPanel = ({ id, config }) => {
@@ -37,7 +40,7 @@ export const useInterfaceAPI = () => {
     }
 
     const handleAddControl = ({ id, config }) => {
-      addControl(id, config)
+      controlRegistry.addControl(id, config)
     }
 
     eventBus.on(events.APP_ADD_BUTTON, handleAddButton)

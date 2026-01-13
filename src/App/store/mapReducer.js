@@ -1,5 +1,5 @@
 import { actionsMap } from './mapActionsMap.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export const initialState = (config) => {
   const {
@@ -11,6 +11,8 @@ export const initialState = (config) => {
     mapSize,
     markers
   } = config
+
+  const { registeredPlugins } = config.pluginRegistry
 
   // Does a plugin handle map styles
   const pluginHandlesMapStyles = !!registeredPlugins?.find(plugin => plugin.config?.handlesMapStyle)

@@ -11,7 +11,8 @@ import { createBreakpointDetector, getBreakpoint } from '../utils/detectBreakpoi
 import { createInterfaceDetector, getInterfaceType } from '../utils/detectInterfaceType.js'
 import { createReverseGeocode } from '../services/reverseGeocode.js'
 import { EVENTS as events } from '../config/events.js'
-import eventBus from '../services/eventBus.js'
+import { createEventBus } from '../services/eventBus.js'
+// import eventBus from '../services/eventBus.js'
 
 export default class DefraMap {
   _openButton = null
@@ -24,6 +25,9 @@ export default class DefraMap {
     if (!this.rootEl) {
       throw new Error(`Element with id "${id}" not found`)
     }
+
+    // Create app local event bus
+    this.eventBus = createEventBus()
 
     this.config = this._buildConfig(props)
 
@@ -113,6 +117,7 @@ export default class DefraMap {
         MapProvider,
         mapProviderConfig,
         mapFramework,
+        eventBus: this.eventBus,
         handleExitClick: this._handleExitClick.bind(this)
       })
 
@@ -150,58 +155,60 @@ export default class DefraMap {
 
     updateDOMState(this)
 
-    eventBus.emit(events.MAP_DESTROY, { mapId: this.id })
+    this.eventBus.emit(events.MAP_DESTROY, { mapId: this.id })
+
+    this.eventBus.destroy?.()
   }
 
   // API - EventBus methods
   on (...args) {
-    eventBus.on(...args)
+    this.eventBus.on(...args)
   }
 
   off (...args) {
-    eventBus.off(...args)
+    this.eventBus.off(...args)
   }
 
   emit (...args) {
-    eventBus.emit(...args)
+    this.eventBus.emit(...args)
   }
 
   // API - location markers
   addMarker (id, coords, options) {
-    eventBus.emit(events.APP_ADD_MARKER, { id, coords, options })
+    this.eventBus.emit(events.APP_ADD_MARKER, { id, coords, options })
   }
 
   removeMarker (id) {
-    eventBus.emit(events.APP_REMOVE_MARKER, id)
+    this.eventBus.emit(events.APP_REMOVE_MARKER, id)
   }
 
   // API - change app mode
   setMode (mode) {
-    eventBus.emit(events.APP_SET_MODE, mode)
+    this.eventBus.emit(events.APP_SET_MODE, mode)
   }
 
   // Interface API add button/panel/control, remove panel
   addButton (id, config) {
-    eventBus.emit(events.APP_ADD_BUTTON, { id, config })
+    this.eventBus.emit(events.APP_ADD_BUTTON, { id, config })
   }
 
   addPanel (id, config) {
-    eventBus.emit(events.APP_ADD_PANEL, { id, config })
+    this.eventBus.emit(events.APP_ADD_PANEL, { id, config })
   }
 
   removePanel (id) {
-    eventBus.emit(events.APP_REMOVE_PANEL, id)
+    this.eventBus.emit(events.APP_REMOVE_PANEL, id)
   }
 
   showPanel (id) {
-    eventBus.emit(events.APP_SHOW_PANEL, id)
+    this.eventBus.emit(events.APP_SHOW_PANEL, id)
   }
 
   hidePanel (id) {
-    eventBus.emit(events.APP_HIDE_PANEL, id)
+    this.eventBus.emit(events.APP_HIDE_PANEL, id)
   }
 
   addControl (id, config) {
-    eventBus.emit(events.APP_ADD_CONTROL, { id, config })
+    this.eventBus.emit(events.APP_ADD_CONTROL, { id, config })
   }
 }

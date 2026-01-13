@@ -1,9 +1,17 @@
-export const addFrame = ({ pluginState, services }, feature) => {
+import { DEFAULT } from '../config.js'
+
+export const addFrame = ({ pluginConfig, pluginState, services }, config) => {
   const { dispatch } = pluginState
   const { eventBus } = services
   
-  // Store initial feature in plugin state
-  dispatch({ type: 'SET_FRAME', payload: true })
+  // Merge defaults
+  const frame = {
+    ...DEFAULT,
+    ...pluginConfig,
+    ...config
+  }
+
+  dispatch({ type: 'SET_FRAME', payload: frame })
 
   eventBus.emit('frame:add')
 }

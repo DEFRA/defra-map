@@ -1,7 +1,7 @@
 // src/core/renderers/mapControls.js
 import React from 'react'
-import { getControlConfig } from '../registry/controlRegistry.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+// import { getControlConfig } from '../registry/controlRegistry.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { allowedSlots } from './slots.js'
 
@@ -10,13 +10,15 @@ import { allowedSlots } from './slots.js'
  * Returns an array of control descriptors.
  */
 export function mapControls ({ slot, appState, evaluateProp }) {
-  const { breakpoint, mode } = appState
-  const controlConfig = getControlConfig()
+  const { breakpoint, mode, pluginRegistry, controlRegistry } = appState
+  const controlConfig = controlRegistry.getControlConfig()
 
   return Object.values(controlConfig)
     .filter(control => {
       const bpConfig = control[breakpoint]
-      if (!bpConfig) return false
+      if (!bpConfig) {
+        return false
+      }
 
       const slotAllowed = allowedSlots.control.includes(bpConfig.slot)
       const inModeWhitelist = control.includeModes?.includes(mode) ?? true
@@ -27,7 +29,7 @@ export function mapControls ({ slot, appState, evaluateProp }) {
     })
     .map(control => {
       // Detect plugin owning this control
-      const plugin = registeredPlugins.find(p =>
+      const plugin = pluginRegistry.registeredPlugins.find(p =>
         p.manifest?.controls?.some(c => c.id === control.id)
       )
 

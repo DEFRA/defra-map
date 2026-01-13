@@ -83,6 +83,62 @@ var defraMap = new DefraMap('map', {
 	// search
 })
 
+var defraMap2 = new DefraMap('map2', {
+	behaviour: 'inline',
+	mapProvider: maplibreProvider(),
+	reverseGeocodeProvider: openNamesProvider({
+		url: process.env.OS_NEAREST_URL,
+		// url: '/api/os-nearest-proxy?query={query}',
+		transformRequest: transformGeocodeRequest
+		// showMarker: true
+	}),
+	// maxMobileWidth: 700,
+	// minDesktopWidth: 960,
+	mapLabel: 'Map showing Carlisle',
+	// zoom: 14,
+	minZoom: 6,
+	maxZoom: 20,
+	autoColorScheme: true,
+	// center: [-2.938769, 54.893806],
+	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
+	containerHeight: '650px',
+	transformRequest: transformTileRequest,
+	// enableFullscreen: true,
+	// hasExitButton: true,
+	// markers: [{
+	// 	id: 'location',
+	// 	coords: [-2.9592267, 54.9045977],
+	// 	color: { outdoor: '#ff0000', dark: '#00ff00' }
+	// }],
+	// mapStyle: {
+	// 	url: process.env.OUTDOOR_URL,
+	// 	logo: '/assets/images/os-logo.svg',
+	// 	logoAltText: 'Ordnance survey logo',
+	// 	attribution: `Contains OS data ${String.fromCharCode(169)} Crown copyright and database rights ${(new Date()).getFullYear()}`,
+	// 	backgroundColor: '#f5f5f0'
+	// },
+	plugins: [
+		mapStylesPlugin({
+			mapStyles: vtsMapStyles3857
+		}),
+		zoomControlsPlugin(),
+		scaleBarPlugin({
+			units: 'metric'
+		}),
+		// searchPlugin({
+		// 	transformRequest: transformGeocodeRequest,
+		// 	osNamesURL: process.env.OS_NAMES_URL,
+		// 	customDatasets: searchCustomDatasets,
+		// 	width: '300px',
+		// 	showMarker: false,
+		// 	// isExpanded: true
+		// }),
+		useLocationPlugin(),
+		interactPlugin
+	]
+	// search
+})
+
 defraMap.on('map:ready', function (e) {
 	defraMap.addPanel('tooltip', {
 		label: 'How to use the map',

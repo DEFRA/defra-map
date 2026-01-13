@@ -1,10 +1,11 @@
 // src/core/PluginInits.jsx
 import React, { useEffect } from 'react'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useInterfaceAPI } from '../hooks/useInterfaceAPI.js'
 import { useApp } from '../store/appContext.js'
+import { useConfig } from '../store/configContext.js'
 import { useEvaluateProp } from '../hooks/useEvaluateProp.js'
 import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
 
@@ -47,6 +48,7 @@ const PluginInit = ({ plugin, mode }) => {
 
 export const PluginInits = () => {
   const { mode } = useApp()
+  const { pluginRegistry } = useConfig()
 
   // Add button, panel and control API methods (Needs to be top-level)
   useInterfaceAPI()
@@ -57,7 +59,7 @@ export const PluginInits = () => {
 
   return (
     <>
-      {registeredPlugins.map((plugin, idx) => (
+      {pluginRegistry.registeredPlugins.map((plugin, idx) => (
         <PluginInit 
           key={`init-${plugin.id}-${idx}`}
           plugin={plugin}

@@ -1,7 +1,7 @@
 // src/core/store/ServiceProvider.jsx
 import React, { createContext, useMemo, useRef } from 'react'
 import { EVENTS } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 import { createAnnouncer } from '../../services/announcer.js'
 import { reverseGeocode } from '../../services/reverseGeocode.js'
 import { useConfig } from '../store/configContext.js'
@@ -9,7 +9,7 @@ import { closeApp } from '../../services/closeApp.js'
 
 export const ServiceContext = createContext(null)
 
-export const ServiceProvider = ({ children }) => {
+export const ServiceProvider = ({ eventBus, children }) => {
   const { id, handleExitClick } = useConfig()
   const mapStatusRef = useRef(null)
   const announce = useMemo(() => createAnnouncer(mapStatusRef), [])
@@ -20,7 +20,7 @@ export const ServiceProvider = ({ children }) => {
     events: EVENTS,
     eventBus,
     mapStatusRef,
-    closeApp: () => closeApp(id, handleExitClick)
+    closeApp: () => closeApp(id, handleExitClick, eventBus)
   }), [announce])
 
   return (

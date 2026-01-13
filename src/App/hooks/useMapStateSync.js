@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 
 export function useMapStateSync () {
   const { mapProvider } = useConfig()
   const { dispatch } = useMap()
+  const { eventBus } = useService()
+  
   const previousState = useRef(null)
   const hasInitialized = useRef(false)
 

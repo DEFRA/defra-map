@@ -2,11 +2,15 @@
 import { useEffect } from 'react'
 import { attachEvents } from './events.js'
 
-export function UseLocationInit ({ appState, pluginState, mapProvider, buttonConfig }) {
+export function UseLocationInit ({ appConfig, appState, pluginState, mapState, mapProvider, buttonConfig }) {
   const { useLocation: useLocationButton } = buttonConfig
 
   // Attach events when component mounts
   useEffect(() => {
+    if (!mapState.isMapReady) {
+      return
+    }
+
     attachEvents({
       appState,
       pluginState,
@@ -17,7 +21,7 @@ export function UseLocationInit ({ appState, pluginState, mapProvider, buttonCon
     return () => {
       useLocationButton.onClick = null
     }
-  }, [mapProvider, useLocationButton])
+  }, [mapState.isMapReady])
 
   return null
 }

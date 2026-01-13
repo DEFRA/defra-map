@@ -10,7 +10,10 @@ export const initialState = (config) => {
     initialInterfaceType,
     appColorScheme,
     autoColorScheme,
-    panelConfig,
+    pluginRegistry,
+    buttonRegistry,
+    panelRegistry,
+    controlRegistry,
     mode
   } = config
 
@@ -23,6 +26,7 @@ export const initialState = (config) => {
   const isFullscreen = getIsFullscreen(behaviour, initialBreakpoint)
 
   // Initial open panels
+  const panelConfig = panelRegistry.getPanelConfig()
   const openPanels = getInitialOpenPanels(panelConfig, initialBreakpoint)
 
   return {
@@ -41,7 +45,11 @@ export const initialState = (config) => {
     hasExclusiveControl: false,
     openPanels,
     previousOpenPanels: {},
-    syncMapPadding: true
+    syncMapPadding: true,
+    pluginRegistry,
+    buttonRegistry,
+    panelRegistry,
+    controlRegistry
   }
 }
 

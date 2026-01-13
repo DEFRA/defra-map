@@ -1,11 +1,12 @@
 // src/core/hooks/useButtonStateEvaluator.js
 import { useEffect, useContext } from 'react'
 import { useApp } from '../store/appContext.js'
+import { useConfig } from '../store/configContext.js'
 import { PluginContext } from '../store/PluginProvider.jsx'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export function useButtonStateEvaluator (evaluateProp) {
   const appState = useApp()
+  const { pluginRegistry } = useConfig()
   const pluginContext = useContext(PluginContext)
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export function useButtonStateEvaluator (evaluateProp) {
     }
     const { dispatch } = appState
 
-    registeredPlugins.forEach((plugin) => {
+    pluginRegistry.registeredPlugins.forEach((plugin) => {
       const buttons = plugin?.manifest?.buttons || []
 
       buttons.forEach((btn) => {

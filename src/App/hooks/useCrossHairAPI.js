@@ -2,13 +2,15 @@ import { useCallback, useEffect } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import { EVENTS as events } from '../../config/events.js'
-import eventBus from '../../services/eventBus.js'
+// import eventBus from '../../services/eventBus.js'
 
 export const useCrossHair = () => {
   const { mapProvider } = useConfig()
   const { safeZoneInset } = useApp()
+  const { eventBus } = useService()
   const { crossHair, dispatch, mapSize } = useMap()
 
   const updatePosition = (el, x, y) => {

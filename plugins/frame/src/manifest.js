@@ -4,6 +4,7 @@ import { FrameInit } from './FrameInit.jsx'
 import { Frame } from './Frame.jsx'
 import { addFrame } from './api/addFrame.js'
 import { removeFrame } from './api/removeFrame.js'
+import { editFeature } from './api/editFeature.js'
 
 const buttonSlots = {
   mobile:  { slot: 'actions', showLabel: true },
@@ -17,7 +18,7 @@ export const manifest = {
     actions
   },
 
-  // InitComponent: FrameInit,
+  InitComponent: FrameInit,
 
   controls: [{
     id: 'frame',
@@ -50,6 +51,7 @@ export const manifest = {
 
   api: {
     addFrame,
-    removeFrame
+    removeFrame,
+    editFeature
   }
 }

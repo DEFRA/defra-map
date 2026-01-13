@@ -1,12 +1,7 @@
 // src/core/PluginProvider.jsx
-import React, {
-  createContext,
-  useReducer,
-  useContext,
-  useMemo,
-  useRef
-} from 'react'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+import React, { createContext, useReducer, useContext, useMemo, useRef } from 'react'
+import { useConfig } from '../store/configContext.js'
+// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export const PluginContext = createContext(null)
 
@@ -18,12 +13,13 @@ export function makeReducer (actionsMap) {
 }
 
 export const PluginProvider = ({ children }) => {
+  const { pluginRegistry } = useConfig()
   const pluginReducers = {}
   const initialState = {}
   const refs = useRef({}) // Persistent ref registry
 
   // Build plugin definitions and initial state
-  registeredPlugins.forEach(plugin => {
+  pluginRegistry.registeredPlugins.forEach(plugin => {
     const reducerDef = plugin.reducer
     if (reducerDef) {
       const { initialState: init, actions } = reducerDef

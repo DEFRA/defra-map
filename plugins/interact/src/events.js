@@ -15,13 +15,22 @@ export function attachEvents ({
     selectCancel
   } = buttonConfig
 
-  const handleKeyup = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleSelectAtTarget()
-    }
+  const { viewportRef } = appState.layoutRefs
+
+  let enterOnViewport = false
+  const handleKeydown = (e) => {
+    enterOnViewport = e.key === 'Enter' && viewportRef.current === e.target
   }
-  appState.layoutRefs.viewportRef.current?.addEventListener('keyup', handleKeyup)
+  document.addEventListener('keydown', handleKeydown)
+
+  const handleKeyup = (e) => {
+    if (e.key !== 'Enter' || !enterOnViewport) {
+      return
+    }
+    e.preventDefault()
+    handleSelectAtTarget()
+  }
+  document.addEventListener('keyup', handleKeyup)
 
   // Allow tapping on touch devices as well as accurate placement
   const handleMapClick = (e) => {
@@ -86,7 +95,8 @@ export function attachEvents ({
     selectDone.onClick = null
     selectAtTarget.onClick = null
     selectCancel.onClick = null
-    appState.layoutRefs.viewportRef.current?.removeEventListener('keyup', handleKeyup)
+    document.removeEventListener('keydown', handleKeydown)
+    document.removeEventListener('keyup', handleKeyup)
     eventBus.off(events.MAP_CLICK, handleMapClick)
     eventBus.off('interact:selectFeature', handleSelect)
     eventBus.off('interact:unselectFeature', handleUnselect)

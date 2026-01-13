@@ -127,6 +127,9 @@ export const DrawVertexMode = {
   },
 
   onKeydown(state, e) {
+    if (document.activeElement !== state.container) {
+      return
+    }
     if (e.key === 'Escape') {
       return e.preventDefault()
     }

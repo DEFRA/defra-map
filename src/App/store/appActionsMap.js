@@ -4,7 +4,7 @@ import { getIsFullscreen } from '../../utils/getIsFullscreen.js'
 import { shallowEqual } from '../../utils/shallowEqual.js'
 
 // Interal helper
-function buildOpenPanels(state, panelId, breakpoint, props = {}) {
+function buildOpenPanels(state, panelId, breakpoint, props) {
   const panelConfig = getPanelConfig()
   const bpConfig = panelConfig[panelId]?.[breakpoint]
   const isExclusiveNonModal = !!bpConfig.exclusive && !bpConfig.modal

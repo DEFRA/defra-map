@@ -6,21 +6,36 @@ function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerE
   cleanup?.()
 
   const getBreakpointType = (width) => {
-    if (width <= maxMobileWidth) return 'mobile'
-    if (width >= minDesktopWidth) return 'desktop'
+    if (width <= maxMobileWidth) {
+      return 'mobile'
+    }
+    if (width >= minDesktopWidth) {
+      return 'desktop'
+    }
     return 'tablet'
   }
 
   const notifyListeners = (type) => {
     if (type !== lastBreakpoint) {
-      lastBreakpoint = type
-      requestAnimationFrame(() => listeners.forEach(fn => fn(type)))
+      lastBreakpoint = type // Set synchronously BEFORE RAF
+      requestAnimationFrame(() => {
+        // Double-check it hasn't changed again
+        if (lastBreakpoint === type) {
+          listeners.forEach(fn => fn(type))
+        }
+      })
     }
   }
 
   // Container-based detection
   if (containerEl) {
     containerEl.style.containerType = 'inline-size'
+
+    // Set initial detection BEFORE observing to prevent double notification
+    const initialWidth = containerEl.getBoundingClientRect().width
+    const initialType = getBreakpointType(initialWidth)
+    containerEl.setAttribute('data-breakpoint', initialType)
+    lastBreakpoint = initialType // Set this directly, don't notify yet
 
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.borderBoxSize?.[0]?.inlineSize || entries[0]?.contentRect.width
@@ -31,10 +46,7 @@ function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerE
 
     observer.observe(containerEl)
     
-    // Initial detection
-    const initialWidth = containerEl.getBoundingClientRect().width
-    const initialType = getBreakpointType(initialWidth)
-    containerEl.setAttribute('data-breakpoint', initialType)
+    // Now notify listeners after observer is set up
     notifyListeners(initialType)
 
     cleanup = () => {

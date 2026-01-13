@@ -75,6 +75,14 @@ describe('actionsMap', () => {
     expect(result2.openPanels).toEqual({}) // falsy branch executed
   })
 
+  test('SET_BREAKPOINT uses default props when last panel has no props', () => {
+    const stateWithoutProps = { ...state, openPanels: { panel3: {} }}
+    const payload = { breakpoint: 'mobile', behaviour: 'responsive' }
+    const result = actionsMap.SET_BREAKPOINT(stateWithoutProps, payload)
+    expect(result.openPanels.panel3).toBeDefined()
+    expect(result.openPanels.panel3.props).toEqual({})
+  })
+
   test('SET_MEDIA merges payload into state', () => {
     const payload = { interfaceType: 'compact', mode: 'edit' }
     const result = actionsMap.SET_MEDIA(state, payload)

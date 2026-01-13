@@ -11,6 +11,10 @@ export const getSafeZoneInset = ({
   const actions = actionsRef.current
   const footer = footerRef.current
 
+  if (!main || !inset || !right || !actions || !footer) {
+    return
+  }
+
   const root = document.documentElement
   const dividerGap = Number.parseInt(getComputedStyle(root).getPropertyValue('--divider-gap'), 10)
 

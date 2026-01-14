@@ -16,6 +16,10 @@
   }
 }
 
+.dm-c-actions--border-top {
+  border-top: 1px solid var(--app-border-color);
+}
+
 .dm-o-app--tablet, .dm-o-app--desktop {
   .dm-c-actions {
     min-width: 280px;

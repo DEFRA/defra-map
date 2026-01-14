@@ -218,7 +218,7 @@ const registerPanel = (state, payload) => {
   }
 }
 
-const addPanelAction = (state, payload) => {
+const addPanel = (state, payload) => {
   const { id, config } = payload
   const newPanelConfig = addPanelFn(state.panelConfig, id, config)
   const panel = newPanelConfig[id]
@@ -246,7 +246,7 @@ const addPanelAction = (state, payload) => {
   }
 }
 
-const removePanelAction = (state, payload) => {
+const removePanel = (state, payload) => {
   const id = payload
   // eslint-disable-next-line no-unused-vars
   const { [id]: _, ...remainingPanels } = state.openPanels
@@ -304,8 +304,8 @@ export const actionsMap = {
   REGISTER_BUTTON: registerButton,
   ADD_BUTTON: addButton,
   REGISTER_PANEL: registerPanel,
-  ADD_PANEL: addPanelAction,
-  REMOVE_PANEL: removePanelAction,
+  ADD_PANEL: addPanel,
+  REMOVE_PANEL: removePanel,
   REGISTER_CONTROL: registerControl,
   ADD_CONTROL: addControl
 }

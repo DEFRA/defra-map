@@ -2,8 +2,10 @@ import React from 'react'
 import { renderHook, act } from '@testing-library/react'
 import { PluginProvider, usePlugin, PluginContext, makeReducer } from './PluginProvider.jsx'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
+import { useConfig } from './configContext.js'
 
 jest.mock('../registry/pluginRegistry.js', () => ({ registeredPlugins: [] }))
+jest.mock('./configContext.js')
 
 const wrapper = ({ children }) => <PluginProvider>{children}</PluginProvider>
 
@@ -20,7 +22,10 @@ describe('makeReducer', () => {
 })
 
 describe('PluginProvider', () => {
-  beforeEach(() => (registeredPlugins.length = 0))
+  beforeEach(() => {
+    registeredPlugins.length = 0
+    useConfig.mockReturnValue({ pluginRegistry: { registeredPlugins: [] } })
+  })
 
   test('renders without error', () => {
     const { result } = renderHook(() => true, { wrapper })
@@ -29,7 +34,10 @@ describe('PluginProvider', () => {
 })
 
 describe('usePlugin', () => {
-  beforeEach(() => (registeredPlugins.length = 0))
+  beforeEach(() => {
+    registeredPlugins.length = 0
+    useConfig.mockReturnValue({ pluginRegistry: { registeredPlugins } })
+  })
 
   test('throws error outside provider', () => {
     expect(() => renderHook(() => usePlugin('any'))).toThrow('usePlugin must be used within PluginProvider')

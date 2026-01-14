@@ -1,4 +1,4 @@
-import * as registry from './pluginRegistry.js'
+import { createPluginRegistry } from './pluginRegistry.js'
 
 // Mock all dependent registries
 jest.mock('./buttonRegistry.js', () => ({ registerButton: jest.fn() }))
@@ -8,16 +8,19 @@ jest.mock('./iconRegistry.js', () => ({ registerIcon: jest.fn() }))
 jest.mock('./keyboardShortcutRegistry.js', () => ({ registerKeyboardShortcut: jest.fn() }))
 
 describe('pluginRegistry', () => {
-  const { registerPlugin, registeredPlugins } = registry
-  const { registerButton } = require('./buttonRegistry.js')
-  const { registerPanel } = require('./panelRegistry.js')
-  const { registerControl } = require('./controlRegistry.js')
-  const { registerIcon } = require('./iconRegistry.js')
-  const { registerKeyboardShortcut } = require('./keyboardShortcutRegistry.js')
+  let pluginRegistry
+  let registerButton, registerPanel, registerControl, registerIcon, registerKeyboardShortcut
 
   beforeEach(() => {
     jest.clearAllMocks()
-    registeredPlugins.length = 0
+
+    registerButton = require('./buttonRegistry.js').registerButton
+    registerPanel = require('./panelRegistry.js').registerPanel
+    registerControl = require('./controlRegistry.js').registerControl
+    registerIcon = require('./iconRegistry.js').registerIcon
+    registerKeyboardShortcut = require('./keyboardShortcutRegistry.js').registerKeyboardShortcut
+
+    pluginRegistry = createPluginRegistry({ registerButton, registerPanel, registerControl })
   })
 
   it('registers plugin and pushes to registeredPlugins', () => {
@@ -26,8 +29,8 @@ describe('pluginRegistry', () => {
       config: { includeModes: ['view'], excludeModes: ['edit'] },
       manifest: {}
     }
-    registerPlugin(plugin)
-    expect(registeredPlugins).toContain(plugin)
+    pluginRegistry.registerPlugin(plugin)
+    expect(pluginRegistry.registeredPlugins).toContain(plugin)
   })
 
   it('registers buttons, panels, controls, icons, and shortcuts with pluginConfig info', () => {
@@ -43,7 +46,7 @@ describe('pluginRegistry', () => {
       }
     }
 
-    registerPlugin(plugin)
+    pluginRegistry.registerPlugin(plugin)
 
     const expectedPluginConfig = {
       pluginId: 'plugin2',
@@ -68,7 +71,7 @@ describe('pluginRegistry', () => {
       })
     )
 
-    expect(registeredPlugins).toContain(plugin)
+    expect(pluginRegistry.registeredPlugins).toContain(plugin)
   })
 
   it('handles single vs array manifests correctly', () => {
@@ -84,7 +87,7 @@ describe('pluginRegistry', () => {
       }
     }
 
-    registerPlugin(plugin)
+    pluginRegistry.registerPlugin(plugin)
 
     expect(registerButton).toHaveBeenCalledTimes(2)
     expect(registerPanel).toHaveBeenCalledTimes(1)
@@ -96,8 +99,8 @@ describe('pluginRegistry', () => {
   it('registers multiple plugins independently', () => {
     const pluginA = { id: 'A', config: {}, manifest: {} }
     const pluginB = { id: 'B', config: {}, manifest: {} }
-    registerPlugin(pluginA)
-    registerPlugin(pluginB)
-    expect(registeredPlugins).toEqual([pluginA, pluginB])
+    pluginRegistry.registerPlugin(pluginA)
+    pluginRegistry.registerPlugin(pluginB)
+    expect(pluginRegistry.registeredPlugins).toEqual([pluginA, pluginB])
   })
 })

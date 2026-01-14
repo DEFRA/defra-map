@@ -1,26 +1,30 @@
 import { renderHook } from '@testing-library/react'
 import { useMapEvents } from './useMapEvents'
 import { useConfig } from '../store/configContext.js'
-import eventBus from '../../services/eventBus.js'
+import { useService } from '../store/serviceContext.js'
 
 jest.mock('../store/configContext.js')
-jest.mock('../../services/eventBus.js')
+jest.mock('../store/serviceContext.js')
 
 describe('useMapEvents', () => {
-  let mockMapProvider
+  let mockMapProvider, mockEventBus
 
   beforeEach(() => {
     mockMapProvider = {}
-    eventBus.on = jest.fn()
-    eventBus.off = jest.fn()
+    mockEventBus = {
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn()
+    }
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
+    useService.mockReturnValue({ eventBus: mockEventBus })
   })
 
   it('does nothing when no mapProvider (line 10)', () => {
     useConfig.mockReturnValue({ mapProvider: null })
     renderHook(() => useMapEvents({ 'test:event': jest.fn() }))
 
-    expect(eventBus.on).not.toHaveBeenCalled()
+    expect(mockEventBus.on).not.toHaveBeenCalled()
   })
 
   it('registers event handlers when mapProvider exists', () => {
@@ -33,9 +37,9 @@ describe('useMapEvents', () => {
 
     renderHook(() => useMapEvents(eventMap))
 
-    expect(eventBus.on).toHaveBeenCalledTimes(2)
-    expect(eventBus.on).toHaveBeenCalledWith('map:click', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:zoom', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledTimes(2)
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:click', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:zoom', expect.any(Function))
   })
 
   it('calls callbacks when events are triggered', () => {
@@ -44,7 +48,7 @@ describe('useMapEvents', () => {
 
     renderHook(() => useMapEvents(eventMap))
 
-    const handler = eventBus.on.mock.calls[0][1]
+    const handler = mockEventBus.on.mock.calls[0][1]
     const mockEvent = { x: 100, y: 200 }
     handler(mockEvent)
 
@@ -61,13 +65,13 @@ describe('useMapEvents', () => {
 
     const { unmount } = renderHook(() => useMapEvents(eventMap))
 
-    const handler1 = eventBus.on.mock.calls[0][1]
-    const handler2 = eventBus.on.mock.calls[1][1]
+    const handler1 = mockEventBus.on.mock.calls[0][1]
+    const handler2 = mockEventBus.on.mock.calls[1][1]
 
     unmount()
 
-    expect(eventBus.off).toHaveBeenCalledWith('map:click', handler1)
-    expect(eventBus.off).toHaveBeenCalledWith('map:zoom', handler2)
+    expect(mockEventBus.off).toHaveBeenCalledWith('map:click', handler1)
+    expect(mockEventBus.off).toHaveBeenCalledWith('map:zoom', handler2)
   })
 
   it('re-registers handlers when eventMap changes', () => {
@@ -79,24 +83,24 @@ describe('useMapEvents', () => {
       { initialProps: { eventMap: { 'map:click': callback1 } } }
     )
 
-    expect(eventBus.on).toHaveBeenCalledTimes(1)
+    expect(mockEventBus.on).toHaveBeenCalledTimes(1)
 
     rerender({ eventMap: { 'map:zoom': callback2 } })
 
-    expect(eventBus.off).toHaveBeenCalledTimes(1)
-    expect(eventBus.on).toHaveBeenCalledTimes(2)
-    expect(eventBus.on).toHaveBeenCalledWith('map:zoom', expect.any(Function))
+    expect(mockEventBus.off).toHaveBeenCalledTimes(1)
+    expect(mockEventBus.on).toHaveBeenCalledTimes(2)
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:zoom', expect.any(Function))
   })
 
   it('handles empty eventMap', () => {
     renderHook(() => useMapEvents({}))
 
-    expect(eventBus.on).not.toHaveBeenCalled()
+    expect(mockEventBus.on).not.toHaveBeenCalled()
   })
 
   it('handles undefined eventMap (default parameter)', () => {
     renderHook(() => useMapEvents())
 
-    expect(eventBus.on).not.toHaveBeenCalled()
+    expect(mockEventBus.on).not.toHaveBeenCalled()
   })
 })

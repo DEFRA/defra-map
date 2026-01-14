@@ -177,3 +177,11 @@ defraMap.on('interact:selectionchange', function (e) {
 defraMap.on('interact:markerchange', function (e) {
 	console.log('interact:markerchange', e)
 })
+
+defraMap.on('app:panelopened', function (e) {
+	console.log('app:panelopened', e)
+})
+
+defraMap.on('app:panelclosed', function (e) {
+	console.log('app:panelclosed', e)
+})

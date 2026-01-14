@@ -2,11 +2,17 @@ import { renderHook, act } from '@testing-library/react'
 import { useMarkers, projectCoords } from './useMarkersAPI.js'
 import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
 import eventBus from '../../services/eventBus.js'
 
 jest.mock('../store/configContext.js')
 jest.mock('../store/mapContext.js')
-jest.mock('../../services/eventBus.js')
+jest.mock('../store/serviceContext.js')
+jest.mock('../../services/eventBus.js', () => ({
+  on: jest.fn(),
+  off: jest.fn(),
+  emit: jest.fn()
+}))
 jest.mock('../../config/appConfig.js', () => ({ scaleFactor: { small: 1, medium: 2, large: 3 } }))
 
 describe('projectCoords', () => {
@@ -24,18 +30,20 @@ describe('projectCoords', () => {
 })
 
 describe('useMarkers', () => {
-  let mockMapProvider, mockDispatch, mockMarkers, mockElement
+  let mockMapProvider, mockDispatch, mockMarkers, mockElement, mockEventBus
 
   beforeEach(() => {
     mockMapProvider = { getPointFromCoords: jest.fn(() => ({ x: 100, y: 200 })) }
     mockDispatch = jest.fn()
     mockMarkers = { items: [] }
     mockElement = { style: {} }
+    mockEventBus = { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
 
     eventBus.on = jest.fn()
     eventBus.off = jest.fn()
 
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
+    useService.mockReturnValue({ eventBus: mockEventBus })
     useMap.mockReturnValue({
       markers: mockMarkers,
       dispatch: mockDispatch,
@@ -92,7 +100,7 @@ describe('useMarkers', () => {
     const { result } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
 
-    const renderCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')[1]
+    const renderCallback = mockEventBus.on.mock.calls.find(call => call[0] === 'map:render')[1]
     act(() => renderCallback())
     expect(mockElement.style.transform).toBe('translate(200px, 381px)')
   })
@@ -102,7 +110,7 @@ describe('useMarkers', () => {
     const { result } = renderHook(() => useMarkers())
     act(() => result.current.markerRef('m1')(mockElement))
 
-    const renderCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')?.[1]
+    const renderCallback = mockEventBus.on.mock.calls.find(call => call[0] === 'map:render')?.[1]
     if (renderCallback) act(() => renderCallback()) // line 60: early return
   })
 
@@ -125,7 +133,7 @@ describe('useMarkers', () => {
     renderHook(() => useMarkers())
     const addPayload = { id: 'm1', coords: { lat: 1, lng: 1 }, options: { label: 'Test' } }
 
-    const handleAddMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    const handleAddMarker = mockEventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
     act(() => handleAddMarker(addPayload))
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPSERT_LOCATION_MARKER',
@@ -135,7 +143,7 @@ describe('useMarkers', () => {
 
   it('does not crash on undefined/null payload', () => {
     renderHook(() => useMarkers())
-    const handleAddMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    const handleAddMarker = mockEventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
 
     act(() => handleAddMarker(undefined))
     act(() => handleAddMarker(null))
@@ -146,7 +154,7 @@ describe('useMarkers', () => {
 
   it('handles app:removemarker safely (guard)', () => {
     renderHook(() => useMarkers())
-    const handleRemoveMarker = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
+    const handleRemoveMarker = mockEventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
 
     act(() => handleRemoveMarker('m1')) // valid id
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'REMOVE_LOCATION_MARKER', payload: 'm1' })
@@ -162,23 +170,23 @@ describe('useMarkers', () => {
     let cleanup
     act(() => { cleanup = result.current.markerRef('m1')(mockElement) })
 
-    const updateCallback = eventBus.on.mock.calls.find(call => call[0] === 'map:render')[1]
+    const updateCallback = mockEventBus.on.mock.calls.find(call => call[0] === 'map:render')[1]
     act(() => { if (cleanup) cleanup() })
 
-    expect(eventBus.off).toHaveBeenCalledWith('map:render', updateCallback)
+    expect(mockEventBus.off).toHaveBeenCalledWith('map:render', updateCallback)
   })
 
   it('cleans up eventBus listeners on unmount', () => {
     const { unmount } = renderHook(() => useMarkers())
 
     // Get the registered callbacks
-    const addCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
-    const removeCallback = eventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
+    const addCallback = mockEventBus.on.mock.calls.find(call => call[0] === 'app:addmarker')[1]
+    const removeCallback = mockEventBus.on.mock.calls.find(call => call[0] === 'app:removemarker')[1]
 
     unmount()
 
     // Verify both listeners were removed
-    expect(eventBus.off).toHaveBeenCalledWith('app:addmarker', addCallback)
-    expect(eventBus.off).toHaveBeenCalledWith('app:removemarker', removeCallback)
+    expect(mockEventBus.off).toHaveBeenCalledWith('app:addmarker', addCallback)
+    expect(mockEventBus.off).toHaveBeenCalledWith('app:removemarker', removeCallback)
   })
 })

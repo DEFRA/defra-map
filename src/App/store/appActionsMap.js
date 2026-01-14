@@ -2,10 +2,23 @@
 import { getInitialOpenPanels } from '../../config/getInitialOpenPanels.js'
 import { getIsFullscreen } from '../../utils/getIsFullscreen.js'
 import { shallowEqual } from '../../utils/shallowEqual.js'
+import {
+  registerButton as registerButtonFn,
+  addButton as addButtonFn
+} from '../registry/buttonRegistry.js'
+import {
+  registerPanel as registerPanelFn,
+  addPanel as addPanelFn,
+  removePanel as removePanelFn
+} from '../registry/panelRegistry.js'
+import {
+  registerControl as registerControlFn,
+  addControl as addControlFn
+} from '../registry/controlRegistry.js'
 
 // Interal helper
 function buildOpenPanels(state, panelId, breakpoint, props) {
-  const panelConfig = state.panelRegistry.getPanelConfig()
+  const panelConfig = state.panelConfig || state.panelRegistry.getPanelConfig()
   const bpConfig = panelConfig[panelId]?.[breakpoint]
   const isExclusiveNonModal = !!bpConfig.exclusive && !bpConfig.modal
   const isModal = !!bpConfig.modal
@@ -25,7 +38,7 @@ function buildOpenPanels(state, panelId, breakpoint, props) {
 }
 
 const setMode = (state, payload) => {
-  const panelConfig = state.panelRegistry.getPanelConfig()
+  const panelConfig = state.panelConfig || state.panelRegistry.getPanelConfig()
 
   return {
     ...state,
@@ -36,7 +49,7 @@ const setMode = (state, payload) => {
 }
 
 const revertMode = (state) => {
-  const panelConfig = state.panelRegistry.getPanelConfig()
+  const panelConfig = state.panelConfig || state.panelRegistry.getPanelConfig()
 
   return {
     ...state,
@@ -57,7 +70,7 @@ const setBreakpoint = (state, payload) => {
   const isFullscreen = getIsFullscreen(payload.behaviour, payload.breakpoint)
   const panelIds = Object.keys(state.openPanels)
   const lastPanelId = panelIds.at(-1)
-  
+ 
   return {
     ...state,
     breakpoint: payload.breakpoint,
@@ -185,6 +198,103 @@ const toggleButtonPressed = (state, payload) => {
   }
 }
 
+// Registry mutation actions
+const registerButton = (state, payload) => {
+  return {
+    ...state,
+    buttonConfig: registerButtonFn(state.buttonConfig, payload)
+  }
+}
+
+const addButton = (state, payload) => {
+  const { id, config } = payload
+  const newButtonConfig = addButtonFn(state.buttonConfig, id, config)
+
+  // Also update the registry instance for persistence across app lifecycle
+  if (state.buttonRegistry?.addButton) {
+    state.buttonRegistry.addButton(id, config)
+  }
+
+  return {
+    ...state,
+    buttonConfig: newButtonConfig
+  }
+}
+
+const registerPanel = (state, payload) => {
+  return {
+    ...state,
+    panelConfig: registerPanelFn(state.panelConfig, payload)
+  }
+}
+
+const addPanelAction = (state, payload) => {
+  const { id, config } = payload
+  const newPanelConfig = addPanelFn(state.panelConfig, id, config)
+  const panel = newPanelConfig[id]
+
+  // Also update the registry instance for persistence across app lifecycle
+  if (state.panelRegistry?.addPanel) {
+    state.panelRegistry.addPanel(id, config)
+  }
+
+  // Check if panel should be initially open
+  const bpConfig = panel?.[state.breakpoint]
+  const shouldOpen = bpConfig?.initiallyOpen
+
+  return {
+    ...state,
+    panelConfig: newPanelConfig,
+    openPanels: shouldOpen
+      ? buildOpenPanels(
+          { ...state, panelConfig: newPanelConfig },
+          id,
+          state.breakpoint,
+          {}
+        )
+      : state.openPanels
+  }
+}
+
+const removePanelAction = (state, payload) => {
+  const id = payload
+  // eslint-disable-next-line no-unused-vars
+  const { [id]: _, ...remainingPanels } = state.openPanels
+
+  // Also update the registry instance for persistence across app lifecycle
+  if (state.panelRegistry?.removePanel) {
+    state.panelRegistry.removePanel(id)
+  }
+
+  return {
+    ...state,
+    panelConfig: removePanelFn(state.panelConfig, id),
+    openPanels: remainingPanels
+  }
+}
+
+const registerControl = (state, payload) => {
+  return {
+    ...state,
+    controlConfig: registerControlFn(state.controlConfig, payload)
+  }
+}
+
+const addControl = (state, payload) => {
+  const { id, config } = payload
+  const newControlConfig = addControlFn(state.controlConfig, id, config)
+
+  // Also update the registry instance for persistence across app lifecycle
+  if (state.controlRegistry?.addControl) {
+    state.controlRegistry.addControl(id, config)
+  }
+
+  return {
+    ...state,
+    controlConfig: newControlConfig
+  }
+}
+
 export const actionsMap = {
   SET_BREAKPOINT: setBreakpoint,
   SET_MEDIA: setMedia,
@@ -199,5 +309,13 @@ export const actionsMap = {
   TOGGLE_HAS_EXCLUSIVE_CONTROL: toggleHasExclusiveControl,
   TOGGLE_BUTTON_DISABLED: toggleButtonDisabled,
   TOGGLE_BUTTON_HIDDEN: toggleButtonHidden,
-  TOGGLE_BUTTON_PRESSED: toggleButtonPressed
+  TOGGLE_BUTTON_PRESSED: toggleButtonPressed,
+  // Registry actions
+  REGISTER_BUTTON: registerButton,
+  ADD_BUTTON: addButton,
+  REGISTER_PANEL: registerPanel,
+  ADD_PANEL: addPanelAction,
+  REMOVE_PANEL: removePanelAction,
+  REGISTER_CONTROL: registerControl,
+  ADD_CONTROL: addControl
 }

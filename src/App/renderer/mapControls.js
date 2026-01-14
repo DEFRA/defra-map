@@ -10,8 +10,7 @@ import { allowedSlots } from './slots.js'
  * Returns an array of control descriptors.
  */
 export function mapControls ({ slot, appState, evaluateProp }) {
-  const { breakpoint, mode, pluginRegistry, controlRegistry } = appState
-  const controlConfig = controlRegistry.getControlConfig()
+  const { breakpoint, mode, pluginRegistry, controlConfig } = appState
 
   return Object.values(controlConfig)
     .filter(control => {

@@ -1,3 +1,4 @@
+import { registerControl, addControl, getControlConfig } from './controlRegistry.js'
 import { defaultControlConfig } from '../../config/appConfig.js'
 
 jest.mock('../../utils/deepMerge.js', () => ({
@@ -5,55 +6,46 @@ jest.mock('../../utils/deepMerge.js', () => ({
 }))
 
 describe('controlRegistry', () => {
-  let registerControl, addControl, getControlConfig
-
-  beforeEach(() => {
-    jest.resetModules()
-    const module = require('./controlRegistry.js')
-    registerControl = module.registerControl
-    addControl = module.addControl
-    getControlConfig = module.getControlConfig
-  })
-
   test('registerControl should store control config', () => {
     const control = { slider: { min: 0, max: 100 } }
-    registerControl(control)
-    expect(getControlConfig()).toEqual(control)
+    const config = registerControl({}, control)
+    expect(config).toEqual(control)
   })
 
   test('registerControl should merge multiple control configs', () => {
     const control1 = { slider: { min: 0, max: 100 } }
     const control2 = { toggle: { default: true } }
-    registerControl(control1)
-    registerControl(control2)
-    expect(getControlConfig()).toEqual({ ...control1, ...control2 })
+    let config = {}
+    config = registerControl(config, control1)
+    config = registerControl(config, control2)
+    expect(config).toEqual({ ...control1, ...control2 })
   })
 
   test('getControlConfig should return the current control config', () => {
     const control = { input: { placeholder: 'Enter text' } }
-    registerControl(control)
-    expect(getControlConfig()).toEqual(control)
+    const config = registerControl({}, control)
+    const result = getControlConfig(config)
+    expect(result).toEqual(control)
   })
 
-  test('addControl adds a control and returns it', () => {
+  test('addControl adds a control to config', () => {
     const config = { min: 0, max: 10 }
     const id = 'slider1'
+    const currentConfig = {}
 
-    const returned = addControl(id, config)
+    const updatedConfig = addControl(currentConfig, id, config)
 
-    const registry = getControlConfig()
-    expect(registry[id]).toEqual({ id, ...defaultControlConfig, ...config })
-    expect(returned).toEqual({ id, ...defaultControlConfig, ...config })
+    expect(updatedConfig[id]).toEqual({ id, ...defaultControlConfig, ...config })
+    expect(updatedConfig).not.toBe(currentConfig) // Immutable
   })
 
   test('addControl can add multiple controls', () => {
-    const { addControl, getControlConfig } = require('./controlRegistry.js')
-    addControl('control1', { foo: 'bar' })
-    addControl('control2', { baz: 'qux' })
+    let config = {}
+    config = addControl(config, 'control1', { foo: 'bar' })
+    config = addControl(config, 'control2', { baz: 'qux' })
 
-    const registry = getControlConfig()
-    expect(Object.keys(registry)).toEqual(['control1', 'control2'])
-    expect(registry.control1).toEqual({ id: 'control1', ...defaultControlConfig, foo: 'bar' })
-    expect(registry.control2).toEqual({ id: 'control2', ...defaultControlConfig, baz: 'qux' })
+    expect(Object.keys(config)).toEqual(['control1', 'control2'])
+    expect(config.control1).toEqual({ id: 'control1', ...defaultControlConfig, foo: 'bar' })
+    expect(config.control2).toEqual({ id: 'control2', ...defaultControlConfig, baz: 'qux' })
   })
 })

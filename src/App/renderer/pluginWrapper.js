@@ -60,7 +60,11 @@ export function withPluginContexts (Component, { pluginId, pluginConfig }) {
           services={services}
           mapProvider={appConfig.mapProvider}
           iconRegistry={getIconRegistry()}
-          buttonConfig={appState.buttonRegistry.getButtonConfig(pluginId)}
+          buttonConfig={Object.fromEntries(
+            Object.entries(appState.buttonConfig).filter(
+              ([_, btn]) => btn.pluginId === pluginId
+            )
+          )}
         />
       )
     })

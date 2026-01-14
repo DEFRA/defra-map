@@ -1,19 +1,22 @@
 import { renderHook } from '@testing-library/react'
 import { useButtonStateEvaluator } from './useButtonStateEvaluator'
 import { useApp } from '../store/appContext.js'
+import { useConfig } from '../store/configContext.js'
 import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { useContext } from 'react'
 
 jest.mock('../store/appContext.js')
+jest.mock('../store/configContext.js')
 jest.mock('react', () => ({ ...jest.requireActual('react'), useContext: jest.fn() }))
 jest.mock('../registry/pluginRegistry.js', () => ({ registeredPlugins: [] }))
 
 describe('useButtonStateEvaluator', () => {
-  let mockAppState, mockDispatch
+  let mockAppState, mockDispatch, mockPluginRegistry
 
   beforeEach(() => {
     jest.clearAllMocks()
     mockDispatch = jest.fn()
+    mockPluginRegistry = { registeredPlugins: [] }
     mockAppState = {
       disabledButtons: new Set(),
       hiddenButtons: new Set(),
@@ -21,6 +24,7 @@ describe('useButtonStateEvaluator', () => {
       dispatch: mockDispatch
     }
     useApp.mockReturnValue(mockAppState)
+    useConfig.mockReturnValue({ pluginRegistry: mockPluginRegistry })
     useContext.mockReturnValue({}) // PluginContext
     registeredPlugins.length = 0
     jest.spyOn(console, 'warn').mockImplementation()
@@ -47,10 +51,10 @@ describe('useButtonStateEvaluator', () => {
   })
 
   it('toggles button disabled state based on enableWhen', () => {
-    registeredPlugins.push({
+    mockPluginRegistry.registeredPlugins = [{
       id: 'p1',
       manifest: { buttons: [{ id: 'btn1', enableWhen: () => false }] }
-    })
+    }]
 
     renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
@@ -60,10 +64,10 @@ describe('useButtonStateEvaluator', () => {
   })
 
   it('toggles button hidden state based on hiddenWhen', () => {
-    registeredPlugins.push({
+    mockPluginRegistry.registeredPlugins = [{
       id: 'p1',
       manifest: { buttons: [{ id: 'btn1', hiddenWhen: () => true }] }
-    })
+    }]
 
     renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
@@ -73,10 +77,10 @@ describe('useButtonStateEvaluator', () => {
   })
 
   it('toggles button pressed state based on pressedWhen', () => {
-    registeredPlugins.push({
+    mockPluginRegistry.registeredPlugins = [{
       id: 'p1',
       manifest: { buttons: [{ id: 'btn1', pressedWhen: () => true }] }
-    })
+    }]
 
     renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).toHaveBeenCalledWith({
@@ -90,11 +94,11 @@ describe('useButtonStateEvaluator', () => {
     mockAppState.hiddenButtons.add('btn2')
     mockAppState.pressedButtons.add('btn3')
 
-    registeredPlugins.push(
+    mockPluginRegistry.registeredPlugins = [
       { id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen: () => false }] } },
       { id: 'p2', manifest: { buttons: [{ id: 'btn2', hiddenWhen: () => true }] } },
       { id: 'p3', manifest: { buttons: [{ id: 'btn3', pressedWhen: () => true }] } }
-    )
+    ]
 
     renderHook(() => useButtonStateEvaluator((fn) => fn()))
     expect(mockDispatch).not.toHaveBeenCalled()
@@ -102,7 +106,7 @@ describe('useButtonStateEvaluator', () => {
 
   it('passes pluginId to evaluateProp and catches errors', () => {
     const failingFn = () => { throw new Error('fail') }
-    registeredPlugins.push({
+    mockPluginRegistry.registeredPlugins = [{
       id: 'p1',
       manifest: {
         buttons: [
@@ -111,7 +115,7 @@ describe('useButtonStateEvaluator', () => {
           { id: 'btn3', pressedWhen: failingFn }
         ]
       }
-    })
+    }]
 
     renderHook(() => useButtonStateEvaluator((fn, pluginId) => fn(pluginId)))
     expect(console.warn).toHaveBeenCalledTimes(3)
@@ -121,7 +125,7 @@ describe('useButtonStateEvaluator', () => {
   it('provides empty plugin state if context missing', () => {
     useContext.mockReturnValue({ state: {} })
     const enableWhen = jest.fn()
-    registeredPlugins.push({ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen }] } })
+    mockPluginRegistry.registeredPlugins = [{ id: 'p1', manifest: { buttons: [{ id: 'btn1', enableWhen }] } }]
 
     renderHook(() => useButtonStateEvaluator((fn) => fn({ pluginState: {} })))
     expect(enableWhen).toHaveBeenCalled()

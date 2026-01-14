@@ -10,136 +10,116 @@ jest.mock('../store/appContext.js')
 jest.mock('../store/mapContext.js')
 jest.mock('../../utils/getSafeZoneInset.js')
 
-const createEl = (overrides = {}) => {
-  if (!overrides) return null
-  const el = document.createElement('div')
-  Object.defineProperty(el, 'offsetHeight', { value: overrides.offsetHeight?.value ?? 100, configurable: true })
-  Object.defineProperty(el, 'offsetWidth', { value: overrides.offsetWidth?.value ?? 200, configurable: true })
-  Object.defineProperty(el, 'offsetTop', { value: overrides.offsetTop?.value ?? 10, configurable: true })
-  Object.defineProperty(el, 'offsetLeft', { value: overrides.offsetLeft?.value ?? 20, configurable: true })
-  return el
+const el = (props = {}) => {
+  const e = document.createElement('div')
+  e.style.setProperty = jest.fn()
+  Object.entries(props).forEach(([k, v]) => Object.defineProperty(e, k, { value: v, configurable: true }))
+  return e
 }
 
-const createRefs = (overrides = {}) => ({
-  mainRef: { current: createEl(overrides.main) },
-  bannerRef: { current: createEl(overrides.banner) },
-  topRef: { current: createEl(overrides.top) },
-  topLeftColRef: { current: createEl(overrides.topLeftCol) },
-  topRightColRef: { current: createEl(overrides.topRightCol) },
-  insetRef: { current: createEl(overrides.inset) },
-  footerRef: { current: createEl(overrides.bottom) },
-  actionsRef: { current: createEl(overrides.actions) }
+const refs = (o = {}) => ({
+  appContainerRef: { current: o.appContainer || el() },
+  mainRef: { current: o.main === null ? null : el({ offsetHeight: 500, ...o.main }) },
+  bannerRef: { current: el(o.banner) },
+  topRef: { current: o.top === null ? null : el({ offsetTop: 10, ...o.top }) },
+  topLeftColRef: { current: el({ offsetHeight: 50, offsetWidth: 200, ...o.topLeftCol }) },
+  topRightColRef: { current: el({ offsetHeight: 40, offsetWidth: 180, ...o.topRightCol }) },
+  insetRef: { current: o.inset === null ? null : el({ offsetHeight: 100, offsetLeft: 20, offsetWidth: 300, ...o.inset }) },
+  footerRef: { current: o.footer === null ? null : el({ offsetTop: 400, ...o.footer }) },
+  actionsRef: { current: el({ offsetTop: 450, ...o.actions }) }
 })
 
-const defaultSetup = (overrides = {}) => {
+const setup = (o = {}) => {
   const dispatch = jest.fn()
-  const layoutRefs = createRefs(overrides.refs)
-  useApp.mockReturnValue({ dispatch, breakpoint: 'md', layoutRefs, ...overrides.app })
-  useMap.mockReturnValue({ mapSize: { width: 800, height: 600 }, isMapReady: true, ...overrides.map })
+  const layoutRefs = refs(o.refs)
+  useApp.mockReturnValue({ dispatch, breakpoint: 'desktop', layoutRefs, ...o.app })
+  useMap.mockReturnValue({ mapSize: { width: 800, height: 600 }, isMapReady: true, ...o.map })
   getSafeZoneInset.mockReturnValue({ top: 0, right: 0, bottom: 0, left: 0 })
   return { dispatch, layoutRefs }
 }
 
 describe('useLayoutMeasurements', () => {
-  let rafSpy, setPropertySpy
+  let rafSpy
 
   beforeEach(() => {
     jest.clearAllMocks()
     rafSpy = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb())
-    setPropertySpy = jest.spyOn(document.documentElement.style, 'setProperty')
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({ getPropertyValue: () => '8' })
   })
 
   afterEach(() => {
     rafSpy.mockRestore()
-    setPropertySpy.mockRestore()
     jest.restoreAllMocks()
   })
 
-  const renderHookWithSetup = (overrides = {}) => {
-    defaultSetup(overrides)
-    return renderHook(() => useLayoutMeasurements())
-  }
-
   test('early return when required refs are null', () => {
-    renderHookWithSetup({ refs: { main: null } })
-    expect(setPropertySpy).not.toHaveBeenCalled()
+    const { layoutRefs } = setup({ refs: { main: null, top: null, inset: null, footer: null } })
+    renderHook(() => useLayoutMeasurements())
+    expect(layoutRefs.appContainerRef.current.style.setProperty).not.toHaveBeenCalled()
   })
 
-  test('calculates all CSS custom properties', () => {
-    renderHookWithSetup()
-    const cssVars = ['--inset-offset-top', '--inset-max-height', '--offset-left', '--right-offset-top', '--right-offset-bottom', '--top-col-width']
-    cssVars.forEach(prop => expect(setPropertySpy).toHaveBeenCalledWith(prop, expect.any(String)))
-  })
-
-  test.each([
-    [{ main: { offsetHeight: { value: 500 } }, topLeftCol: { offsetHeight: { value: 50 } }, top: { offsetTop: { value: 20 } } }, '--inset-offset-top', '70px'],
-    [{ main: { offsetHeight: { value: 500 } }, topLeftCol: { offsetHeight: { value: 50 } }, top: { offsetTop: { value: 20 } } }, '--inset-max-height', '410px']
-  ])('calculates inset CSS vars correctly', (refs, varName, expected) => {
-    renderHookWithSetup({ refs })
-    expect(setPropertySpy).toHaveBeenCalledWith(varName, expected)
+  test('calculates and sets all CSS custom properties', () => {
+    const { layoutRefs } = setup()
+    renderHook(() => useLayoutMeasurements())
+    const spy = layoutRefs.appContainerRef.current.style.setProperty
+    ;['--inset-offset-top', '--inset-max-height', '--offset-left', '--right-offset-top', '--right-offset-bottom', '--top-col-width']
+      .forEach(prop => expect(spy).toHaveBeenCalledWith(prop, expect.any(String)))
   })
 
   test.each([
-    [{ inset: { offsetHeight: { value: 200 }, offsetLeft: { value: 30 }, offsetWidth: { value: 150 } }, bottom: { offsetTop: { value: 100 } }, actions: { offsetTop: { value: 120 } }, topLeftCol: { offsetHeight: { value: 50 } }, top: { offsetTop: { value: 10 } } }, '--offset-left', '180px'],
-    [{ inset: { offsetHeight: { value: 50 } }, bottom: { offsetTop: { value: 200 } }, actions: { offsetTop: { value: 220 } }, topLeftCol: { offsetHeight: { value: 50 } }, top: { offsetTop: { value: 10 } } }, '--offset-left', '0px']
-  ])('calculates bottom offset-left correctly', (refs, varName, expected) => {
-    renderHookWithSetup({ refs })
-    expect(setPropertySpy).toHaveBeenCalledWith(varName, expected)
-  })
-
-  test('calculates right column offsets', () => {
-    renderHookWithSetup({ refs: { topRightCol: { offsetHeight: { value: 80 } }, top: { offsetTop: { value: 15 } }, main: { offsetHeight: { value: 600 } }, bottom: { offsetTop: { value: 500 } }, actions: { offsetTop: { value: 150 } } } })
-    expect(setPropertySpy).toHaveBeenCalledWith('--right-offset-top', '95px')
-    expect(setPropertySpy).toHaveBeenCalledWith('--right-offset-bottom', '108px')
+    ['inset-offset-top', { main: { offsetHeight: 500 }, top: { offsetTop: 20 }, topLeftCol: { offsetHeight: 50 } }, '70px'],
+    ['inset-max-height', { main: { offsetHeight: 500 }, top: { offsetTop: 20 }, topLeftCol: { offsetHeight: 50 } }, '410px'],
+    ['offset-left with overlap', { inset: { offsetHeight: 200, offsetLeft: 30, offsetWidth: 150 }, footer: { offsetTop: 100 }, actions: { offsetTop: 120 }, topLeftCol: { offsetHeight: 50 }, top: { offsetTop: 10 } }, '180px'],
+    ['offset-left without overlap', { inset: { offsetHeight: 50, offsetLeft: 30, offsetWidth: 150 }, footer: { offsetTop: 200 }, actions: { offsetTop: 220 }, topLeftCol: { offsetHeight: 50 }, top: { offsetTop: 10 } }, '0px'],
+    ['right-offset-top', { topRightCol: { offsetHeight: 80 }, top: { offsetTop: 15 } }, '95px'],
+    ['right-offset-bottom', { main: { offsetHeight: 600 }, footer: { offsetTop: 500 } }, '108px']
+  ])('calculates %s correctly', (name, refOverrides, expected) => {
+    const { layoutRefs } = setup({ refs: refOverrides })
+    renderHook(() => useLayoutMeasurements())
+    const varName = `--${name.replace(/ .+/, '')}`
+    expect(layoutRefs.appContainerRef.current.style.setProperty).toHaveBeenCalledWith(varName, expected)
   })
 
   test.each([
-    [{ topLeftCol: { offsetWidth: { value: 250 } }, topRightCol: { offsetWidth: { value: 200 } } }, '250px'],
-    [{ topLeftCol: { offsetWidth: { value: 0 } }, topRightCol: { offsetWidth: { value: 200 } } }, '200px'],
-    [{ topLeftCol: { offsetWidth: { value: 0 } }, topRightCol: { offsetWidth: { value: 0 } } }, '0px']
-  ])('calculates top column width correctly', (refs, expected) => {
-    renderHookWithSetup({ refs })
-    expect(setPropertySpy).toHaveBeenCalledWith('--top-col-width', expected)
+    [{ offsetWidth: 250 }, { offsetWidth: 200 }, '250px'],
+    [{ offsetWidth: 0 }, { offsetWidth: 200 }, '200px'],
+    [{ offsetWidth: 0 }, { offsetWidth: 0 }, '0px']
+  ])('calculates top-col-width for left=%o right=%o', (left, right, expected) => {
+    const { layoutRefs } = setup({ refs: { topLeftCol: { offsetHeight: 50, ...left }, topRightCol: { offsetHeight: 40, ...right } } })
+    renderHook(() => useLayoutMeasurements())
+    expect(layoutRefs.appContainerRef.current.style.setProperty).toHaveBeenCalledWith('--top-col-width', expected)
   })
 
   test('dispatches safe zone inset', () => {
-    const { dispatch, layoutRefs } = defaultSetup()
+    const { dispatch, layoutRefs } = setup()
     getSafeZoneInset.mockReturnValue({ top: 10, right: 5, bottom: 15, left: 5 })
     renderHook(() => useLayoutMeasurements())
     expect(getSafeZoneInset).toHaveBeenCalledWith(layoutRefs)
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_SAFE_ZONE_INSET', payload: { safeZoneInset: { top: 10, right: 5, bottom: 15, left: 5 } } })
   })
 
-  test('recalculates on breakpoint, mapSize, and isMapReady changes', () => {
+  test('recalculates on dependency changes', () => {
+    setup()
     const { rerender } = renderHook(() => useLayoutMeasurements())
-    const changes = [{ app: { breakpoint: 'lg' } }, { map: { mapSize: { width: 1000, height: 800 } } }, { map: { isMapReady: false } }]
-    changes.forEach(change => {
-      setPropertySpy.mockClear()
-      defaultSetup(change)
-      rerender()
-      expect(setPropertySpy).toHaveBeenCalled()
-    })
+    ;[{ app: { breakpoint: 'mobile' } }, { map: { mapSize: { width: 1000, height: 800 } } }, { map: { isMapReady: false } }]
+      .forEach(change => {
+        const { layoutRefs } = setup(change)
+        layoutRefs.appContainerRef.current.style.setProperty.mockClear()
+        rerender()
+        expect(layoutRefs.appContainerRef.current.style.setProperty).toHaveBeenCalled()
+      })
   })
 
-  test('sets up resize observer and recalculates on callback', () => {
-    const { layoutRefs } = defaultSetup()
+  test('sets up resize observer', () => {
+    const { layoutRefs } = setup()
     renderHook(() => useLayoutMeasurements())
     expect(useResizeObserver).toHaveBeenCalledWith(
-      [layoutRefs.bannerRef, layoutRefs.mainRef, layoutRefs.insetRef, layoutRefs.actionsRef],
+      [layoutRefs.bannerRef, layoutRefs.mainRef, layoutRefs.topRef, layoutRefs.actionsRef, layoutRefs.footerRef],
       expect.any(Function)
     )
-    setPropertySpy.mockClear()
+    layoutRefs.appContainerRef.current.style.setProperty.mockClear()
     useResizeObserver.mock.calls[0][1]()
     expect(rafSpy).toHaveBeenCalled()
-    expect(setPropertySpy).toHaveBeenCalled()
-  })
-
-  test('early return triggers if any required ref missing', () => {
-    const refs = createRefs({ main: null })
-    useApp.mockReturnValue({ dispatch: jest.fn(), breakpoint: 'md', layoutRefs: refs })
-    useMap.mockReturnValue({ mapSize: { width: 800, height: 600 }, isMapReady: true })
-    renderHook(() => useLayoutMeasurements())
-    expect(setPropertySpy).not.toHaveBeenCalled()
+    expect(layoutRefs.appContainerRef.current.style.setProperty).toHaveBeenCalled()
   })
 })

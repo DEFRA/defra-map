@@ -1,32 +1,37 @@
 import { renderHook, act } from '@testing-library/react'
 import { useMapURLSync } from './useMapURLSync'
 import { useConfig } from '../store/configContext.js'
-import eventBus from '../../services/eventBus.js'
+import { useService } from '../store/serviceContext.js'
 import * as mapStateSync from '../../utils/mapStateSync.js'
 
 jest.mock('../store/configContext.js')
-jest.mock('../../services/eventBus.js')
+jest.mock('../store/serviceContext.js')
 jest.mock('../../utils/mapStateSync.js', () => ({
   setMapStateInURL: jest.fn()
 }))
 
 describe('useMapURLSync', () => {
   let handleEvent
+  let mockEventBus
 
   beforeEach(() => {
     handleEvent = undefined
-    eventBus.on = jest.fn((_, fn) => { handleEvent = fn })
-    eventBus.off = jest.fn()
+    mockEventBus = {
+      on: jest.fn((_, fn) => { handleEvent = fn }),
+      off: jest.fn(),
+      emit: jest.fn()
+    }
+    useService.mockReturnValue({ eventBus: mockEventBus })
   })
 
   it('registers map:stateupdated listener and cleans up', () => {
     useConfig.mockReturnValue({ id: 'map123' })
 
     const { unmount } = renderHook(() => useMapURLSync())
-    expect(eventBus.on).toHaveBeenCalledWith('map:stateupdated', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:stateupdated', expect.any(Function))
 
     unmount()
-    expect(eventBus.off).toHaveBeenCalledWith('map:stateupdated', handleEvent)
+    expect(mockEventBus.off).toHaveBeenCalledWith('map:stateupdated', handleEvent)
   })
 
   it('calls setMapStateInURL on map:stateupdated', () => {
@@ -48,8 +53,8 @@ describe('useMapURLSync', () => {
     useConfig.mockReturnValue({ id: null })
 
     const { unmount } = renderHook(() => useMapURLSync())
-    expect(eventBus.on).not.toHaveBeenCalled()
-    expect(eventBus.off).not.toHaveBeenCalled()
+    expect(mockEventBus.on).not.toHaveBeenCalled()
+    expect(mockEventBus.off).not.toHaveBeenCalled()
 
     unmount() // cleanup should not throw
   })

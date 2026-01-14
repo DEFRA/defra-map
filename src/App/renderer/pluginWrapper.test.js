@@ -4,7 +4,7 @@ import { withPluginContexts, wrapperCache } from './pluginWrapper.js'
 
 // Mock hooks
 jest.mock('../store/configContext.js', () => ({ useConfig: jest.fn(() => ({ mapProvider: 'mockMap' })) }))
-jest.mock('../store/appContext.js', () => ({ useApp: jest.fn(() => ({ user: 'testUser' })) }))
+jest.mock('../store/appContext.js', () => ({ useApp: jest.fn(() => ({ user: 'testUser', buttonConfig: {} })) }))
 jest.mock('../store/mapContext.js', () => ({ useMap: jest.fn(() => ({ center: [0, 0] })) }))
 jest.mock('../store/serviceContext.js', () => ({ useService: jest.fn(() => ({ eventBus: {} })) }))
 jest.mock('../store/PluginProvider.jsx', () => ({ usePlugin: jest.fn(() => ({ pluginStateVal: true })) }))
@@ -29,10 +29,11 @@ describe('withPluginContexts', () => {
       pluginConfig: { foo: 'bar' },
       pluginState: { pluginStateVal: true },
       appConfig: { mapProvider: 'mockMap' },
-      appState: { user: 'testUser' },
+      appState: { user: 'testUser', buttonConfig: {} },
       mapState: { center: [0, 0] },
       services: { eventBus: {} },
-      mapProvider: 'mockMap'
+      mapProvider: 'mockMap',
+      buttonConfig: {}
     }))
   })
 

@@ -17,11 +17,7 @@ describe('mapPanels', () => {
     pluginId: 'plug1'
   }
 
-  const defaultAppState = {
-    breakpoint: 'desktop',
-    mode: 'view',
-    openPanels: { p1: { props: { foo: 'bar' } } }
-  }
+  let defaultAppState
 
   const map = (state = defaultAppState, slot = 'header') =>
     mapPanels({ slot, appState: state, evaluateProp: (p) => p })
@@ -29,7 +25,14 @@ describe('mapPanels', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     registeredPlugins.length = 0
-    getPanelConfig.mockReturnValue({ p1: baseConfig })
+    defaultAppState = {
+      breakpoint: 'desktop',
+      mode: 'view',
+      openPanels: { p1: { props: { foo: 'bar' } } },
+      panelConfig: { p1: baseConfig },
+      pluginRegistry: { registeredPlugins: [] }
+    }
+    defaultAppState.panelConfig =({ p1: baseConfig })
   })
 
   it('returns empty array when no panels are open', () => {
@@ -37,23 +40,23 @@ describe('mapPanels', () => {
   })
 
   it('skips panel if config is missing', () => {
-    getPanelConfig.mockReturnValue({})
+    defaultAppState.panelConfig =({})
     expect(map()).toEqual([])
   })
 
   it('skips panel if breakpoint config is missing', () => {
-    getPanelConfig.mockReturnValue({ p1: {} })
+    defaultAppState.panelConfig =({ p1: {} })
     expect(map()).toEqual([])
   })
 
   it('skips panel if slot does not match requested slot', () => {
-    getPanelConfig.mockReturnValue({ p1: { desktop: { slot: 'header' }, includeModes: ['view'] } })
+    defaultAppState.panelConfig =({ p1: { desktop: { slot: 'header' }, includeModes: ['view'] } })
     const state = { ...defaultAppState, openPanels: { p1: { props: {} } } }
     expect(map(state, 'sidebar')).toEqual([])
   })
 
   it('skips panel if mode does not match includeModes/excludeModes or slot invalid', () => {
-    getPanelConfig.mockReturnValue({
+    defaultAppState.panelConfig =({
       p1: { desktop: { slot: 'invalid' }, includeModes: ['view'] },
       p2: { desktop: { slot: 'header' }, includeModes: ['edit'] },
       p3: { desktop: { slot: 'header' }, excludeModes: ['view'] },
@@ -63,7 +66,7 @@ describe('mapPanels', () => {
   })
 
   it('only allows last opened modal panel', () => {
-    getPanelConfig.mockReturnValue({
+    defaultAppState.panelConfig =({
       p1: { desktop: { modal: true }, includeModes: ['view'] },
       p2: { desktop: { modal: true }, includeModes: ['view'] }
     })
@@ -76,8 +79,10 @@ describe('mapPanels', () => {
 
   it('wraps render function with plugin context', () => {
     const renderFn = jest.fn(() => <div>child</div>)
-    registeredPlugins.push({ id: 'plug1', config: { a: 1 } })
-    getPanelConfig.mockReturnValue({ p1: { ...baseConfig, render: renderFn } })
+    const plugin = { id: 'plug1', config: { a: 1 } }
+    registeredPlugins.push(plugin)
+    defaultAppState.pluginRegistry = { registeredPlugins: [plugin] }
+    defaultAppState.panelConfig =({ p1: { ...baseConfig, render: renderFn } })
     map()
     expect(withPluginContexts).toHaveBeenCalledWith(
       renderFn,
@@ -95,7 +100,7 @@ describe('mapPanels', () => {
   })
 
   it('returns correct structure and defaults', () => {
-    getPanelConfig.mockReturnValue({ p1: { desktop: { slot: 'header' }, includeModes: ['view'] } })
+    defaultAppState.panelConfig =({ p1: { desktop: { slot: 'header' }, includeModes: ['view'] } })
     const result = map()
     expect(result[0]).toMatchObject({ id: 'p1', type: 'panel', order: 0 })
     expect(result[0].element.props).toMatchObject({ panelId: 'p1', props: { foo: 'bar' } })
@@ -103,7 +108,7 @@ describe('mapPanels', () => {
 
   it('allows panel next to a button slot', () => {
     const panelId = 'p-1'
-    getPanelConfig.mockReturnValue({
+    defaultAppState.panelConfig =({
       [panelId]: { desktop: { slot: 'p-1-button' }, includeModes: ['view'] }
     })
     const state = { ...defaultAppState, openPanels: { [panelId]: { props: {} } } }
@@ -112,14 +117,14 @@ describe('mapPanels', () => {
 
   it('handles missing plugin config and default modes properly', () => {
     registeredPlugins.push({ id: 'plug1' })
-    getPanelConfig.mockReturnValue({
+    defaultAppState.panelConfig =({
       p1: { desktop: { slot: 'header' }, pluginId: 'plug1' }
     })
     expect(map()).toHaveLength(1)
   })
 
   it('replaces bottom slot with inset on non-mobile breakpoints', () => {
-    getPanelConfig.mockReturnValue({
+    defaultAppState.panelConfig =({
       p1: {
         desktop: { slot: 'bottom' },
         includeModes: ['view']

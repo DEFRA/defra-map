@@ -1,6 +1,6 @@
 import { initialState, reducer } from './mapReducer.js'
 import { actionsMap } from './mapActionsMap.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
+import { createMockRegistries } from '../__test-helpers__/mockRegistries.js'
 
 jest.mock('./mapActionsMap.js', () => ({
   actionsMap: {
@@ -8,14 +8,13 @@ jest.mock('./mapActionsMap.js', () => ({
   }
 }))
 
-jest.mock('../registry/pluginRegistry.js', () => ({
-  registeredPlugins: []
-}))
-
 describe('mapReducer', () => {
+  let mockPluginRegistry
+
   beforeEach(() => {
     jest.clearAllMocks()
-    registeredPlugins.length = 0 // reset plugin list
+    const registries = createMockRegistries()
+    mockPluginRegistry = registries.pluginRegistry
   })
 
   describe('initialState', () => {
@@ -28,8 +27,14 @@ describe('mapReducer', () => {
       markers: [{ id: 1, name: 'Marker1' }]
     }
 
+    const getConfig = (overrides = {}) => ({
+      ...baseConfig,
+      pluginRegistry: mockPluginRegistry,
+      ...overrides
+    })
+
     test('returns default state using mapStyle when no plugin handles map styles', () => {
-      const state = initialState(baseConfig)
+      const state = initialState(getConfig())
 
       expect(state).toMatchObject({
         isMapReady: false,
@@ -53,10 +58,9 @@ describe('mapReducer', () => {
     })
 
     test('sets mapStyle to null when a plugin handles map styles', () => {
-      registeredPlugins.push({ config: { handlesMapStyle: true } })
+      mockPluginRegistry.registeredPlugins.push({ config: { handlesMapStyle: true } })
 
-      const config = { ...baseConfig, mapStyle: { id: 'custom' }, center: [10, 20], zoom: 12 }
-      const state = initialState(config)
+      const state = initialState(getConfig({ mapStyle: { id: 'custom' }, center: [10, 20], zoom: 12 }))
 
       expect(state.mapStyle).toBeNull()
       expect(state.center).toEqual([10, 20])
@@ -64,30 +68,25 @@ describe('mapReducer', () => {
     })
 
     test('defaults markers.items to empty array when no markers are provided', () => {
-      const config = { ...baseConfig, markers: undefined }
-      const state = initialState(config)
+      const state = initialState(getConfig({ markers: undefined }))
 
       expect(state.markers.items).toEqual([])
     })
 
     test('uses extent when bounds is not provided', () => {
-      const config = { 
-        ...baseConfig, 
+      const state = initialState(getConfig({
         bounds: undefined,
         extent: [5, 6, 7, 8]
-      }
-      const state = initialState(config)
+      }))
 
       expect(state.bounds).toEqual([5, 6, 7, 8])
     })
 
     test('prefers bounds over extent when both are provided', () => {
-      const config = { 
-        ...baseConfig, 
+      const state = initialState(getConfig({
         bounds: [1, 2, 3, 4],
         extent: [5, 6, 7, 8]
-      }
-      const state = initialState(config)
+      }))
 
       expect(state.bounds).toEqual([1, 2, 3, 4])
     })

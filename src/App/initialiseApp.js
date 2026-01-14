@@ -12,6 +12,7 @@ import { App } from './App.jsx'
 
 const rootMap = new WeakMap()
 const mapProviderMap = new WeakMap()
+const registryMap = new WeakMap()
 
 export async function initialiseApp (rootElement, {
   MapProvider: MapProviderClass,
@@ -35,18 +36,26 @@ export async function initialiseApp (rootElement, {
     setProviderSupportedShortcuts(mapProvider.capabilities.supportedShortcuts)
   }
 
-  // Create registries
-  const buttonRegistry = createButtonRegistry()
-  const panelRegistry = createPanelRegistry()
-  const controlRegistry = createControlRegistry()
-  const pluginRegistry = createPluginRegistry({
-    registerButton: buttonRegistry.registerButton,
-    registerPanel: panelRegistry.registerPanel, 
-    registerControl: controlRegistry.registerControl
-  })
+  // Reuse or create registries (persist across app open/close cycles)
+  let registries = registryMap.get(rootElement)
+  if (!registries) {
+    const buttonRegistry = createButtonRegistry()
+    const panelRegistry = createPanelRegistry()
+    const controlRegistry = createControlRegistry()
+    const pluginRegistry = createPluginRegistry({
+      registerButton: buttonRegistry.registerButton,
+      registerPanel: panelRegistry.registerPanel,
+      registerControl: controlRegistry.registerControl
+    })
+
+    registries = { buttonRegistry, panelRegistry, controlRegistry, pluginRegistry }
+    registryMap.set(rootElement, registries)
+  }
+
+  const { buttonRegistry, panelRegistry, controlRegistry, pluginRegistry } = registries
   const { registerPlugin } = pluginRegistry
 
-  // Clear previous plugins
+  // Clear previous plugins (but keep runtime additions)
   pluginRegistry.clear()
 
   // Register default appConfig as a plugin

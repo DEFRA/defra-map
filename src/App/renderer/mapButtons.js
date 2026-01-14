@@ -81,8 +81,8 @@ function renderButton ({ btn, appState, appConfig, evaluateProp, groupStart, gro
 }
 
 function mapButtons ({ slot, appState, appConfig, evaluateProp }) {
-  const { buttonRegistry, breakpoint } = appState
-  const buttonConfig = buttonRegistry.getButtonConfig()
+  const { buttonConfig, breakpoint } = appState
+
   const matching = getMatchingButtons({ appState, appConfig, buttonConfig, slot, evaluateProp })
 
   if (!matching.length) {

@@ -52,11 +52,17 @@ describe('Viewport', () => {
     })
 
     useMap.mockReturnValue({
-      mapSize: 'medium'
+      mapSize: 'medium',
+      dispatch: jest.fn()
     })
 
     useService.mockReturnValue({
-      announce: jest.fn()
+      announce: jest.fn(),
+      eventBus: {
+        on: jest.fn(),
+        off: jest.fn(),
+        emit: jest.fn()
+      }
     })
 
     useKeyboardHint.mockImplementation(({ onViewportFocusChange }) => ({

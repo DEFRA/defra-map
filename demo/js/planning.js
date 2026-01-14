@@ -78,7 +78,7 @@ const framePlugin = createFramePlugin({
 })
 
 const defraMap = new DefraMap('map', {
-	behaviour: 'hybrid',
+	behaviour: 'mapOnly',
 	mapProvider: esriProvider({
 		setupConfig: setupEsriConfig
 	}),

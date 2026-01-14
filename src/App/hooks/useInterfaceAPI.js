@@ -9,26 +9,20 @@ import { useApp } from '../store/appContext.js'
 import { useService } from '../store/serviceContext.js'
 
 export const useInterfaceAPI = () => {
-  const { dispatch, breakpoint, buttonRegistry, controlRegistry, panelRegistry } = useApp()
-  const { addPanel, removePanel } = panelRegistry
+  const { dispatch } = useApp()
   const { eventBus } = useService()
 
   useEffect(() => {
     const handleAddButton = ({ id, config }) => {
-      buttonRegistry.addButton(id, config)
+      dispatch({ type: 'ADD_BUTTON', payload: { id, config } })
     }
 
     const handleAddPanel = ({ id, config }) => {
-      const panel = addPanel(id, config)
-      if (!panel[breakpoint]?.initiallyOpen) {
-        return
-      }
-      dispatch({ type: 'OPEN_PANEL', payload: { panelId: id }})
+      dispatch({ type: 'ADD_PANEL', payload: { id, config } })
     }
 
     const handleRemovePanel = (id) => {
-      dispatch({ type: 'CLOSE_PANEL', payload: id })
-      removePanel(id)
+      dispatch({ type: 'REMOVE_PANEL', payload: id })
     }
 
     const handleShowPanel = (id) => {
@@ -40,7 +34,7 @@ export const useInterfaceAPI = () => {
     }
 
     const handleAddControl = ({ id, config }) => {
-      controlRegistry.addControl(id, config)
+      dispatch({ type: 'ADD_CONTROL', payload: { id, config } })
     }
 
     eventBus.on(events.APP_ADD_BUTTON, handleAddButton)
@@ -58,5 +52,5 @@ export const useInterfaceAPI = () => {
       eventBus.off(events.APP_HIDE_PANEL, handleHidePanel)
       eventBus.off(events.APP_ADD_CONTROL, handleAddControl)
     }
-  }, [dispatch])
+  }, [dispatch, eventBus])
 }

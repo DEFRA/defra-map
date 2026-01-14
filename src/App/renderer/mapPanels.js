@@ -8,8 +8,7 @@ import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'
 
 export function mapPanels ({ slot, appState, evaluateProp }) {
-  const { breakpoint, pluginRegistry, panelRegistry, mode, openPanels } = appState
-  const panelConfig = panelRegistry.getPanelConfig()
+  const { breakpoint, pluginRegistry, panelConfig, mode, openPanels } = appState
 
   const openPanelEntries = Object.entries(openPanels)
   

@@ -11,18 +11,6 @@ jest.mock('../../services/reverseGeocode.js', () => ({
   reverseGeocode: jest.fn(() => 'mockedReverseGeocode')
 }))
 
-// Default export mock for eventBus
-jest.mock('../../services/eventBus.js', () => ({
-  __esModule: true,
-  default: { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
-}))
-
-// Fix closeApp mock to match your named import
-jest.mock('../../services/closeApp.js', () => ({
-  __esModule: true,
-  closeApp: jest.fn()
-}))
-
 jest.mock('../../services/closeApp.js', () => ({
   closeApp: jest.fn()
 }))
@@ -37,11 +25,11 @@ jest.mock('../store/configContext.js', () => ({
 
 import { createAnnouncer } from '../../services/announcer.js'
 import { reverseGeocode } from '../../services/reverseGeocode.js'
-import eventBus from '../../services/eventBus.js'
 import { closeApp } from '../../services/closeApp.js'
 
 describe('ServiceProvider', () => {
-  const wrapper = ({ children }) => <ServiceProvider>{children}</ServiceProvider>
+  const mockEventBus = { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
+  const wrapper = ({ children }) => <ServiceProvider eventBus={mockEventBus}>{children}</ServiceProvider>
 
   test('provides announce, reverseGeocode, eventBus, and closeApp via context', () => {
     const { result } = renderHook(() => React.useContext(ServiceContext), { wrapper })
@@ -53,7 +41,7 @@ describe('ServiceProvider', () => {
     expect(reverseGeocode).toHaveBeenCalledWith(10, { lat: 1, lng: 2 })
     expect(output).toBe('mockedReverseGeocode')
 
-    expect(result.current.eventBus).toBe(eventBus)
+    expect(result.current.eventBus).toBe(mockEventBus)
 
     expect(typeof result.current.closeApp).toBe('function')
     expect(result.current.mapStatusRef).toBeDefined()
@@ -79,6 +67,6 @@ describe('ServiceProvider', () => {
     result.current.closeApp()
 
     expect(closeApp).toHaveBeenCalledTimes(1)
-    expect(closeApp).toHaveBeenCalledWith('abc', mockHandleExitClick)
+    expect(closeApp).toHaveBeenCalledWith('abc', mockHandleExitClick, mockEventBus)
   })
 })

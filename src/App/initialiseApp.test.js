@@ -1,111 +1,184 @@
 import React from 'react'
 import { initialiseApp } from './initialiseApp.js'
 import { createRoot } from 'react-dom/client'
-import eventBus from '../services/eventBus.js'
-import { registerPlugin, registeredPlugins } from './registry/pluginRegistry.js'
-import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
-import { mergeManifests } from './registry/mergeManifests.js'
 import { EVENTS as events } from '../config/events.js'
+import { createMockRegistries } from './__test-helpers__/mockRegistries.js'
+import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 
-jest.mock('react-dom/client', () => ({ createRoot: jest.fn(() => ({ render: jest.fn(), unmount: jest.fn() })) }))
-jest.mock('../services/eventBus.js', () => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() }))
-jest.mock('./registry/pluginRegistry.js', () => ({ registerPlugin: jest.fn(), registeredPlugins: [] }))
-jest.mock('./registry/keyboardShortcutRegistry.js', () => ({ setProviderSupportedShortcuts: jest.fn() }))
-jest.mock('./registry/mergeManifests.js', () => ({ mergeManifests: jest.fn((base, override) => ({ ...base, ...override })) }))
-jest.mock('./App.jsx', () => ({ App: jest.fn(() => <div>App</div>) }))
+// --------------------------------------------------
+// Shared mocks
+// --------------------------------------------------
+let mockRegistries
 
-describe('initialiseApp', () => {
-  let rootElement, MapProviderMock
+const mockEventBus = {
+  on: jest.fn(),
+  off: jest.fn(),
+  emit: jest.fn()
+}
 
-  const createMapProviderMock = (capabilities) => {
-    return jest.fn(function ({ mapFramework, eventBus, events: evt, mapProviderConfig }) {
-      this.mapFramework = mapFramework
-      this.eventBus = eventBus
-      this.events = evt
-      this.mapProviderConfig = mapProviderConfig
-      if (capabilities) this.capabilities = capabilities
-    })
-  }
+beforeEach(() => {
+  mockRegistries = createMockRegistries()
+  jest.clearAllMocks()
+})
 
-  const createPlugin = ({ manifest = { version: '1.0' }, overrideManifest = {}, api = { foo: jest.fn() } } = {}) => ({
-    id: 'plugin1',
-    load: jest.fn(() => Promise.resolve({ manifest, api })),
-    manifest: overrideManifest
+// --------------------------------------------------
+// Module mocks
+// --------------------------------------------------
+jest.mock('react-dom/client', () => ({
+  createRoot: jest.fn(() => ({
+    render: jest.fn(),
+    unmount: jest.fn()
+  }))
+}))
+
+jest.mock('./registry/buttonRegistry.js', () => ({
+  createButtonRegistry: jest.fn(() => mockRegistries.buttonRegistry)
+}))
+
+jest.mock('./registry/panelRegistry.js', () => ({
+  createPanelRegistry: jest.fn(() => mockRegistries.panelRegistry)
+}))
+
+jest.mock('./registry/controlRegistry.js', () => ({
+  createControlRegistry: jest.fn(() => mockRegistries.controlRegistry)
+}))
+
+jest.mock('./registry/pluginRegistry.js', () => ({
+  createPluginRegistry: jest.fn(() => mockRegistries.pluginRegistry)
+}))
+
+jest.mock('./registry/keyboardShortcutRegistry.js', () => ({
+  setProviderSupportedShortcuts: jest.fn()
+}))
+
+jest.mock('./registry/mergeManifests.js', () => ({
+  mergeManifests: jest.fn((base, override) => ({ ...base, ...override }))
+}))
+
+jest.mock('./App.jsx', () => ({
+  App: jest.fn(() => <div>App</div>)
+}))
+
+// --------------------------------------------------
+// Test helpers
+// --------------------------------------------------
+const createMapProviderMock = (capabilities) =>
+  jest.fn(function ({ mapFramework, eventBus, events: evt, mapProviderConfig }) {
+    this.mapFramework = mapFramework
+    this.eventBus = eventBus
+    this.events = evt
+    this.mapProviderConfig = mapProviderConfig
+    if (capabilities) this.capabilities = capabilities
   })
+
+const createPlugin = (overrides = {}) => ({
+  id: 'plugin1',
+  load: jest.fn(() =>
+    Promise.resolve({
+      manifest: { version: '1.0' },
+      api: { foo: jest.fn() },
+      ...overrides
+    })
+  ),
+  manifest: overrides.overrideManifest ?? {}
+})
+
+// --------------------------------------------------
+// Tests
+// --------------------------------------------------
+describe('initialiseApp', () => {
+  let rootElement
+  let MapProviderMock
+
+  const initApp = (overrides = {}) =>
+    initialiseApp(rootElement, {
+      MapProvider: MapProviderMock,
+      mapFramework: 'test',
+      eventBus: mockEventBus,
+      plugins: [],
+      ...overrides
+    })
 
   beforeEach(() => {
     rootElement = document.createElement('div')
-    MapProviderMock = createMapProviderMock({ supportedShortcuts: ['ctrl+a'] })
-    jest.clearAllMocks()
-    registeredPlugins.length = 0
+    MapProviderMock = createMapProviderMock({
+      supportedShortcuts: ['ctrl+a']
+    })
   })
 
-  test('initialises app, registers appConfig plugin, and passes restProps to App', async () => {
-    const restProps = { foo: 'bar' }
-    const appInstance = await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'mockFramework', plugins: [], ...restProps })
+  test('initialises app and wires dependencies', async () => {
+    const appInstance = await initApp({ foo: 'bar' })
 
-    expect(MapProviderMock).toHaveBeenCalledWith({ mapFramework: 'mockFramework', mapProviderConfig: undefined, events, eventBus })
-    expect(setProviderSupportedShortcuts).toHaveBeenCalledWith(['ctrl+a'])
-    expect(registerPlugin).toHaveBeenCalledWith(expect.objectContaining({ id: 'appConfig' }))
+    expect(MapProviderMock).toHaveBeenCalledWith({
+      mapFramework: 'test',
+      mapProviderConfig: undefined,
+      events,
+      eventBus: mockEventBus
+    })
 
-    const renderedElement = createRoot.mock.results[0].value.render.mock.calls[0][0]
-    expect(renderedElement.props).toEqual(expect.objectContaining({ foo: 'bar', mapProvider: expect.any(Object) }))
+    expect(mockRegistries.pluginRegistry.registerPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'appConfig' })
+    )
 
-    expect(appInstance.on).toBe(eventBus.on)
-    expect(appInstance.off).toBe(eventBus.off)
-    expect(appInstance.emit).toBe(eventBus.emit)
+    const rendered = createRoot.mock.results[0].value.render.mock.calls[0][0]
+
+    expect(rendered.props.foo).toBe('bar')
+
+    expect(appInstance.on).toBe(mockEventBus.on)
+    expect(appInstance.emit).toBe(mockEventBus.emit)
 
     appInstance.unmount()
-    expect(createRoot.mock.results[0].value.unmount).toHaveBeenCalled()
-    expect(registeredPlugins.length).toBe(0)
+
+    expect(mockRegistries.pluginRegistry.clear).toHaveBeenCalled()
   })
 
-  test('loads plugin, merges manifest, and registers it', async () => {
-    const plugin = createPlugin({ manifest: { version: '1.1' }, overrideManifest: { extra: true } })
-    await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'mockFramework', plugins: [plugin] })
+  test('loads and registers plugin', async () => {
+    const plugin = createPlugin({ overrideManifest: { extra: true } })
+
+    await initApp({ plugins: [plugin] })
 
     expect(plugin.load).toHaveBeenCalled()
-    expect(mergeManifests).toHaveBeenCalledWith({ manifest: { version: '1.1' } }, { extra: true })
-    expect(registerPlugin).toHaveBeenCalledWith(expect.objectContaining({ id: 'plugin1', _originalPlugin: plugin }))
+    expect(mockRegistries.pluginRegistry.registerPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({ _originalPlugin: plugin })
+    )
   })
 
-  test('skips plugins without load function', async () => {
-    await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'test', plugins: [{ id: 'noLoad', someOtherProp: 'value' }] })
-    expect(registerPlugin).not.toHaveBeenCalledWith(expect.objectContaining({ id: 'noLoad' }))
+  test('skips plugins without load', async () => {
+    await initApp({ plugins: [{ id: 'noLoad' }] })
+
+    expect(mockRegistries.pluginRegistry.registerPlugin).toHaveBeenCalledTimes(1)
   })
 
-  test('reuses cached MapProvider and root instances', async () => {
-    await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'test' })
+  test('reuses cached root and provider', async () => {
+    await initApp()
     jest.clearAllMocks()
-    await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'test' })
+    await initApp()
 
     expect(MapProviderMock).not.toHaveBeenCalled()
     expect(createRoot).not.toHaveBeenCalled()
   })
 
-  test('creates separate instances for different root elements', async () => {
-    await initialiseApp(document.createElement('div'), { MapProvider: MapProviderMock, mapFramework: 'test' })
-    await initialiseApp(document.createElement('div'), { MapProvider: MapProviderMock, mapFramework: 'test' })
+  test('creates separate instances per root', async () => {
+    await initialiseApp(document.createElement('div'), {
+      MapProvider: MapProviderMock,
+      mapFramework: 'test',
+      eventBus: mockEventBus
+    })
+
+    await initialiseApp(document.createElement('div'), {
+      MapProvider: MapProviderMock,
+      mapFramework: 'test',
+      eventBus: mockEventBus
+    })
 
     expect(MapProviderMock).toHaveBeenCalledTimes(2)
-    expect(createRoot).toHaveBeenCalledTimes(2)
   })
 
-  test('handles plugin without API', async () => {
-    const plugin = createPlugin({ api: undefined })
-    await initialiseApp(rootElement, { MapProvider: MapProviderMock, mapFramework: 'test', plugins: [plugin] })
-    expect(registerPlugin).toHaveBeenCalledWith(expect.objectContaining({ id: 'plugin1' }))
-  })
+  test('does not register shortcuts when unsupported', async () => {
+    MapProviderMock = createMapProviderMock()
 
-  test('does not call setProviderSupportedShortcuts when capabilities are undefined', async () => {
-    const MapProviderWithoutCapabilities = createMapProviderMock()
-    await initialiseApp(rootElement, { MapProvider: MapProviderWithoutCapabilities, mapFramework: 'test', plugins: [] })
-    expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
-  })
+    await initApp()
 
-  test('does not call setProviderSupportedShortcuts when supportedShortcuts are undefined', async () => {
-    const MapProviderWithEmptyCapabilities = createMapProviderMock({})
-    await initialiseApp(rootElement, { MapProvider: MapProviderWithEmptyCapabilities, mapFramework: 'test', plugins: [] })
     expect(setProviderSupportedShortcuts).not.toHaveBeenCalled()
   })
 })

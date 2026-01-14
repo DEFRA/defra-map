@@ -3,15 +3,18 @@ import { useMapAnnouncements } from './useMapAnnouncements'
 import { useConfig } from '../store/configContext.js'
 import { useService } from '../store/serviceContext.js'
 import { getMapStatusMessage } from '../../utils/getMapStatusMessage.js'
-import eventBus from '../../services/eventBus.js'
 
 jest.mock('../store/configContext.js')
 jest.mock('../store/serviceContext.js')
 jest.mock('../../utils/getMapStatusMessage.js')
-jest.mock('../../services/eventBus.js')
 
 const setup = (overrides = {}) => {
   const announce = jest.fn()
+  const eventBus = {
+    on: jest.fn(),
+    off: jest.fn(),
+    emit: jest.fn()
+  }
   const mapProvider = {
     getAreaDimensions: jest.fn(() => ({ width: 100, height: 100 })),
     getCardinalMove: jest.fn(() => 'north'),
@@ -19,14 +22,14 @@ const setup = (overrides = {}) => {
   }
 
   useConfig.mockReturnValue({ mapProvider, ...overrides.config })
-  useService.mockReturnValue({ announce, ...overrides.service })
+  useService.mockReturnValue({ announce, eventBus, ...overrides.service })
 
   getMapStatusMessage.moved = jest.fn(() => 'Moved north')
   getMapStatusMessage.zoomed = jest.fn(() => 'Zoomed in')
   getMapStatusMessage.noChange = jest.fn(() => 'No change')
   getMapStatusMessage.newArea = jest.fn(() => 'New area')
 
-  return { announce, mapProvider }
+  return { announce, mapProvider, eventBus }
 }
 
 describe('useMapAnnouncements', () => {
@@ -35,20 +38,20 @@ describe('useMapAnnouncements', () => {
   })
 
   test('subscribes to map:stateupdated event on mount', () => {
-    setup()
+    const { eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     expect(eventBus.on).toHaveBeenCalledWith('map:stateupdated', expect.any(Function))
   })
 
   test('unsubscribes from event on unmount', () => {
-    setup()
+    const { eventBus } = setup()
     const { unmount } = renderHook(() => useMapAnnouncements())
     unmount()
     expect(eventBus.off).toHaveBeenCalledWith('map:stateupdated', expect.any(Function))
   })
 
   test('early returns when previous or current center is missing', () => {
-    const { announce } = setup()
+    const { announce, eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -60,7 +63,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('announces moved message when only center changes', () => {
-    const { announce, mapProvider } = setup()
+    const { announce, mapProvider, eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -78,7 +81,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('announces zoomed message when only zoom changes', () => {
-    const { announce } = setup()
+    const { announce, eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -98,7 +101,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('announces no change message when neither center nor zoom changes', () => {
-    const { announce } = setup()
+    const { announce, eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -115,7 +118,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('announces new area message when both center and zoom change', () => {
-    const { announce } = setup()
+    const { announce, eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -133,6 +136,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('detects center change correctly for lat or lng', () => {
+    const { eventBus } = setup()
     renderHook(() => useMapAnnouncements())
     const handler = eventBus.on.mock.calls[0][1]
 
@@ -151,7 +155,7 @@ describe('useMapAnnouncements', () => {
   })
 
   test('does not announce when message is falsy', () => {
-    const { announce } = setup()
+    const { announce, eventBus } = setup()
     getMapStatusMessage.noChange = jest.fn(() => null)
 
     renderHook(() => useMapAnnouncements())

@@ -8,6 +8,22 @@ describe('actionsMap', () => {
   let state
 
   beforeEach(() => {
+    // Mock realistic panel config including breakpoints + exclusive/modal flags
+    const mockPanelConfig = {
+      panel1: {
+        desktop: { exclusive: true, modal: false, initiallyOpen: true },
+        mobile: { exclusive: true, modal: false }
+      },
+      panel2: {
+        desktop: { exclusive: false, modal: true },
+        mobile: { exclusive: false, modal: true }
+      },
+      panel3: {
+        desktop: { exclusive: false, modal: false },
+        mobile: { exclusive: false, modal: false }
+      }
+    }
+
     state = {
       mode: 'view',
       previousMode: 'edit',
@@ -21,24 +37,11 @@ describe('actionsMap', () => {
       syncMapPadding: true,
       disabledButtons: new Set(['btn1']),
       hiddenButtons: new Set(['btn3']),
-      pressedButtons: new Set(['btn5'])
+      pressedButtons: new Set(['btn5']),
+      panelConfig: mockPanelConfig
     }
 
-    // Mock realistic panel config including breakpoints + exclusive/modal flags
-    jest.spyOn(panelRegistry, 'getPanelConfig').mockReturnValue({
-      panel1: {
-        desktop: { exclusive: true, modal: false, initiallyOpen: true },
-        mobile: { exclusive: true, modal: false }
-      },
-      panel2: {
-        desktop: { exclusive: false, modal: true },
-        mobile: { exclusive: false, modal: true }
-      },
-      panel3: {
-        desktop: { exclusive: false, modal: false },
-        mobile: { exclusive: false, modal: false }
-      }
-    })
+    jest.spyOn(panelRegistry, 'getPanelConfig').mockReturnValue(mockPanelConfig)
 
     jest.spyOn(getInitialOpenPanelsModule, 'getInitialOpenPanels').mockImplementation(
       () => ({ panel1: { props: {} } })

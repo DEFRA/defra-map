@@ -7,7 +7,6 @@ import * as mapStore from '../store/mapContext.js'
 import * as serviceStore from '../store/serviceContext.js'
 import { PluginContext } from '../store/PluginProvider.jsx'
 import * as iconRegistryModule from '../registry/iconRegistry.js'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 // --- Mock the dependencies ---
 jest.mock('../store/configContext.js', () => ({ useConfig: jest.fn() }))
@@ -18,6 +17,11 @@ jest.mock('../registry/iconRegistry.js', () => ({ getIconRegistry: jest.fn() }))
 
 describe('useEvaluateProp hook', () => {
   const pluginDispatch = jest.fn()
+  const mockPluginRegistry = {
+    registeredPlugins: [],
+    registerPlugin: jest.fn(),
+    clear: jest.fn()
+  }
 
   const pluginContextValue = {
     state: { myPlugin: { foo: 'bar' } },
@@ -26,7 +30,11 @@ describe('useEvaluateProp hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    configStore.useConfig.mockReturnValue({ mapProvider: { name: 'leaflet' } })
+    mockPluginRegistry.registeredPlugins = []
+    configStore.useConfig.mockReturnValue({
+      mapProvider: { name: 'leaflet' },
+      pluginRegistry: mockPluginRegistry
+    })
     appStore.useApp.mockReturnValue({ user: 'alice' })
     mapStore.useMap.mockReturnValue({ zoom: 5 })
     serviceStore.useService.mockReturnValue({ reverseGeocode: jest.fn() })
@@ -70,7 +78,7 @@ describe('useEvaluateProp hook', () => {
   })
 
   it('includes pluginConfig and pluginState when pluginId provided', () => {
-    registeredPlugins.push({ id: 'myPlugin', config: { includeModes: ['edit'], excludeModes: ['view'] } })
+    mockPluginRegistry.registeredPlugins.push({ id: 'myPlugin', config: { includeModes: ['edit'], excludeModes: ['view'] } })
 
     const wrapper = ({ children }) => (
       <PluginContext.Provider value={pluginContextValue}>

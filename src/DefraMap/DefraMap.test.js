@@ -30,7 +30,10 @@ jest.mock('../config/mergeConfig.js', () => ({ mergeConfig: jest.fn(cfg => cfg) 
 jest.mock('../utils/detectBreakpoint.js', () => ({ createBreakpointDetector: jest.fn(), getBreakpoint: jest.fn(() => 'desktop') }))
 jest.mock('../utils/detectInterfaceType.js', () => ({ createInterfaceDetector: jest.fn(), getInterfaceType: jest.fn(() => 'keyboard') }))
 jest.mock('../services/reverseGeocode.js', () => ({ createReverseGeocode: jest.fn() }))
-jest.mock('../services/eventBus.js', () => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() }))
+jest.mock('../services/eventBus.js', () => ({
+  createEventBus: jest.fn(() => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() })),
+  default: { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
+}))
 jest.mock('../App/initialiseApp.js', () => ({ initialiseApp: jest.fn() }))
 
 const { initialiseApp } = require('../App/initialiseApp.js')
@@ -253,12 +256,12 @@ describe('DefraMap Public API Methods', () => {
     map.removeMarker('marker-1')
     map.setMode('test-mode')
 
-    expect(eventBus.on).toHaveBeenCalledWith('testEvent', cb)
-    expect(eventBus.off).toHaveBeenCalledWith('testEvent', cb)
-    expect(eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addmarker', { id: 'marker-1', coords, options })
-    expect(eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
-    expect(eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
+    expect(map.eventBus.on).toHaveBeenCalledWith('testEvent', cb)
+    expect(map.eventBus.off).toHaveBeenCalledWith('testEvent', cb)
+    expect(map.eventBus.emit).toHaveBeenCalledWith('customEvent', 123)
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:addmarker', { id: 'marker-1', coords, options })
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:removemarker', 'marker-1')
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:setmode', 'test-mode')
   })
 
   it('delegates addButton, addPanel, addControl, removePanel, showPanel, hidePanel correctly', () => {
@@ -277,13 +280,13 @@ describe('DefraMap Public API Methods', () => {
     map.hidePanel('panel3')
 
     // Existing assertions
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addbutton', { id: 'btn1', config: buttonConfig })
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addpanel', { id: 'panel1', config: panelConfig })
-    expect(eventBus.emit).toHaveBeenCalledWith('app:addcontrol', { id: 'ctrl1', config: controlConfig })
-    expect(eventBus.emit).toHaveBeenCalledWith('app:removepanel', 'panel1')
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:addbutton', { id: 'btn1', config: buttonConfig })
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:addpanel', { id: 'panel1', config: panelConfig })
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:addcontrol', { id: 'ctrl1', config: controlConfig })
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:removepanel', 'panel1')
 
     // New assertions for coverage
-    expect(eventBus.emit).toHaveBeenCalledWith('app:showpanel', 'panel2')
-    expect(eventBus.emit).toHaveBeenCalledWith('app:hidepanel', 'panel3')
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:showpanel', 'panel2')
+    expect(map.eventBus.emit).toHaveBeenCalledWith('app:hidepanel', 'panel3')
   })
 })

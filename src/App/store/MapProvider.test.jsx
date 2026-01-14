@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, act } from '@testing-library/react'
 import { MapProvider, MapContext } from './MapProvider.jsx'
-import eventBus from '../../services/eventBus.js'
 
 // Mock mapReducer module correctly (self-contained factory)
 jest.mock('./mapReducer.js', () => {
@@ -32,24 +31,22 @@ jest.mock('./mapReducer.js', () => {
   return { initialState, actionsMap, reducer }
 })
 
-// Mock eventBus
-jest.mock('../../services/eventBus.js', () => ({
-  on: jest.fn(),
-  off: jest.fn()
-}))
-
 describe('MapProvider', () => {
   let capturedHandlers = {}
+  let mockEventBus
 
   beforeEach(() => {
     localStorage.clear()
     capturedHandlers = {}
 
-    // Capture event handlers
-    eventBus.on.mockImplementation((event, handler) => {
-      capturedHandlers[event] = handler
-    })
-    eventBus.off.mockClear()
+    mockEventBus = {
+      on: jest.fn((event, handler) => {
+        capturedHandlers[event] = handler
+      }),
+      off: jest.fn(),
+      emit: jest.fn()
+    }
+
     jest.clearAllMocks()
   })
 
@@ -61,7 +58,7 @@ describe('MapProvider', () => {
     }
 
     const { getByText } = render(
-      <MapProvider options={{ id: 'map1', mapSize: '100x100' }}>
+      <MapProvider options={{ id: 'map1', mapSize: '100x100', eventBus: mockEventBus }}>
         <Child />
       </MapProvider>
     )
@@ -76,16 +73,16 @@ describe('MapProvider', () => {
 
   test('subscribes and unsubscribes to eventBus', () => {
     render(
-      <MapProvider options={{ id: 'map1', mapSize: '100x100' }}>
+      <MapProvider options={{ id: 'map1', mapSize: '100x100', eventBus: mockEventBus }}>
         <div>Child</div>
       </MapProvider>
     )
 
     // Ensure all events subscribed
-    expect(eventBus.on).toHaveBeenCalledWith('map:ready', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:initmapstyles', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:setstyle', expect.any(Function))
-    expect(eventBus.on).toHaveBeenCalledWith('map:setsize', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:ready', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:initmapstyles', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:setstyle', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:setsize', expect.any(Function))
 
     // Trigger handlers → covers reducer calls
     act(() => {
@@ -97,7 +94,7 @@ describe('MapProvider', () => {
   })
 
   test('initMapStyles uses options.mapSize if localStorage has no saved mapSize', () => {
-    const options = { id: 'map1', mapSize: '200x200' }
+    const options = { id: 'map1', mapSize: '200x200', eventBus: mockEventBus }
     const mapStyles = [{ id: 'style1' }]
 
     render(
@@ -116,7 +113,7 @@ describe('MapProvider', () => {
 
   test('initMapStyles uses savedMapSize from localStorage if present', () => {
     localStorage.setItem('map1:mapSize', '150x150')
-    const options = { id: 'map1', mapSize: '200x200' }
+    const options = { id: 'map1', mapSize: '200x200', eventBus: mockEventBus }
     const mapStyles = [{ id: 'style1' }]
 
     render(
@@ -135,7 +132,7 @@ describe('MapProvider', () => {
 
   test('handles dispatch actions correctly', () => {
     render(
-      <MapProvider options={{ id: 'map1', mapSize: '100x100' }}>
+      <MapProvider options={{ id: 'map1', mapSize: '100x100', eventBus: mockEventBus }}>
         <div>Child</div>
       </MapProvider>
     )

@@ -1,16 +1,16 @@
-import eventBus from '../services/eventBus.js'
 import { closeApp } from './closeApp'
-
-jest.mock('../services/eventBus.js', () => ({
-  __esModule: true,
-  default: { emit: jest.fn() }
-}))
 
 describe('closeApp', () => {
   let handleExitClickMock
+  let mockEventBus
 
   beforeEach(() => {
     handleExitClickMock = jest.fn()
+    mockEventBus = {
+      emit: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn()
+    }
     jest.spyOn(history, 'back').mockImplementation(() => {})
   })
 
@@ -26,9 +26,9 @@ describe('closeApp', () => {
       configurable: true
     })
 
-    closeApp('map-123', handleExitClickMock)
+    closeApp('map-123', handleExitClickMock, mockEventBus)
 
-    expect(eventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
+    expect(mockEventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
     expect(history.back).toHaveBeenCalled()
     expect(handleExitClickMock).not.toHaveBeenCalled()
   })
@@ -40,9 +40,9 @@ describe('closeApp', () => {
       configurable: true
     })
 
-    closeApp('map-123', handleExitClickMock)
+    closeApp('map-123', handleExitClickMock, mockEventBus)
 
-    expect(eventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
+    expect(mockEventBus.emit).toHaveBeenCalledWith('map:exit', { mapId: 'map-123' })
     expect(history.back).not.toHaveBeenCalled()
     expect(handleExitClickMock).toHaveBeenCalled()
   })

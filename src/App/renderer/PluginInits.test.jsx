@@ -1,17 +1,17 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { PluginInits } from './PluginInits.jsx'
-import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 import { useButtonStateEvaluator } from '../hooks/useButtonStateEvaluator.js'
 import { withPluginApiContexts } from './pluginApiWrapper.js'
 import { withPluginContexts } from './pluginWrapper.js'
+import { useInterfaceAPI } from '../hooks/useInterfaceAPI.js'
+import { useApp } from '../store/appContext.js'
+import { useConfig } from '../store/configContext.js'
 
-// Mock dependencies
-jest.mock('../registry/pluginRegistry.js', () => ({
-  registeredPlugins: []
-}))
-
+// --------------------
+// Mocks
+// --------------------
 jest.mock('./pluginWrapper.js', () => ({
   withPluginContexts: jest.fn((Comp) => Comp || (() => null))
 }))
@@ -34,18 +34,35 @@ jest.mock('../hooks/useEvaluateProp.js', () => ({
 }))
 
 jest.mock('../store/appContext.js', () => ({
-  useApp: jest.fn(() => ({ mode: 'view' }))
+  useApp: jest.fn()
 }))
 
+jest.mock('../store/configContext.js', () => ({
+  useConfig: jest.fn()
+}))
+
+// --------------------
+// Tests
+// --------------------
 describe('PluginInits', () => {
+  let pluginRegistryMock
+  const mode = 'view'
+
   beforeEach(() => {
     jest.clearAllMocks()
-    registeredPlugins.splice(0, registeredPlugins.length)
+
+    pluginRegistryMock = {
+      registeredPlugins: []
+    }
+
+    useApp.mockReturnValue({ mode })
+    useConfig.mockReturnValue({ pluginRegistry: pluginRegistryMock })
   })
 
   it('calls useButtonStateEvaluator and useInterfaceAPI on render', () => {
     render(<PluginInits />)
     expect(useButtonStateEvaluator).toHaveBeenCalled()
+    expect(useInterfaceAPI).toHaveBeenCalled()
   })
 
   it('renders nothing when no plugins registered', () => {
@@ -55,20 +72,24 @@ describe('PluginInits', () => {
 
   it('renders wrapped InitComponent for plugin with InitComponent and valid mode', () => {
     const InitComp = () => <div data-testid='init' />
-    registeredPlugins.push({
+    const plugin = {
       id: 'plugin1',
       _originalPlugin: {},
       config: { foo: 'bar', api: {} },
       InitComponent: InitComp
-    })
+    }
+    pluginRegistryMock.registeredPlugins.push(plugin)
 
     const { getByTestId } = render(<PluginInits />)
     expect(getByTestId('init')).toBeTruthy()
-    expect(withPluginContexts).toHaveBeenCalledWith(InitComp, expect.objectContaining({ pluginId: 'plugin1' }))
+    expect(withPluginContexts).toHaveBeenCalledWith(
+      InitComp,
+      expect.objectContaining({ pluginId: 'plugin1' })
+    )
   })
 
   it('skips plugin without InitComponent', () => {
-    registeredPlugins.push({
+    pluginRegistryMock.registeredPlugins.push({
       id: 'plugin2',
       _originalPlugin: {},
       config: { foo: 'bar', api: {} }
@@ -86,19 +107,22 @@ describe('PluginInits', () => {
       InitComponent: () => null,
       api: { testFn: mockFn }
     }
-    registeredPlugins.push(plugin)
+    pluginRegistryMock.registeredPlugins.push(plugin)
 
     render(<PluginInits />)
 
     expect(plugin._originalPlugin.testFn).toBeDefined()
     expect(typeof plugin._originalPlugin.testFn).toBe('function')
-    expect(withPluginApiContexts).toHaveBeenCalledWith(mockFn, expect.objectContaining({ pluginId: 'pluginApi' }))
+    expect(withPluginApiContexts).toHaveBeenCalledWith(
+      mockFn,
+      expect.objectContaining({ pluginId: 'pluginApi' })
+    )
   })
 
   it('handles plugin with api but missing config', () => {
     const mockFn = jest.fn()
     const plugin = { id: 'pluginMissingConfig', _originalPlugin: {}, api: { testFn: mockFn } }
-    registeredPlugins.push(plugin)
+    pluginRegistryMock.registeredPlugins.push(plugin)
 
     render(<PluginInits />)
 
@@ -108,7 +132,7 @@ describe('PluginInits', () => {
 
   it('handles plugin without _originalPlugin gracefully', () => {
     const mockFn = jest.fn()
-    registeredPlugins.push({ id: 'pluginNoOriginal', api: { testFn: mockFn }, config: {} })
+    pluginRegistryMock.registeredPlugins.push({ id: 'pluginNoOriginal', api: { testFn: mockFn }, config: {} })
 
     const { container } = render(<PluginInits />)
     expect(container.textContent).toBe('')
@@ -116,12 +140,13 @@ describe('PluginInits', () => {
 
   it('respects includeModes and excludeModes for InitComponent rendering', () => {
     const InitComp = () => <div data-testid='initMode' />
-    registeredPlugins.push({
+    const plugin = {
       id: 'pluginMode',
       _originalPlugin: {},
       config: { includeModes: ['edit'], excludeModes: ['view'], api: {} },
       InitComponent: InitComp
-    })
+    }
+    pluginRegistryMock.registeredPlugins.push(plugin)
 
     const { container } = render(<PluginInits />)
     expect(container.textContent).toBe('')

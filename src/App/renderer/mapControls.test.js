@@ -18,20 +18,30 @@ jest.mock('./slots.js', () => ({
 const mockGetControlConfig = getControlConfig
 
 describe('mapControls', () => {
-  const defaultAppState = { breakpoint: 'desktop', mode: 'view' }
+  let defaultAppState
 
   beforeEach(() => {
     jest.clearAllMocks()
+    defaultAppState = {
+      breakpoint: 'desktop',
+      mode: 'view',
+      controlConfig: {},
+      pluginRegistry: {
+        registeredPlugins: [
+          { id: 'plugin1', manifest: { controls: [{ id: 'ctrl1' }] }, config: { foo: 'bar' } }
+        ]
+      }
+    }
   })
 
   it('returns empty array when no controls are defined', () => {
-    mockGetControlConfig.mockReturnValue({})
+    defaultAppState.controlConfig =({})
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
     expect(result).toEqual([])
   })
 
   it('filters controls by slot and allowedSlots', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['view'] },
       ctrl2: { id: 'ctrl2', desktop: { slot: 'footer', order: 2 }, includeModes: ['view'] } // filtered out
     })
@@ -40,7 +50,7 @@ describe('mapControls', () => {
   })
 
   it('filters out controls missing breakpoint config', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', mobile: { slot: 'header', order: 1 }, includeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -48,7 +58,7 @@ describe('mapControls', () => {
   })
 
   it('filters by includeModes whitelist', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['edit'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -56,7 +66,7 @@ describe('mapControls', () => {
   })
 
   it('filters by excludeModes', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, excludeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -65,7 +75,7 @@ describe('mapControls', () => {
 
   it('maps plugin controls to wrapped component with correct order', () => {
     const renderFn = () => <div>Control</div>
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 5 }, render: renderFn, includeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -75,7 +85,7 @@ describe('mapControls', () => {
   })
 
   it('falls back to order 0 if order is missing', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl1: { id: 'ctrl1', desktop: { slot: 'header' }, render: () => <div />, includeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -83,7 +93,7 @@ describe('mapControls', () => {
   })
 
   it('renders HTML controls with dangerouslySetInnerHTML', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrlHtml: { id: 'ctrlHtml', desktop: { slot: 'header' }, html: '<p>Hi</p>', includeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
@@ -91,7 +101,7 @@ describe('mapControls', () => {
   })
 
   it('handles plugin-less controls gracefully', () => {
-    mockGetControlConfig.mockReturnValue({
+    defaultAppState.controlConfig =({
       ctrl2: { id: 'ctrl2', desktop: { slot: 'header' }, render: () => <div />, includeModes: ['view'] }
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })

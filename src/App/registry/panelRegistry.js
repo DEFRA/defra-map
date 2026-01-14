@@ -2,54 +2,60 @@
 import { defaultPanelConfig } from '../../config/appConfig.js'
 import { deepMerge } from '../../utils/deepMerge.js'
 
-export function createPanelRegistry() {
-  let panelConfig = {}
+// Pure utility functions for panel registry operations
+export const registerPanel = (currentConfig, panel) => {
+  const normalizedPanelConfig = Object.fromEntries(
+    Object.entries(panel).map(([key, value]) => [
+      key,
+      {
+        showLabel: true,
+        ...value
+      }
+    ])
+  )
+  return { ...currentConfig, ...normalizedPanelConfig }
+}
 
-  // Register panels from config/manifest
-  const registerPanel = (panel) => {
-    const normalizedPanelConfig = Object.fromEntries(
-      Object.entries(panel).map(([key, value]) => [
-        key,
-        {
-          showLabel: true,
-          ...value
-        }
-      ])
-    )
-    panelConfig = { ...panelConfig, ...normalizedPanelConfig }
-  }
+export const addPanel = (currentConfig, id, config) => {
+  const mergedConfig = deepMerge(defaultPanelConfig, config)
 
-  // Add a panel to the registry at run time
-  const addPanel = (id, config) => {
-    const mergedConfig = deepMerge(defaultPanelConfig, config)
-
-    panelConfig[id] = {
+  return {
+    ...currentConfig,
+    [id]: {
       ...mergedConfig,
       html: mergedConfig.html,
       render: mergedConfig.render
     }
-
-    return panelConfig[id]
   }
+}
 
-  // Remove a panel from the registry at run time
-  const removePanel = (id) => {
-    delete panelConfig[id]
-  }
+export const removePanel = (currentConfig, id) => {
+  const { [id]: _, ...rest } = currentConfig
+  return rest
+}
 
-  // Get the full panel config (optionally filtered later if needed)
-  const getPanelConfig = () => panelConfig
+export const getPanelConfig = (panelConfig) => panelConfig
 
-  // Clear all panels (useful when unmounting map)
-  const clear = () => {
-    panelConfig = {}
-  }
+// Factory function for backward compatibility during migration
+export function createPanelRegistry() {
+  let panelConfig = {}
 
   return {
-    registerPanel,
-    addPanel,
-    removePanel,
-    getPanelConfig,
-    clear
+    registerPanel: (panel) => {
+      panelConfig = registerPanel(panelConfig, panel)
+    },
+    addPanel: (id, config) => {
+      panelConfig = addPanel(panelConfig, id, config)
+      return panelConfig[id]
+    },
+    removePanel: (id) => {
+      panelConfig = removePanel(panelConfig, id)
+    },
+    getPanelConfig: () => {
+      return getPanelConfig(panelConfig)
+    },
+    clear: () => {
+      panelConfig = {}
+    }
   }
 }

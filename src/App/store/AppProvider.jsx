@@ -38,11 +38,11 @@ export const AppProvider = ({ options, children }) => {
 
   // Wrap dispatch to handle side effects
   const dispatch = useCallback((action) => {
-    const panelConfig = options.panelRegistry.getPanelConfig()
+    const panelConfig = state.panelConfig || options.panelRegistry.getPanelConfig()
     const previousState = state
     rawDispatch(action)
     handleActionSideEffects(action, previousState, panelConfig, eventBus)
-  }, [state, options])
+  }, [state, options, eventBus])
 
   useMediaQueryDispatch(dispatch, options)
 

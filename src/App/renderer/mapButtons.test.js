@@ -20,15 +20,7 @@ describe('mapButtons module', () => {
     includeModes: ['view']
   }
 
-  const appState = {
-    breakpoint: 'desktop',
-    mode: 'view',
-    openPanels: {},
-    dispatch: jest.fn(),
-    disabledButtons: new Set(),
-    hiddenButtons: new Set(),
-    pressedButtons: new Set()
-  }
+  let appState
 
   const appConfig = { id: 'test' }
 
@@ -36,7 +28,18 @@ describe('mapButtons module', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    getButtonConfig.mockReturnValue({})
+    appState = {
+      breakpoint: 'desktop',
+      mode: 'view',
+      openPanels: {},
+      dispatch: jest.fn(),
+      disabledButtons: new Set(),
+      hiddenButtons: new Set(),
+      pressedButtons: new Set(),
+      buttonConfig: {},
+      panelConfig: {}
+    }
+    appState.buttonConfig =({})
     getPanelConfig.mockReturnValue({})
     Object.defineProperty(document, 'activeElement', {
       value: document.createElement('div'),
@@ -157,13 +160,13 @@ describe('mapButtons module', () => {
     })
 
     it('returns a flat list of buttons with type and order', () => {
-      getButtonConfig.mockReturnValue({ b1: baseBtn })
+      appState.buttonConfig =({ b1: baseBtn })
       const result = map()
       expect(result[0]).toMatchObject({ id: 'b1', type: 'button', order: 1 })
     })
 
     it('sets groupStart, groupMiddle, and groupEnd flags correctly for multiple buttons', () => {
-      getButtonConfig.mockReturnValue({
+      appState.buttonConfig =({
         b1: { ...baseBtn, group: 'g1' },
         b2: { ...baseBtn, desktop: { slot: 'header', order: 2 }, group: 'g1' },
         b3: { ...baseBtn, desktop: { slot: 'header', order: 3 }, group: 'g1' }
@@ -175,12 +178,12 @@ describe('mapButtons module', () => {
     })
 
     it('ignores singleton groups when calculating group flags', () => {
-      getButtonConfig.mockReturnValue({ b1: { ...baseBtn, group: 'g1' } })
+      appState.buttonConfig =({ b1: { ...baseBtn, group: 'g1' } })
       expect(map()[0].element.props).toMatchObject({ groupStart: false, groupEnd: false })
     })
 
     it('falls back to order 0 when order is not specified in breakpoint config', () => {
-      getButtonConfig.mockReturnValue({ b1: { ...baseBtn, desktop: { slot: 'header' } } })
+      appState.buttonConfig =({ b1: { ...baseBtn, desktop: { slot: 'header' } } })
       expect(map()[0].order).toBe(0)
     })
   })

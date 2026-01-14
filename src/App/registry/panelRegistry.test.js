@@ -1,24 +1,10 @@
+import { registerPanel, addPanel, removePanel, getPanelConfig } from './panelRegistry.js'
+import { defaultPanelConfig } from '../../config/appConfig.js'
+
 describe('panelRegistry', () => {
-  let registerPanel
-  let addPanel
-  let removePanel
-  let getPanelConfig
-  let defaultPanelConfig
-
-  beforeEach(() => {
-    jest.resetModules()
-    const module = require('./panelRegistry')
-    registerPanel = module.registerPanel
-    addPanel = module.addPanel
-    removePanel = module.removePanel
-    getPanelConfig = module.getPanelConfig
-    defaultPanelConfig = require('../../config/appConfig.js').defaultPanelConfig
-  })
-
   test('registerPanel should store a panel with showLabel default', () => {
     const panel = { settings: { title: 'Settings Panel' } }
-    registerPanel(panel)
-    const config = getPanelConfig()
+    const config = registerPanel({}, panel)
     expect(config).toEqual({
       settings: {
         title: 'Settings Panel',
@@ -30,9 +16,9 @@ describe('panelRegistry', () => {
   test('registerPanel should merge multiple panels', () => {
     const panel1 = { settings: { title: 'Settings Panel' } }
     const panel2 = { dashboard: { title: 'Dashboard Panel', showLabel: false } }
-    registerPanel(panel1)
-    registerPanel(panel2)
-    const config = getPanelConfig()
+    let config = {}
+    config = registerPanel(config, panel1)
+    config = registerPanel(config, panel2)
     expect(config).toEqual({
       settings: {
         title: 'Settings Panel',
@@ -47,9 +33,9 @@ describe('panelRegistry', () => {
 
   test('getPanelConfig should return the current panel config', () => {
     const panel = { reports: { title: 'Reports Panel' } }
-    registerPanel(panel)
-    const config = getPanelConfig()
-    expect(config).toEqual({
+    const config = registerPanel({}, panel)
+    const result = getPanelConfig(config)
+    expect(result).toEqual({
       reports: {
         title: 'Reports Panel',
         showLabel: true
@@ -59,36 +45,47 @@ describe('panelRegistry', () => {
 
   // --- New tests for addPanel / removePanel ---
 
-  test('addPanel adds a panel using deepMerge and returns it', () => {
+  test('addPanel adds a panel using deepMerge', () => {
     const id = 'analytics'
     const config = { title: 'Analytics Panel', html: '<div></div>' }
-    const returned = addPanel(id, config)
+    const currentConfig = {}
+    const updatedConfig = addPanel(currentConfig, id, config)
 
-    const registry = getPanelConfig()
-    expect(registry[id]).toEqual({
+    expect(updatedConfig[id]).toEqual({
       ...defaultPanelConfig,
       ...config,
       html: config.html,
       render: null // match defaultPanelConfig
     })
-    expect(returned).toEqual(registry[id])
+    expect(updatedConfig).not.toBe(currentConfig) // Immutable
   })
 
   test('addPanel can add multiple panels', () => {
-    addPanel('panel1', { title: 'Panel 1' })
-    addPanel('panel2', { title: 'Panel 2', render: () => {} })
+    let config = {}
+    config = addPanel(config, 'panel1', { title: 'Panel 1' })
+    config = addPanel(config, 'panel2', { title: 'Panel 2', render: () => {} })
 
-    const keys = Object.keys(getPanelConfig())
+    const keys = Object.keys(config)
     expect(keys).toEqual(['panel1', 'panel2'])
-    expect(getPanelConfig().panel1.title).toBe('Panel 1')
-    expect(typeof getPanelConfig().panel2.render).toBe('function')
+    expect(config.panel1.title).toBe('Panel 1')
+    expect(typeof config.panel2.render).toBe('function')
   })
 
   test('removePanel removes a panel by id', () => {
-    addPanel('tempPanel', { title: 'Temp' })
-    expect(getPanelConfig().tempPanel).toBeDefined()
+    let config = {}
+    config = addPanel(config, 'tempPanel', { title: 'Temp' })
+    expect(config.tempPanel).toBeDefined()
 
-    removePanel('tempPanel')
-    expect(getPanelConfig().tempPanel).toBeUndefined()
+    config = removePanel(config, 'tempPanel')
+    expect(config.tempPanel).toBeUndefined()
+  })
+
+  test('removePanel returns immutable config', () => {
+    let config = { panel1: { title: 'A' }, panel2: { title: 'B' } }
+    const updatedConfig = removePanel(config, 'panel1')
+
+    expect(updatedConfig.panel2).toBeDefined()
+    expect(updatedConfig.panel1).toBeUndefined()
+    expect(updatedConfig).not.toBe(config) // Immutable
   })
 })

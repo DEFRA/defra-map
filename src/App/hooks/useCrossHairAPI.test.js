@@ -3,16 +3,22 @@ import { useCrossHair } from './useCrossHairAPI.js'
 import { useConfig } from '../store/configContext.js'
 import { useApp } from '../store/appContext.js'
 import { useMap } from '../store/mapContext.js'
+import { useService } from '../store/serviceContext.js'
 import eventBus from '../../services/eventBus.js'
 
 jest.mock('../store/configContext.js')
 jest.mock('../store/appContext.js')
 jest.mock('../store/mapContext.js')
-jest.mock('../../services/eventBus.js')
+jest.mock('../store/serviceContext.js')
+jest.mock('../../services/eventBus.js', () => ({
+  on: jest.fn(),
+  off: jest.fn(),
+  emit: jest.fn()
+}))
 jest.mock('../../config/appConfig.js', () => ({ scaleFactor: { small: 1, medium: 2, large: 3 } }))
 
 describe('useCrossHair', () => {
-  let mockMapProvider, mockDispatch, mockCrossHair, mockElement
+  let mockMapProvider, mockDispatch, mockCrossHair, mockElement, mockEventBus
 
   beforeEach(() => {
     mockMapProvider = {
@@ -23,11 +29,14 @@ describe('useCrossHair', () => {
     mockDispatch = jest.fn()
     mockCrossHair = { coords: null, isPinnedToMap: false, state: 'default' }
     mockElement = { style: {} }
+    mockEventBus = { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
+
     eventBus.on = jest.fn()
     eventBus.off = jest.fn()
 
     useConfig.mockReturnValue({ mapProvider: mockMapProvider })
     useApp.mockReturnValue({ safeZoneInset: { left: 10, top: 20 } })
+    useService.mockReturnValue({ eventBus: mockEventBus })
     useMap.mockReturnValue({
       crossHair: mockCrossHair,
       dispatch: mockDispatch,
@@ -112,12 +121,12 @@ describe('useCrossHair', () => {
 
   it('subscribes and updates on map:render', () => {
     setup()
-    expect(eventBus.on).toHaveBeenCalledWith('map:render', expect.any(Function))
+    expect(mockEventBus.on).toHaveBeenCalledWith('map:render', expect.any(Function))
 
     mockCrossHair.coords = { lat: 1, lng: 1 }
     mockCrossHair.isPinnedToMap = true
 
-    act(() => eventBus.on.mock.calls[0][1]())
+    act(() => mockEventBus.on.mock.calls[0][1]())
     expect(mockElement.style.transform).toBe('translate(190px, 380px)')
   })
 
@@ -127,7 +136,7 @@ describe('useCrossHair', () => {
     mockCrossHair.coords = { lat: 1, lng: 1 }
     mockCrossHair.isPinnedToMap = false
 
-    const handleRender = eventBus.on.mock.calls[0][1]
+    const handleRender = mockEventBus.on.mock.calls[0][1]
     act(() => handleRender())
 
     expect(mockElement.style.transform).toBeUndefined()
@@ -138,7 +147,7 @@ describe('useCrossHair', () => {
     let cleanup
     act(() => { cleanup = result.current.crossHairRef(mockElement) })
     act(() => cleanup())
-    expect(eventBus.off).toHaveBeenCalledWith('map:render', expect.any(Function))
+    expect(mockEventBus.off).toHaveBeenCalledWith('map:render', expect.any(Function))
   })
 
   it('re-pins on mapSize change', () => {

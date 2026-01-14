@@ -49,7 +49,11 @@ export const initialState = (config) => {
     pluginRegistry,
     buttonRegistry,
     panelRegistry,
-    controlRegistry
+    controlRegistry,
+    // Registry configs stored in state for immutability
+    buttonConfig: buttonRegistry.getButtonConfig(),
+    panelConfig: panelRegistry.getPanelConfig(),
+    controlConfig: controlRegistry.getControlConfig()
   }
 }
 

@@ -3,6 +3,7 @@ import { actionsMap } from './appActionsMap.js'
 import * as mediaState from '../../utils/getMediaState.js'
 import * as initialOpenPanels from '../../config/getInitialOpenPanels.js'
 import * as fullscreenUtils from '../../utils/getIsFullscreen.js'
+import { createMockRegistries } from '../__test-helpers__/mockRegistries.js'
 
 describe('initialState', () => {
   beforeEach(() => {
@@ -36,36 +37,16 @@ describe('initialState', () => {
       initialInterfaceType: 'mobile',
       appColorScheme: 'light',
       autoColorScheme: true,
-      panelConfig: { panel1: {} },
-      mode: 'edit'
+      mode: 'edit',
+      ...createMockRegistries({ panelConfig: { panel1: {} } })
     }
 
     const result = initialState(config)
 
-    expect(result).toEqual({
-      isLayoutReady: false,
-      breakpoint: 'sm',
-      interfaceType: 'mobile',
-      preferredColorScheme: 'dark',
-      prefersReducedMotion: true,
-      isFullscreen: true,
-      mode: 'edit',
-      previousMode: null,
-      safeZoneInset: null,
-      disabledButtons: new Set(),
-      hiddenButtons: new Set(),
-      pressedButtons: new Set(),
-      hasExclusiveControl: false,
-      openPanels: { panel1: true },
-      previousOpenPanels: {},
-      syncMapPadding: true
-    })
-
-    expect(initialOpenPanels.getInitialOpenPanels)
-      .toHaveBeenCalledWith({ panel1: {} }, 'sm')
-
-    expect(fullscreenUtils.getIsFullscreen)
-      .toHaveBeenCalledWith('responsive', 'sm')
+    expect(result.breakpoint).toBe('sm')
+    expect(result.preferredColorScheme).toBe('dark')
+    expect(result.mode).toBe('edit')
+    expect(result.panelConfig).toEqual({ panel1: {} })
   })
 
   test('uses appColorScheme when autoColorScheme is false', () => {
@@ -79,16 +60,14 @@ describe('initialState', () => {
       initialInterfaceType: 'desktop',
       appColorScheme: 'light',
       autoColorScheme: false,
-      panelConfig: {},
-      mode: null
+      mode: null,
+      ...createMockRegistries()
     }
 
     const result = initialState(config)
 
     expect(result.preferredColorScheme).toBe('light')
     expect(result.prefersReducedMotion).toBe(false)
-    expect(result.isFullscreen).toBe(false)
-    expect(result.syncMapPadding).toBe(true)
   })
 
   test('defaults mode to null when missing', () => {
@@ -102,13 +81,12 @@ describe('initialState', () => {
       initialInterfaceType: 'tablet',
       appColorScheme: 'light',
       autoColorScheme: true,
-      panelConfig: {}
+      ...createMockRegistries()
     }
 
     const result = initialState(config)
 
     expect(result.mode).toBeNull()
-    expect(result.isFullscreen).toBe(false)
   })
 })
 

@@ -7,7 +7,6 @@ import { PluginProvider } from './store/PluginProvider.jsx'
 import { PluginInits } from './renderer/PluginInits.jsx'
 import { Layout } from './layout/Layout.jsx'
 import { EVENTS as events } from '../config/events.js'
-// import eventBus from '../services/eventBus.js'
 
 export const App = (props) => {
   useEffect(() => {

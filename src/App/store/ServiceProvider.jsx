@@ -1,7 +1,6 @@
-// src/core/store/ServiceProvider.jsx
+// src/App/store/ServiceProvider.jsx
 import React, { createContext, useMemo, useRef } from 'react'
 import { EVENTS } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 import { createAnnouncer } from '../../services/announcer.js'
 import { reverseGeocode } from '../../services/reverseGeocode.js'
 import { useConfig } from '../store/configContext.js'

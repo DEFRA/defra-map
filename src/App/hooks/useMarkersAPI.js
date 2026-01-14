@@ -4,7 +4,6 @@ import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 
 // Pure function - easier to test
 export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {

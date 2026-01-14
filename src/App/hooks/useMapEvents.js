@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { useConfig } from '../store/configContext.js'
 import { useService } from '../store/serviceContext.js'
-// import eventBus from '../../services/eventBus.js'
 
 export function useMapEvents (eventMap = {}) {
   const { mapProvider } = useConfig()

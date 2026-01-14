@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client'
 import { EVENTS as events } from '../config/events.js'
-// import eventBus from '../services/eventBus.js'
 import { appConfig } from '../config/appConfig.js'
 import { createButtonRegistry } from './registry/buttonRegistry.js'
 import { createPanelRegistry } from './registry/panelRegistry.js'

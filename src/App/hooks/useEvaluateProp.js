@@ -6,7 +6,6 @@ import { useService } from '../store/serviceContext.js'
 import { useContext } from 'react'
 import { PluginContext } from '../store/PluginProvider.jsx'
 import { getIconRegistry } from '../registry/iconRegistry.js'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export function useEvaluateProp () {
   const appConfig = useConfig()

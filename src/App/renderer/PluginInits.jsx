@@ -1,6 +1,5 @@
 // src/core/PluginInits.jsx
 import React, { useEffect } from 'react'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { withPluginApiContexts, usePluginApiState } from './pluginApiWrapper.js'
 import { useInterfaceAPI } from '../hooks/useInterfaceAPI.js'

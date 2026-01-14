@@ -5,7 +5,6 @@ import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 import { scaleFactor } from '../../config/appConfig.js'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 
 export const useCrossHair = () => {
   const { mapProvider } = useConfig()

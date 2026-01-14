@@ -1,7 +1,5 @@
 // src/core/renderers/mapControls.js
 import React from 'react'
-// import { getControlConfig } from '../registry/controlRegistry.js'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { allowedSlots } from './slots.js'
 

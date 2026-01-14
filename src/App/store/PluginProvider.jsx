@@ -1,7 +1,6 @@
-// src/core/PluginProvider.jsx
+// src/App/store/PluginProvider.jsx
 import React, { createContext, useReducer, useContext, useMemo, useRef } from 'react'
 import { useConfig } from '../store/configContext.js'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export const PluginContext = createContext(null)
 

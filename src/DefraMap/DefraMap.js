@@ -1,3 +1,4 @@
+// src/DefraMap/DefraMap.js
 import '../scss/main.scss'
 import historyManager from './historyManager.js'
 import { parseDataProperties } from './parseDataProperties.js'
@@ -12,7 +13,6 @@ import { createInterfaceDetector, getInterfaceType } from '../utils/detectInterf
 import { createReverseGeocode } from '../services/reverseGeocode.js'
 import { EVENTS as events } from '../config/events.js'
 import { createEventBus } from '../services/eventBus.js'
-// import eventBus from '../services/eventBus.js'
 
 export default class DefraMap {
   _openButton = null

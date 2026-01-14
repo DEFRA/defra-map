@@ -1,5 +1,5 @@
+// src/App/store/mapReducer.js
 import { actionsMap } from './mapActionsMap.js'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 
 export const initialState = (config) => {
   const {

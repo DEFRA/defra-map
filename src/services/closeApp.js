@@ -1,5 +1,5 @@
-import { EVENTS as events } from '../config/events.js' 
-// import eventBus from '../services/eventBus.js'
+// src/services/closeApp.js
+import { EVENTS as events } from '../config/events.js'
 
 export function closeApp (mapId, handleExitClick, eventBus) {
   eventBus.emit(events.MAP_EXIT, { mapId })

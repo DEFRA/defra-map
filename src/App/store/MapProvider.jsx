@@ -1,8 +1,7 @@
-// src/core/store/MapProvider.jsx
+// src/App/store/MapProvider.jsx
 import React, { createContext, useEffect, useReducer, useMemo } from 'react'
 import { initialState, reducer } from './mapReducer.js'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 
 export const MapContext = createContext(null)
 

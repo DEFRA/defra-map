@@ -1,5 +1,4 @@
-// src/core/store/dispatchMiddleware.js
-// import eventBus from '../../services/eventBus.js'
+// src/App/store/dispatchMiddleware.js
 import { EVENTS as events } from '../../config/events.js'
 
 /**

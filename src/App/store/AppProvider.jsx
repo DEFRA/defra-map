@@ -1,16 +1,12 @@
-// src/core/store/AppProvider.jsx
+// src/App/store/AppProvider.jsx
 import React, { createContext, useRef, useEffect, useReducer, useMemo, useCallback } from 'react'
 import { initialState, reducer } from './appReducer.js'
 import { handleActionSideEffects } from './appDispatchMiddleware.js'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 import { ConfigContext } from './configContext.js'
 import { subscribeToBreakpointChange } from '../../utils/detectBreakpoint.js'
 import { subscribeToInterfaceChanges } from '../../utils/detectInterfaceType.js'
 import { useMediaQueryDispatch } from '../hooks/useMediaQueryDispatch.js'
-// import { getPanelConfig } from '../registry/panelRegistry.js'
-// import { getButtonConfig } from '../registry/buttonRegistry.js'
-// import { getControlConfig } from '../registry/controlRegistry.js'
 
 export const AppContext = createContext(null)
 

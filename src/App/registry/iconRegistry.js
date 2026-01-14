@@ -1,4 +1,4 @@
-// src/icons/iconRegistry.js
+// src/App/registry/iconRegistry.js
 let iconRegistry = {
   close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
 }

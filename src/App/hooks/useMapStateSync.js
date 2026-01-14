@@ -3,7 +3,6 @@ import { useConfig } from '../store/configContext.js'
 import { useMap } from '../store/mapContext.js'
 import { useService } from '../store/serviceContext.js'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
 
 export function useMapStateSync () {
   const { mapProvider } = useConfig()

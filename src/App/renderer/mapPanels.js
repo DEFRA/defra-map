@@ -1,8 +1,6 @@
 // src/core/renderers/mapPanels.js
 import React from 'react'
 import { stringToKebab } from '../../utils/stringToKebab.js'
-// import { getPanelConfig } from '../registry/panelRegistry.js'
-// import { registeredPlugins } from '../registry/pluginRegistry.js'
 import { withPluginContexts } from './pluginWrapper.js'
 import { Panel } from '../components/Panel/Panel.jsx'
 import { allowedSlots } from './slots.js'

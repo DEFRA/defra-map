@@ -1,8 +1,4 @@
 // src/core/registry/pluginRegistry.js
-
-// import { registerButton } from './buttonRegistry.js'
-// import { registerPanel } from './panelRegistry.js'
-// import { registerControl } from './controlRegistry.js'
 import { registerIcon } from './iconRegistry.js'
 import { registerKeyboardShortcut } from './keyboardShortcutRegistry.js'
 

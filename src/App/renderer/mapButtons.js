@@ -1,6 +1,5 @@
 // src/core/renderers/mapButtons.js
 import { MapButton } from '../components/MapButton/MapButton.jsx'
-// import { getButtonConfig } from '../registry/buttonRegistry.js'
 import { allowedSlots } from './slots.js'
 
 function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {

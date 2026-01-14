@@ -1,20 +1,10 @@
-// import { getPanelConfig } from '../registry/panelRegistry.js'
+// src/App/store/appActionsMap.js
 import { getInitialOpenPanels } from '../../config/getInitialOpenPanels.js'
 import { getIsFullscreen } from '../../utils/getIsFullscreen.js'
 import { shallowEqual } from '../../utils/shallowEqual.js'
-import {
-  registerButton as registerButtonFn,
-  addButton as addButtonFn
-} from '../registry/buttonRegistry.js'
-import {
-  registerPanel as registerPanelFn,
-  addPanel as addPanelFn,
-  removePanel as removePanelFn
-} from '../registry/panelRegistry.js'
-import {
-  registerControl as registerControlFn,
-  addControl as addControlFn
-} from '../registry/controlRegistry.js'
+import { registerButton as registerButtonFn, addButton as addButtonFn } from '../registry/buttonRegistry.js'
+import { registerPanel as registerPanelFn, addPanel as addPanelFn, removePanel as removePanelFn } from '../registry/panelRegistry.js'
+import { registerControl as registerControlFn, addControl as addControlFn } from '../registry/controlRegistry.js'
 
 // Interal helper
 function buildOpenPanels(state, panelId, breakpoint, props) {

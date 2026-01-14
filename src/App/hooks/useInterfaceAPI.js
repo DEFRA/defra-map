@@ -1,10 +1,6 @@
 // src/hooks/usePanels.js
 import { useEffect } from 'react'
 import { EVENTS as events } from '../../config/events.js'
-// import eventBus from '../../services/eventBus.js'
-// import { addButton } from '../registry/buttonRegistry.js'
-// import { addPanel, removePanel } from '../registry/panelRegistry.js'
-// import { addControl } from '../registry/controlRegistry.js'
 import { useApp } from '../store/appContext.js'
 import { useService } from '../store/serviceContext.js'
 

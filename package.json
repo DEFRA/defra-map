@@ -43,7 +43,7 @@
     "@types/jest": "^29.5.14",
     "array-flat-polyfill": "^1.0.1",
     "babel-jest": "^29.7.0",
-    "babel-loader": "^9.2.1",
+    "babel-loader": "^10.0.0",
     "compression-webpack-plugin": "^11.1.0",
     "computed-style-to-inline-style": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",

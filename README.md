@@ -1,8 +1,9 @@
 # Flood map
 
-## Useful Links
-- [Development Guide](./docs/development-guide.md)
-- [How to Publish](./docs/how-to-publish.md)
+## Useful links
+- [API reference](./docs/api.md)
+- [Development guide](./docs/development-guide.md)
+- [How to publish](./docs/how-to-publish.md)
 
 ## Usage
 
@@ -14,7 +15,7 @@ Run:
 npm i @defra/flood-map
 ```
 
-### Client Side Javascript
+### Client side JavaScript
 
 You will need to initialise flood map in your client side code:
 
@@ -30,7 +31,7 @@ In your html, will need to add a map placeholder container
 <div id="map"></div>
 ```
 
-And finally, if using buttonFirst or hybrid behaviour, a script tag to prevent the floodmap widget "flashing" on page load/reload.
+And finally, if using buttonFirst or hybrid behaviour, a script tag to prevent the map "flashing" on page load/reload.
 
 ```html
     <script>document.body.classList.add('fm-js-hidden')</script>

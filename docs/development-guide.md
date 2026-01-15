@@ -1,4 +1,4 @@
-# Development Guide
+# Development guide
 
 1) Clone the repo
 2) Run `npm install` to install the dependencies.

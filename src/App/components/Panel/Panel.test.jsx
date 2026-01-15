@@ -9,6 +9,7 @@ jest.mock('../../store/configContext', () => ({ useConfig: jest.fn() }))
 jest.mock('../../store/appContext', () => ({ useApp: jest.fn() }))
 jest.mock('../../../utils/stringToKebab', () => ({ stringToKebab: (str) => str.toLowerCase().replace(/\s+/g, '-') }))
 jest.mock('../../hooks/useModalPanelBehaviour.js', () => ({ useModalPanelBehaviour: jest.fn() }))
+jest.mock('../../hooks/useIsScrollable.js', () => ({ useIsScrollable: jest.fn(() => false) }))
 jest.mock('../../components/Icon/Icon', () => ({ Icon: ({ id }) => <svg data-testid={id} /> }))
 
 describe('Panel', () => {

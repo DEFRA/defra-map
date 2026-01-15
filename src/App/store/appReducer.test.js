@@ -3,7 +3,7 @@ import { actionsMap } from './appActionsMap.js'
 import * as mediaState from '../../utils/getMediaState.js'
 import * as initialOpenPanels from '../../config/getInitialOpenPanels.js'
 import * as fullscreenUtils from '../../utils/getIsFullscreen.js'
-import { createMockRegistries } from '../__test-helpers__/mockRegistries.js'
+import { createMockRegistries } from '../../test-utils.js'
 
 describe('initialState', () => {
   beforeEach(() => {

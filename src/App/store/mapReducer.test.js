@@ -1,6 +1,6 @@
 import { initialState, reducer } from './mapReducer.js'
 import { actionsMap } from './mapActionsMap.js'
-import { createMockRegistries } from '../__test-helpers__/mockRegistries.js'
+import { createMockRegistries } from '../../test-utils.js'
 
 jest.mock('./mapActionsMap.js', () => ({
   actionsMap: {

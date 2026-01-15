@@ -1,7 +1,7 @@
 import DefraMap from '../../src/index.js'
-import { openMapStyles, vtsMapStyles3857 } from './mapStyles.js'
+import { vtsMapStyles3857 } from './mapStyles.js'
 import { searchCustomDatasets } from './searchCustomDatasets.js'
-import { transformGeocodeRequest, transformTileRequest, transformDataRequest } from './auth.js'
+import { transformGeocodeRequest, transformTileRequest } from './auth.js'
 // Providers
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
@@ -9,12 +9,9 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
-import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
 import createInteractPlugin from '/plugins/interact/src/index.js'
-import framePlugin from '/plugins/frame/src/index.js'
 
 var interactPlugin = createInteractPlugin({
 	// dataLayers: [],
@@ -73,12 +70,10 @@ var defraMap = new DefraMap('map', {
 			customDatasets: searchCustomDatasets,
 			width: '300px',
 			showMarker: false,
-			// isExpanded: true
+			isExpanded: true
 		}),
 		useLocationPlugin(),
-		interactPlugin,
-		// framePlugin(),
-		// drawPlugin
+		interactPlugin
 	]
 	// search
 })

@@ -132,10 +132,6 @@ const defraMap = new DefraMap('map', {
 		// interactPlugin,
 		drawPlugin,
 		framePlugin
-		// menuDataLayersPlugin({
-		// 	dataLayers: [],
-		// 	excludeModes: ['circle', 'square', 'polygon']
-		// })
 	]
 	// search
 })

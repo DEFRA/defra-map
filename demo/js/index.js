@@ -125,11 +125,7 @@ var defraMap = new DefraMap('map', {
 		}),
 		// interactPlugin,
 		framePlugin,
-		drawPlugin,
-		// menuDataLayersPlugin({
-		// 	dataLayers: [],
-		// 	excludeModes: ['circle', 'square', 'polygon']
-		// })
+		drawPlugin
 	]
 	// search
 })

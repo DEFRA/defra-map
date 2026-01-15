@@ -2,7 +2,7 @@ import React from 'react'
 import { initialiseApp } from './initialiseApp.js'
 import { createRoot } from 'react-dom/client'
 import { EVENTS as events } from '../config/events.js'
-import { createMockRegistries } from './__test-helpers__/mockRegistries.js'
+import { createMockRegistries } from '../test-utils.js'
 import { setProviderSupportedShortcuts } from './registry/keyboardShortcutRegistry.js'
 
 // --------------------------------------------------

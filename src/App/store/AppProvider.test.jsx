@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, act } from '@testing-library/react'
 import { AppProvider, AppContext } from './AppProvider.jsx'
-import { createMockRegistries } from '../__test-helpers__/mockRegistries.js'
+import { createMockRegistries } from '../../test-utils.js'
 import * as mediaHook from '../hooks/useMediaQueryDispatch.js'
 import * as detectBreakpoint from '../../utils/detectBreakpoint.js'
 import * as detectInterface from '../../utils/detectInterfaceType.js'

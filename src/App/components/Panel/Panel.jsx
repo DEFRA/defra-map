@@ -3,6 +3,7 @@ import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
 import { useModalPanelBehaviour } from '../../hooks/useModalPanelBehaviour.js'
+import { useIsScrollable } from '../../hooks/useIsScrollable.js'
 import { Icon } from '../Icon/Icon'
 
 export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, children }) => {
@@ -22,6 +23,8 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
   const buttonContainerEl = bpConfig.slot.endsWith('button') ? props?.triggeringElement?.parentNode : undefined
   const mainRef = layoutRefs.mainRef
   const panelRef = useRef(null)
+  const bodyRef = useRef(null)
+  const isBodyScrollable = useIsScrollable(bodyRef)
 
   const handleClose = () => {
     requestAnimationFrame(() => { (props?.triggeringElement || layoutRefs.viewportRef.current).focus?.() })
@@ -35,6 +38,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
       panelRef.current.focus()
     }
   }, [])
+
 
   const panelClass = [
     'dm-c-panel',
@@ -77,10 +81,21 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
 
       {html
         ? (
-          <div className={panelBodyClass} dangerouslySetInnerHTML={{ __html: html }} />
+          <div
+            ref={bodyRef}
+            className={panelBodyClass}
+            tabIndex={isBodyScrollable ? 0 : undefined}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
           )
         : (
-          <div className={panelBodyClass}>
+          <div
+            ref={bodyRef}
+            className={panelBodyClass}
+            tabIndex={isBodyScrollable ? 0 : undefined}
+            role={isBodyScrollable ? 'region' : undefined}
+            aria-labelledby={isBodyScrollable ? `${elementId}-label` : undefined}
+          >
             {WrappedChild ? <WrappedChild {...props} /> : children}
           </div>
           )}

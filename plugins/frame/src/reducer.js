@@ -1,5 +1,6 @@
 const initialState = {
-  frame: null
+  frame: null,
+  frameRefs: null
 }
 
 const setFrame = (state, payload) => {
@@ -9,8 +10,16 @@ const setFrame = (state, payload) => {
   }
 }
 
+const setFrameRefs = (state, payload) => {
+  return {
+    ...state,
+    frameRefs: payload
+  }
+}
+
 const actions = {
-  SET_FRAME: setFrame
+  SET_FRAME: setFrame,
+  SET_FRAME_REFS: setFrameRefs
 }
 
 export {

@@ -3,7 +3,6 @@ import { initialState, actions } from './reducer.js'
 import { FrameInit } from './FrameInit.jsx'
 import { Frame } from './Frame.jsx'
 import { addFrame } from './api/addFrame.js'
-import { removeFrame } from './api/removeFrame.js'
 import { editFeature } from './api/editFeature.js'
 
 const buttonSlots = {
@@ -51,7 +50,6 @@ export const manifest = {
 
   api: {
     addFrame,
-    removeFrame,
     editFeature
   }
 }

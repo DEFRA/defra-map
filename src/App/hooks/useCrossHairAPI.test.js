@@ -22,7 +22,7 @@ describe('useCrossHair', () => {
 
   beforeEach(() => {
     mockMapProvider = {
-      getPointFromCoords: jest.fn(() => ({ x: 100, y: 200 })),
+      mapToScreen: jest.fn(() => ({ x: 100, y: 200 })),
       getCenter: jest.fn(() => ({ lat: 0, lng: 0 })),
       getZoom: jest.fn(() => 10)
     }

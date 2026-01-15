@@ -41,8 +41,8 @@ export const createMapboxDraw = ({ colorScheme, mapProvider, events, eventBus })
     styles: createDrawStyles(colorScheme),
     displayControlsDefault: false,
     userProperties: true,
+    defaultMode: 'disabled'
   })
-
   map.addControl(draw)
 
   // We need a reference to this

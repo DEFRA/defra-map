@@ -3,16 +3,13 @@
  * @param {object} context - plugin context
  * @param {object} feature - A single geoJSON feature
  */
-export const editFeature = ({ appState, appConfig, mapState, mapProvider, services }, feature) => {
-  const { map, draw } = mapProvider
-  const { eventBus } = services
+export const editFeature = ({ appState, appConfig, mapState, pluginState, mapProvider }, featureId) => {
+  const { dispatch } = pluginState
+  const { draw } = mapProvider
 
   if (!draw) {
     return
   }
-
-  // --- Add feature to draw instance
-  draw.add(feature)
 
   // --- Change mode to edit_vertex
   draw.changeMode('edit_vertex', {
@@ -21,13 +18,16 @@ export const editFeature = ({ appState, appConfig, mapState, mapProvider, servic
     isPanEnabled: appState.interfaceType !== 'keyboard',
     interfaceType: appState.interfaceType,
     scale: { small: 1, medium: 1.5, large: 2 }[mapState.mapSize],
-    featureId: feature.properties?.id || feature.id
+    featureId
   })
 
-  // Emit draw:modechange as draw.changeMode doesnt always do this
-  eventBus.emit('draw:modechange', { mode: 'edit_vertex' })
+  // Put feature in state
+  const feature = draw.get(featureId)
+  dispatch({ type: 'SET_FEATURE', payload: {
+    feature,
+    tempFeature: feature
+  }})
 
-  return () => {
-    map.off('draw.vertexselection', onVertexSelection)
-  }
+  // Set mode to edit_vertex
+  dispatch({ type: 'SET_MODE', payload: 'edit_vertex' })
 }

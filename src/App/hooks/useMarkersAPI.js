@@ -10,7 +10,7 @@ export const projectCoords = (coords, mapProvider, mapSize, isMapReady) => {
   if (!mapProvider || !isMapReady) {
     return { x: 0, y: 0 }
   }
-  const { x, y } = mapProvider.getPointFromCoords(coords)
+  const { x, y } = mapProvider.mapToScreen(coords)
   return { x: x * scaleFactor[mapSize], y: y * scaleFactor[mapSize] - 19 }
 }
 

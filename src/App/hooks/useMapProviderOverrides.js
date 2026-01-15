@@ -37,14 +37,17 @@ export const useMapProviderOverrides = () => {
 
     const originalFitToBounds = mapProvider.fitToBounds
 
-    mapProvider.fitToBounds = (bounds, options) => {
+    mapProvider.fitToBounds = (bounds, skipPaddingCalc = false) => {
       if (!bounds) {
         return
       }
 
-      updatePadding()
+      // Calculate and set safe zone padding unless explicitly skipped
+      if (!skipPaddingCalc) {
+        updatePadding()
+      }
 
-      return originalFitToBounds.call(mapProvider, bounds, options)
+      return originalFitToBounds.call(mapProvider, bounds)
     }
 
     const originalSetView = mapProvider.setView

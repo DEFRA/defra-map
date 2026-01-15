@@ -101,8 +101,9 @@ export function attachMapEvents ({
 
   // click
   handlers.push(view.on('click', e => {
-    const p = e.mapPoint
-    eventBus.emit(events.MAP_CLICK, { point: p, coords: [p.x, p.y] })
+    const mapPoint = e.mapPoint
+    const screenPoint = { x: e.x, y: e.y }
+    eventBus.emit(events.MAP_CLICK, { point: screenPoint, coords: [mapPoint.x, mapPoint.y] })
   }))
 
   // Cleanup

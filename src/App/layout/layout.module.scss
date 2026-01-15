@@ -160,6 +160,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: -1; // Support masking the viewport
 }
 
 // ---------------------------------------------------
@@ -195,6 +196,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  z-index: -2; // Support masking the viewport
 }
 
 .dm-o-app__footer-col {

@@ -78,7 +78,7 @@ const framePlugin = createFramePlugin({
 })
 
 const defraMap = new DefraMap('map', {
-	behaviour: 'mapOnly',
+	behaviour: 'inline',
 	mapProvider: esriProvider({
 		setupConfig: setupEsriConfig
 	}),
@@ -196,7 +196,9 @@ defraMap.on('draw:ready', function () {
 		const drawSquareBtn = e.target.closest('#drawSquareBtn')
 		if (drawSquareBtn && drawSquareBtn.getAttribute('aria-disabled') !== 'true') {
 			drawOptions = []
-			framePlugin.addFrame({})
+			framePlugin.addFrame('boundary', {
+				aspectRatio: 1
+			})
 			hideMenu(defraMap)
 		}
 		// Edit area
@@ -204,6 +206,7 @@ defraMap.on('draw:ready', function () {
 		if (editAreaBtn && editAreaBtn.getAttribute('aria-disabled') !== 'true') {
 			drawOptions = []
 			if (getGeometryShape(feature.geometry) === 'square') {
+				drawPlugin.deleteFeature('boundary')
 				framePlugin.editFeature(feature)
 			} else {
 				drawPlugin.editFeature('boundary')
@@ -214,6 +217,8 @@ defraMap.on('draw:ready', function () {
 		const deleteAreaBtn = e.target.closest('#deleteAreaBtn')
 		if (deleteAreaBtn && deleteAreaBtn.getAttribute('aria-disabled') !== 'true') {
 			drawPlugin.deleteFeature('boundary')
+			feature = null
+			drawOptions = ['shape', 'square']
 			hideMenu(defraMap)
 		}
 	})
@@ -221,11 +226,12 @@ defraMap.on('draw:ready', function () {
 
 defraMap.on('draw:done', function (e) {
 	console.log('draw:done', e)
+	feature = e.newFeature
 	drawOptions = ['edit', 'delete']
 })
 
 defraMap.on('draw:update', function (e) {
-	console.log('draw:update', e)
+	// console.log('draw:update', e)
 })
 
 defraMap.on('draw:create', function (e) {
@@ -233,15 +239,23 @@ defraMap.on('draw:create', function (e) {
 })
 
 defraMap.on('draw:cancel', function (e) {
-	// console.log('draw:cancel')
-	drawOptions = e.originalFeature ? ['edit', 'delete'] : ['shape', 'square']
+	console.log('draw:cancel', e)
+	drawOptions = feature ? ['edit', 'delete'] : ['shape', 'square']
 })
 
 defraMap.on('draw:delete', function (e) {
 	// console.log('draw:delete', e)
-	drawOptions = ['shape', 'square']
 })
 
-defraMap.on('frame:cancel', function (e) {
+defraMap.on('frame:done', function (e) {
+	drawPlugin.addFeature(e)
+	feature = e
+	drawOptions = ['edit', 'delete']
+})
+
+defraMap.on('frame:cancel', function () {
+	if (feature) {
+		drawPlugin.addFeature(feature)
+	}
 	drawOptions = feature ? ['edit', 'delete'] : ['shape', 'square']
 })

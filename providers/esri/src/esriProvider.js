@@ -189,9 +189,14 @@ export default class EsriProvider {
     return this.view.resolution
   }
 
-  getPointFromCoords (coords) {
+  mapToScreen (coords) {
     const point = getPointFromFlatCoords(coords)
     const screenPoint = this.view.toScreen(point)
     return { x: screenPoint.x, y: screenPoint.y }
+  }
+
+  screenToMap (point) {
+    const mapPoint = this.view.toMap(point)
+    return [mapPoint.x, mapPoint.y]
   }
 }

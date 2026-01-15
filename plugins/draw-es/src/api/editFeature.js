@@ -1,9 +1,8 @@
 import { graphicToGeoJSON } from '../graphic.js'
 
-export const editFeature = ({ pluginState, mapProvider, services }, featureId) => {
+export const editFeature = ({ pluginState, mapProvider }, featureId) => {
   const { dispatch } = pluginState
   const { sketchViewModel, sketchLayer } = mapProvider
-  const { eventBus } = services
 
   // Graphic must already exist on sketchLayer
   const graphic = sketchLayer.graphics.items.find(g => g.attributes.id === featureId)
@@ -13,15 +12,6 @@ export const editFeature = ({ pluginState, mapProvider, services }, featureId) =
   const bounds = [extent.xmin, extent.ymin, extent.xmax, extent.ymax]
   mapProvider.fitToBounds(bounds)
 
-  // Update temp feature in state and emit update event
-  sketchViewModel.on('update', (e) => {
-    if (e.state === 'complete') {
-      const tempFeature = graphicToGeoJSON(e.graphics[0])
-      eventBus.emit('draw:update', tempFeature)
-      dispatch({ type: 'SET_FEATURE', payload: { tempFeature }})
-    }
-  })
-
   // Enter update mode
   sketchViewModel.layer = sketchLayer
   sketchViewModel.update(graphic, {
@@ -30,6 +20,10 @@ export const editFeature = ({ pluginState, mapProvider, services }, featureId) =
     enableRotation: false,
     enableScaling: false 
   })
+
+  // Set original feature
+  const feature = graphicToGeoJSON(graphic)
+  dispatch({ type: 'SET_FEATURE', payload: { feature }})
 
   dispatch({ type: 'SET_MODE', payload: 'edit-feature' })
 }

@@ -191,7 +191,12 @@ export default class MapLibreProvider {
     return getResolution(this.map.getCenter(), this.map.getZoom())
   }
 
-  getPointFromCoords (coords) {
+  mapToScreen (coords) {
     return this.map.project(coords)
+  }
+
+  screenToMap (point) {
+    const { lng, lat } = this.map.unproject([point.x, point.y])
+    return [lng, lat]
   }
 }

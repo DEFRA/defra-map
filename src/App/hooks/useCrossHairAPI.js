@@ -31,7 +31,7 @@ export const useCrossHair = () => {
     // --- API ---
 
     crossHair.pinToMap = (coords, state) => {
-      const { x, y } = mapProvider.getPointFromCoords(coords)
+      const { x, y } = mapProvider.mapToScreen(coords)
       crossHair.coords = coords
       dispatch({ type: 'UPDATE_CROSS_HAIR', payload: { isPinnedToMap: true, isVisible: true, coords, state } })
       updatePosition(el, x, y, state)
@@ -69,7 +69,7 @@ export const useCrossHair = () => {
 
       return {
         state: crossHair.state,
-        point: mapProvider.getPointFromCoords(coords),
+        point: mapProvider.mapToScreen(coords),
         zoom: mapProvider.getZoom(),
         coords
       }
@@ -77,7 +77,7 @@ export const useCrossHair = () => {
 
     const handleRender = () => {
       if (crossHair.coords && crossHair.isPinnedToMap) {
-        const { x, y } = mapProvider.getPointFromCoords(crossHair.coords)
+        const { x, y } = mapProvider.mapToScreen(crossHair.coords)
         updatePosition(el, x, y, crossHair.state)
       }
     }

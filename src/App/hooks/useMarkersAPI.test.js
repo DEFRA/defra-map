@@ -16,7 +16,7 @@ jest.mock('../../services/eventBus.js', () => ({
 jest.mock('../../config/appConfig.js', () => ({ scaleFactor: { small: 1, medium: 2, large: 3 } }))
 
 describe('projectCoords', () => {
-  const mockProvider = { getPointFromCoords: jest.fn(() => ({ x: 100, y: 200 })) }
+  const mockProvider = { mapToScreen: jest.fn(() => ({ x: 100, y: 200 })) }
 
   it('returns scaled coordinates when ready', () => {
     expect(projectCoords({ lat: 1, lng: 1 }, mockProvider, 'medium', true)).toEqual({ x: 200, y: 381 })
@@ -33,7 +33,7 @@ describe('useMarkers', () => {
   let mockMapProvider, mockDispatch, mockMarkers, mockElement, mockEventBus
 
   beforeEach(() => {
-    mockMapProvider = { getPointFromCoords: jest.fn(() => ({ x: 100, y: 200 })) }
+    mockMapProvider = { mapToScreen: jest.fn(() => ({ x: 100, y: 200 })) }
     mockDispatch = jest.fn()
     mockMarkers = { items: [] }
     mockElement = { style: {} }

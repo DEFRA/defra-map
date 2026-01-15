@@ -49,7 +49,7 @@ describe('useMapProviderOverrides', () => {
     const safeZone = { top: 10, right: 5, bottom: 15, left: 5 }
     const scaled = { top: 20, right: 10, bottom: 30, left: 10 }
 
-    mapProvider.fitToBounds([0, 0, 1, 1], { animate: true })
+    mapProvider.fitToBounds([0, 0, 1, 1])
 
     expect(getSafeZoneInset).toHaveBeenCalledWith(layoutRefs)
     expect(scalePoints).toHaveBeenCalledWith(safeZone, scaleFactor.lg)
@@ -65,6 +65,17 @@ describe('useMapProviderOverrides', () => {
     expect(getSafeZoneInset).toHaveBeenCalledWith(layoutRefs)
     expect(dispatch).toHaveBeenCalled()
     expect(mapProvider.setPadding).toHaveBeenCalled()
+  })
+
+  test('fitToBounds skips padding calculation when skipPaddingCalc is true', () => {
+    const { mapProvider, dispatch } = setup()
+    renderHook(() => useMapProviderOverrides())
+
+    mapProvider.fitToBounds([0, 0, 1, 1], true)
+
+    expect(getSafeZoneInset).not.toHaveBeenCalled()
+    expect(dispatch).not.toHaveBeenCalled()
+    expect(mapProvider.setPadding).not.toHaveBeenCalled()
   })
 
   test('fitToBounds and setView early return when bounds/center is null', () => {
@@ -102,10 +113,10 @@ describe('useMapProviderOverrides', () => {
 
     expect(mapProvider.fitToBounds).not.toBe(originalFitBounds)
 
-    mapProvider.fitToBounds([0, 0, 1, 1], { animate: false })
+    mapProvider.fitToBounds([0, 0, 1, 1])
     mapProvider.setView({ center: [1, 2], zoom: 15 })
 
-    expect(originalFitBounds).toHaveBeenCalledWith([0, 0, 1, 1], { animate: false })
+    expect(originalFitBounds).toHaveBeenCalledWith([0, 0, 1, 1])
     expect(originalSetView).toHaveBeenCalledWith({ center: [1, 2], zoom: 15 })
 
     unmount()

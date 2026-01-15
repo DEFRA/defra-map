@@ -59,7 +59,7 @@ export const DrawInit = ({
     })
 
     return () => {
-      cleanup?.()
+      cleanup()
     }
   }, [isActive, mapColorScheme, pluginState])
 }

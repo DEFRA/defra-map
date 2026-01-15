@@ -1,8 +1,9 @@
 const initialState = {
+  mode: null,
+  feature: null,
+  tempFeature: null,
   selectedVertexIndex: -1,
   numVertecies: null,
-  feature: null,
-  mode: null,
   snap: false
 }
 
@@ -21,10 +22,11 @@ const setSelectedVertexIndex = (state, payload) => {
   }
 }
 
-const setfeature = (state, payload) => {
+const setFeature = (state, payload) => {
   return {
     ...state,
-    feature: payload
+    feature: payload.feature === undefined ? state.feature : payload.feature,
+    tempFeature: payload.tempFeature === undefined ? state.tempFeature : payload.tempFeature
   }
 }
 
@@ -37,8 +39,8 @@ const toggleSnap = (state) => {
 
 const actions = {
   SET_MODE: setMode,
+  SET_FEATURE: setFeature,
   SET_SELECTED_VERTEX_INDEX: setSelectedVertexIndex,
-  SET_FEATURE: setfeature,
   TOGGLE_SNAP: toggleSnap
 }
 

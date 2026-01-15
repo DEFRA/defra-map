@@ -112,8 +112,8 @@ export function attachEvents({ pluginState, mapProvider, events, eventBus, butto
     sketchViewModel.cancel()
     sketchViewModel.layer = emptySketchLayer
     dispatch({ type: 'SET_MODE', payload: null })
-    dispatch({ type: 'SET_FEATURE', payload: { feature: pluginState.tempFeature }})
-    eventBus.emit('draw:done', pluginState.tempFeature)
+    dispatch({ type: 'SET_FEATURE', payload: { feature: null, tempFeature: null }})
+    eventBus.emit('draw:done', { newFeature: pluginState.tempFeature })
   }
 
   const handleCancel = () => {
@@ -136,7 +136,7 @@ export function attachEvents({ pluginState, mapProvider, events, eventBus, butto
     sketchViewModel.layer = emptySketchLayer
 
     dispatch({ type: 'SET_MODE', payload: null })
-    eventBus.emit('draw:cancel', { originalFeature: feature })
+    eventBus.emit('draw:cancel')
   }
 
   // Attach all event listeners

@@ -5,6 +5,7 @@ import { createMapboxDraw } from './mapboxDraw.js'
 export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginState, services, mapProvider, buttonConfig }) => {
 	const { events, eventBus } = services
 
+	// Create draw instance once
 	useEffect(() => {
 		// Don't run init if the app is in non-specified mode
 		const inModeWhitelist = pluginConfig.includeModes?.includes(appState.mode) ?? true
@@ -14,7 +15,27 @@ export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginSt
       return
     }
 
-		// Attach provider.map and plugin events before mapbox-gl-draw instance is created
+    const { remove } = createMapboxDraw({
+			colorScheme: mapState.mapStyle.mapColorScheme,
+			mapProvider,
+			events,
+			eventBus
+		})
+
+		// Draw ready
+		eventBus.emit('draw:ready')
+
+		return () => remove()
+
+  }, [mapState.isMapReady, appState.mode])
+
+	// Attach events when plgin state changes
+	useEffect(() => {
+		
+		if (!mapProvider.draw) {
+			return
+		}
+
 		const cleanupEvents = attachEvents({
 			appState,
 			appConfig,
@@ -26,21 +47,7 @@ export const DrawInit = ({ appState, appConfig, mapState, pluginConfig, pluginSt
 			eventBus
 		})
 
-		// Create draw
-    const { remove } = createMapboxDraw({
-			colorScheme: mapState.mapStyle.mapColorScheme,
-			mapProvider,
-			events,
-			eventBus
-		})
+		return () => cleanupEvents()
 
-		// Draw ready
-		eventBus.emit('draw:ready')
-
-		return () => {
-			cleanupEvents
-			remove()
-		}
-
-  }, [mapState.isMapReady, appState.mode])
+	}, [mapProvider, appState, pluginState])
 }

@@ -1,7 +1,7 @@
 const initialState = {
+  mode: null,
   feature: null,
-  tempFeature: null,
-  mode: null
+  tempFeature: null
 }
 
 const setMode = (state, payload) => {

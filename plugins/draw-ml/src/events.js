@@ -9,65 +9,75 @@ export function attachEvents ({ appState, appConfig, mapState, pluginState, mapP
     drawCancel
   } = buttonConfig
 
-  // --- Button events
+  const { map, draw } = mapProvider
+  const { dispatch, feature, tempFeature } = pluginState
+
+  // --- Done
   const handleDone = () => {
-    console.log('Done')
-    eventBus.emit('draw:done', pluginState.feature)
+    draw.changeMode('disabled')
+    dispatch({ type: 'SET_MODE', payload: null })
+    dispatch({ type: 'SET_FEATURE', payload: { feature: null, tempFeature: null }})
+    eventBus.emit('draw:done', { newFeature: tempFeature })
   }
   drawDone.onClick = handleDone
 
+  // --- Cancel
   const handleCancel = () => {
-    console.log('Cancel')
-    eventBus.emit('draw:cancel')
+    draw.delete(tempFeature.id)
+
+    // Reinstate initial feature
+    if (feature) {
+      draw.add(feature)
+    }
+    draw.changeMode('disabled')
+
+    dispatch({ type: 'SET_MODE', payload: null })
+    dispatch({ type: 'SET_FEATURE', payload: { feature: null, tempFeature: null }})
+    eventBus.emit('draw:cancel', { originalFeature: feature })
   }
   drawCancel.onClick = handleCancel
 
+  // --- Snap
   const handleSnap = () => {
-    pluginState.dispatch({ type: 'TOGGLE_SNAP' })
+    dispatch({ type: 'TOGGLE_SNAP' })
   }
   drawSnap.onClick = handleSnap
 
-  // --- Map events
-  const { map } = mapProvider
-
-  const onModeChange = (e) => {
-    pluginState.dispatch({ type: 'SET_MODE', payload: e.mode })
-
-    // Switch SimpleSelect to EditVertexMode
-    if (e.mode === 'simple_select') {
-      mapProvider.draw.changeMode('edit_vertex', {
-        container: appState.layoutRefs.viewportRef.current,
-        deleteVertexButtonId: `${appConfig.id}-draw-delete-point`,
-        isPanEnabled: appState.interfaceType !== 'keyboard',
-        interfaceType: appState.interfaceType,
-        scale: { small: 1, medium: 1.5, large: 2 }[mapState.mapSize],
-        featureId: mapProvider.draw.getAll().features[0].id
-      })
-    }
-  }
-  eventBus.on('draw:modechange', onModeChange)
-  map.on('draw.modechange', onModeChange)
-
   // --- Map style change
-  const handleStyleData = (map) => {
+  const handleStyleData = () => {
     const layers = map.getStyle().layers || []
     if (layers.length === 0 || layers[layers.length - 1].source?.startsWith('mapbox-gl-draw')) {
       return
     }
     layers.filter(l => l.source?.startsWith('mapbox-gl-draw')).forEach(l => map.moveLayer(l.id))
   }
-  map.on('styledata', (e) => handleStyleData(map))
+  map.on('styledata', () => handleStyleData(map))
 
   // --- A new shape is created
   const onCreate = (e) => {
-    pluginState.dispatch({ type: 'SET_FEATURE', payload: e.features })
+    const newFeature = e.features[0]
+    dispatch({ type: 'SET_FEATURE', payload: { tempFeature: newFeature }})
     eventBus.emit('draw:create', e)
+
+    // Switch straight to edit vertex mode
+    dispatch({ type: 'SET_MODE', payload: 'edit_vertex'})
+
+    setTimeout(() => {
+      draw.changeMode('edit_vertex', {
+        container: appState.layoutRefs.viewportRef.current,
+        deleteVertexButtonId: `${appConfig.id}-draw-delete-point`,
+        isPanEnabled: appState.interfaceType !== 'keyboard',
+        interfaceType: appState.interfaceType,
+        scale: { small: 1, medium: 1.5, large: 2 }[mapState.mapSize],
+        featureId: newFeature.id
+      })
+    }, 0)
   }
   map.on('draw.create', onCreate)
 
   // --- A vertex is selected
   const onVertexSelection = (e) => {
-    pluginState.dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
+    dispatch({ type: 'SET_SELECTED_VERTEX_INDEX', payload: e })
     eventBus.emit('draw:vertexselection', e)
   }
   map.on('draw.vertexselection', onVertexSelection)
@@ -80,7 +90,6 @@ export function attachEvents ({ appState, appConfig, mapState, pluginState, mapP
     drawDeletePoint.onClick = null
     drawSnap.onClick = null
     drawCancel.onClick = null
-    map.off('draw.modechange', onModeChange)
     map.off('styledata', handleStyleData)
     map.off('draw.create', onCreate)
     map.off('draw.vertexselection', onVertexSelection)

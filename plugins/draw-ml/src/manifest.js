@@ -3,6 +3,8 @@ import { initialState, actions } from './reducer.js'
 import { DrawInit } from './DrawInit.jsx'
 import { newPolygon } from './api/newPolygon.js'
 import { editFeature } from './api/editFeature.js'
+import { addFeature } from './api/addFeature.js'
+import { deleteFeature } from './api/deleteFeature.js'
 
 const createButtonSlots = (showLabel) => ({
   mobile:  { slot: 'actions', showLabel },
@@ -22,8 +24,8 @@ export const manifest = {
     id: 'drawDone',
     label: 'Done',
     variant: 'primary',
-    hiddenWhen: ({ appState, pluginState }) => pluginState.mode === 'draw_vertex' && appState.interfaceType !== 'mouse',
-    enableWhen: ({ pluginState }) => !!pluginState.feature,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
+    enableWhen: ({ pluginState }) => !!pluginState.tempFeature,
     ...createButtonSlots(true)
   },{
     id: 'drawAddPoint',
@@ -36,7 +38,8 @@ export const manifest = {
     label: 'Undo',
     iconId: 'undo',
     variant: 'tertiary',
-    enableWhen: ({ pluginState }) => pluginState.numVertecies >= 1,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
+    enableWhen: ({ pluginState }) => false,
     ...createButtonSlots(false)
   },{
     id: 'drawFinish',
@@ -59,13 +62,14 @@ export const manifest = {
     label: 'Snap to point',
     iconId: 'magnet',
     variant: 'tertiary',
-    pressedWhen: ({ pluginState }) => pluginState.snap,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
+    pressedWhen: ({ pluginState }) => !!pluginState.snap,
     ...createButtonSlots(false)
   },{
     id: 'drawCancel',
     label: 'Cancel',
     variant: 'tertiary',
-    hiddenWhen: ({ appState }) => !appState.isFullscreen,
+    hiddenWhen: ({ pluginState }) => !pluginState.mode,
     ...createButtonSlots(true)
   }],
 
@@ -89,6 +93,8 @@ export const manifest = {
 
   api: {
     newPolygon,
-    editFeature
+    editFeature,
+    addFeature,
+    deleteFeature
   }
 }

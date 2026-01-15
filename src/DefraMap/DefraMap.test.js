@@ -16,7 +16,7 @@ import eventBus from '../services/eventBus.js'
 
 // --- Mocking Setup ---
 jest.mock('../scss/main.scss', () => ({}))
-jest.mock('./historyManager.js', () => ({ register: jest.fn() }))
+jest.mock('./historyManager.js', () => ({ register: jest.fn(), unregister: jest.fn() }))
 jest.mock('./parseDataProperties.js', () => ({ parseDataProperties: jest.fn(() => ({})) }))
 jest.mock('./deviceChecker.js', () => ({ checkDeviceSupport: jest.fn(() => true) }))
 jest.mock('./buttonManager.js')
@@ -27,8 +27,17 @@ jest.mock('./behaviourController.js', () => ({
 jest.mock('./domStateManager.js', () => ({ updateDOMState: jest.fn(), removeLoadingState: jest.fn() }))
 jest.mock('./renderError.js', () => ({ renderError: jest.fn() }))
 jest.mock('../config/mergeConfig.js', () => ({ mergeConfig: jest.fn(cfg => cfg) }))
-jest.mock('../utils/detectBreakpoint.js', () => ({ createBreakpointDetector: jest.fn(), getBreakpoint: jest.fn(() => 'desktop') }))
-jest.mock('../utils/detectInterfaceType.js', () => ({ createInterfaceDetector: jest.fn(), getInterfaceType: jest.fn(() => 'keyboard') }))
+const mockBreakpointDetector = {
+  subscribe: jest.fn(() => jest.fn()),
+  getBreakpoint: jest.fn(() => 'desktop'),
+  destroy: jest.fn()
+}
+const mockInterfaceDetectorCleanup = jest.fn()
+jest.mock('../utils/detectBreakpoint.js', () => ({ createBreakpointDetector: jest.fn(() => mockBreakpointDetector) }))
+jest.mock('../utils/detectInterfaceType.js', () => ({
+  createInterfaceDetector: jest.fn(() => mockInterfaceDetectorCleanup),
+  getInterfaceType: jest.fn(() => 'keyboard')
+}))
 jest.mock('../services/reverseGeocode.js', () => ({ createReverseGeocode: jest.fn() }))
 jest.mock('../services/eventBus.js', () => ({
   createEventBus: jest.fn(() => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() })),
@@ -203,11 +212,34 @@ describe('DefraMap Core Functionality', () => {
     map._root = { some: 'root' }
     map.unmount = jest.fn()
     map._openButton = null
-    
+
     map.removeApp()
-    
+
     expect(map.unmount).toHaveBeenCalled()
     expect(updateDOMState).toHaveBeenCalled()
+  })
+
+  it('does not destroy breakpoint detector on removeApp (persists for history navigation)', () => {
+    const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
+    map._root = {}
+    map.unmount = jest.fn()
+
+    map.removeApp()
+
+    expect(mockBreakpointDetector.destroy).not.toHaveBeenCalled()
+    expect(mockInterfaceDetectorCleanup).not.toHaveBeenCalled()
+  })
+
+  it('destroys breakpoint detector and unregisters from historyManager on destroy', () => {
+    const map = new DefraMap('map', { behaviour: 'buttonFirst', mapProvider: mapProviderMock })
+    map._root = {}
+    map.unmount = jest.fn()
+
+    map.destroy()
+
+    expect(mockBreakpointDetector.destroy).toHaveBeenCalled()
+    expect(mockInterfaceDetectorCleanup).toHaveBeenCalled()
+    expect(historyManager.unregister).toHaveBeenCalledWith(map)
   })
 
   it('_handleExitClick removes app and calls replaceState', () => {

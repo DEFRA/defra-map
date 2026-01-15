@@ -1,14 +1,18 @@
 import { setupBehavior, shouldLoadComponent } from './behaviourController.js'
-import * as detectBreakpoint from '../utils/detectBreakpoint.js'
 import * as queryString from '../utils/queryString.js'
 
-jest.mock('../utils/detectBreakpoint.js')
 jest.mock('../utils/queryString.js')
 
 describe('shouldLoadComponent', () => {
+  let mockBreakpointDetector
+
   beforeEach(() => {
     jest.clearAllMocks()
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector = {
+      getBreakpoint: jest.fn(() => 'desktop'),
+      subscribe: jest.fn(),
+      destroy: jest.fn()
+    }
     queryString.getQueryParam.mockReturnValue(null)
   })
 
@@ -19,39 +23,44 @@ describe('shouldLoadComponent', () => {
     ['hybrid', 'mobile', false],
     ['buttonFirst', 'desktop', false]
   ])('returns %s for %s behaviour on %s', (behaviour, breakpoint, expected) => {
-    detectBreakpoint.getBreakpoint.mockReturnValue(breakpoint)
-    expect(shouldLoadComponent({ id: 'test', behaviour })).toBe(expected)
+    mockBreakpointDetector.getBreakpoint.mockReturnValue(breakpoint)
+    expect(shouldLoadComponent({ id: 'test', behaviour }, mockBreakpointDetector)).toBe(expected)
   })
 
   it('returns true when view param matches id', () => {
     queryString.getQueryParam.mockReturnValue('test')
-    expect(shouldLoadComponent({ id: 'test', behaviour: 'buttonFirst' })).toBe(true)
+    expect(shouldLoadComponent({ id: 'test', behaviour: 'buttonFirst' }, mockBreakpointDetector)).toBe(true)
   })
 })
 
 describe('setupBehavior', () => {
-  let mockMapInstance, breakpointCallback
+  let mockMapInstance, mockBreakpointDetector, breakpointCallback
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockBreakpointDetector = {
+      getBreakpoint: jest.fn(() => 'desktop'),
+      subscribe: jest.fn(cb => { breakpointCallback = cb }),
+      destroy: jest.fn()
+    }
     mockMapInstance = {
       config: {},
+      _breakpointDetector: mockBreakpointDetector,
       loadApp: jest.fn(),
       removeApp: jest.fn()
     }
-    detectBreakpoint.subscribeToBreakpointChange.mockImplementation(cb => { breakpointCallback = cb })
   })
 
   it.each(['buttonFirst', 'hybrid'])('subscribes for %s behaviour', (behaviour) => {
     mockMapInstance.config = { behaviour }
     setupBehavior(mockMapInstance)
-    expect(detectBreakpoint.subscribeToBreakpointChange).toHaveBeenCalled()
+    expect(mockBreakpointDetector.subscribe).toHaveBeenCalled()
   })
 
   it('does not subscribe for mapOnly', () => {
     mockMapInstance.config = { behaviour: 'mapOnly' }
     setupBehavior(mockMapInstance)
-    expect(detectBreakpoint.subscribeToBreakpointChange).not.toHaveBeenCalled()
+    expect(mockBreakpointDetector.subscribe).not.toHaveBeenCalled()
   })
 
   it('loads/removes component based on shouldLoadComponent', () => {

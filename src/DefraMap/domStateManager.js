@@ -1,5 +1,4 @@
 import { getQueryParam } from '../utils/queryString.js'
-import { getBreakpoint } from '../utils/detectBreakpoint.js'
 import { toggleInertElements } from '../utils/toggleInertElements.js'
 import defaults from '../config/defaults.js'
 
@@ -13,9 +12,9 @@ function updatePageTitle ({ pageTitle, isFullscreen }) {
   document.title = isFullscreen ? `${pageTitle}: ${title}` : title
 }
 
-function getIsFullscreen (config) {
+function getIsFullscreen (config, breakpointDetector) {
   const { id, behaviour } = config
-  const isMobile = getBreakpoint() === 'mobile'
+  const isMobile = breakpointDetector.getBreakpoint() === 'mobile'
   const hasViewParam = getQueryParam(defaults.mapViewParamKey) === id
   const isHybridMobile = behaviour === 'hybrid' && isMobile
 
@@ -41,14 +40,15 @@ function getIsFullscreen (config) {
  * @returns {void}
  */
 function updateDOMState (mapInstance) {
-  const { config, rootEl } = mapInstance
+  const { config, rootEl, _breakpointDetector } = mapInstance
   const { pageTitle, behaviour, containerHeight } = config
-  const isFullscreen = getIsFullscreen(config)
-  const isMobile = getBreakpoint() === 'mobile'
+  const isFullscreen = getIsFullscreen(config, _breakpointDetector)
+  const isMobile = _breakpointDetector.getBreakpoint() === 'mobile'
 
   if (['mapOnly', 'buttonFirst', 'hybrid'].includes(behaviour)) {
     toggleInertElements({ containerEl: rootEl, isFullscreen })
     document.documentElement.classList.toggle('dm-is-fullscreen', isFullscreen)
+    rootEl.classList.toggle('dm-is-fullscreen', isFullscreen)
   }
 
   if (['buttonFirst', 'hybrid'].includes(behaviour)) {

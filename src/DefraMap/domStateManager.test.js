@@ -1,22 +1,26 @@
 import { updateDOMState, removeLoadingState } from './domStateManager.js'
 import * as queryString from '../utils/queryString.js'
-import * as detectBreakpoint from '../utils/detectBreakpoint.js'
 import * as toggleInertElements from '../utils/toggleInertElements.js'
 
 jest.mock('../utils/queryString.js')
-jest.mock('../utils/detectBreakpoint.js')
 jest.mock('../utils/toggleInertElements.js')
 
 describe('updateDOMState', () => {
-  let mapInstance, rootEl
+  let mapInstance, rootEl, mockBreakpointDetector
 
   beforeEach(() => {
     rootEl = document.createElement('div')
     document.body.appendChild(rootEl)
     document.title = 'Original Title'
+    mockBreakpointDetector = {
+      getBreakpoint: jest.fn(() => 'desktop'),
+      subscribe: jest.fn(),
+      destroy: jest.fn()
+    }
     mapInstance = {
       config: { id: 'map', pageTitle: 'Map View', behaviour: 'mapOnly', containerHeight: '500px' },
-      rootEl
+      rootEl,
+      _breakpointDetector: mockBreakpointDetector
     }
     jest.clearAllMocks()
   })
@@ -24,6 +28,7 @@ describe('updateDOMState', () => {
   afterEach(() => {
     document.body.innerHTML = ''
     document.documentElement.classList.remove('dm-is-fullscreen')
+    rootEl.classList.remove('dm-is-fullscreen')
   })
 
   it.each([
@@ -36,12 +41,15 @@ describe('updateDOMState', () => {
     ['inline', 'desktop', null, false, '500px', false]
   ])('%s on %s with view=%s', (behaviour, breakpoint, viewParam, isFullscreen, height, titleUpdated) => {
     mapInstance.config.behaviour = behaviour
-    detectBreakpoint.getBreakpoint.mockReturnValue(breakpoint)
+    mockBreakpointDetector.getBreakpoint.mockReturnValue(breakpoint)
     queryString.getQueryParam.mockReturnValue(viewParam)
 
     updateDOMState(mapInstance)
 
     expect(document.documentElement.classList.contains('dm-is-fullscreen')).toBe(isFullscreen)
+    if (behaviour !== 'inline') {
+      expect(rootEl.classList.contains('dm-is-fullscreen')).toBe(isFullscreen)
+    }
     expect(rootEl.style.height).toBe(height)
     if (titleUpdated) {
       expect(document.title).toBe('Map View: Original Title')

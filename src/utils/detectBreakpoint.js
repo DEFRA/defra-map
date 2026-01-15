@@ -1,9 +1,7 @@
-let lastBreakpoint = 'unknown'
-const listeners = new Set()
-let cleanup = null
-
 function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerEl }) {
-  cleanup?.()
+  let lastBreakpoint = 'unknown'
+  const listeners = new Set()
+  let cleanup = null
 
   const getBreakpointType = (width) => {
     if (width <= maxMobileWidth) {
@@ -45,7 +43,7 @@ function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerE
     })
 
     observer.observe(containerEl)
-    
+
     // Now notify listeners after observer is set up
     notifyListeners(initialType)
 
@@ -54,7 +52,7 @@ function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerE
       containerEl.style.containerType = ''
       containerEl.removeAttribute('data-breakpoint')
     }
-  } 
+  }
   // Viewport-based fallback
   else {
     const mq = {
@@ -77,20 +75,25 @@ function createBreakpointDetector ({ maxMobileWidth, minDesktopWidth, containerE
     }
   }
 
-  return cleanup
+  const subscribe = (fn) => {
+    listeners.add(fn)
+    return () => listeners.delete(fn)
+  }
+
+  const getBreakpoint = () => {
+    return lastBreakpoint === 'unknown' ? 'desktop' : lastBreakpoint
+  }
+
+  const destroy = () => {
+    cleanup?.()
+    listeners.clear()
+  }
+
+  return {
+    subscribe,
+    getBreakpoint,
+    destroy
+  }
 }
 
-function subscribeToBreakpointChange (fn) {
-  listeners.add(fn)
-  return () => listeners.delete(fn)
-}
-
-function getBreakpoint () {
-  return lastBreakpoint === 'unknown' ? 'desktop' : lastBreakpoint
-}
-
-export {
-  createBreakpointDetector,
-  subscribeToBreakpointChange,
-  getBreakpoint
-}
+export { createBreakpointDetector }

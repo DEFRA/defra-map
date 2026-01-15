@@ -23,7 +23,7 @@ var interactPlugin = createInteractPlugin({
 })
 
 var defraMap = new DefraMap('map', {
-	behaviour: 'inline',
+	behaviour: 'hybrid',
 	mapProvider: maplibreProvider(),
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,
@@ -128,7 +128,7 @@ var defraMap2 = new DefraMap('map2', {
 		// 	showMarker: false,
 		// 	// isExpanded: true
 		// }),
-		useLocationPlugin(),
+		// useLocationPlugin(),
 		interactPlugin
 	]
 	// search

@@ -1,18 +1,27 @@
 import historyManager from './historyManager.js'
 import * as queryString from '../utils/queryString.js'
-import * as detectBreakpoint from '../utils/detectBreakpoint.js'
 
 jest.mock('../utils/queryString.js')
-jest.mock('../utils/detectBreakpoint.js')
 
 describe('historyManager', () => {
-  let component1, component2, popstateEvent
+  let component1, component2, popstateEvent, mockBreakpointDetector1, mockBreakpointDetector2
 
   beforeEach(() => {
+    mockBreakpointDetector1 = {
+      getBreakpoint: jest.fn(() => 'desktop'),
+      subscribe: jest.fn(),
+      destroy: jest.fn()
+    }
+    mockBreakpointDetector2 = {
+      getBreakpoint: jest.fn(() => 'desktop'),
+      subscribe: jest.fn(),
+      destroy: jest.fn()
+    }
     component1 = {
       id: 'map',
       config: { behaviour: 'buttonFirst' },
       rootEl: document.createElement('div'),
+      _breakpointDetector: mockBreakpointDetector1,
       loadApp: jest.fn(),
       removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
@@ -21,6 +30,7 @@ describe('historyManager', () => {
       id: 'list',
       config: { behaviour: 'hybrid' },
       rootEl: document.createElement('div'),
+      _breakpointDetector: mockBreakpointDetector2,
       loadApp: jest.fn(),
       removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
@@ -41,7 +51,7 @@ describe('historyManager', () => {
   it('loads component when view param matches and component is not open', () => {
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue('map')
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -52,7 +62,7 @@ describe('historyManager', () => {
     component1.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue('map')
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -63,7 +73,7 @@ describe('historyManager', () => {
     component1.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue(null)
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -75,7 +85,7 @@ describe('historyManager', () => {
     component2.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component2)
     queryString.getQueryParam.mockReturnValue(null)
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector2.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -86,7 +96,7 @@ describe('historyManager', () => {
     component2.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component2)
     queryString.getQueryParam.mockReturnValue(null)
-    detectBreakpoint.getBreakpoint.mockReturnValue('mobile')
+    mockBreakpointDetector2.getBreakpoint.mockReturnValue('mobile')
 
     window.dispatchEvent(popstateEvent)
 
@@ -99,7 +109,7 @@ describe('historyManager', () => {
     historyManager.unregister(component1)
 
     queryString.getQueryParam.mockReturnValue('map')
-    detectBreakpoint.getBreakpoint.mockReturnValue('desktop')
+    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
     window.dispatchEvent(popstateEvent)
 
     expect(component1.loadApp).not.toHaveBeenCalled()

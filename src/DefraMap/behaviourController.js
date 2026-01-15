@@ -1,4 +1,3 @@
-import { getBreakpoint, subscribeToBreakpointChange } from '../utils/detectBreakpoint.js'
 import { getQueryParam } from '../utils/queryString.js'
 import defaults from '../config/defaults.js'
 
@@ -13,11 +12,12 @@ import defaults from '../config/defaults.js'
  * @param {Object} config - Component configuration.
  * @param {string} config.id - The view/component ID.
  * @param {string} config.behaviour - The behaviour mode ("buttonFirst", "mapOnly", "inline", "hybrid").
+ * @param {Object} breakpointDetector - Breakpoint detector instance.
  * @returns {boolean} True if the component should be loaded.
  */
-function shouldLoadComponent (config) {
+function shouldLoadComponent (config, breakpointDetector) {
   const { id, behaviour } = config
-  const breakpoint = getBreakpoint()
+  const breakpoint = breakpointDetector.getBreakpoint()
   const hasViewParam = getQueryParam(defaults.mapViewParamKey) === id
 
   return ['mapOnly', 'inline'].includes(behaviour) ||
@@ -33,16 +33,18 @@ function shouldLoadComponent (config) {
  *
  * @param {Object} mapInstance - Map instance containing config and methods.
  * @param {Object} mapInstance.config - Configuration object.
+ * @param {Object} mapInstance._breakpointDetector - Breakpoint detector instance.
  * @param {Function} mapInstance.loadApp - Function to load the component.
  * @param {Function} mapInstance.removeApp - Function to remove the component.
  * @returns {void}
  */
 function setupBehavior (mapInstance) {
   const { behaviour } = mapInstance.config
+  const breakpointDetector = mapInstance._breakpointDetector
 
   if (['buttonFirst', 'hybrid'].includes(behaviour)) {
-    subscribeToBreakpointChange(() => {
-      if (shouldLoadComponent(mapInstance.config)) {
+    breakpointDetector.subscribe(() => {
+      if (shouldLoadComponent(mapInstance.config, breakpointDetector)) {
         mapInstance.loadApp()
       } else {
         mapInstance.removeApp()

@@ -41,7 +41,7 @@ function createInterfaceDetector () {
   mql.addEventListener('change', handleMediaChange)
 
   const REACT_CLICK_DELAY = 150
-  
+
   const handlePointer = event => {
     const type = normalizePointerType(event.pointerType)
     setTimeout(() => notifyListeners(type), REACT_CLICK_DELAY)

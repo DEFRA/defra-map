@@ -8,7 +8,7 @@ import { setupBehavior, shouldLoadComponent } from './behaviourController.js'
 import { updateDOMState, removeLoadingState } from './domStateManager.js'
 import { renderError } from './renderError.js'
 import { mergeConfig } from '../config/mergeConfig.js'
-import { createBreakpointDetector, getBreakpoint } from '../utils/detectBreakpoint.js'
+import { createBreakpointDetector } from '../utils/detectBreakpoint.js'
 import { createInterfaceDetector, getInterfaceType } from '../utils/detectInterfaceType.js'
 import { createReverseGeocode } from '../services/reverseGeocode.js'
 import { EVENTS as events } from '../config/events.js'
@@ -17,6 +17,8 @@ import { createEventBus } from '../services/eventBus.js'
 export default class DefraMap {
   _openButton = null
   _root = null // keep react root internally
+  _breakpointDetector = null
+  _interfaceDetectorCleanup = null
 
   constructor (id, props = {}) {
     this.id = id
@@ -39,12 +41,12 @@ export default class DefraMap {
       historyManager.register(this)
     }
 
-    createBreakpointDetector({
+    this._breakpointDetector = createBreakpointDetector({
       maxMobileWidth: this.config.maxMobileWidth,
       minDesktopWidth: this.config.minDesktopWidth,
       containerEl: this.rootEl
     })
-    createInterfaceDetector()
+    this._interfaceDetectorCleanup = createInterfaceDetector()
 
     this._initialize()
   }
@@ -69,7 +71,7 @@ export default class DefraMap {
 
     setupBehavior(this)
 
-    if (shouldLoadComponent(this.config)) {
+    if (shouldLoadComponent(this.config, this._breakpointDetector)) {
       this.loadApp()
     } else {
       removeLoadingState()
@@ -111,13 +113,14 @@ export default class DefraMap {
       // Initialise App
       const appInstance = await initialiseApp(this.rootEl, {
         id: this.id,
-        initialBreakpoint: getBreakpoint(),
+        initialBreakpoint: this._breakpointDetector.getBreakpoint(),
         initialInterfaceType: getInterfaceType(),
         ...this.config,
         MapProvider,
         mapProviderConfig,
         mapFramework,
         eventBus: this.eventBus,
+        breakpointDetector: this._breakpointDetector,
         handleExitClick: this._handleExitClick.bind(this)
       })
 
@@ -158,6 +161,13 @@ export default class DefraMap {
     this.eventBus.emit(events.MAP_DESTROY, { mapId: this.id })
 
     this.eventBus.destroy?.()
+  }
+
+  destroy () {
+    this.removeApp()
+    this._breakpointDetector?.destroy()
+    this._interfaceDetectorCleanup?.()
+    historyManager.unregister(this)
   }
 
   // API - EventBus methods

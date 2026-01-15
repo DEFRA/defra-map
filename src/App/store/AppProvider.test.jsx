@@ -3,17 +3,15 @@ import { render, act } from '@testing-library/react'
 import { AppProvider, AppContext } from './AppProvider.jsx'
 import { createMockRegistries } from '../../test-utils.js'
 import * as mediaHook from '../hooks/useMediaQueryDispatch.js'
-import * as detectBreakpoint from '../../utils/detectBreakpoint.js'
 import * as detectInterface from '../../utils/detectInterfaceType.js'
 
 jest.mock('../hooks/useMediaQueryDispatch.js')
-jest.mock('../../utils/detectBreakpoint.js')
 jest.mock('../../utils/detectInterfaceType.js')
 
 describe('AppProvider', () => {
-  let handleBreakpointChange, handleInterfaceChange
   let capturedSetMode, capturedRevertMode
   let mockOptions
+  let mockBreakpointDetector
 
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
@@ -44,17 +42,20 @@ describe('AppProvider', () => {
       off: jest.fn()
     }
 
+    mockBreakpointDetector = {
+      subscribe: jest.fn(() => jest.fn()),
+      getBreakpoint: jest.fn(() => 'desktop'),
+      destroy: jest.fn()
+    }
+
     mockOptions = {
       ...registries,
-      eventBus: mockEventBus
+      eventBus: mockEventBus,
+      breakpointDetector: mockBreakpointDetector
     }
 
     mediaHook.useMediaQueryDispatch.mockImplementation(() => {})
-
-    handleBreakpointChange = jest.fn()
-    handleInterfaceChange = jest.fn()
-    detectBreakpoint.subscribeToBreakpointChange.mockImplementation(() => handleBreakpointChange)
-    detectInterface.subscribeToInterfaceChanges.mockImplementation(() => handleInterfaceChange)
+    detectInterface.subscribeToInterfaceChanges.mockImplementation(() => jest.fn())
   })
 
   test('renders children and calls config hooks', () => {
@@ -71,7 +72,7 @@ describe('AppProvider', () => {
 
   test('handles breakpoint and interface callbacks', () => {
     let breakpointCb, interfaceCb
-    detectBreakpoint.subscribeToBreakpointChange.mockImplementation(cb => { breakpointCb = cb; return jest.fn() })
+    mockBreakpointDetector.subscribe.mockImplementation(cb => { breakpointCb = cb; return jest.fn() })
     detectInterface.subscribeToInterfaceChanges.mockImplementation(cb => { interfaceCb = cb; return jest.fn() })
 
     render(<AppProvider options={mockOptions}><div>Child</div></AppProvider>)

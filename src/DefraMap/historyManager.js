@@ -1,5 +1,4 @@
 import { getQueryParam } from '../utils/queryString.js'
-import { getBreakpoint } from '../utils/detectBreakpoint.js'
 import defaults from '../config/defaults.js'
 
 // -----------------------------------------------------------------------------
@@ -22,9 +21,9 @@ import defaults from '../config/defaults.js'
  */
 function handlePopstate () {
   const viewId = getQueryParam(defaults.mapViewParamKey)
-  const breakpoint = getBreakpoint()
 
   for (const mapInstance of components.values()) {
+    const breakpoint = mapInstance._breakpointDetector.getBreakpoint()
     const shouldBeOpen = mapInstance.id === viewId
     const isHybridVisible = mapInstance.config.behaviour === 'hybrid' && breakpoint !== 'mobile'
     const isOpen = mapInstance.rootEl?.children.length

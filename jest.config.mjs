@@ -10,6 +10,8 @@ export default {
     testEnvironment: 'jsdom',
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     testMatch: ['<rootDir>/src/**/*.test.[jt]s?(x)'],
+    testPathIgnorePatterns: ['<rootDir>/src/test-utils.js'],
+    coveragePathIgnorePatterns: ['<rootDir>/src/test-utils.js'],
     transformIgnorePatterns: []
   }]
 }

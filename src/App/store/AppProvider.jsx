@@ -4,14 +4,13 @@ import { initialState, reducer } from './appReducer.js'
 import { handleActionSideEffects } from './appDispatchMiddleware.js'
 import { EVENTS as events } from '../../config/events.js'
 import { ConfigContext } from './configContext.js'
-import { subscribeToBreakpointChange } from '../../utils/detectBreakpoint.js'
 import { subscribeToInterfaceChanges } from '../../utils/detectInterfaceType.js'
 import { useMediaQueryDispatch } from '../hooks/useMediaQueryDispatch.js'
 
 export const AppContext = createContext(null)
 
 export const AppProvider = ({ options, children }) => {
-  const { pluginRegistry, buttonRegistry, panelRegistry, controlRegistry, eventBus } = options
+  const { pluginRegistry, buttonRegistry, panelRegistry, controlRegistry, eventBus, breakpointDetector } = options
 
   const layoutRefs = {
     appContainerRef: useRef(null),
@@ -42,7 +41,7 @@ export const AppProvider = ({ options, children }) => {
 
   useMediaQueryDispatch(dispatch, options)
 
-  const handleBreakpointChange = subscribeToBreakpointChange((breakpoint) => {
+  const handleBreakpointChange = breakpointDetector.subscribe((breakpoint) => {
     dispatch({ type: 'SET_BREAKPOINT', payload: { behaviour: options.behaviour, breakpoint } })
   })
 

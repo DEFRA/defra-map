@@ -49,3 +49,36 @@ describe('controlRegistry', () => {
     expect(config.control2).toEqual({ id: 'control2', ...defaultControlConfig, baz: 'qux' })
   })
 })
+
+describe('createControlRegistry', () => {
+  let registry
+
+  beforeEach(() => {
+    const { createControlRegistry } = require('./controlRegistry.js')
+    registry = createControlRegistry()
+  })
+
+  test('registerControl adds control to internal config', () => {
+    registry.registerControl({ slider: { min: 0 } })
+    expect(registry.getControlConfig()).toEqual({ slider: { min: 0 } })
+  })
+
+  test('addControl adds control and returns the control config', () => {
+    const result = registry.addControl('ctrl1', { label: 'Test' })
+    expect(result.id).toBe('ctrl1')
+    expect(registry.getControlConfig().ctrl1).toBeDefined()
+  })
+
+  test('getControlConfig returns all controls', () => {
+    registry.registerControl({ slider: { min: 0 } })
+    registry.registerControl({ toggle: { default: true } })
+    const config = registry.getControlConfig()
+    expect(config).toEqual({ slider: { min: 0 }, toggle: { default: true } })
+  })
+
+  test('clear resets internal config', () => {
+    registry.registerControl({ slider: { min: 0 } })
+    registry.clear()
+    expect(registry.getControlConfig()).toEqual({})
+  })
+})

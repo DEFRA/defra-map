@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useOutsideInteract } from '../hooks/use-outside-interact'
 import { useApp } from '../store/use-app'
 import { constrainFocus, toggleInert } from '../lib/dom'
+import { ExternalHtml } from './externalHtml.jsx'
 
 const getClassNames = (className, isInset) => {
   return `fm-c-panel${className ? ' fm-c-panel--' + className : ''}${isInset ? ' fm-c-panel--inset' : ''}`
@@ -118,13 +119,9 @@ export default function Panel ({ className, label, isInset, isFixed, isNotObscur
           )}
         </div>
         <div className='fm-c-panel__body' ref={bodyRef}>
-          {html && (
-            <div className='fm-c-panel__content' {...({ dangerouslySetInnerHTML: { __html: html } })} />
-          )}
+          <ExternalHtml className='fm-c-panel__content' html={html} />
           {children}
-          {htmlAfter && (
-            <div {...({ dangerouslySetInnerHTML: { __html: htmlAfter } })} />
-          )}
+          <ExternalHtml html={htmlAfter} />
         </div>
       </div>
       {isModal && (

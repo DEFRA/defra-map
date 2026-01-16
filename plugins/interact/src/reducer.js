@@ -8,7 +8,7 @@ const initialState = {
  * Structure of items in Set: { featureId: string, layerId: string, idProperty: string }
  */
 const toggleSelectedFeatures = (state, payload) => {
-  const { featureId, multiSelect, layerId, idProperty, addToExisting = true, properties } = payload
+  const { featureId, multiSelect, layerId, idProperty, addToExisting = true, properties, geometry } = payload
   const selected = Array.isArray(state.selectedFeatures) ? [...state.selectedFeatures] : []
 
   const existingIndex = selected.findIndex(
@@ -26,7 +26,7 @@ const toggleSelectedFeatures = (state, payload) => {
   // Multi-select mode (add to selection)
   if (multiSelect) {
     if (existingIndex === -1) {
-      selected.push({ featureId, layerId, idProperty, properties })
+      selected.push({ featureId, layerId, idProperty, properties, geometry })
     } else {
       // optional: could also remove existing on toggle
       selected.splice(existingIndex, 1)
@@ -36,7 +36,7 @@ const toggleSelectedFeatures = (state, payload) => {
 
   // Single-select mode
   const isSameSingle = existingIndex !== -1 && selected.length === 1
-  const newSelected = isSameSingle ? [] : [{ featureId, layerId, idProperty, properties }]
+  const newSelected = isSameSingle ? [] : [{ featureId, layerId, idProperty, properties, geometry }]
 
   return { ...state, selectedFeatures: newSelected }
 }

@@ -40,6 +40,7 @@ export const useInteractionHandlers = ({
             layerId: config.layerId,
             idProperty: config.idProperty,
             properties: feature.properties,
+            geometry: feature.geometry
           },
         })
       }

@@ -43,7 +43,7 @@ let framePlugin = createFramePlugin({
 })
 
 var defraMap = new DefraMap('map', {
-	behaviour: 'hybrid',
+	behaviour: 'inline',
 	mapProvider: maplibreProvider(),
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,
@@ -60,7 +60,7 @@ var defraMap = new DefraMap('map', {
 	autoColorScheme: true,
 	// center: [-2.938769, 54.893806],
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
-	containerHeight: '650px',
+	containerHeight: '500px',
 	transformRequest: transformTileRequest,
 	// enableFullscreen: true,
 	// hasExitButton: true,

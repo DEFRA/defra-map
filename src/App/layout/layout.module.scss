@@ -296,10 +296,6 @@
     );
   }
 
-  .dm-c-panel--banner {
-    margin: var(--primary-gap);
-  }
-
   .dm-c-panel--inset {
     top: var(--inset-offset-top);
     left: var(--primary-gap);
@@ -324,6 +320,18 @@
   [class*="dm-c-panel--"][class*="-button"] { // Adjacent to button
     inset: var(--modal-inset);
   }
+}
+
+// Mobile and tablet modal banner margin
+.dm-o-app--mobile, .dm-o-app--tablet {
+  .dm-o-app__modal .dm-c-panel--banner {
+    margin: var(--primary-gap);
+  }
+}
+
+// Desktop modal banner margin
+.dm-o-app--desktop .dm-o-app__modal .dm-c-panel--banner {
+  margin-top: var(--primary-gap);
 }
 
 // 3. Modifiers

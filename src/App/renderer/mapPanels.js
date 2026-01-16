@@ -45,6 +45,11 @@ export function mapPanels ({ slot, appState, evaluateProp }) {
       return null
     }
 
+    // Skip panels marked as inline:false when not in fullscreen mode
+    if (config.inline === false && !appState.isFullscreen) {
+      return null
+    }
+
     if (targetSlot !== slot) {
       return null
     }

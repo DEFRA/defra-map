@@ -6,6 +6,7 @@ export default function createPlugin (options = {}) {
   if (options.isExpanded) {
     options.manifest = {controls: [{ id: 'search', mobile: { slot: 'banner' }}]}
   }
+
   return {
     showMarker: true,
     ...options,

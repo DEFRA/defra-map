@@ -21,6 +21,10 @@ function getMatchingButtons ({ appState, buttonConfig, slot, evaluateProp }) {
     if (config.excludeModes?.includes(mode)) {
       return false
     }
+    // Skip buttons marked as inline:false when not in fullscreen mode
+    if (config.inline === false && !appState.isFullscreen) {
+      return false
+    }
     if (bpConfig?.slot !== slot || !allowedSlots.button.includes(bpConfig.slot)) {
       return false
     }

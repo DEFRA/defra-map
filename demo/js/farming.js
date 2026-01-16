@@ -9,7 +9,7 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
+import createDataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
 import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
@@ -34,6 +34,56 @@ var interactPlugin = createInteractPlugin({
 	interactionMode: 'select', // 'auto', 'select', 'marker' // defaults to 'marker'
 	multiSelect: true,
 	// excludeModes: ['draw']
+})
+
+var dataLayersPlugin = createDataLayersPlugin({
+	layers: [{
+		id: 'field-parcels',
+		label: 'Field parcels',
+		filter: [
+			'all',
+			['!=', ['get', 'sbi'], '106223377'],
+			['==', ['get', 'is_dominant_land_cover'], true]
+		],
+		tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
+		sourceLayer: 'field_parcels_filtered',
+		stroke: { outdoor: '#b1b4b6', dark: '#28a197', aerial: 'rgba(40,161,151,0.8)', 'black-and-white': '#28a197' },
+		strokeWidth: 2,
+		// strokeDashArray: [1, 2],
+		fill: 'transparent',
+		symbolDescription: { outdoor: 'turquiose outline' },
+		minZoom: 10,
+		maxZoom: 24,
+		showInLegend: true,
+		canToggle: true
+	},{
+		id: 'linked-parcels',
+		label: 'Existing fields',
+		filter: [
+			'all',
+			['==', ['get', 'sbi'], '106223377'],
+			['==', ['get', 'is_dominant_land_cover'], true]
+		],
+		tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
+		sourceLayer: 'field_parcels_filtered',
+		stroke: '#0000ff',
+		strokeWidth: 2,
+		fill: 'rgba(0,0,255,0.1)',
+		symbolDescription: { outdoor: 'blue outline' },
+		minZoom: 10,
+		maxZoom: 24
+	},{
+		id: 'hedge-control',
+		label: 'Hedge control',
+		tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
+		sourceLayer: 'hedge_control',
+		stroke: '#b58840',
+		fill: 'transparent',
+		strokeWidth: 4,
+		symbolDescription: { outdoor: 'blue outline' },
+		minZoom: 10,
+		maxZoom: 24
+	}]
 })
 
 var drawPlugin = createDrawPlugin()
@@ -63,7 +113,7 @@ var defraMap = new DefraMap('map', {
 	containerHeight: '500px',
 	transformRequest: transformTileRequest,
 	// enableFullscreen: true,
-	// hasExitButton: true,
+	hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
 	// 	coords: [-2.9592267, 54.9045977],
@@ -90,57 +140,13 @@ var defraMap = new DefraMap('map', {
 			customDatasets: searchCustomDatasets,
 			width: '300px',
 			showMarker: false,
+			// manifest: { controls: [{ id: 'search',
+			// 	inline: false
+			// }]}
 			// isExpanded: true
 		}),
 		useLocationPlugin(),
-		dataLayersPlugin({
-			layers: [{
-				id: 'field-parcels',
-				label: 'Field parcels',
-				filter: [
-					'all',
-					['!=', ['get', 'sbi'], '106223377'],
-					['==', ['get', 'is_dominant_land_cover'], true]
-				],
-				tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
-				sourceLayer: 'field_parcels_filtered',
-				stroke: { outdoor: '#b1b4b6', dark: '#28a197', aerial: 'rgba(40,161,151,0.8)', 'black-and-white': '#28a197' },
-				strokeWidth: 2,
-				// strokeDashArray: [1, 2],
-				fill: 'transparent',
-				symbolDescription: { outdoor: 'turquiose outline' },
-				minZoom: 10,
-				maxZoom: 24,
-				showInLegend: true,
-				canToggle: true
-			},{
-				id: 'linked-parcels',
-				label: 'Existing fields',
-				filter: [
-					'all',
-					['==', ['get', 'sbi'], '106223377'],
-					['==', ['get', 'is_dominant_land_cover'], true]
-				],
-				tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
-				sourceLayer: 'field_parcels_filtered',
-				stroke: '#0000ff',
-				strokeWidth: 2,
-				fill: 'rgba(0,0,255,0.1)',
-				symbolDescription: { outdoor: 'blue outline' },
-				minZoom: 10,
-				maxZoom: 24
-			},{
-				id: 'hedge-control',
-				label: 'Hedge control',
-				tiles: ['https://farming-tiles-702a60f45633.herokuapp.com/field_parcels_with_hedges/{z}/{x}/{y}'],
-				sourceLayer: 'hedge_control',
-				stroke: '#b58840',
-				strokeWidth: 4,
-				symbolDescription: { outdoor: 'blue outline' },
-				minZoom: 10,
-				maxZoom: 24
-			}]
-		}),
+		dataLayersPlugin,
 		interactPlugin,
 		// framePlugin,
 		// drawPlugin
@@ -153,6 +159,7 @@ defraMap.on('map:ready', function (e) {
 	// framePlugin.addFrame('test', {
 	// 	aspectRatio: 1
 	// })
+	dataLayersPlugin.hideLayer('testId')
 })
 
 defraMap.on('draw:ready', function () {

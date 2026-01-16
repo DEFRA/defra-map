@@ -28,6 +28,7 @@ describe('mapPanels', () => {
     defaultAppState = {
       breakpoint: 'desktop',
       mode: 'view',
+      isFullscreen: true,
       openPanels: { p1: { props: { foo: 'bar' } } },
       panelConfig: { p1: baseConfig },
       pluginRegistry: { registeredPlugins: [] }
@@ -134,5 +135,29 @@ describe('mapPanels', () => {
     const result = map(defaultAppState, 'inset')
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('p1')
+  })
+
+  it('filters out panels with inline:false when not in fullscreen', () => {
+    defaultAppState.isFullscreen = false
+    defaultAppState.panelConfig = ({
+      p1: { ...baseConfig, inline: false }
+    })
+    expect(map()).toEqual([])
+  })
+
+  it('includes panels with inline:false when in fullscreen', () => {
+    defaultAppState.isFullscreen = true
+    defaultAppState.panelConfig = ({
+      p1: { ...baseConfig, inline: false }
+    })
+    expect(map().map(p => p.id)).toEqual(['p1'])
+  })
+
+  it('includes panels without inline property regardless of fullscreen state', () => {
+    defaultAppState.isFullscreen = false
+    defaultAppState.panelConfig = ({
+      p1: baseConfig
+    })
+    expect(map().map(p => p.id)).toEqual(['p1'])
   })
 })

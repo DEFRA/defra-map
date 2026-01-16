@@ -21,6 +21,11 @@ export function mapControls ({ slot, appState, evaluateProp }) {
       const inModeWhitelist = control.includeModes?.includes(mode) ?? true
       const inExcludeModes = control.excludeModes?.includes(mode) ?? false
 
+      // Skip controls marked as inline:false when not in fullscreen mode
+      if (control.inline === false && !appState.isFullscreen) {
+        return false
+      }
+
       // Only include controls allowed in slot and current mode
       return inModeWhitelist && !inExcludeModes && bpConfig.slot === slot && slotAllowed
     })

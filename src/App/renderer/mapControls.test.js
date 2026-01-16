@@ -25,6 +25,7 @@ describe('mapControls', () => {
     defaultAppState = {
       breakpoint: 'desktop',
       mode: 'view',
+      isFullscreen: true,
       controlConfig: {},
       pluginRegistry: {
         registeredPlugins: [
@@ -106,5 +107,32 @@ describe('mapControls', () => {
     })
     const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
     expect(result[0].element).toBeDefined()
+  })
+
+  it('filters out controls with inline:false when not in fullscreen', () => {
+    defaultAppState.isFullscreen = false
+    defaultAppState.controlConfig = ({
+      ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['view'], inline: false }
+    })
+    const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
+    expect(result).toEqual([])
+  })
+
+  it('includes controls with inline:false when in fullscreen', () => {
+    defaultAppState.isFullscreen = true
+    defaultAppState.controlConfig = ({
+      ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['view'], inline: false }
+    })
+    const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
+    expect(result.map(c => c.id)).toEqual(['ctrl1'])
+  })
+
+  it('includes controls without inline property regardless of fullscreen state', () => {
+    defaultAppState.isFullscreen = false
+    defaultAppState.controlConfig = ({
+      ctrl1: { id: 'ctrl1', desktop: { slot: 'header', order: 1 }, includeModes: ['view'] }
+    })
+    const result = mapControls({ slot: 'header', appState: defaultAppState, evaluateProp: (p) => p })
+    expect(result.map(c => c.id)).toEqual(['ctrl1'])
   })
 })

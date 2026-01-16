@@ -15,7 +15,7 @@ export default {
   entry: {
     index: path.join(__dirname, 'demo/js/index.js'),
     forms: path.join(__dirname, 'demo/js/forms.js'),
-    print: path.join(__dirname, 'demo/js/print.js'),
+    farming: path.join(__dirname, 'demo/js/farming.js'),
     planning: path.join(__dirname, 'demo/js/planning.js')
   },
   output: {

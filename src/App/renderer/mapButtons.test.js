@@ -31,6 +31,7 @@ describe('mapButtons module', () => {
     appState = {
       breakpoint: 'desktop',
       mode: 'view',
+      isFullscreen: true,
       openPanels: {},
       dispatch: jest.fn(),
       disabledButtons: new Set(),
@@ -67,6 +68,24 @@ describe('mapButtons module', () => {
       const config = { b1: { ...baseBtn, desktop: { slot: 'header' }, excludeWhen: fn, pluginId: 'p1' } }
       getMatchingButtons({ buttonConfig: config, slot: 'header', appState, evaluateProp })
       expect(evaluateProp).toHaveBeenCalledWith(fn, 'p1')
+    })
+
+    it('filters out buttons with inline:false when not in fullscreen', () => {
+      const config = { b1: { ...baseBtn, inline: false } }
+      const state = { ...appState, isFullscreen: false }
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState: state, evaluateProp }).length).toBe(0)
+    })
+
+    it('includes buttons with inline:false when in fullscreen', () => {
+      const config = { b1: { ...baseBtn, inline: false } }
+      const state = { ...appState, isFullscreen: true }
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState: state, evaluateProp }).length).toBe(1)
+    })
+
+    it('includes buttons without inline property regardless of fullscreen state', () => {
+      const config = { b1: baseBtn }
+      const state = { ...appState, isFullscreen: false }
+      expect(getMatchingButtons({ buttonConfig: config, slot: 'header', appState: state, evaluateProp }).length).toBe(1)
     })
   })
 

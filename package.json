@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist",
-    "sass:watch": "sass --watch demo/scss/demo.scss:public/demo.css",
+    "sass:watch": "sass --watch demo/scss/farming.scss:public/farming-demo.css demo/scss/planning.scss:public/planning-demo.css",
     "webpack:serve": "webpack serve --config webpack.dev.mjs",
     "dev": "npm-run-all --parallel sass:watch webpack:serve",
     "prod": "webpack serve --config webpack.prod.mjs",

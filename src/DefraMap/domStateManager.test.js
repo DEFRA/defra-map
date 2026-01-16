@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { updateDOMState, removeLoadingState } from './domStateManager.js'
 import * as queryString from '../utils/queryString.js'
 import * as toggleInertElements from '../utils/toggleInertElements.js'
@@ -6,23 +10,28 @@ jest.mock('../utils/queryString.js')
 jest.mock('../utils/toggleInertElements.js')
 
 describe('updateDOMState', () => {
-  let mapInstance, rootEl, mockBreakpointDetector
+  let mapInstance, rootEl
 
   beforeEach(() => {
     rootEl = document.createElement('div')
     document.body.appendChild(rootEl)
     document.title = 'Original Title'
-    mockBreakpointDetector = {
-      getBreakpoint: jest.fn(() => 'desktop'),
-      subscribe: jest.fn(),
-      destroy: jest.fn()
-    }
     mapInstance = {
-      config: { id: 'map', pageTitle: 'Map View', behaviour: 'mapOnly', containerHeight: '500px' },
-      rootEl,
-      _breakpointDetector: mockBreakpointDetector
+      config: {
+        id: 'map',
+        pageTitle: 'Map View',
+        behaviour: 'mapOnly',
+        containerHeight: '500px',
+        hybridWidth: null,
+        maxMobileWidth: 640
+      },
+      rootEl
     }
     jest.clearAllMocks()
+    // Default: viewport is wide (media query doesn't match)
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false
+    }))
   })
 
   afterEach(() => {
@@ -32,16 +41,14 @@ describe('updateDOMState', () => {
   })
 
   it.each([
-    ['mapOnly', 'desktop', null, true, '100%', false],
-    ['buttonFirst', 'desktop', null, false, 'auto', false],
-    ['buttonFirst', 'desktop', 'map', true, '100%', true],
-    ['hybrid', 'desktop', null, false, '500px', false],
-    ['hybrid', 'mobile', null, false, 'auto', false],
-    ['hybrid', 'mobile', 'map', true, '100%', true],
-    ['inline', 'desktop', null, false, '500px', false]
-  ])('%s on %s with view=%s', (behaviour, breakpoint, viewParam, isFullscreen, height, titleUpdated) => {
+    // [behaviour, mediaMatches, viewParam, expectedFullscreen, expectedHeight, expectedTitleUpdated]
+    ['mapOnly', false, null, true, '100%', false],
+    ['buttonFirst', false, null, false, 'auto', false],
+    ['buttonFirst', false, 'map', true, '100%', true],
+    ['inline', false, null, false, '500px', false]
+  ])('%s with mediaMatches=%s and view=%s', (behaviour, mediaMatches, viewParam, isFullscreen, height, titleUpdated) => {
     mapInstance.config.behaviour = behaviour
-    mockBreakpointDetector.getBreakpoint.mockReturnValue(breakpoint)
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: mediaMatches }))
     queryString.getQueryParam.mockReturnValue(viewParam)
 
     updateDOMState(mapInstance)
@@ -60,6 +67,53 @@ describe('updateDOMState', () => {
         isFullscreen
       })
     }
+  })
+
+  describe('hybrid behaviour', () => {
+    beforeEach(() => {
+      mapInstance.config.behaviour = 'hybrid'
+    })
+
+    it('shows inline (not fullscreen) when viewport is wide', () => {
+      window.matchMedia = jest.fn().mockImplementation(() => ({ matches: false }))
+      queryString.getQueryParam.mockReturnValue(null)
+
+      updateDOMState(mapInstance)
+
+      expect(document.documentElement.classList.contains('dm-is-fullscreen')).toBe(false)
+      expect(rootEl.style.height).toBe('500px')
+    })
+
+    it('uses auto height when viewport is narrow (hybrid fullscreen mode)', () => {
+      window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
+      queryString.getQueryParam.mockReturnValue(null)
+
+      updateDOMState(mapInstance)
+
+      expect(rootEl.style.height).toBe('auto')
+    })
+
+    it('shows fullscreen when viewport is narrow and view param matches', () => {
+      window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
+      queryString.getQueryParam.mockReturnValue('map')
+
+      updateDOMState(mapInstance)
+
+      expect(document.documentElement.classList.contains('dm-is-fullscreen')).toBe(true)
+      expect(rootEl.classList.contains('dm-is-fullscreen')).toBe(true)
+      expect(rootEl.style.height).toBe('100%')
+      expect(document.title).toBe('Map View: Original Title')
+    })
+
+    it('uses hybridWidth for media query when provided', () => {
+      mapInstance.config.hybridWidth = 768
+      window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
+      queryString.getQueryParam.mockReturnValue(null)
+
+      updateDOMState(mapInstance)
+
+      expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 768px)')
+    })
   })
 })
 

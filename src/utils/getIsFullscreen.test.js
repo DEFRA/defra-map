@@ -2,29 +2,83 @@
  * @jest-environment jsdom
  */
 
-import { getIsFullscreen } from './getIsFullscreen.js'
+import { getIsFullscreen, isHybridFullscreen } from './getIsFullscreen.js'
+
+describe('isHybridFullscreen', () => {
+  beforeEach(() => {
+    // Reset matchMedia mock before each test
+    window.matchMedia = jest.fn()
+  })
+
+  it('returns false when behaviour is not hybrid', () => {
+    const config = { behaviour: 'inline', hybridWidth: null, maxMobileWidth: 640 }
+    expect(isHybridFullscreen(config)).toBe(false)
+  })
+
+  it('returns true when behaviour is hybrid and media query matches (viewport <= threshold)', () => {
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      matches: true
+    }))
+    const config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(isHybridFullscreen(config)).toBe(true)
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 640px)')
+  })
+
+  it('returns false when behaviour is hybrid and media query does not match (viewport > threshold)', () => {
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      matches: false
+    }))
+    const config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(isHybridFullscreen(config)).toBe(false)
+  })
+
+  it('uses hybridWidth when provided instead of maxMobileWidth', () => {
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      matches: true
+    }))
+    const config = { behaviour: 'hybrid', hybridWidth: 768, maxMobileWidth: 640 }
+    isHybridFullscreen(config)
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 768px)')
+  })
+})
 
 describe('getIsFullscreen', () => {
-  // Use it.each to test all logical branches and combinations concisely.
+  beforeEach(() => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false
+    }))
+  })
+
   it.each([
-    // --- True Cases (Covers all branches resulting in true) ---
-    // Branch 1: ['mapOnly', 'buttonFirst'].includes(behaviour)
-    ['mapOnly', 'desktop', true],
-    ['buttonFirst', 'desktop', true],
-    ['mapOnly', 'mobile', true], // Should still be true regardless of breakpoint
+    // --- True Cases ---
+    // mapOnly and buttonFirst are always fullscreen
+    ['mapOnly', false],
+    ['buttonFirst', false],
+  ])('should return true for behaviour: %s (always fullscreen)', (behaviour, mediaMatches) => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: mediaMatches }))
+    const config = { behaviour, hybridWidth: null, maxMobileWidth: 640 }
+    expect(getIsFullscreen(config)).toBe(true)
+  })
 
-    // Branch 2: breakpoint === 'mobile' && behaviour === 'hybrid'
-    ['hybrid', 'mobile', true],
+  it('should return true for hybrid when media query matches', () => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
+    const config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(getIsFullscreen(config)).toBe(true)
+  })
 
-    // --- False Cases (Covers all combinations resulting in false) ---
-    // If behaviour is not in the list, and the mobile/hybrid condition is not met.
-    ['hybrid', 'desktop', false], // Not mobile AND not in list
-    ['hybrid', 'tablet', false], // Not mobile AND not in list
-    ['someOtherValue', 'mobile', false], // Mobile is true, but behaviour is not 'hybrid'
-    ['someOtherValue', 'desktop', false] // Neither condition met
+  it('should return false for hybrid when media query does not match', () => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: false }))
+    const config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(getIsFullscreen(config)).toBe(false)
+  })
 
-  ])('should return %s for behaviour: %s and breakpoint: %s', (behaviour, breakpoint, expected) => {
-    const result = getIsFullscreen(behaviour, breakpoint)
-    expect(result).toBe(expected)
+  it('should return false for inline behaviour', () => {
+    const config = { behaviour: 'inline', hybridWidth: null, maxMobileWidth: 640 }
+    expect(getIsFullscreen(config)).toBe(false)
+  })
+
+  it('should return false for unknown behaviour', () => {
+    const config = { behaviour: 'someOtherValue', hybridWidth: null, maxMobileWidth: 640 }
+    expect(getIsFullscreen(config)).toBe(false)
   })
 })

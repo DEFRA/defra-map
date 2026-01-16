@@ -39,10 +39,15 @@ export const AppProvider = ({ options, children }) => {
     handleActionSideEffects(action, previousState, panelConfig, eventBus)
   }, [state, options, eventBus])
 
-  useMediaQueryDispatch(dispatch, options)
+  useMediaQueryDispatch(rawDispatch, options)
 
   const handleBreakpointChange = breakpointDetector.subscribe((breakpoint) => {
-    dispatch({ type: 'SET_BREAKPOINT', payload: { behaviour: options.behaviour, breakpoint } })
+    dispatch({ type: 'SET_BREAKPOINT', payload: {
+      behaviour: options.behaviour,
+      breakpoint,
+      hybridWidth: options.hybridWidth,
+      maxMobileWidth: options.maxMobileWidth
+    }})
   })
 
   const handleInterfaceTypeChange = subscribeToInterfaceChanges((newType) => {

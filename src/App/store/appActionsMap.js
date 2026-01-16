@@ -56,11 +56,24 @@ const setMedia = (state, payload) => {
   }
 }
 
+const setHybridFullscreen = (state, payload) => {
+  return {
+    ...state,
+    isFullscreen: payload
+  }
+}
+
 const setBreakpoint = (state, payload) => {
-  const isFullscreen = getIsFullscreen(payload.behaviour, payload.breakpoint)
+  const { behaviour, hybridWidth, maxMobileWidth } = payload
   const panelIds = Object.keys(state.openPanels)
   const lastPanelId = panelIds.at(-1)
- 
+
+  // For hybrid, isFullscreen is controlled by media query via SET_HYBRID_FULLSCREEN
+  // For other behaviours, calculate it here
+  const isFullscreen = behaviour === 'hybrid'
+    ? state.isFullscreen
+    : getIsFullscreen({ behaviour, hybridWidth, maxMobileWidth })
+
   return {
     ...state,
     breakpoint: payload.breakpoint,
@@ -288,6 +301,7 @@ const addControl = (state, payload) => {
 export const actionsMap = {
   SET_BREAKPOINT: setBreakpoint,
   SET_MEDIA: setMedia,
+  SET_HYBRID_FULLSCREEN: setHybridFullscreen,
   SET_INTERFACE_TYPE: setInterfaceType,
   SET_MODE: setMode,
   SET_SAFE_ZONE_INSET: setSafeZoneInset,

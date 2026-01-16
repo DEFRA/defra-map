@@ -4,6 +4,7 @@ const defaults = {
   backgroundColor: 'var(--background-color)',
   maxMobileWidth: 640,
   minDesktopWidth: 835,
+  hybridWidth: null, // Defaults to maxMobileWidth if not set
   containerHeight: '600px',
   mapSize: 'small',
   appColorScheme: 'light',

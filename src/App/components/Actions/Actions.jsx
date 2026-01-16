@@ -9,7 +9,7 @@ export const Actions = ({ slot, children }) => {
 
   // If a panel exists above we need so css adjustment
   const isBottomSlotUsed = Object.keys(openPanels).some(panelId => {
-      return panelConfig[panelId]?.[breakpoint]?.slot === 'bottom'
+      return breakpoint === 'mobile' && panelConfig[panelId]?.[breakpoint]?.slot === 'bottom'
   })
 
   const className = [

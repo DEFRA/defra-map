@@ -1,4 +1,5 @@
 import { getQueryParam } from '../utils/queryString.js'
+import { isHybridFullscreen } from '../utils/getIsFullscreen.js'
 import defaults from '../config/defaults.js'
 
 // -----------------------------------------------------------------------------
@@ -23,9 +24,8 @@ function handlePopstate () {
   const viewId = getQueryParam(defaults.mapViewParamKey)
 
   for (const mapInstance of components.values()) {
-    const breakpoint = mapInstance._breakpointDetector.getBreakpoint()
     const shouldBeOpen = mapInstance.id === viewId
-    const isHybridVisible = mapInstance.config.behaviour === 'hybrid' && breakpoint !== 'mobile'
+    const isHybridVisible = mapInstance.config.behaviour === 'hybrid' && !isHybridFullscreen(mapInstance.config)
     const isOpen = mapInstance.rootEl?.children.length
 
     if (shouldBeOpen && !isOpen) {

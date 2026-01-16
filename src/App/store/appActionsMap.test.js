@@ -225,14 +225,33 @@ describe('actionsMap full coverage', () => {
 
   test('SET_BREAKPOINT uses empty openPanels when lastPanelId missing', () => {
     const tmp = { ...state, openPanels: {} }
-    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'responsive' })
+    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'responsive', hybridWidth: null, maxMobileWidth: 640 })
     expect(result.openPanels).toEqual({})
   })
 
   test('SET_BREAKPOINT rebuilds openPanels with lastPanelId.props fallback', () => {
     const tmp = { ...state, openPanels: { panel3: {} } }
-    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'responsive' })
+    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'responsive', hybridWidth: null, maxMobileWidth: 640 })
     expect(result.openPanels.panel3.props).toEqual({})
+  })
+
+  test('SET_BREAKPOINT preserves isFullscreen for hybrid behaviour', () => {
+    const tmp = { ...state, isFullscreen: true }
+    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 })
+    expect(result.isFullscreen).toBe(true)
+  })
+
+  test('SET_BREAKPOINT calculates isFullscreen for non-hybrid behaviours', () => {
+    getIsFullscreenModule.getIsFullscreen.mockReturnValue(true)
+    const tmp = { ...state, isFullscreen: false }
+    const result = actionsMap.SET_BREAKPOINT(tmp, { breakpoint: 'mobile', behaviour: 'buttonFirst', hybridWidth: null, maxMobileWidth: 640 })
+    expect(result.isFullscreen).toBe(true)
+  })
+
+  test('SET_HYBRID_FULLSCREEN updates isFullscreen', () => {
+    const tmp = { ...state, isFullscreen: false }
+    const result = actionsMap.SET_HYBRID_FULLSCREEN(tmp, true)
+    expect(result.isFullscreen).toBe(true)
   })
 
   test('RESTORE_PREVIOUS_PANELS returns {} if previousOpenPanels missing', () => {

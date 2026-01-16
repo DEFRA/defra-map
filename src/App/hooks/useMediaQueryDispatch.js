@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
 import { getMediaState } from '../../utils/getMediaState.js'
+import { isHybridFullscreen } from '../../utils/getIsFullscreen.js'
 
-export function useMediaQueryDispatch (dispatch, { maxMobileWidth, minDesktopWidth, appColorScheme, autoColorScheme }) {
+export function useMediaQueryDispatch (dispatch, options) {
+  const { appColorScheme, autoColorScheme, behaviour, hybridWidth, maxMobileWidth } = options
+
   useEffect(() => {
     const queries = [
       window.matchMedia('(prefers-color-scheme: dark)'),
@@ -22,8 +25,28 @@ export function useMediaQueryDispatch (dispatch, { maxMobileWidth, minDesktopWid
 
     queries.forEach(query => query.addEventListener('change', updateMedia))
 
+    // Hybrid behaviour: listen to media query width changes
+    let hybridQuery = null
+    let updateHybridFullscreen = null
+    if (behaviour === 'hybrid') {
+      const threshold = hybridWidth ?? maxMobileWidth
+      hybridQuery = window.matchMedia(`(max-width: ${threshold}px)`)
+
+      updateHybridFullscreen = (e) => {
+        dispatch({
+          type: 'SET_HYBRID_FULLSCREEN',
+          payload: e.matches
+        })
+      }
+
+      hybridQuery.addEventListener('change', updateHybridFullscreen)
+    }
+
     return () => {
       queries.forEach(query => query.removeEventListener('change', updateMedia))
+      if (hybridQuery && updateHybridFullscreen) {
+        hybridQuery.removeEventListener('change', updateHybridFullscreen)
+      }
     }
-  }, [dispatch])
+  }, [dispatch, behaviour, hybridWidth, maxMobileWidth])
 }

@@ -1,35 +1,49 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { setupBehavior, shouldLoadComponent } from './behaviourController.js'
 import * as queryString from '../utils/queryString.js'
 
 jest.mock('../utils/queryString.js')
 
 describe('shouldLoadComponent', () => {
-  let mockBreakpointDetector
-
   beforeEach(() => {
     jest.clearAllMocks()
-    mockBreakpointDetector = {
-      getBreakpoint: jest.fn(() => 'desktop'),
-      subscribe: jest.fn(),
-      destroy: jest.fn()
-    }
     queryString.getQueryParam.mockReturnValue(null)
+    // Default: viewport is wide (not matching mobile media query)
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    }))
   })
 
   it.each([
-    ['mapOnly', 'desktop', true],
-    ['inline', 'desktop', true],
-    ['hybrid', 'desktop', true],
-    ['hybrid', 'mobile', false],
-    ['buttonFirst', 'desktop', false]
-  ])('returns %s for %s behaviour on %s', (behaviour, breakpoint, expected) => {
-    mockBreakpointDetector.getBreakpoint.mockReturnValue(breakpoint)
-    expect(shouldLoadComponent({ id: 'test', behaviour }, mockBreakpointDetector)).toBe(expected)
+    ['mapOnly', true],
+    ['inline', true],
+    ['buttonFirst', false]
+  ])('returns %s for %s behaviour', (behaviour, expected) => {
+    const config = { id: 'test', behaviour, hybridWidth: null, maxMobileWidth: 640 }
+    expect(shouldLoadComponent(config)).toBe(expected)
+  })
+
+  it('returns true for hybrid when viewport is wide (media query does not match)', () => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: false }))
+    const config = { id: 'test', behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(shouldLoadComponent(config)).toBe(true)
+  })
+
+  it('returns false for hybrid when viewport is narrow (media query matches)', () => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
+    const config = { id: 'test', behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    expect(shouldLoadComponent(config)).toBe(false)
   })
 
   it('returns true when view param matches id', () => {
     queryString.getQueryParam.mockReturnValue('test')
-    expect(shouldLoadComponent({ id: 'test', behaviour: 'buttonFirst' }, mockBreakpointDetector)).toBe(true)
+    const config = { id: 'test', behaviour: 'buttonFirst', hybridWidth: null, maxMobileWidth: 640 }
+    expect(shouldLoadComponent(config)).toBe(true)
   })
 })
 
@@ -44,27 +58,63 @@ describe('setupBehavior', () => {
       destroy: jest.fn()
     }
     mockMapInstance = {
-      config: {},
+      config: { hybridWidth: null, maxMobileWidth: 640 },
       _breakpointDetector: mockBreakpointDetector,
       loadApp: jest.fn(),
       removeApp: jest.fn()
     }
+    // Default: viewport is wide
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    }))
   })
 
-  it.each(['buttonFirst', 'hybrid'])('subscribes for %s behaviour', (behaviour) => {
-    mockMapInstance.config = { behaviour }
+  it('subscribes to breakpoint changes for buttonFirst behaviour', () => {
+    mockMapInstance.config = { behaviour: 'buttonFirst', hybridWidth: null, maxMobileWidth: 640 }
     setupBehavior(mockMapInstance)
     expect(mockBreakpointDetector.subscribe).toHaveBeenCalled()
   })
 
+  it('subscribes to media query changes for hybrid behaviour', () => {
+    const mockAddEventListener = jest.fn()
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: mockAddEventListener,
+      removeEventListener: jest.fn()
+    }))
+    mockMapInstance.config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    setupBehavior(mockMapInstance)
+    expect(mockAddEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+    expect(mockBreakpointDetector.subscribe).not.toHaveBeenCalled()
+  })
+
+  it('uses hybridWidth for media query when provided', () => {
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    }))
+    mockMapInstance.config = { behaviour: 'hybrid', hybridWidth: 768, maxMobileWidth: 640 }
+    setupBehavior(mockMapInstance)
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 768px)')
+  })
+
   it('does not subscribe for mapOnly', () => {
-    mockMapInstance.config = { behaviour: 'mapOnly' }
+    mockMapInstance.config = { behaviour: 'mapOnly', hybridWidth: null, maxMobileWidth: 640 }
     setupBehavior(mockMapInstance)
     expect(mockBreakpointDetector.subscribe).not.toHaveBeenCalled()
   })
 
-  it('loads/removes component based on shouldLoadComponent', () => {
-    mockMapInstance.config = { id: 'test', behaviour: 'buttonFirst' }
+  it('does not subscribe for inline', () => {
+    mockMapInstance.config = { behaviour: 'inline', hybridWidth: null, maxMobileWidth: 640 }
+    setupBehavior(mockMapInstance)
+    expect(mockBreakpointDetector.subscribe).not.toHaveBeenCalled()
+  })
+
+  it('loads/removes component based on shouldLoadComponent for buttonFirst', () => {
+    mockMapInstance.config = { id: 'test', behaviour: 'buttonFirst', hybridWidth: null, maxMobileWidth: 640 }
     setupBehavior(mockMapInstance)
 
     queryString.getQueryParam.mockReturnValue('test')
@@ -74,5 +124,25 @@ describe('setupBehavior', () => {
     queryString.getQueryParam.mockReturnValue(null)
     breakpointCallback()
     expect(mockMapInstance.removeApp).toHaveBeenCalled()
+  })
+
+  it('returns cleanup function for hybrid behaviour', () => {
+    const mockRemoveEventListener = jest.fn()
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: mockRemoveEventListener
+    }))
+    mockMapInstance.config = { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 }
+    const cleanup = setupBehavior(mockMapInstance)
+    expect(typeof cleanup).toBe('function')
+    cleanup()
+    expect(mockRemoveEventListener).toHaveBeenCalled()
+  })
+
+  it('returns null for non-hybrid/buttonFirst behaviours', () => {
+    mockMapInstance.config = { behaviour: 'inline', hybridWidth: null, maxMobileWidth: 640 }
+    const cleanup = setupBehavior(mockMapInstance)
+    expect(cleanup).toBeNull()
   })
 })

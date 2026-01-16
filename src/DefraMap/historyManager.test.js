@@ -1,42 +1,38 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import historyManager from './historyManager.js'
 import * as queryString from '../utils/queryString.js'
 
 jest.mock('../utils/queryString.js')
 
 describe('historyManager', () => {
-  let component1, component2, popstateEvent, mockBreakpointDetector1, mockBreakpointDetector2
+  let component1, component2, popstateEvent
 
   beforeEach(() => {
-    mockBreakpointDetector1 = {
-      getBreakpoint: jest.fn(() => 'desktop'),
-      subscribe: jest.fn(),
-      destroy: jest.fn()
-    }
-    mockBreakpointDetector2 = {
-      getBreakpoint: jest.fn(() => 'desktop'),
-      subscribe: jest.fn(),
-      destroy: jest.fn()
-    }
     component1 = {
       id: 'map',
-      config: { behaviour: 'buttonFirst' },
+      config: { behaviour: 'buttonFirst', hybridWidth: null, maxMobileWidth: 640 },
       rootEl: document.createElement('div'),
-      _breakpointDetector: mockBreakpointDetector1,
       loadApp: jest.fn(),
       removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
     }
     component2 = {
       id: 'list',
-      config: { behaviour: 'hybrid' },
+      config: { behaviour: 'hybrid', hybridWidth: null, maxMobileWidth: 640 },
       rootEl: document.createElement('div'),
-      _breakpointDetector: mockBreakpointDetector2,
       loadApp: jest.fn(),
       removeApp: jest.fn(),
       openButton: { focus: jest.fn() }
     }
     popstateEvent = new PopStateEvent('popstate')
     jest.clearAllMocks()
+    // Default: viewport is wide (media query doesn't match)
+    window.matchMedia = jest.fn().mockImplementation(() => ({
+      matches: false
+    }))
   })
 
   it('registers component and initializes popstate listener on first registration', () => {
@@ -51,7 +47,6 @@ describe('historyManager', () => {
   it('loads component when view param matches and component is not open', () => {
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue('map')
-    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -62,7 +57,6 @@ describe('historyManager', () => {
     component1.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue('map')
-    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -73,7 +67,6 @@ describe('historyManager', () => {
     component1.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component1)
     queryString.getQueryParam.mockReturnValue(null)
-    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
 
     window.dispatchEvent(popstateEvent)
 
@@ -81,26 +74,40 @@ describe('historyManager', () => {
     expect(component1.openButton.focus).toHaveBeenCalled()
   })
 
-  it('does not remove hybrid component on non-mobile breakpoint', () => {
+  it('does not remove hybrid component when viewport is wide (inline mode)', () => {
     component2.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component2)
     queryString.getQueryParam.mockReturnValue(null)
-    mockBreakpointDetector2.getBreakpoint.mockReturnValue('desktop')
+    // Viewport is wide - hybrid is visible inline
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: false }))
 
     window.dispatchEvent(popstateEvent)
 
     expect(component2.removeApp).not.toHaveBeenCalled()
   })
 
-  it('removes hybrid component on mobile breakpoint when view does not match', () => {
+  it('removes hybrid component when viewport is narrow and view does not match', () => {
     component2.rootEl.appendChild(document.createElement('div'))
     historyManager.register(component2)
     queryString.getQueryParam.mockReturnValue(null)
-    mockBreakpointDetector2.getBreakpoint.mockReturnValue('mobile')
+    // Viewport is narrow - hybrid is in fullscreen/buttonFirst mode
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: true }))
 
     window.dispatchEvent(popstateEvent)
 
     expect(component2.removeApp).toHaveBeenCalled()
+  })
+
+  it('uses hybridWidth for media query when provided', () => {
+    component2.config.hybridWidth = 768
+    component2.rootEl.appendChild(document.createElement('div'))
+    historyManager.register(component2)
+    queryString.getQueryParam.mockReturnValue(null)
+    window.matchMedia = jest.fn().mockImplementation(() => ({ matches: false }))
+
+    window.dispatchEvent(popstateEvent)
+
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 768px)')
   })
 
   it('unregisters component', () => {
@@ -109,7 +116,6 @@ describe('historyManager', () => {
     historyManager.unregister(component1)
 
     queryString.getQueryParam.mockReturnValue('map')
-    mockBreakpointDetector1.getBreakpoint.mockReturnValue('desktop')
     window.dispatchEvent(popstateEvent)
 
     expect(component1.loadApp).not.toHaveBeenCalled()

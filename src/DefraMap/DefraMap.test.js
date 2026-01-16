@@ -242,6 +242,29 @@ describe('DefraMap Core Functionality', () => {
     expect(historyManager.unregister).toHaveBeenCalledWith(map)
   })
 
+  it('calls _hybridBehaviourCleanup on destroy if defined', () => {
+    const mockCleanup = jest.fn()
+    setupBehavior.mockReturnValue(mockCleanup)
+
+    const map = new DefraMap('map', { behaviour: 'hybrid', mapProvider: mapProviderMock })
+    map._root = {}
+    map.unmount = jest.fn()
+
+    map.destroy()
+
+    expect(mockCleanup).toHaveBeenCalled()
+  })
+
+  it('handles null _hybridBehaviourCleanup gracefully', () => {
+    setupBehavior.mockReturnValue(null)
+
+    const map = new DefraMap('map', { behaviour: 'inline', mapProvider: mapProviderMock })
+    map._root = {}
+    map.unmount = jest.fn()
+
+    expect(() => map.destroy()).not.toThrow()
+  })
+
   it('_handleExitClick removes app and calls replaceState', () => {
     const replaceStateSpy = jest.spyOn(history, 'replaceState').mockImplementation(() => {})
     

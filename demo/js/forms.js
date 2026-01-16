@@ -70,7 +70,7 @@ var defraMap = new DefraMap('map', {
 			customDatasets: searchCustomDatasets,
 			width: '300px',
 			showMarker: false,
-			isExpanded: true
+			// isExpanded: true
 		}),
 		useLocationPlugin(),
 		interactPlugin

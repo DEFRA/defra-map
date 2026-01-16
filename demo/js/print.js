@@ -43,7 +43,7 @@ let framePlugin = createFramePlugin({
 })
 
 var defraMap = new DefraMap('map', {
-	behaviour: 'inline',
+	behaviour: 'hybrid',
 	mapProvider: maplibreProvider(),
 	reverseGeocodeProvider: openNamesProvider({
 		url: process.env.OS_NEAREST_URL,

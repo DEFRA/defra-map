@@ -19,6 +19,7 @@ export default class DefraMap {
   _root = null // keep react root internally
   _breakpointDetector = null
   _interfaceDetectorCleanup = null
+  _hybridBehaviourCleanup = null
 
   constructor (id, props = {}) {
     this.id = id
@@ -69,9 +70,9 @@ export default class DefraMap {
       })
     }
 
-    setupBehavior(this)
+    this._hybridBehaviourCleanup = setupBehavior(this)
 
-    if (shouldLoadComponent(this.config, this._breakpointDetector)) {
+    if (shouldLoadComponent(this.config)) {
       this.loadApp()
     } else {
       removeLoadingState()
@@ -167,6 +168,7 @@ export default class DefraMap {
     this.removeApp()
     this._breakpointDetector?.destroy()
     this._interfaceDetectorCleanup?.()
+    this._hybridBehaviourCleanup?.()
     historyManager.unregister(this)
   }
 

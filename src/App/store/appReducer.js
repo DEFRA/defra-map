@@ -5,7 +5,6 @@ import { getInitialOpenPanels } from '../../config/getInitialOpenPanels.js'
 
 export const initialState = (config) => {
   const {
-    behaviour,
     initialBreakpoint,
     initialInterfaceType,
     appColorScheme,
@@ -23,7 +22,7 @@ export const initialState = (config) => {
   } = getMediaState()
 
   // Initial isFullscreen
-  const isFullscreen = getIsFullscreen(behaviour, initialBreakpoint)
+  const isFullscreen = getIsFullscreen(config)
 
   // Initial open panels
   const panelConfig = panelRegistry.getPanelConfig()

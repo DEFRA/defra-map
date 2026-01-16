@@ -1,5 +1,6 @@
 import { getQueryParam } from '../utils/queryString.js'
 import { toggleInertElements } from '../utils/toggleInertElements.js'
+import { isHybridFullscreen } from '../utils/getIsFullscreen.js'
 import defaults from '../config/defaults.js'
 
 // -----------------------------------------------------------------------------
@@ -12,14 +13,12 @@ function updatePageTitle ({ pageTitle, isFullscreen }) {
   document.title = isFullscreen ? `${pageTitle}: ${title}` : title
 }
 
-function getIsFullscreen (config, breakpointDetector) {
+function getIsFullscreen (config) {
   const { id, behaviour } = config
-  const isMobile = breakpointDetector.getBreakpoint() === 'mobile'
   const hasViewParam = getQueryParam(defaults.mapViewParamKey) === id
-  const isHybridMobile = behaviour === 'hybrid' && isMobile
 
   return behaviour === 'mapOnly' ||
-         (hasViewParam && (behaviour === 'buttonFirst' || isHybridMobile))
+         (hasViewParam && (behaviour === 'buttonFirst' || isHybridFullscreen(config)))
 }
 
 // -----------------------------------------------------------------------------
@@ -40,10 +39,9 @@ function getIsFullscreen (config, breakpointDetector) {
  * @returns {void}
  */
 function updateDOMState (mapInstance) {
-  const { config, rootEl, _breakpointDetector } = mapInstance
+  const { config, rootEl } = mapInstance
   const { pageTitle, behaviour, containerHeight } = config
-  const isFullscreen = getIsFullscreen(config, _breakpointDetector)
-  const isMobile = _breakpointDetector.getBreakpoint() === 'mobile'
+  const isFullscreen = getIsFullscreen(config)
 
   if (['mapOnly', 'buttonFirst', 'hybrid'].includes(behaviour)) {
     toggleInertElements({ containerEl: rootEl, isFullscreen })
@@ -57,7 +55,7 @@ function updateDOMState (mapInstance) {
 
   // Set container height
   const height = !isFullscreen &&
-    (behaviour === 'buttonFirst' || (behaviour === 'hybrid' && isMobile))
+    (behaviour === 'buttonFirst' || isHybridFullscreen(config))
     ? 'auto'
     : containerHeight
   rootEl.style.height = isFullscreen ? '100%' : height

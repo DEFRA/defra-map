@@ -1,16 +1,27 @@
-const setDataLayersProps = (state, payload) => {
+const initialState = {
+  dataSets: null
+}
+
+const setDataSets = (state, payload) => {
   return {
     ...state,
-    dataLayersProp: payload
+    dataSets: payload
   }
 }
 
-const initialState = {
-  dataLayersProp: false
+const setDataSetVisibility = (state, payload) => {
+  const { id, visibility } = payload
+  return {
+    ...state,
+    dataSets: state.dataSets.map(dataSet =>
+      dataSet.id === id ? { ...dataSet, visibility } : dataSet
+    )
+  }
 }
 
 const actions = {
-  SET_DATA_LAYERS_PROP: setDataLayersProps
+  SET_DATA_SETS: setDataSets,
+  SET_DATA_SET_VISIBILITY: setDataSetVisibility
 }
 
 export {

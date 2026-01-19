@@ -6,7 +6,6 @@ import { transformGeocodeRequest, transformTileRequest, setupEsriConfig } from '
 import openNamesProvider from '/providers/open-names/src/index.js'
 import esriProvider from '/providers/esri/src/index.js'
 // Plugins
-import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import createDrawPlugin from '/plugins/draw-es/src/index.js'
@@ -96,6 +95,7 @@ const defraMap = new DefraMap('map', {
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
 	enableFullscreen: false,
+	enableZoomControls: true,
 	hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
@@ -113,7 +113,6 @@ const defraMap = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles27700
 		}),
-		zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),

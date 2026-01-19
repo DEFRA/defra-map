@@ -1,8 +1,8 @@
 // /plugins/data-sets/manifest.js
 import { initialState, actions } from './reducer.js'
 import { DataSetsInit } from './DataSetsInit.jsx'
-import { Layers } from './Layers.jsx'
-import { Key } from './Key.jsx'
+import { Layers } from './panels/Layers.jsx'
+import { Key } from './panels/Key.jsx'
 import { showLayer } from './api/showLayer.js'
 import { hideLayer } from './api/hideLayer.js'
 
@@ -24,14 +24,12 @@ export const manifest = {
     },
     tablet: {
       slot: 'inset',
-      // modal: true,
       dismissable: true,
       exclusive: true,
       width: '300px'
     },
     desktop: {
       slot: 'inset',
-      // initiallyOpen: true,
       modal: false,
       dismissable: true,
       exclusive: true,
@@ -61,7 +59,7 @@ export const manifest = {
     label: 'Layers',
     panelId: 'dataSetsLayers',
     iconId: 'layers',
-    excludeWhen: ({ pluginConfig }) => !pluginConfig.layers.find(l => l.showInLayers),
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.dataSets.find(l => l.showInLayers),
     mobile: {
       slot: 'top-left',
       showLabel: true
@@ -79,7 +77,7 @@ export const manifest = {
     label: 'Key',
     panelId: 'dataSetsKey',
     iconId: 'key',
-    excludeWhen: ({ pluginConfig }) => !pluginConfig.layers.find(l => l.showInKey),
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.dataSets.find(l => l.showInKey),
     mobile: {
       slot: 'top-left',
       showLabel: true

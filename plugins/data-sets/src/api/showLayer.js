@@ -1,3 +1,14 @@
-export const showLayer = ({ pluginConfig, pluginState }, layerId) => {
-  console.log('showLayer:', layerId)
+export const showLayer = ({ mapProvider, pluginDispatch }, layerId) => {
+  const map = mapProvider.map
+
+  // Update map layer visibility
+  if (map.getLayer(layerId)) {
+    map.setLayoutProperty(layerId, 'visibility', 'visible')
+  }
+  if (map.getLayer(`${layerId}-stroke`)) {
+    map.setLayoutProperty(`${layerId}-stroke`, 'visibility', 'visible')
+  }
+
+  // Update state
+  pluginDispatch({ type: 'SET_DATA_SET_VISIBILITY', payload: { id: layerId, visibility: 'visible' } })
 }

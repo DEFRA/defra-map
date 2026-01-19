@@ -1,0 +1,19 @@
+.dm-c-data-sets-key {
+
+}
+
+.dm-c-data-sets-key__item-label {
+  display: flex;
+  align-items: start;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  align-self: auto;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.dm-c-data-sets-key__item-label svg {
+  position: relative;
+  flex-shrink: 0;
+  margin: 0px 13px 0 2px;
+}

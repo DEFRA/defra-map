@@ -6,7 +6,6 @@ import { transformGeocodeRequest, transformTileRequest, transformDataRequest } f
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
-import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import dataSetsPlugin from '/plugins/data-sets/src/index.js'
@@ -79,7 +78,6 @@ var defraMap = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles3857
 		}),
-		// zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),
@@ -88,12 +86,12 @@ var defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: true,
+			showMarker: false,
 			// isExpanded: true
 		}),
 		useLocationPlugin(),
 		dataSetsPlugin({
-			layers: [{
+			dataSets: [{
 				id: 'field-parcels',
 				label: 'Field parcels',
 				filter: [
@@ -137,7 +135,11 @@ var defraMap = new DefraMap('map', {
 				strokeWidth: 4,
 				symbolDescription: { outdoor: 'blue outline' },
 				minZoom: 10,
-				maxZoom: 24
+				maxZoom: 24,
+				visibility: 'hidden',
+				showInLayers: true,
+				showInKey: true,
+				keySymbolShape: 'line'
 			}]
 		}),
 		// interactPlugin,

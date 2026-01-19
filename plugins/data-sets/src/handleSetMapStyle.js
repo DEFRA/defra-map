@@ -4,15 +4,15 @@ export const handleSetMapStyle = ({
   map,
   events,
   eventBus,
-  layers
+  getDataSets
 }) => {
   const onSetStyle = (e) => {
     map.once('idle', () => {
       const newStyleId = e.id
-      
+
       // Re-add all layers with correct colors for new style
-      layers.forEach(layer => {
-        addMapLayers(map, newStyleId, layer)
+      getDataSets().forEach(dataSet => {
+        addMapLayers(map, newStyleId, dataSet)
       })
     })
   }

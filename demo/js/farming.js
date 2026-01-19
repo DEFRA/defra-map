@@ -36,7 +36,7 @@ var interactPlugin = createInteractPlugin({
 })
 
 var dataSetsPlugin = createDataSetsPlugin({
-	layers: [{
+	dataSets: [{
 		id: 'field-parcels',
 		label: 'Field parcels',
 		filter: [
@@ -70,7 +70,9 @@ var dataSetsPlugin = createDataSetsPlugin({
 		fill: 'rgba(0,0,255,0.1)',
 		symbolDescription: { outdoor: 'blue outline' },
 		minZoom: 10,
-		maxZoom: 24
+		maxZoom: 24,
+		showInKey: true,
+		showInLayers: true
 	},{
 		id: 'hedge-control',
 		label: 'Hedge control',
@@ -81,7 +83,11 @@ var dataSetsPlugin = createDataSetsPlugin({
 		strokeWidth: 4,
 		symbolDescription: { outdoor: 'blue outline' },
 		minZoom: 10,
-		maxZoom: 24
+		maxZoom: 24,
+		showInKey: true,
+		showInLayers: true,
+		visibility: 'hidden',
+		keySymbolShape: 'line'
 	}]
 })
 

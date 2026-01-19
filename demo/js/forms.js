@@ -6,7 +6,6 @@ import { transformGeocodeRequest, transformTileRequest } from './auth.js'
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
-import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
@@ -38,6 +37,7 @@ var defraMap = new DefraMap('map', {
 	minZoom: 6,
 	maxZoom: 20,
 	autoColorScheme: true,
+	enableZoomControls: true,
 	// center: [-2.938769, 54.893806],
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
 	containerHeight: '650px',
@@ -60,7 +60,6 @@ var defraMap = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles3857
 		}),
-		zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),
@@ -116,7 +115,6 @@ var defraMap2 = new DefraMap('map2', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles3857
 		}),
-		zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),

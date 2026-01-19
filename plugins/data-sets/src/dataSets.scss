@@ -1,20 +1,7 @@
+// Components: specific UI components. Using 'CSS in Component' pattern
+@use './panels/Key.module';
+@use './panels/Layers.module';
+
 .dm-c-data-sets {
     display: block;
-}
-
-// GOVUK Overides
-.dm-c-data-sets-layers__item-label {
-    display: flex;
-    align-items: start;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    align-self: auto;
-    font-size: 1rem;
-    line-height: 1.2;
-
-    svg {
-        position: relative;
-        flex-shrink: 0;
-        margin: -2px 0.5rem 0;
-    }
 }

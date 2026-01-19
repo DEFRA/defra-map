@@ -1,3 +1,14 @@
-export const hideLayer = ({ mapProvider, services }, layerId) => {
-  console.log('hideLayer:', layerId)
+export const hideLayer = ({ mapProvider, pluginDispatch }, layerId) => {
+  const map = mapProvider.map
+
+  // Update map layer visibility
+  if (map.getLayer(layerId)) {
+    map.setLayoutProperty(layerId, 'visibility', 'none')
+  }
+  if (map.getLayer(`${layerId}-stroke`)) {
+    map.setLayoutProperty(`${layerId}-stroke`, 'visibility', 'none')
+  }
+
+  // Update state
+  pluginDispatch({ type: 'SET_DATA_SET_VISIBILITY', payload: { id: layerId, visibility: 'hidden' } })
 }

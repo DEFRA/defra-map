@@ -81,7 +81,7 @@ export function mapPanels ({ slot, appState, evaluateProp }) {
           props={props}
           WrappedChild={WrappedChild}
           label={evaluateProp(config.label, pluginId)}
-          html={typeof config.html === 'function' && !pluginId ? config.html() : evaluateProp(config.html, pluginId)}
+          html={pluginId ? evaluateProp(config.html, pluginId) : config.html}
         />
       )
     }

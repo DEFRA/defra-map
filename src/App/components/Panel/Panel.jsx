@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useMemo } from 'react'
 import { useConfig } from '../../store/configContext'
 import { useApp } from '../../store/appContext'
 import { stringToKebab } from '../../../utils/stringToKebab.js'
@@ -17,7 +17,7 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
   const isAside = bpConfig.slot === 'side' && bpConfig.initiallyOpen && !bpConfig.modal
   const isDialog = !isAside && bpConfig.dismissable
   const isModal = bpConfig.modal === true
-  const isDismissable = bpConfig.dismissable === true
+  const isDismissable = bpConfig.dismissable !== false
   const shouldFocus = Boolean(isModal || props?.triggeringElement)
 
   const buttonContainerEl = bpConfig.slot.endsWith('button') ? props?.triggeringElement?.parentNode : undefined
@@ -51,6 +51,8 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
     !panelConfig.showLabel && isDismissable && 'dm-c-panel__body--offset'
   ].filter(Boolean).join(' ')
 
+  const innerHtmlProp = useMemo(() => html ? { __html: html } : null, [html])
+
   return (
     <div
       ref={panelRef}
@@ -79,13 +81,13 @@ export const Panel = ({ panelId, panelConfig, props, WrappedChild, label, html, 
         </button>
       )}
 
-      {html
+      {innerHtmlProp
         ? (
           <div
             ref={bodyRef}
             className={panelBodyClass}
             tabIndex={isBodyScrollable ? 0 : undefined}
-            dangerouslySetInnerHTML={{ __html: html }}
+            dangerouslySetInnerHTML={innerHtmlProp}
           />
           )
         : (

@@ -9,7 +9,7 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import dataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
+import dataSetsPlugin from '/plugins/data-sets/src/index.js'
 import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
@@ -89,11 +89,11 @@ var defraMap = new DefraMap('map', {
 			osNamesURL: process.env.OS_NAMES_URL,
 			customDatasets: searchCustomDatasets,
 			width: '300px',
-			showMarker: false,
+			showMarker: true,
 			// isExpanded: true
 		}),
 		useLocationPlugin(),
-		dataLayersPlugin({
+		dataSetsPlugin({
 			layers: [{
 				id: 'field-parcels',
 				label: 'Field parcels',
@@ -111,8 +111,8 @@ var defraMap = new DefraMap('map', {
 				symbolDescription: { outdoor: 'turquiose outline' },
 				minZoom: 10,
 				maxZoom: 24,
-				showInLegend: true,
-				canToggle: true
+				showInKey: true,
+				toggleVisibility: true
 			},{
 				id: 'linked-parcels',
 				label: 'Existing fields',

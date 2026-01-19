@@ -47,7 +47,13 @@ function getGeometryShape(geometry, tol = 1e-6) {
   return 'polygon'
 }
 
+function toggleButtonState (enabledButtons) {
+  const buttons = document.querySelectorAll('#fmp-menu-list .fmp-menu-button')
+  buttons.forEach(button => button.setAttribute('aria-disabled', !enabledButtons.includes(button.id.slice(0, -3))))
+}
+
 export {
   hideMenu,
-  getGeometryShape
+  getGeometryShape,
+  toggleButtonState
 }

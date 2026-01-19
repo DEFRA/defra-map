@@ -116,7 +116,7 @@ const ALL_BUILDS = [
   { entryPath: './plugins/use-location/src/index.js', outDir: 'plugins/use-location/dist/esm' },
   { entryPath: './plugins/search/src/index.js', outDir: 'plugins/search/dist/esm' },
   { entryPath: './plugins/interact/src/index.js', outDir: 'plugins/interact/dist/esm' },
-  { entryPath: './plugins/data-layers-ml/src/index.js', outDir: 'plugins/data-layers-ml/dist/esm' },
+  { entryPath: './plugins/data-sets/src/index.js', outDir: 'plugins/data-sets/dist/esm' },
   { entryPath: './plugins/map-styles/src/index.js', outDir: 'plugins/map-styles/dist/esm' },
   { entryPath: './plugins/draw-ml/src/index.js', outDir: 'plugins/draw-ml/dist/esm' },
   { entryPath: './plugins/frame/src/index.js', outDir: 'plugins/frame/dist/esm' }

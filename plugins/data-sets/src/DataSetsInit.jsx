@@ -1,8 +1,8 @@
-// src/plugins/dataLayers/dataLayersInit.jsx
+// src/plugins/dataSets/dataSetsInit.jsx
 import { useEffect } from 'react'
-import { createDataLayers } from './dataLayers.js'
+import { createDataSets } from './dataSets.js'
 
-export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider, services }) {
+export function DataSetsInit ({ pluginConfig, appState, mapState, mapProvider, services }) {
   const { events, eventBus } = services
 
   const isMapStyleReady = !!mapProvider.map?.getStyle()
@@ -16,7 +16,7 @@ export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider,
       return
     }
 
-    const dataLayers = createDataLayers({
+    const dataSets = createDataSets({
 			mapStyleId: mapState.mapStyle.id,
       layersConfig: pluginConfig, 
 			mapSize: mapState.mapSize,
@@ -26,7 +26,7 @@ export function DataLayersInit ({ pluginConfig, appState, mapState, mapProvider,
     })
 
     return () => {
-      dataLayers.remove()
+      dataSets.remove()
     }
     
   }, [isMapStyleReady, appState.mode])

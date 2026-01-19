@@ -9,7 +9,7 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import createDataLayersPlugin from '/plugins/data-layers-ml/src/index.js'
+import createDataSetsPlugin from '/plugins/data-sets/src/index.js'
 import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
@@ -36,7 +36,7 @@ var interactPlugin = createInteractPlugin({
 	// excludeModes: ['draw']
 })
 
-var dataLayersPlugin = createDataLayersPlugin({
+var dataSetsPlugin = createDataSetsPlugin({
 	layers: [{
 		id: 'field-parcels',
 		label: 'Field parcels',
@@ -54,8 +54,8 @@ var dataLayersPlugin = createDataLayersPlugin({
 		symbolDescription: { outdoor: 'turquiose outline' },
 		minZoom: 10,
 		maxZoom: 24,
-		showInLegend: true,
-		canToggle: true
+		showInKey: true,
+		toggleVisibility: true
 	},{
 		id: 'linked-parcels',
 		label: 'Existing fields',
@@ -146,7 +146,7 @@ var defraMap = new DefraMap('map', {
 			// isExpanded: true
 		}),
 		useLocationPlugin(),
-		dataLayersPlugin,
+		dataSetsPlugin,
 		interactPlugin,
 		// framePlugin,
 		// drawPlugin
@@ -159,7 +159,7 @@ defraMap.on('map:ready', function (e) {
 	// framePlugin.addFrame('test', {
 	// 	aspectRatio: 1
 	// })
-	dataLayersPlugin.hideLayer('testId')
+	dataSetsPlugin.hideLayer('testId')
 })
 
 defraMap.on('draw:ready', function () {

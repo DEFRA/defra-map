@@ -1,7 +1,7 @@
 import { handleSetMapStyle } from './handleSetMapStyle.js'
 import { addMapLayers } from './mapLayers.js'
 
-export const createDataLayers = ({
+export const createDataSets = ({
   layersConfig,
   mapStyleId,
   mapProvider,

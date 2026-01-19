@@ -24,7 +24,7 @@ export const manifest = {
     id: 'drawDone',
     label: 'Done',
     variant: 'primary',
-    hiddenWhen: ({ pluginState }) => !pluginState.mode,
+    hiddenWhen: ({ appState, pluginState }) => appState.interfaceType !== 'mouse' && pluginState.mode !== 'edit_vertex',
     enableWhen: ({ pluginState }) => !!pluginState.tempFeature,
     ...createButtonSlots(true)
   },{

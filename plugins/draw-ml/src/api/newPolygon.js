@@ -20,6 +20,6 @@ export const newPolygon = ({ appState, appConfig, pluginState, mapProvider }, fe
     featureId
   })
 
-  // Set mode to edit_vertex
-  dispatch({ type: 'SET_MODE', payload: 'new_vertex' })
+  // Set mode to draw_vertex
+  dispatch({ type: 'SET_MODE', payload: 'draw_vertex' })
 }

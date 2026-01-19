@@ -160,8 +160,6 @@ export default class DefraMap {
     updateDOMState(this)
 
     this.eventBus.emit(events.MAP_DESTROY, { mapId: this.id })
-
-    this.eventBus.destroy?.()
   }
 
   destroy () {
@@ -170,6 +168,7 @@ export default class DefraMap {
     this._interfaceDetectorCleanup?.()
     this._hybridBehaviourCleanup?.()
     historyManager.unregister(this)
+    this.eventBus.destroy()
   }
 
   // API - EventBus methods

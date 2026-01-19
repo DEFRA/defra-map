@@ -40,8 +40,8 @@ jest.mock('../utils/detectInterfaceType.js', () => ({
 }))
 jest.mock('../services/reverseGeocode.js', () => ({ createReverseGeocode: jest.fn() }))
 jest.mock('../services/eventBus.js', () => ({
-  createEventBus: jest.fn(() => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn() })),
-  default: { on: jest.fn(), off: jest.fn(), emit: jest.fn() }
+  createEventBus: jest.fn(() => ({ on: jest.fn(), off: jest.fn(), emit: jest.fn(), destroy: jest.fn() })),
+  default: { on: jest.fn(), off: jest.fn(), emit: jest.fn(), destroy: jest.fn() }
 }))
 jest.mock('../App/initialiseApp.js', () => ({ initialiseApp: jest.fn() }))
 

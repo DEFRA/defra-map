@@ -26,6 +26,7 @@ export const manifest = {
       slot: 'inset',
       // modal: true,
       dismissable: true,
+      exclusive: true,
       width: '300px'
     },
     desktop: {
@@ -33,6 +34,7 @@ export const manifest = {
       // initiallyOpen: true,
       modal: false,
       dismissable: true,
+      exclusive: true,
       width: '320px'
     },
     render: Layers

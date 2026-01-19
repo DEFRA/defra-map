@@ -6,7 +6,6 @@ import { transformGeocodeRequest, transformTileRequest, transformDataRequest } f
 import maplibreProvider from '/providers/maplibre/src/index.js'
 import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
-import zoomControlsPlugin from '/plugins/zoom-controls/src/index.js'
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
 import createDataSetsPlugin from '/plugins/data-sets/src/index.js'
@@ -55,7 +54,7 @@ var dataSetsPlugin = createDataSetsPlugin({
 		minZoom: 10,
 		maxZoom: 24,
 		showInKey: true,
-		toggleVisibility: true
+		showInLayers: true
 	},{
 		id: 'linked-parcels',
 		label: 'Existing fields',
@@ -113,6 +112,7 @@ var defraMap = new DefraMap('map', {
 	containerHeight: '500px',
 	transformRequest: transformTileRequest,
 	// enableFullscreen: true,
+	enableZoomControls: true,
 	hasExitButton: true,
 	// markers: [{
 	// 	id: 'location',
@@ -130,7 +130,6 @@ var defraMap = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles3857
 		}),
-		zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),
@@ -145,7 +144,7 @@ var defraMap = new DefraMap('map', {
 			// }]}
 			// isExpanded: true
 		}),
-		useLocationPlugin(),
+		// useLocationPlugin(),
 		dataSetsPlugin,
 		interactPlugin,
 		// framePlugin,

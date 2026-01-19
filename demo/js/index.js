@@ -62,6 +62,7 @@ var defraMap = new DefraMap('map', {
 	bounds: [-2.989707, 54.864555, -2.878635, 54.937635],
 	containerHeight: '650px',
 	transformRequest: transformTileRequest,
+	enableZoomControls: true,
 	// enableFullscreen: true,
 	// hasExitButton: true,
 	// markers: [{
@@ -80,7 +81,7 @@ var defraMap = new DefraMap('map', {
 		mapStylesPlugin({
 			mapStyles: vtsMapStyles3857
 		}),
-		zoomControlsPlugin(),
+		// zoomControlsPlugin(),
 		scaleBarPlugin({
 			units: 'metric'
 		}),
@@ -112,7 +113,7 @@ var defraMap = new DefraMap('map', {
 				minZoom: 10,
 				maxZoom: 24,
 				showInKey: true,
-				toggleVisibility: true
+				showInLayers: true
 			},{
 				id: 'linked-parcels',
 				label: 'Existing fields',

@@ -6,7 +6,6 @@ export function ZoomControlsInit ({
   appConfig,
   appState,
   mapState,
-  services,
   mapProvider,
   buttonConfig
 }) {

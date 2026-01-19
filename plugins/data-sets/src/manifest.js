@@ -59,7 +59,7 @@ export const manifest = {
     label: 'Layers',
     panelId: 'dataSetsLayers',
     iconId: 'layers',
-    excludeWhen: ({ pluginConfig }) => !pluginConfig.layers.find(l => l.toggleVisibility),
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.layers.find(l => l.showInLayers),
     mobile: {
       slot: 'top-left',
       showLabel: true

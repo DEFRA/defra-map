@@ -9,14 +9,12 @@ const keyboardBasePanelSlots = {
 
 const buttonSlots = {
   slot: 'right-top',
-  showLabel: false,
-  order: 10
+  showLabel: false
 }
 
 const exitButtonSlots = {
   slot: 'top-left',
-  showLabel: false,
-  order: -1
+  showLabel: false
 }
 
 // Default app buttons, panels and icons
@@ -39,6 +37,28 @@ export const appConfig = {
       document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
     },
     excludeWhen: ({ appState, appConfig }) => !appConfig.enableFullscreen || appState.isFullscreen,
+    mobile: buttonSlots,
+    tablet: buttonSlots,
+    desktop: buttonSlots
+  }, {
+    id: 'zoomIn',
+    group: 'zoom',
+    label: 'Zoom in',
+    iconId: 'plus',
+    onClick: (e, { mapProvider, appConfig }) => mapProvider.zoomIn(appConfig.zoomDelta),
+    excludeWhen: ({ appState, appConfig }) => !appConfig.enableZoomControls || appState.interfaceType === 'touch',
+    enableWhen: ({ mapState }) => !mapState.isAtMaxZoom,
+    mobile: buttonSlots,
+    tablet: buttonSlots,
+    desktop: buttonSlots
+  }, {
+    id: 'zoomOut',
+    group: 'zoom',
+    label: 'Zoom out',
+    iconId: 'minus',
+    onClick: (e, { mapProvider, appConfig }) => mapProvider.zoomOut(appConfig.zoomDelta),
+    excludeWhen: ({ appState, appConfig }) => !appConfig.enableZoomControls || appState.interfaceType === 'touch',
+    enableWhen: ({ mapState }) => !mapState.isAtMinZoom,
     mobile: buttonSlots,
     tablet: buttonSlots,
     desktop: buttonSlots
@@ -67,6 +87,12 @@ export const appConfig = {
   }, {
     id: 'minimise',
     svgContent: '<path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/>'
+  }, {
+    id: 'plus',
+    svgContent: '<path d="M5 12h14"/><path d="M12 5v14"/>'
+  }, {
+    id: 'minus',
+    svgContent: '<path d="M5 12h14"/>'
   }]
 }
 

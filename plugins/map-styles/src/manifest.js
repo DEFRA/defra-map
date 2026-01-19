@@ -39,11 +39,13 @@ export const manifest = {
     },
     tablet: {
       slot: 'right-top',
-      showLabel: false
+      showLabel: false,
+      order: 1
     },
     desktop: {
       slot: 'right-top',
-      showLabel: false
+      showLabel: false,
+      order: 1
     }
   }],
 

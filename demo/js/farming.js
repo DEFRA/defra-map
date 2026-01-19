@@ -159,6 +159,16 @@ defraMap.on('map:ready', function (e) {
 	// 	aspectRatio: 1
 	// })
 	dataSetsPlugin.hideLayer('testId')
+	// interactPlugin.selectFeature({
+	// 	idProperty: 'ngc',
+	// 	featureId: 'NY70197424',
+	// 	layerId: 'field-parcels'
+	// })
+	// interactPlugin.unselectFeature({
+	// 	idProperty: 'ngc',
+	// 	featureId: 'NY70197424',
+	// 	layerId: 'field-parcels'
+	// })
 })
 
 defraMap.on('draw:ready', function () {

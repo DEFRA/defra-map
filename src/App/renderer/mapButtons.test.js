@@ -42,11 +42,6 @@ describe('mapButtons module', () => {
     }
     appState.buttonConfig =({})
     getPanelConfig.mockReturnValue({})
-    Object.defineProperty(document, 'activeElement', {
-      value: document.createElement('div'),
-      writable: true,
-      configurable: true
-    })
   })
 
   // -------------------------
@@ -125,16 +120,18 @@ describe('mapButtons module', () => {
 
     it('opens and closes panel on button click to cover all branches', () => {
       const btn = { ...baseBtn, panelId: 'p1' }
+      const mockButtonEl = document.createElement('button')
+      const mockEvent = { currentTarget: mockButtonEl }
 
       // OPEN_PANEL branch
-      render(btn).props.onClick({})
+      render(btn).props.onClick(mockEvent)
       expect(appState.dispatch).toHaveBeenCalledWith({
         type: 'OPEN_PANEL',
-        payload: { panelId: 'p1', props: { triggeringElement: document.activeElement } }
+        payload: { panelId: 'p1', props: { triggeringElement: mockButtonEl } }
       })
 
       // CLOSE_PANEL branch
-      render(btn, { ...appState, openPanels: { p1: true } }).props.onClick({})
+      render(btn, { ...appState, openPanels: { p1: true } }).props.onClick(mockEvent)
       expect(appState.dispatch).toHaveBeenCalledWith({
         type: 'CLOSE_PANEL',
         payload: 'p1'

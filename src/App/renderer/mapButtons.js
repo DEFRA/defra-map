@@ -44,7 +44,7 @@ function createButtonClickHandler (btn, appState, evaluateProp) {
     }
 
     if (config.panelId) {
-      const triggeringElement = document.activeElement
+      const triggeringElement = e.currentTarget
       appState.dispatch({
         type: isOpen ? 'CLOSE_PANEL' : 'OPEN_PANEL',
         payload: isOpen

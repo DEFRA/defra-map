@@ -1,4 +1,4 @@
-export const hideLayer = ({ mapProvider, pluginState }, layerId) => {
+export const hideDataset = ({ mapProvider, pluginState }, layerId) => {
   const map = mapProvider.map
 
   // Update map layer visibility

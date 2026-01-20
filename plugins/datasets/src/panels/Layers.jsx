@@ -1,15 +1,15 @@
 import React from 'react'
-import { showLayer } from '../api/showLayer'
-import { hideLayer } from '../api/hideLayer'
+import { showDataset } from '../api/showDataset'
+import { hideDataset } from '../api/hideDataset'
 
 export const Layers = ({ pluginState, mapProvider }) => {
 
   const handleChange = (e) => {
     const { value, checked } = e.target
     if (checked) {
-      showLayer({ mapProvider, pluginState }, value)
+      showDataset({ mapProvider, pluginState }, value)
     } else {
-      hideLayer({ mapProvider, pluginState }, value)
+      hideDataset({ mapProvider, pluginState }, value)
     }
   }
 

@@ -3,8 +3,8 @@ import { initialState, actions } from './reducer.js'
 import { DatasetsInit } from './DatasetsInit.jsx'
 import { Layers } from './panels/Layers.jsx'
 import { Key } from './panels/Key.jsx'
-import { showLayer } from './api/showLayer.js'
-import { hideLayer } from './api/hideLayer.js'
+import { showDataset } from './api/showDataset.js'
+import { hideDataset } from './api/hideDataset.js'
 
 export const manifest = {
   InitComponent: DatasetsInit,
@@ -101,7 +101,7 @@ export const manifest = {
   }],
 
   api: {
-    showLayer,
-    hideLayer
+    showDataset,
+    hideDataset
   }
 }

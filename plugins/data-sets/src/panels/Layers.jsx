@@ -3,14 +3,13 @@ import { showLayer } from '../api/showLayer'
 import { hideLayer } from '../api/hideLayer'
 
 export const Layers = ({ pluginState, mapProvider }) => {
-  const { dispatch: pluginDispatch } = pluginState
 
   const handleChange = (e) => {
     const { value, checked } = e.target
     if (checked) {
-      showLayer({ mapProvider, pluginDispatch }, value)
+      showLayer({ mapProvider, pluginState }, value)
     } else {
-      hideLayer({ mapProvider, pluginDispatch }, value)
+      hideLayer({ mapProvider, pluginState }, value)
     }
   }
 

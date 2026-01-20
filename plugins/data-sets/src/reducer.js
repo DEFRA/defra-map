@@ -13,7 +13,7 @@ const setDataSetVisibility = (state, payload) => {
   const { id, visibility } = payload
   return {
     ...state,
-    dataSets: state.dataSets.map(dataSet =>
+    dataSets: state.dataSets?.map(dataSet =>
       dataSet.id === id ? { ...dataSet, visibility } : dataSet
     )
   }

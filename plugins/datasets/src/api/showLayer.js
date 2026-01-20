@@ -10,5 +10,5 @@ export const showLayer = ({ mapProvider, pluginState }, layerId) => {
   }
 
   // Update state
-  pluginState.dispatch({ type: 'SET_DATA_SET_VISIBILITY', payload: { id: layerId, visibility: 'visible' } })
+  pluginState.dispatch({ type: 'SET_DATASET_VISIBILITY', payload: { id: layerId, visibility: 'visible' } })
 }

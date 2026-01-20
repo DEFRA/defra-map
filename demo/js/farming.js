@@ -8,7 +8,7 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import createDataSetsPlugin from '/plugins/data-sets/src/index.js'
+import createDatasetsPlugin from '/plugins/datasets/src/index.js'
 import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
@@ -35,8 +35,8 @@ var interactPlugin = createInteractPlugin({
 	// excludeModes: ['draw']
 })
 
-var dataSetsPlugin = createDataSetsPlugin({
-	dataSets: [{
+var datasetsPlugin = createDatasetsPlugin({
+	datasets: [{
 		id: 'field-parcels',
 		label: 'Field parcels',
 		filter: [
@@ -151,7 +151,7 @@ var defraMap = new DefraMap('map', {
 			// isExpanded: true
 		}),
 		// useLocationPlugin(),
-		dataSetsPlugin,
+		datasetsPlugin,
 		interactPlugin,
 		// framePlugin,
 		// drawPlugin
@@ -164,7 +164,7 @@ defraMap.on('map:ready', function (e) {
 	// framePlugin.addFrame('test', {
 	// 	aspectRatio: 1
 	// })
-	dataSetsPlugin.hideLayer('testId')
+	datasetsPlugin.hideLayer('testId')
 	// interactPlugin.selectFeature({
 	// 	idProperty: 'ngc',
 	// 	featureId: 'NY70197424',

@@ -8,7 +8,7 @@ import openNamesProvider from '/providers/open-names/src/index.js'
 // Plugins
 import useLocationPlugin from '/plugins/use-location/src/index.js'
 import mapStylesPlugin from '/plugins/map-styles/src/index.js'
-import dataSetsPlugin from '/plugins/data-sets/src/index.js'
+import datasetsPlugin from '/plugins/datasets/src/index.js'
 import createDrawPlugin from '/plugins/draw-ml/src/index.js'
 import scaleBarPlugin from '/plugins/scale-bar/src/index.js'
 import searchPlugin from '/plugins/search/src/index.js'
@@ -90,8 +90,8 @@ var defraMap = new DefraMap('map', {
 			// isExpanded: true
 		}),
 		useLocationPlugin(),
-		dataSetsPlugin({
-			dataSets: [{
+		datasetsPlugin({
+			datasets: [{
 				id: 'field-parcels',
 				label: 'Field parcels',
 				filter: [

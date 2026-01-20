@@ -1,8 +1,9 @@
-// src/plugins/dataSets/dataSetsInit.jsx
+// src/plugins/datasets/datasetsInit.jsx
 import { useEffect, useRef } from 'react'
-import { createDataSets } from './dataSets.js'
+import { datasetDefaults } from './defaults.js'
+import { createDatasets } from './datasets.js'
 
-export function DataSetsInit ({ pluginConfig, pluginState, appState, mapState, mapProvider, services }) {
+export function DatasetsInit ({ pluginConfig, pluginState, appState, mapState, mapProvider, services }) {
   const { dispatch } = pluginState
   const { events, eventBus } = services
 
@@ -13,7 +14,7 @@ export function DataSetsInit ({ pluginConfig, pluginState, appState, mapState, m
   pluginStateRef.current = pluginState
 
   // Track initialisation and store cleanup function
-  const dataSetsInstanceRef = useRef(null)
+  const datasetsInstanceRef = useRef(null)
 
   useEffect(() => {
     const inModeWhitelist = pluginConfig.includeModes?.includes(appState.mode) ?? true
@@ -24,16 +25,16 @@ export function DataSetsInit ({ pluginConfig, pluginState, appState, mapState, m
     }
 
     // Only initialise once
-    if (dataSetsInstanceRef.current) {
+    if (datasetsInstanceRef.current) {
       return
     }
 
     // Only initialise state if not already set
-    if (!pluginState.dataSets) {
-      dispatch({ type: 'SET_DATA_SETS', payload: pluginConfig.dataSets })
+    if (!pluginState.datasets) {
+      dispatch({ type: 'SET_DATASETS', payload: { datasets: pluginConfig.datasets, datasetDefaults }})
     }
 
-    dataSetsInstanceRef.current = createDataSets({
+    datasetsInstanceRef.current = createDatasets({
       mapStyleId: mapState.mapStyle.id,
       pluginConfig,
       pluginStateRef,
@@ -46,9 +47,9 @@ export function DataSetsInit ({ pluginConfig, pluginState, appState, mapState, m
   // Cleanup only on unmount
   useEffect(() => {
     return () => {
-      if (dataSetsInstanceRef.current) {
-        dataSetsInstanceRef.current.remove()
-        dataSetsInstanceRef.current = null
+      if (datasetsInstanceRef.current) {
+        datasetsInstanceRef.current.remove()
+        datasetsInstanceRef.current = null
       }
     }
   }, [])

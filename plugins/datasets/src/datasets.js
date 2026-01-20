@@ -1,7 +1,7 @@
 import { handleSetMapStyle } from './handleSetMapStyle.js'
 import { addMapLayers } from './mapLayers.js'
 
-export const createDataSets = ({
+export const createDatasets = ({
   pluginConfig,
   pluginStateRef,
   mapStyleId,
@@ -10,13 +10,13 @@ export const createDataSets = ({
   eventBus
 }) => {
   const { map } = mapProvider
-  const { dataSets } = pluginConfig
+  const { datasets } = pluginConfig
 
-  const getDataSets = () => pluginStateRef.current.dataSets || dataSets
+  const getDatasets = () => pluginStateRef.current.datasets || datasets
 
-  // Initialize all dataSets once
-  dataSets.forEach(dataSet => {
-    addMapLayers(map, mapStyleId, dataSet)
+  // Initialize all datasets once
+  datasets.forEach(dataset => {
+    addMapLayers(map, mapStyleId, dataset)
   })
 
   // Handle style changes
@@ -24,7 +24,7 @@ export const createDataSets = ({
     map,
     events,
     eventBus,
-    getDataSets
+    getDatasets
   })
 
   return {
@@ -32,10 +32,10 @@ export const createDataSets = ({
       eventBus.off(events.MAP_SET_STYLE, styleHandler)
 
       // Clean up sources and layers
-      getDataSets().forEach(dataSet => {
-        const sourceId = `${dataSet.id}-source`
-        const fillLayerId = dataSet.fill ? dataSet.id : null
-        const strokeLayerId = dataSet.stroke ? (dataSet.fill ? `${dataSet.id}-stroke` : dataSet.id) : null
+      getDatasets().forEach(dataset => {
+        const sourceId = `${dataset.id}-source`
+        const fillLayerId = dataset.fill ? dataset.id : null
+        const strokeLayerId = dataset.stroke ? (dataset.fill ? `${dataset.id}-stroke` : dataset.id) : null
 
         if (strokeLayerId && map.getLayer(strokeLayerId)) {
           map.removeLayer(strokeLayerId)

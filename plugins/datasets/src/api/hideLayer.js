@@ -10,5 +10,5 @@ export const hideLayer = ({ mapProvider, pluginState }, layerId) => {
   }
 
   // Update state
-  pluginState.dispatch({ type: 'SET_DATA_SET_VISIBILITY', payload: { id: layerId, visibility: 'hidden' } })
+  pluginState.dispatch({ type: 'SET_DATASET_VISIBILITY', payload: { id: layerId, visibility: 'hidden' } })
 }

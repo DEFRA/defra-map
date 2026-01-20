@@ -14,19 +14,19 @@ export const Layers = ({ pluginState, mapProvider }) => {
   }
 
   return (
-    <div className="dm-c-data-sets-layers">
+    <div className="dm-c-datasets-layers">
       <div className="govuk-form-group">
         <fieldset className="govuk-fieldset">
           <legend className="govuk-visually-hidden">
             Layers
           </legend>
           <div className="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
-            {pluginState.dataSets.filter(dataSet => dataSet.showInLayers).map(dataSet => (
-              <div key={dataSet.id} className="dm-c-data-sets-layers__item">
+            {pluginState.datasets.filter(dataset => dataset.showInLayers).map(dataset => (
+              <div key={dataset.id} className="dm-c-datasets-layers__item">
                 <div className="govuk-checkboxes__item">
-                  <input className="govuk-checkboxes__input" id={dataSet.id} name="layers" type="checkbox" value={dataSet.id} checked={dataSet.visibility !== 'hidden'} onChange={handleChange} />
-                  <label className="dm-c-data-sets-layers__item-label govuk-label govuk-checkboxes__label" htmlFor={dataSet.id}>
-                    {dataSet.label}
+                  <input className="govuk-checkboxes__input" id={dataset.id} name="layers" type="checkbox" value={dataset.id} checked={dataset.visibility !== 'hidden'} onChange={handleChange} />
+                  <label className="dm-c-datasets-layers__item-label govuk-label govuk-checkboxes__label" htmlFor={dataset.id}>
+                    {dataset.label}
                   </label>
                 </div>
               </div>

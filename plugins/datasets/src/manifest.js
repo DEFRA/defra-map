@@ -1,13 +1,13 @@
-// /plugins/data-sets/manifest.js
+// /plugins/datasets/manifest.js
 import { initialState, actions } from './reducer.js'
-import { DataSetsInit } from './DataSetsInit.jsx'
+import { DatasetsInit } from './DatasetsInit.jsx'
 import { Layers } from './panels/Layers.jsx'
 import { Key } from './panels/Key.jsx'
 import { showLayer } from './api/showLayer.js'
 import { hideLayer } from './api/hideLayer.js'
 
 export const manifest = {
-  InitComponent: DataSetsInit,
+  InitComponent: DatasetsInit,
 
   reducer: {
     initialState,
@@ -15,7 +15,7 @@ export const manifest = {
   },
 
   panels: [{
-    id: 'dataSetsLayers',
+    id: 'datasetsLayers',
     label: 'Layers',
     mobile: {
       slot: 'bottom',
@@ -37,7 +37,7 @@ export const manifest = {
     },
     render: Layers
   },{
-    id: 'dataSetsKey',
+    id: 'datasetsKey',
     label: 'Key',
     mobile: {
       slot: 'bottom',
@@ -55,11 +55,11 @@ export const manifest = {
   }],
 
   buttons: [{
-    id: 'dataSetsLayers',
+    id: 'datasetsLayers',
     label: 'Layers',
-    panelId: 'dataSetsLayers',
+    panelId: 'datasetsLayers',
     iconId: 'layers',
-    excludeWhen: ({ pluginConfig }) => !pluginConfig.dataSets.find(l => l.showInLayers),
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.datasets.find(l => l.showInLayers),
     mobile: {
       slot: 'top-left',
       showLabel: true
@@ -73,11 +73,11 @@ export const manifest = {
       showLabel: true
     }
   },{
-    id: 'dataSetsKey',
+    id: 'datasetsKey',
     label: 'Key',
-    panelId: 'dataSetsKey',
+    panelId: 'datasetsKey',
     iconId: 'key',
-    excludeWhen: ({ pluginConfig }) => !pluginConfig.dataSets.find(l => l.showInKey),
+    excludeWhen: ({ pluginConfig }) => !pluginConfig.datasets.find(l => l.showInKey),
     mobile: {
       slot: 'top-left',
       showLabel: true

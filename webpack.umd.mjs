@@ -131,7 +131,7 @@ const ALL_BUILDS = [
   { entryPath: './plugins/use-location/src/index.js', libraryPath: 'drawPolygonMLPlugin', outDir: 'plugins/use-location/dist/umd' },
   { entryPath: './plugins/search/src/index.js', libraryPath: 'searchPlugin', outDir: 'plugins/search/dist/umd' },
   { entryPath: './plugins/interact/src/index.js', libraryPath: 'interactPlugin', outDir: 'plugins/interact/dist/umd' },
-  { entryPath: './plugins/data-sets/src/index.js', libraryPath: 'dataLayersMLPlugin', outDir: 'plugins/data-sets/dist/umd' },
+  { entryPath: './plugins/datasets/src/index.js', libraryPath: 'datasetsPlugin', outDir: 'plugins/datasets/dist/umd' },
   { entryPath: './plugins/map-styles/src/index.js', libraryPath: 'mapStylesPlugin', outDir: 'plugins/map-styles/dist/umd' },
   { entryPath: './plugins/draw-ml/src/index.js', libraryPath: 'drawMLPlugin', outDir: 'plugins/draw-ml/dist/umd' },
   { entryPath: './plugins/frame/src/index.js', libraryPath: 'framePlugin', outDir: 'plugins/frame/dist/umd' }

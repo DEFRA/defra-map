@@ -95,4 +95,12 @@ describe('getNearest', () => {
     expect(transformSearchRequest).toHaveBeenCalledWith('https://example.com/123/654')
     expect(global.fetch).toHaveBeenCalledWith('transformed-https://example.com/123/654')
   })
+
+  it('should not make a fetch if URL transformation returns null', async () => {
+    global.fetch = jest.fn()
+    const transformSearchRequest = jest.fn(url => null)
+    const result = await getNearest([123.456, 654.321], transformSearchRequest)
+    expect(global.fetch).not.toHaveBeenCalled()
+    expect(result).toBeNull()
+  })
 })

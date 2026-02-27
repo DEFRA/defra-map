@@ -287,9 +287,19 @@ export class Draw {
     const graphic = e.graphics[0]
 
     if (e.state === "active") {
-        draw.sketchViewModel.layer.remove(graphic)
-        draw.sketchViewModel.layer.add(graphic)
-      }    
+      const layer = draw.sketchViewModel.layer;
+      // Remove all graphics except the current one
+      layer.graphics.items.slice().forEach(graphicItem => {
+        if (graphicItem !== graphic) {
+          layer.remove(graphicItem)
+        }
+      })
+      // Only add graphic if not already present
+      const exists = layer.graphics.items.some(graphicItem => graphicItem === graphic)
+      if (!exists) {
+        layer.add(graphic)
+      }
+    }
     // Area events
     if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
       const area = areaOperator.execute(graphic.geometry)

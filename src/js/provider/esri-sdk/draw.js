@@ -5,7 +5,6 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js'
 import Graphic from '@arcgis/core/Graphic'
 import { defaults } from './constants'
 
-let exposeDraw
 export class Draw {
   constructor (provider, options) {
     const { shape, feature } = options
@@ -35,10 +34,8 @@ export class Draw {
     })
 
     // Add update event handler
-    exposeDraw = (() => this).bind(this)
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
     sketchViewModel.on(['create'], this.handleCreate.bind(this))
-
 
     this.sketchViewModel = sketchViewModel
 
@@ -282,12 +279,11 @@ export class Draw {
   }
 
   handleUpdateDelete (e) {
-    const draw = exposeDraw()
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
 
     if (e.state === "active") {
-      const layer = draw.sketchViewModel.layer;
+      const layer = this.layer
       // Remove all graphics except the current one
       layer.graphics.items.slice().forEach(graphicItem => {
         if (graphicItem !== graphic) {

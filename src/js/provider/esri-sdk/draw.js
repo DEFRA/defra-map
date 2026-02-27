@@ -34,8 +34,10 @@ export class Draw {
     })
 
     // Add update event handler
-    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
+    sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete.bind(null, this))
     sketchViewModel.on(['create'], this.handleCreate.bind(this))
+
+
     this.sketchViewModel = sketchViewModel
 
     // Add existing feature
@@ -102,15 +104,15 @@ export class Draw {
       sketchViewModel.layer = graphicsLayer
 
       // Another timeout hack
-      setTimeout(() => {
-        sketchViewModel.update([graphic], {
+      // setTimeout(() => {
+        sketchViewModel.update(graphic, {
           tool: 'reshape',
           enableRotation: false,
           enableScaling: false,
           preserveAspectRatio: false,
           toggleToolOnClick: false
         })
-      }, 100)
+      // }, 0)
     }
   }
 
@@ -277,10 +279,14 @@ export class Draw {
     }
   }
 
-  handleUpdateDelete (e) {
+  handleUpdateDelete (draw, e) {
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
 
+    if (e.state === "active") {
+        draw.sketchViewModel.layer.remove(graphic)
+        draw.sketchViewModel.layer.add(graphic)
+      }    
     // Area events
     if (['reshape-stop', 'vertex-remove'].includes(toolInfoType)) {
       const area = areaOperator.execute(graphic.geometry)

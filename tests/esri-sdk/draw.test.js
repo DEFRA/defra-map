@@ -389,7 +389,7 @@ describe('Draw Class', () => {
       expect(mockEvent.cancel).toHaveBeenCalled()
     })
 
-    it('should remove invalid add valid graphics when state is active', async () => {
+    it('should remove invalid and add valid graphics when state is active', async () => {
       const graphicsBad = { geometry: { ...mockGraphic.geometry } }
       areaOperatorSpy.mockReturnValue(-1)
       const graphicsGood = mockEvent.graphics[0]

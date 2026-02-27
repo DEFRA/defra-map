@@ -287,7 +287,7 @@ export class Draw {
         }
       })
       // Only add graphic if not already present
-      const exists = layer.graphics.items.some(graphicItem => graphicItem === graphic)
+      const exists = layer.graphics.items.includes(graphic)
       if (!exists) {
         layer.add(graphic)
       }

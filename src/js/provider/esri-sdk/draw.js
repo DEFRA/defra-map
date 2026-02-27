@@ -36,7 +36,6 @@ export class Draw {
     // Add update event handler
     sketchViewModel.on(['update', 'delete'], this.handleUpdateDelete)
     sketchViewModel.on(['create'], this.handleCreate.bind(this))
-
     this.sketchViewModel = sketchViewModel
 
     // Add existing feature
@@ -282,7 +281,7 @@ export class Draw {
     if (e.state === 'active') {
       const layer = this.layer
       // Remove all graphics except the current one
-      layer.graphics.items.slice().forEach(graphicItem => {
+      layer.graphics.items.forEach(graphicItem => {
         if (graphicItem !== graphic) {
           layer.remove(graphicItem)
         }

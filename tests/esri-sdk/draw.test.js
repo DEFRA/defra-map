@@ -397,7 +397,7 @@ describe('Draw Class', () => {
         ...mockEvent,
         state: 'active',
         layer: {
-          graphics: {items: [graphicsBad]},
+          graphics: { items: [graphicsBad] },
           add: jest.fn(),
           remove: jest.fn()
         }
@@ -416,7 +416,7 @@ describe('Draw Class', () => {
         ...mockEvent,
         state: 'active',
         layer: {
-          graphics: {items: [graphicsGood]},
+          graphics: { items: [graphicsGood] },
           add: jest.fn(),
           remove: jest.fn()
         }

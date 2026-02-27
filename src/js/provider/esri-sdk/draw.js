@@ -102,16 +102,13 @@ export class Draw {
     if (drawMode === 'vertex' && graphic) {
       sketchViewModel.layer = graphicsLayer
 
-      // Another timeout hack
-      // setTimeout(() => {
-        sketchViewModel.update(graphic, {
-          tool: 'reshape',
-          enableRotation: false,
-          enableScaling: false,
-          preserveAspectRatio: false,
-          toggleToolOnClick: false
-        })
-      // }, 0)
+      sketchViewModel.update(graphic, {
+        tool: 'reshape',
+        enableRotation: false,
+        enableScaling: false,
+        preserveAspectRatio: false,
+        toggleToolOnClick: false
+      })
     }
   }
 
@@ -282,7 +279,7 @@ export class Draw {
     const toolInfoType = e.toolEventInfo?.type
     const graphic = e.graphics[0]
 
-    if (e.state === "active") {
+    if (e.state === 'active') {
       const layer = this.layer
       // Remove all graphics except the current one
       layer.graphics.items.slice().forEach(graphicItem => {

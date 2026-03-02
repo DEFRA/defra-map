@@ -1,4 +1,5 @@
 import Provider from '../../../src/js/provider/os-open-names/provider'
+import osNamesLookupWithWelshNameAlso from './__data__/osNamesLookupWithWelshNameAlso.json'
 
 describe('OS Open Names Provider', () => {
   let provider
@@ -64,6 +65,16 @@ describe('OS Open Names Provider', () => {
 
       const results = await provider.suggest('London')
       expect(results).toEqual([])
+    })
+
+    it('Should return the english name if NAME1 is in welsh', async () => {
+      global.fetch.mockImplementationOnce(() =>
+        Promise.resolve({ json: () => osNamesLookupWithWelshNameAlso })
+      )
+      const results = await provider.suggest('Oswest')
+      expect(results[0]).toHaveProperty('id', 'osgb4000000074559842')
+      expect(results[0]).toHaveProperty('text', 'Oswestry, SY11, Shropshire')
+      expect(results[0]).toHaveProperty('marked')
     })
   })
 

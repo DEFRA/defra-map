@@ -17,10 +17,23 @@ const removeDuplicates = (results) => {
   return Array.from(new Map(results.map(result => [result.GAZETTEER_ENTRY.ID, result])).values())
 }
 
+const transformGazetteerResult = (result) => {
+  // Sometimes the NAME1 value can be welsh, so we should use NAME2 instead
+  const name = result.GAZETTEER_ENTRY.NAME2_LANG === 'eng'
+    ? result.GAZETTEER_ENTRY.NAME2
+    : result.GAZETTEER_ENTRY.NAME1
+  // Force NAME1 to be the english value
+  result.GAZETTEER_ENTRY.NAME1 = name
+  result.GAZETTEER_ENTRY.NAME1_LANG = 'eng'
+  return result
+}
+
 // Remove any item that doesnt contain a part of the query in name1
 const removeTenuousResults = (results, query) => {
   const words = query.toLowerCase().replace(/,/g, '').split(' ')
-  return results.filter(l => words.some(w => l.GAZETTEER_ENTRY.NAME1.toLowerCase().includes(w)))
+  return results
+    .map(transformGazetteerResult)
+    .filter(result => words.some(w => result.GAZETTEER_ENTRY.NAME1.toLowerCase().includes(w)))
 }
 
 // Mark search charcaters in result
@@ -111,7 +124,7 @@ class Provider {
       return null
     }
     const results = await parseResults(query, this.transformSearchRequest)
-    return results.length ? place(results[0].GAZETTEER_ENTRY) : null
+    return results.length ? place(transformGazetteerResult(results[0]).GAZETTEER_ENTRY) : null
   }
 }
 

@@ -388,6 +388,45 @@ describe('Draw Class', () => {
       handleUpdateDelete(mockEvent)
       expect(mockEvent.cancel).toHaveBeenCalled()
     })
+
+    it('should remove invalid and add valid graphics when state is active', async () => {
+      const graphicsBad = { geometry: { ...mockGraphic.geometry } }
+      areaOperatorSpy.mockReturnValue(-1)
+      const graphicsGood = mockEvent.graphics[0]
+      const thisMockEvent = {
+        ...mockEvent,
+        state: 'active',
+        layer: {
+          graphics: { items: [graphicsBad] },
+          add: jest.fn(),
+          remove: jest.fn()
+        }
+      }
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      handleUpdateDelete = drawInstance.handleUpdateDelete.bind(thisMockEvent)
+      handleUpdateDelete(thisMockEvent)
+      expect(thisMockEvent.layer.remove).toHaveBeenCalledWith(graphicsBad)
+      expect(thisMockEvent.layer.add).toHaveBeenCalledWith(graphicsGood)
+    })
+
+    it('should not change graphics when state is active and graphics are correct', async () => {
+      areaOperatorSpy.mockReturnValue(-1)
+      const graphicsGood = mockEvent.graphics[0]
+      const thisMockEvent = {
+        ...mockEvent,
+        state: 'active',
+        layer: {
+          graphics: { items: [graphicsGood] },
+          add: jest.fn(),
+          remove: jest.fn()
+        }
+      }
+      const drawInstance = createDrawInstance({ addGraphic: true })
+      handleUpdateDelete = drawInstance.handleUpdateDelete.bind(thisMockEvent)
+      handleUpdateDelete(thisMockEvent)
+      expect(thisMockEvent.layer.remove).not.toHaveBeenCalled()
+      expect(thisMockEvent.layer.add).not.toHaveBeenCalled()
+    })
   })
 
   describe('createPolygonSymbol', () => {

@@ -1,9 +1,9 @@
-# How to Publish
+# How to publish
 
 This repo implements automated publishing via GitHub actions triggered by creating a release in GitHub.
 Releases should respect [the semantic versioning specification v2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## A Pre-Release
+## A pre-release
 1) Go to the [GitHub repo homepage](https://github.com/DEFRA/flood-webchat) for this project.  
 2) Click "Create a new release"
 
@@ -23,7 +23,7 @@ Releases should respect [the semantic versioning specification v2.0.0](https://s
 
 _NOTE: pre-release identifiers must match the pattern `^-[0-9A-Za-z-].*$`_
 
-## A Release
+## A release
 1) Go to the [GitHub repo homepage](https://github.com/DEFRA/flood-webchat) for this project.
 2) Click "Create a new release"
 
